@@ -5,5 +5,4 @@
 
 Site web:
 
-https://app.netlify.com/sites/hungry-hodgkin-0a5a81/overview
-
+https://hungry-hodgkin-0a5a81.netlify.app/
