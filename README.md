@@ -27,5 +27,6 @@ de privilégier l'utilisation via `RStudio` pour bénéficier de la mise
 à jour instantanée du contenu sur un serveur local) :
 
 ```r
+blogdown::install_hugo()
 blogdown::serve_site()
 ```
