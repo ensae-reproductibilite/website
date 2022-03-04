@@ -1,14 +1,10 @@
 ---
-  title: "Introduction aux bonnes pratiques pour les projets de data science"
-subtitle: "Séance 1"
-excerpt: "Rappels sur `Git` la première brique"
+title: "Introduction aux bonnes pratiques pour les projets de data science"
 date: 2022-03-03
 author: "Romain Avouac et Lino Galiana"
 draft: false
 # layout options: single, single-sidebar
 layout: single
-categories:
-  - syllabus
 ---
   
   Ce séminaire constitue une introduction aux bonnes pratiques de développement dans le cadre des projets de data science. On commencera par une introduction à la notion de bonnes pratiques, en insistant sur l'enjeu de la reproductibilité. On discutera ensuite des bonnes pratiques en matière de qualité du code et de structure des projets de code. On présentera l'enjeu du contrôle de version, à travers l'utilisation du logiciel Git, en insistant sur l’importance de séparer clairement le stockage du code de celui des données. Après un rappel des notions essentielles de Git, on présentera la manière dont cet outil permet de faciliter la gestion des projets collaboratifs. Les outils présentés seront appliqués directement aux projets personnels des participants. Nous couvrirons particulièrement les langages R et Python, mais les concepts présentés s'appliquent à tout projet de data science.
