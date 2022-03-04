@@ -59,5 +59,4 @@ layout: single
 ## Environnement d'exécution
 
 - Agnostique en principe
-- Mais SSP Cloud fortement recommandé (architecture Cloud + S3 + conteneurs => adoption de facto des bonnes pratiques)
-
+- Env de ref : SSP Cloud (architecture Cloud + S3 + conteneurs => adoption de facto des bonnes pratiques)

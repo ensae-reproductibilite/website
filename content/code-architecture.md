@@ -84,3 +84,13 @@ layout: single
 
 
 
+# Application
+
+Sur un projet personnel, terminé ou en cours : 
+- utiliser un linter pour améliorer la qualité du code au maximum (seuil ?)
+- modulariser le code
+  - réécrire le code sous forme de fonctions
+  - répartir les fonctions dans des modules thématiques
+  - écrire un script `main.py` qui permet de reproduire le projet
+- choisir une architecture cohérente de projet
+- faire du projet un package
