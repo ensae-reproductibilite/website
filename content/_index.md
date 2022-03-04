@@ -7,7 +7,7 @@ description: |
   un projet de _data science_ avec les outils à l'état de l'art.
 image_left: true
 images:
-- logo-onyxia.png
+- homepage.png
 show_action_link: true
 show_social_links: true
 subtitle: Cours de 3e année de l'ENSAE
