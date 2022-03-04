@@ -7,3 +7,80 @@ draft: false
 layout: single
 ---
   
+  
+  
+# Qualité du code 
+
+## Principes généraux
+
+### Lisibilité
+
+- expressivité des nommages
+- simplicité
+
+### Cohérence interne
+
+- importance des conventions, par projet et/ou communautaires
+
+### Limiter la redondance
+
+- utiliser des fonctions
+
+### Documentation
+
+- commentaires
+- docstrings
+
+## Standards communautaires de code
+
+- R : tidyverse / Google style guides
+- Python : PEP 8, PEP 257
+
+## Outils
+
+### Analyse de code
+
+- linters
+- formatters
+
+### Relecture par un tiers / pair-programming
+
+
+
+# Structure des projets
+
+## Modularité
+
+- fonctions
+- modules
+
+## Principes d'architecture
+
+### Séparation données/code/environnement d'exécution
+
+### Modèles
+
+- input / traitement / output
+- domain-driven design (data, domain, application, presentation)
+
+### Templates
+
+- R : RProjects
+- Python : cookiescutter
+
+## Packages
+
+### Gestion des dépendances
+
+### Documentation
+
+### Logging
+
+### Tests unitaires
+
+### Publication
+
+### Maintenance
+
+
+
