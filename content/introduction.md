@@ -1,16 +1,63 @@
 ---
-title: "Introduction aux bonnes pratiques pour les projets de data science"
+title: "Introduction"
 date: 2022-03-03
 author: "Romain Avouac et Lino Galiana"
 draft: false
 # layout options: single, single-sidebar
 layout: single
 ---
+
+
+
+
+# Les bonnes pratiques de développement
+
+## Origines
   
-  Ce séminaire constitue une introduction aux bonnes pratiques de développement dans le cadre des projets de data science. On commencera par une introduction à la notion de bonnes pratiques, en insistant sur l'enjeu de la reproductibilité. On discutera ensuite des bonnes pratiques en matière de qualité du code et de structure des projets de code. On présentera l'enjeu du contrôle de version, à travers l'utilisation du logiciel Git, en insistant sur l’importance de séparer clairement le stockage du code de celui des données. Après un rappel des notions essentielles de Git, on présentera la manière dont cet outil permet de faciliter la gestion des projets collaboratifs. Les outils présentés seront appliqués directement aux projets personnels des participants. Nous couvrirons particulièrement les langages R et Python, mais les concepts présentés s'appliquent à tout projet de data science.
+## Pourquoi s'intéresser aux bonnes pratiques ?
 
-## Prérequis : 
+### Le code comme outil de communication
+        
+- pour soi dans le futur
+- pour les autres
+        
+### L'enjeu majeur de la reproductibilité
 
-* notions sur l’utilisation de `Git` et `GitHub`/`GitLab` (un rappel des notions essentielles sera proposé)
-* avoir un [compte GitHub](https://github.com/signup?source=login)
-* avoir un projet de données, individuel ou collectif, terminé ou encore en cours de développement, que l'on utilisera comme base pour appliquer les bonnes pratiques présentées
+### Préalable à la mise en production
+
+## Un continuum de bonnes pratiques
+
+### Comment fixer le bon niveau ?
+            
+- Ambitions du projet (état de l'existant, potentiel évolutif, potentiel collaboratif)
+- Ressources (moyens humain, temps, existence d'une communauté de contributeurs)
+- Contraintes (échéance, niveau de qualité attendu, mise en production, environnement d'exécution, enjeux de sécurité)
+
+### Un socle minimal pour les projets de data science ?
+
+- Standards de code
+- Architecture de projet
+- Git
+- Gestion des dépendances
+
+### Le bon curseur peut changer en fonction de l'évolution du projet
+
+- Passage en production
+- Projet open-source
+
+
+# Approche pédagogique
+
+## Apprentissage par la pratique
+
+- Application des concepts dès le début sur projets personnels
+
+## Langages
+
+- Python et R, mais en réalité principes agnostiques.
+
+## Environnement d'exécution
+
+- Agnostique en principe
+- Mais SSP Cloud fortement recommandé (architecture Cloud + S3 + conteneurs => adoption de facto des bonnes pratiques)
+
