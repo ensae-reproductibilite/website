@@ -50,6 +50,7 @@ layout: single
 ## Gestionnaire de paquets
 
 - Principe / différence avec Windows
+- Distributions Linux
 - Présentation d'apt
 - apt install
 - apt update
