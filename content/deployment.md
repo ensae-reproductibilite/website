@@ -8,5 +8,33 @@ layout: single
 ---
   
 
+# Mise en production
 
+## Tentative de définition
+
+## Importance des bonnes pratiques
+
+## Environnements de production
+
+## Différents types de livrable
+
+- API
+- application
+- rapport automatisé
+- site internet
+
+
+# Approches
+
+## Pipelines de données
+
+- DAG
+
+## Orchestration
+
+## CI/CD
+
+
+
+# Application
 
