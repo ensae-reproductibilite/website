@@ -11,7 +11,7 @@ layout: single
 
 # Environnements d'exécution
 
-## Exemples illustratifs de problèmes liés à la non-normalisation de son environnement d'exécution
+- Exemples illustratifs de problèmes liés à la non-normalisation de son environnement d'exécution
 
 ## Principes du développement logiciel pour favoriser la reproductibilité
 
