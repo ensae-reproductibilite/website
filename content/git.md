@@ -8,7 +8,7 @@ layout: single
 ---
   
 
-  
+
 # Git pour les projets individuels
 
 ## Pourquoi faire ?
@@ -63,3 +63,14 @@ layout: single
 
 - via Fork + PR
 - suivre les règles de contribution du projet
+
+
+
+# Application
+
+- individuel
+  - exercice guidé add/commit/push/pull/checkout
+  - mise sur GitHub d'un projet personnel
+- collaboratif
+  - cadavre exquis
+  - PR à partir d'un fork
