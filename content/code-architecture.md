@@ -56,7 +56,7 @@ layout: single
 
 ## Principes d'architecture
 
-### Séparation données/code/environnement d'exécution
+### Séparation données/code/config/environnement d'exécution
 
 ### Modèles
 

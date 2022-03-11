@@ -6,3 +6,20 @@ draft: false
 # layout options: single, single-sidebar
 layout: single
 ---
+
+
+
+- Tests unitaires
+- Monitoring
+    - Logging
+- Versioning avancé 
+    - Data version control
+    - MLOps
+- Optimisation de performance
+    - Sin of early optimisation
+    - Profiling
+    - Ressources
+        - R : Advanced R, R inferno
+        - Python : High Performance Python
+- Bonnes pratiques Dockerfile
+- Enjeux de sécurité
