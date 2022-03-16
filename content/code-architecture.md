@@ -301,6 +301,53 @@ une démarche ou des résultats
 2. Une documentation de la démarche plus proche du code dont l'un des 
 exemples sont les _docstrings_ `Python` ou la documentation `Roxygen`
 
+{{< panelset class="nommage" >}}
+{{% panel name="Python :snake:" %}}
+
+- PEP 8, PEP 257
+
+
+{{% /panel %}}
+
+{{% panel name="R" %}}
+
+L'exemple suivant, issu du livre de référence
+d'Hadley Wickham et Jenny Bryan _R Packages_ permet de mesurer
+l'intérêt de la documentation standardisée (bien-sûr ici la
+fonction est assez explicite mais cela permet de se concentrer
+sur la documentation). 
+
+Les balises `Roxygen` s'insèrent autour de la définition d'une
+fonction. Elles permettent à la lecture du code source de bien
+comprendre l'objectif de la fonction ainsi que ses inputs. On
+a même ici des exemples qui permettent de tester la fonction.
+
+```r
+#' Add together two numbers
+#' 
+#' @param x A number.
+#' @param y A number.
+#' @return The sum of \code{x} and \code{y}.
+#' @examples
+#' add(1, 1)
+#' add(10, 1)
+add <- function(x, y) {
+  x + y
+}
+```
+
+Ceci est déjà explicite à la lecture du code source. Cependant,
+un avantage de cette structuration imposée de la documentation est
+qu'ensuite, si la fonction est introduite dans un _package_,
+la documentation de la fonction, accessible via `?add` par
+exemple, est automatiquement mise en forme:
+
+![](https://d33wubrfki0l68.cloudfront.net/b97dc657a7e1c7030d1b8d188723fb10f5260474/3dc52/images/man-add.png)
+
+{{% /panel %}}
+{{< /panelset >}}
+
+
 
 ## Standards communautaires de code
 
@@ -407,3 +454,4 @@ Sur un projet personnel, terminé ou en cours :
 - [_tidyverse style guide_](https://style.tidyverse.org/googl)
 - [_google style guide_](https://google.github.io/styleguide/Rguide.html)
 - [Cours de Pierre-Antoine Champin](https://perso.liris.cnrs.fr/pierre-antoine.champin/enseignement/algo/cours/algo/bonnes_pratiques.html)
+- [R Packages](https://r-pkgs.org/index.html) par Hadley Wickham and Jenny Bryan
