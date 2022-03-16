@@ -101,8 +101,14 @@ choix des noms des objets afin d’assurer la lisibilité des programmes.
 {{< panelset class="nommage" >}}
 {{% panel name="Python :snake:" %}}
 
+- Adopter les mêmes standards que la communauté pour les noms de package
+
 ```python
-"toto"
+# bien
+import numpy as np
+
+# trompeur
+import numpy as pd
 ```
 
 {{% /panel %}}
@@ -161,7 +167,73 @@ s'adapter au type d'objet en entrée (par exemple aller chercher des
 
 ### Concision  {#concision}
 
--   simplicité
+Comme une démonstration mathématique, un code intelligible 
+doit viser la concision et la simplicité. Les codes très longs
+sont souvent signes de répétitions et sont difficiles à débugger. 
+
+{{< panelset class="nommage" >}}
+{{% panel name="Python :snake:" %}}
+
+{{% /panel %}}
+
+{{% panel name="R" %}}
+
+- Le code `R` base ci-dessous est très difficile à comprendre ;
+- Le code `dplyr` est plus intelligible mais est encore relativement verbeux ;
+- Le code `data.table` est plus concis, ce qui le rend plus clair (et plus
+proche de la syntaxe SQL).
+
+<table class='table' style = "width : 70%;">
+<tr> <td>
+
+**`Base R`**
+
+</td> 
+<td>
+
+```r
+aggregate(
+  dt[dt[["x"]] > 3]$y,
+  by = list(dt[dt[["x"]] > 3]$z),
+  FUN = sum)
+```
+
+</td>
+</tr>
+<tr>
+<td>
+
+**`dplyr`**
+
+</td> 
+<td>
+
+```r
+dt %>%
+  dplyr::filter(x > 3) %>%
+  dplyr::group_by(z) %>%
+  dplyr::summarise(sum(y))
+```
+
+</td>
+</tr>
+<tr>
+<td>
+
+**`data.table`**
+
+</td> 
+<td>
+
+```r
+dt[x > 3, sum(y), by = z]
+```
+</td>
+</tr>
+</table>
+
+{{% /panel %}}
+{{< /panelset >}}
 
 
 ### Cohérence interne {#coherence}
