@@ -238,7 +238,31 @@ dt[x > 3, sum(y), by = z]
 
 ### Cohérence interne {#coherence}
 
--   importance des conventions, par projet et/ou communautaires
+Lister les dépendances est important,
+tant pour des raisons techniques (que le logiciel sache où aller
+chercher des fonctions nécessaires pour avoir un code fonctionnel)
+que pour des raisons conventionnelles (que les utilisateurs comprennent les
+dépendances à s'installer pour être en mesure de réutiliser le code). 
+Pour cette raison, il est de bonne pratique de lister les dépendances
+de deux manières:
+
+* en début de script, l'ensemble des fonctions issues de librairies externes
+ou les packages à importer doivent être listés ;
+* dans un fichier externe (voir la [partie structure](#structure) et le chapitre portabilité),
+les dépendances à installer sont listées.
+
+
+Un code reproductible doit pouvoir s'exécuter de manière linéaire.
+S'il provoque une erreur, il est important de pouvoir identifier
+l'instruction responsable pour pouvoir _debugger_.
+
+Les scripts trop longs ne sont pas une bonne pratique. Il est préférable
+de diviser l'ensemble des scripts exécutant une
+chaîne de production en "monades"", c'est-à-dire en petites unités
+cohérentes. Les fonctions sont un outil privilégié pour cela
+(en plus de limiter la redondance, et d'être un outil privilégié
+pour documenter un code).
+
 
 ### Limiter la redondance {#redondance}
 
@@ -246,15 +270,77 @@ dt[x > 3, sum(y), by = z]
 
 ### Documentation {#documentation}
 
--   commentaires
--   docstrings
+Un code sans aucun commentaire est très difficile à s'approprier (y compris
+pour la personne qui l'a rédigé et qui y revient quelques semaines plus tard).
+Cependant, un code présentant trop de commentaires est également illisible et
+reflète généralement un défaut de conception du code qui n'est pas assez
+explicite. 
+
+La documentation vise à présenter la démarche générale, éventuellement
+à travers des exemples, mais aussi à expliciter certains éléments
+du code (une opération qui n'est pas évidente, des arguments de fonction, etc.). 
+La documentation se mélange donc aux instructions visant à être exécutées
+mais s'en distingue. Ces principes sont hérités du paradigme de la 
+_"programmation lettrée"_ (_Literate programming_) dont l'un des 
+avocats était Donald Knuth. 
+
+
+> "Je crois que le temps est venu pour une amélioration significative de la documentation des programmes, et que le meilleur moyen d'y arriver est de considérer les programmes comme des œuvres littéraires. D'où mon titre, « programmation lettrée .
+>
+> Nous devons changer notre attitude traditionnelle envers la construction des programmes : au lieu de considérer que notre tâche principale est de dire à un ordinateur ce qu'il doit faire, appliquons-nous plutôt à expliquer à des êtres humains ce que nous voulons que l'ordinateur fasse.
+>
+> Celui qui pratique la programmation lettrée peut être vu comme un essayiste, qui s'attache principalement à exposer son sujet dans un style visant à l'excellence. Tel un auteur, il choisit , avec soin, le dictionnaire à la main, les noms de ses variables et en explique la signification pour chacune d'elles. Il cherche donc à obtenir un programme compréhensible parce que ses concepts sont présentés dans le meilleur ordre possible. Pour cela, il utilise un mélange de méthodes formelles et informelles qui se complètent"
+>
+> Donald Knuth, _Literate Programming_ ([source](https://fr.wikipedia.org/wiki/Programmation_lettr%C3%A9e))
+
+Cela peut amener à distinguer deux types de documentation:
+
+1. Une documentation générale de type `Jupyter Notebook` ou `R Markdown` qui 
+présente certes du code exécuté mais dont l'objet principal est de présenter
+une démarche ou des résultats
+2. Une documentation de la démarche plus proche du code dont l'un des 
+exemples sont les _docstrings_ `Python` ou la documentation `Roxygen`
+
 
 ## Standards communautaires de code
 
--   R : tidyverse / Google style guides
--   Python : PEP 8, PEP 257
+{{< panelset class="nommage" >}}
+{{% panel name="Python :snake:" %}}
 
-## Outils
+- PEP 8, PEP 257
+
+
+{{% /panel %}}
+
+{{% panel name="R" %}}
+
+* tidyverse
+* Google style guides
+* Ropensci guide
+
+{{% /panel %}}
+{{< /panelset >}}
+
+## Outils et méthodes pour améliorer un code
+
+### Helpers
+
+{{< panelset class="nommage" >}}
+{{% panel name="Python :snake:" %}}
+
+
+{{% /panel %}}
+
+{{% panel name="R" %}}
+
+* `usethis`
+* `devtools`
+* `here`
+* `Roxygen`
+* Addins `RStudio`
+
+{{% /panel %}}
+{{< /panelset >}}
 
 ### Analyse de code
 
@@ -263,7 +349,7 @@ dt[x > 3, sum(y), by = z]
 
 ### Relecture par un tiers / pair-programming
 
-# Structure des projets
+# Structure des projets {#structure}
 
 ## Modularité
 
@@ -320,3 +406,4 @@ Sur un projet personnel, terminé ou en cours :
 - [The Hitchhiker’s Guide to Python](https://docs.python-guide.org/#writing-great-python-code)
 - [_tidyverse style guide_](https://style.tidyverse.org/googl)
 - [_google style guide_](https://google.github.io/styleguide/Rguide.html)
+- [Cours de Pierre-Antoine Champin](https://perso.liris.cnrs.fr/pierre-antoine.champin/enseignement/algo/cours/algo/bonnes_pratiques.html)
