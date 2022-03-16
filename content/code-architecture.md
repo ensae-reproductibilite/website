@@ -65,6 +65,9 @@ quelles problématiques prioritaires en proposant quelques conseils.
 Ils sont complémentaires d'un
 [guide des bonnes pratiques `utilitR`](https://www.pratiques.utilitr.org)
 qui vise à présenter de manière plus formelle quelques recommendations.
+Les onglets `Python` et `R` permettent de comparer, à chaque fois, 
+les deux langages. Globalement, les recommandations divergent rarement, 
+ces deux langages ayant une logique très proche. 
 
 # Qualité du code
 
