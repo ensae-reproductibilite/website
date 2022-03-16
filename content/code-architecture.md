@@ -92,7 +92,72 @@ par d'autres (à condition de ne pas aller dans l'excès de documentation)
 
 ### Lisibilité  {#lisibilite}
 
--   expressivité des nommages
+Un code écrit avec des noms de variables et de fonctions explicites est autant,
+voire plus, informatif que les commentaires qui l’accompagnent.
+C’est pourquoi il est essentiel de respecter des conventions pour le
+choix des noms des objets afin d’assurer la lisibilité des programmes.
+
+
+{{< panelset class="nommage" >}}
+{{% panel name="Python :snake:" %}}
+
+```python
+"toto"
+```
+
+{{% /panel %}}
+{{% panel name="R" %}}
+
+- Les fonctions de base `R` utilisent des points dans les noms de fonctions
+(`contrib.url()` par exemple) ou les noms de classes (`data.frame`).
+Il est mieux de réserver les points uniquement aux objets de classe `S3`
+sous la forme `fonction.classe` (approche de programmation orientée objet).
+
+- Privilégier le _snake case_, (écriture avec des *underscores*, par exemple `donnees_menages`)
+au _CamelCase_
+(écriture avec des majuscules en début de nouveau mot, par exemple `donneesMenages`)
+(préconisation du [tidyverse style guide](https://style.tidyverse.org/syntax.html)).
+Si vous préférez le _CamelCase_, utilisez-le systématiquement dans tout le script pour uniformiser le code.
+
+- Ne pas utiliser `T` ou `F` pour nommer des variables**
+(car en plus d'être rarement des noms explicites ce sont les abréviations des booléens `TRUE` et `FALSE`)
+
+- Ne pas utiliser de noms qui sont déjà des fonctions de base `R` (`mean` par exemple).
+Cela ne génère pas toujours d'erreur mais cela évite des erreurs difficilement détectables! Voici un exemple d'erreur difficile à détecter:
+
+```{r exemple T}
+# On commence avec équivalence TRUE et T
+TRUE == T
+2 == TRUE
+# On crée une variable T à un moment (shortcut de TRUE)
+T <- 2
+# On a rompu l'équivalence entre T et TRUE
+TRUE == T
+2 == T
+```
+
+- Le `return` n'est pas obligatoire en `R` mais il peut être utile
+d'expliciter l'objet retourné.
+Le [tidyverse style guide](https://style.tidyverse.org/functions.html#return)
+recommande de ne pas le faire, le
+[Google style guide](https://google.github.io/styleguide/Rguide.html#use-explicit-returns)
+recommande de toujours expliciter. Nous recommandons de toujours mettre un
+`return`.
+
+- Faire attention au type d'objet renvoyé par `R`. `R` ne propose pas de typage
+fort, il est donc possible qu'une fonction renvoie des objets de nature
+différente en fonction de conditions `if` (selon les cas une liste, un vecteur,
+un dataframe, etc.). Cela peut amener à des surprises lorsqu'on utilise une 
+telle fonction dans un code. Il est recommandé d'éviter ce comportement
+en proposant des fonctions différentes si l'_output_ d'une fonction 
+est de nature différente. 
+
+- Privilégier la programmation orientée objet lorsqu'une fonction doit
+s'adapter au type d'objet en entrée (par exemple aller chercher des
+éléments différents pour un objet `lm` ou un objet `glm`)
+{{% /panel %}}
+{{< /panelset  >}}
+
 
 ### Concision  {#concision}
 
