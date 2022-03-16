@@ -1,5 +1,5 @@
 ---
-title: "Améliorer la qualité de son code et la structure de ses projets"
+title: "Structuration et qualité du code"
 date: 2022-03-03
 author: "Romain Avouac et Lino Galiana"
 draft: false
@@ -10,6 +10,8 @@ layout: single
 > The code is read much more often than it is written.
 >
 > Guido Van Rossum [créateur de Python]
+
+<br>
 
 `Python` est un langage très lisible.
 Avec un peu d’effort sur le nom des objets,
@@ -66,24 +68,43 @@ qui vise à présenter de manière plus formelle quelques recommendations.
 
 # Qualité du code
 
-
-
 ## Principes généraux
 
-### Lisibilité
+
+Les premières conventions à évoquer ont trait à la syntaxe du code et
+ont les objectifs suivants:
+
+1. [Améliorer la lisibilité](#lisibilite) ce qui est indispensable pour
+rendre la démarche intelligible par d'autres mais aussi pour soi, lorsqu'on
+reprend un code écrit il y a quelques temps
+2. [Favoriser la concision](#concision) pour réduire le risque d'erreur
+et rendre la démarche plus claire. 
+3. Suivre les règles explicites ou les conventions d'un langage pour
+[assurer le fonctionnement et la cohérence](#coherence) d'un code
+4. [Limiter la redondance](#redondance) ce qui permet de simplifier
+un code (paradigme du _don't repeat yourself_)
+5. [Documenter un code](#documentation) ce qui facilite son acquisition
+par d'autres (à condition de ne pas aller dans l'excès de documentation)
+
+
+### Lisibilité  {#lisibilite}
 
 -   expressivité des nommages
+
+### Concision  {#concision}
+
 -   simplicité
 
-### Cohérence interne
+
+### Cohérence interne {#coherence}
 
 -   importance des conventions, par projet et/ou communautaires
 
-### Limiter la redondance
+### Limiter la redondance {#redondance}
 
 -   utiliser des fonctions
 
-### Documentation
+### Documentation {#documentation}
 
 -   commentaires
 -   docstrings
