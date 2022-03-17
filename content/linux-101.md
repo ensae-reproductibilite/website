@@ -28,11 +28,21 @@ Dans le cadre de ce cours, on s'intéressera donc particulièrement au terminal 
 ## Environnement de travail
 
 Différents environnements de travail peuvent être utilisés pour apprendre à se servir d'un terminal Linux :
-- le [SSP Cloud](https://datalab.sspcloud.fr). Dans la mesure où les exemples de mise en production du cours seront illustrées sur cet environnement, nous recommendons de l'utiliser dès à présent pour bien se familiariser.
 
-- Recommandé : terminal du service VSCode sur le SSP Cloud
-- Autre option sur Linux : [Katacoda](https://katacoda.com/scenario-examples/courses/environment-usages/ubuntu-2004), un bac à sable dans un système Ubuntu
-- Sur Windows : git bash (émulation minimaliste d'un terminal Linux)
+- le [SSP Cloud](https://datalab.sspcloud.fr). Dans la mesure où les exemples de mise en production du cours seront illustrées sur cet environnement, nous recommendons de l'utiliser dès à présent pour se familiariser. Le terminal est accessible à partir de différents services (RStudio, Jupyter, etc.), mais nous recommandons d'utiliser le terminal d'un service VSCode, dans la mesure où se servir d'un [IDE](https://fr.wikipedia.org/wiki/Environnement_de_d%C3%A9veloppement) pour organiser notre code est en soi déjà une bonne pratique ;
+
+- [Katacoda](https://katacoda.com/scenario-examples/courses/environment-usages/ubuntu-2004), un bac à sable dans un système Ubuntu, la distribution Linux la plus populaire ;
+
+- sur Windows : Git Bash (émulation minimaliste d'un terminal Linux), qui est installée par défaut avec Git.
+
+## Débuter avec le terminal
+
+Lançons un terminal pour présenter son fonctionnement basique. On prend pour exemple le terminal d'un service VSCode lancé via le SSP Cloud (*Application Menu* tout en haut à gauche de VSCode -> *Terminal* -> *New Terminal*). Voici à quoi ressemble le terminal en question.
+
+![](/terminal.png)
+
+Décrivons d'abord les différentes inscriptions qui arrivent à l'initialisation :
+- `(base)` : cette inscription n'est pas directement liée au terminal, elle provient du fait que l'on utilise un environnement `conda`. Nous verrons le fonctionnement des environnements virtuels en détail dans le chapitre sur la [portabilité]({{< ref "/content/portability.md" >}}).
 
 ## Notions de filesystem
 
