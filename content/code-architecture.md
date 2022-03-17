@@ -351,6 +351,14 @@ exemple, est automatiquement mise en forme:
 
 ## Standards communautaires de code
 
+Pour parler le même langage, un certain nombre de conventions ont
+émergé dans les communautés `R` et `Python`. L'objectif ici 
+n'est pas de lister ces conventions (une partie d'entre elles ayant
+déjà été évoquées) mais pointer rapidement vers les principales
+conventions. 
+Dans le domaine, `Python` a crée un système un peu plus formel que
+`R` mais globalement, la démarche est la même. 
+
 {{< panelset class="nommage" >}}
 {{% panel name="Python :snake:" %}}
 
@@ -361,9 +369,16 @@ exemple, est automatiquement mise en forme:
 
 {{% panel name="R" %}}
 
-* tidyverse
-* Google style guides
-* Ropensci guide
+Les incontournables sont :
+
+- [_tidyverse style guide_](https://style.tidyverse.org/googl)
+- [_google style guide_](https://google.github.io/styleguide/Rguide.html)
+* [Le guide du développeur Ropensci](https://devguide.ropensci.org/index.html)
+
+`Ropensci` a également lancé un appel à contribution pour proposer
+un guide des bonnes pratiques adapté aux projets de données 
+gouvernementaux
+[sur Github](https://github.com/ropensci-org/community-calls/issues/26)
 
 {{% /panel %}}
 {{< /panelset >}}
@@ -371,6 +386,14 @@ exemple, est automatiquement mise en forme:
 ## Outils et méthodes pour améliorer un code
 
 ### Helpers
+
+`Python` ou `R` étant l'outil de travail principal de milliers de 
+_data-scientists_, un certain nombre d'outils ont vu le jour
+pour réduire le temps nécessaire pour créer un projet ou disposer
+d'un code fonctionnel. Ces outils permettent un gros gain de productivité,
+réduisent le temps passé à effectuer des tâches rébarbatives et améliorent
+la qualité d'un projet en offrant des diagnostics voire des correctifs
+à des codes perfectibles. 
 
 {{< panelset class="nommage" >}}
 {{% panel name="Python :snake:" %}}
@@ -380,10 +403,18 @@ exemple, est automatiquement mise en forme:
 
 {{% panel name="R" %}}
 
+La première chose à faire est de privilégier
+les projets RStudio (
+[voir la présentation de ceux-ci dans la documentation `utilitR`](https://www.book.utilitr.org/rproject.html)
+et les éléments présentés dans la partie sur la
+[structuration des projets](#structure)).
+
+Les packages suivants font partie de la palette du développeurs
 * `usethis`
 * `devtools`
 * `here`
 * `Roxygen`
+* `goodpractice`
 * Addins `RStudio`
 
 {{% /panel %}}
@@ -404,6 +435,28 @@ exemple, est automatiquement mise en forme:
 -   modules
 
 ## Principes d'architecture
+
+{{< panelset class="nommage" >}}
+{{% panel name="Python :snake:" %}}
+
+
+{{% /panel %}}
+
+{{% panel name="R" %}}
+
+> Le principe d'un projet `RStudio` est de rassembler tous les éléments de contexte propres à ce projet : espace de travail, historique de commandes, variables d'environnement, options de `R`... Utiliser un projet `RStudio` présente donc de multiples avantages : 
+> 
+> * Il centralise l'ensemble des éléments d'un projet : codes, réglages, documentation, et sorties (articles, présentations) ;
+> * Il facilite la compréhension du traitement pour les utilisateurs extérieurs et rend plus aisées les évolutions postérieures du projet ;
+> * Il organise l'interaction entre les fichiers (plusieurs codes, rédaction de documents avec R markdown...) et avec les données ;
+> * Il renforce la portabilité : le répertoire de travail par défaut d’un projet est le dossier où se situe le fichier `.Rproj`. Cela rend les scripts indépendants de l'arborescence de la machine. Ainsi, si vous avez un code `traitement.R` situé dans le même dossier que le fichier `.Rproj`, alors le chemin de ce code est `./traitement.R`, où que soit situé le dossier du projet.
+
+
+{{% /panel %}}
+{{< /panelset >}}
+
+
+
 
 ### Séparation données/code/config/environnement d'exécution
 
@@ -455,3 +508,4 @@ Sur un projet personnel, terminé ou en cours :
 - [_google style guide_](https://google.github.io/styleguide/Rguide.html)
 - [Cours de Pierre-Antoine Champin](https://perso.liris.cnrs.fr/pierre-antoine.champin/enseignement/algo/cours/algo/bonnes_pratiques.html)
 - [R Packages](https://r-pkgs.org/index.html) par Hadley Wickham and Jenny Bryan
+- [La documentation collaborative `utilitR`](https://www.book.utilitr.org)
