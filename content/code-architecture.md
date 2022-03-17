@@ -438,6 +438,53 @@ pas à en tester quelques uns.
 -   linters
 -   formatters
 
+Les _linters_ sont des outils qui permettent d'évaluer la qualité du 
+code et son risque de provoquer une erreur (explicite ou silencieuse).
+Voici quelques exemples de problèmes que peuvent rencontrer les 
+`linters`:
+
+* les variables sont utilisées mais n'existent pas (erreur)
+* les variables inutilisées (inutiles)
+* la mauvaise organisation du code (risque d'erreur)
+* le non respect des bonnes pratiques d'écriture de code
+* les erreurs de syntaxe (par exemple les coquilles)
+    
+La plupart des logiciels de développement embarquent des fonctionalités
+de diagnostic (voire de suggestion de correctif). Il faut parfois
+les paramétrer dans les options (ils sont désactivés pour ne pas
+effrayer l'utilisateur avec des croix rouges partout)
+
+{{< panelset class="nommage" >}}
+{{% panel name="Python :snake:" %}}
+
+
+{{% /panel %}}
+
+{{% panel name="R" %}}
+
+Les packages de référence dans le 
+domaine sont:
+
+- [`lintr`](https://github.com/r-lib/lintr) pour les diagnostics ;  
+- [`styler`](https://github.com/r-lib/styler) pour la modification
+automatisée des fichiers suite au diagnostic.
+
+`RStudio` propose des diagnostics mais ils ne sont pas activés
+par défaut. Pour les activer, après avoir fait `Tools > Global Options` : 
+
+1. Aller dans la partie `Code` à gauche
+2. Dans les onglets en haut, cliquer sur `Diagnostics`
+3. Ajouter quelques diagnostics (par défaut ceux-ci sont vraiment
+trop peu nombreux)
+
+![](/rstudio-diagnostics.png)
+
+Même si vous ne développez pas de _packages_ ces diagnostics vous
+permettront d'améliorer la qualité de vos codes. 
+
+{{% /panel %}}
+{{< /panelset >}}
+
 ### Relecture par un tiers / pair-programming
 
 # Structure des projets {#structure}
