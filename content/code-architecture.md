@@ -351,6 +351,14 @@ exemple, est automatiquement mise en forme:
 
 ## Standards communautaires de code
 
+Pour parler le même langage, un certain nombre de conventions ont
+émergé dans les communautés `R` et `Python`. L'objectif ici 
+n'est pas de lister ces conventions (une partie d'entre elles ayant
+déjà été évoquées) mais pointer rapidement vers les principales
+conventions. 
+Dans le domaine, `Python` a crée un système un peu plus formel que
+`R` mais globalement, la démarche est la même. 
+
 {{< panelset class="nommage" >}}
 {{% panel name="Python :snake:" %}}
 
@@ -361,9 +369,18 @@ exemple, est automatiquement mise en forme:
 
 {{% panel name="R" %}}
 
-* tidyverse
-* Google style guides
-* Ropensci guide
+Les incontournables sont :
+
+- [_tidyverse style guide_](https://style.tidyverse.org/googl)
+- [_google style guide_](https://google.github.io/styleguide/Rguide.html)
+* [Le guide du développeur Ropensci](https://devguide.ropensci.org/index.html)
+
+`Ropensci` a également lancé un appel à contribution pour proposer
+un guide des bonnes pratiques adapté aux projets de données 
+gouvernementaux
+[sur Github](https://github.com/ropensci-org/community-calls/issues/26).
+L'OCDE devrait également lancer un manuel sur le sujet dans les prochains
+mois. 
 
 {{% /panel %}}
 {{< /panelset >}}
@@ -371,6 +388,14 @@ exemple, est automatiquement mise en forme:
 ## Outils et méthodes pour améliorer un code
 
 ### Helpers
+
+`Python` ou `R` étant l'outil de travail principal de milliers de 
+_data-scientists_, un certain nombre d'outils ont vu le jour
+pour réduire le temps nécessaire pour créer un projet ou disposer
+d'un code fonctionnel. Ces outils permettent un gros gain de productivité,
+réduisent le temps passé à effectuer des tâches rébarbatives et améliorent
+la qualité d'un projet en offrant des diagnostics voire des correctifs
+à des codes perfectibles. 
 
 {{< panelset class="nommage" >}}
 {{% panel name="Python :snake:" %}}
@@ -380,11 +405,30 @@ exemple, est automatiquement mise en forme:
 
 {{% panel name="R" %}}
 
-* `usethis`
-* `devtools`
-* `here`
-* `Roxygen`
-* Addins `RStudio`
+La première chose à faire est de privilégier
+les projets RStudio (
+[voir la présentation de ceux-ci dans la documentation `utilitR`](https://www.book.utilitr.org/rproject.html)
+et les éléments présentés dans la partie sur la
+[structuration des projets](#structure)).
+
+Les packages suivants font partie de la palette du développeur: 
+
+* [`usethis`](https://usethis.r-lib.org/): s'il fallait n'en retenir qu'un (ce
+qui serait tout de même un peu dommage...). Le couteau-suisse de la création
+et de la gestion des options d'un projet
+* [`devtools`](https://github.com/r-lib/devtools): le meilleur ami de la
+personne qui développe les packages. Le livre [R Packages](https://r-pkgs.org/index.html)
+donne de nombreux exemples à son propos. 
+* [`here`](https://here.r-lib.org/): pour en finir avec la galère des chemins
+relatifs, des dossiers de travail, etc.
+* [`Roxygen`](https://cran.r-project.org/web/packages/roxygen2/vignettes/roxygen2.html): 
+le package dédié à la documentation des fonctions
+* [`goodpractice`](https://github.com/MangoTheCat/goodpractice): des diagnostics
+pratiques sur la qualité du code
+
+Enfin, `RStudio` propose de nombreux _addins_ (extensions) bien pratiques.
+La plupart sont installés avec des _packages_ de _helpers_, n'hésitez
+pas à en tester quelques uns. 
 
 {{% /panel %}}
 {{< /panelset >}}
@@ -393,6 +437,53 @@ exemple, est automatiquement mise en forme:
 
 -   linters
 -   formatters
+
+Les _linters_ sont des outils qui permettent d'évaluer la qualité du 
+code et son risque de provoquer une erreur (explicite ou silencieuse).
+Voici quelques exemples de problèmes que peuvent rencontrer les 
+`linters`:
+
+* les variables sont utilisées mais n'existent pas (erreur)
+* les variables inutilisées (inutiles)
+* la mauvaise organisation du code (risque d'erreur)
+* le non respect des bonnes pratiques d'écriture de code
+* les erreurs de syntaxe (par exemple les coquilles)
+    
+La plupart des logiciels de développement embarquent des fonctionalités
+de diagnostic (voire de suggestion de correctif). Il faut parfois
+les paramétrer dans les options (ils sont désactivés pour ne pas
+effrayer l'utilisateur avec des croix rouges partout)
+
+{{< panelset class="nommage" >}}
+{{% panel name="Python :snake:" %}}
+
+
+{{% /panel %}}
+
+{{% panel name="R" %}}
+
+Les packages de référence dans le 
+domaine sont:
+
+- [`lintr`](https://github.com/r-lib/lintr) pour les diagnostics ;  
+- [`styler`](https://github.com/r-lib/styler) pour la modification
+automatisée des fichiers suite au diagnostic.
+
+`RStudio` propose des diagnostics mais ils ne sont pas activés
+par défaut. Pour les activer, après avoir fait `Tools > Global Options` : 
+
+1. Aller dans la partie `Code` à gauche
+2. Dans les onglets en haut, cliquer sur `Diagnostics`
+3. Ajouter quelques diagnostics (par défaut ceux-ci sont vraiment
+trop peu nombreux)
+
+![](/rstudio-diagnostics.png)
+
+Même si vous ne développez pas de _packages_ ces diagnostics vous
+permettront d'améliorer la qualité de vos codes. 
+
+{{% /panel %}}
+{{< /panelset >}}
 
 ### Relecture par un tiers / pair-programming
 
@@ -404,6 +495,82 @@ exemple, est automatiquement mise en forme:
 -   modules
 
 ## Principes d'architecture
+
+Comme `Git` est un pré-requis, tout projet présente un fichier `.gitignore`
+(il est très important, surtout quand on manipule des données qui ne
+devraient pas se retrouver sur `Github` ou `Gitlab`).
+
+Les _output_ sont stockés dans un dossier séparé, de même que les _inputs_
+(idéalement ils ne sont même pas stockés avec le code, nous reviendrons
+sur la distinction code-stockage-exécution plus tard). Ne pas
+oublier d'ajouter les dossiers ou extensions qui vont bien dans
+le `.gitignore` pour ne pas les committer.
+
+Idéalement, un projet utilise de l'intégration continue (voir partie XXX) : 
+
+- si vous utilisez `Gitlab`, les instructions sont stockées dans
+le fichier `gitlab-ci.yml`
+- si vous utilisez `Github`, cela se passe dans le dossier `.github/workflows`
+
+
+
+{{< panelset class="nommage" >}}
+{{% panel name="Python :snake:" %}}
+
+
+{{% /panel %}}
+
+{{% panel name="R" %}}
+
+La première recommandation (si ce n'est obligation) est de privilégier
+les projets `RStudio`. Voici ce qu'en dit la 
+[documentation collaborative `utilitR`](https://www.book.utilitr.org)
+
+> Le principe d'un projet `RStudio` est de rassembler tous les éléments de contexte propres à ce projet : espace de travail, historique de commandes, variables d'environnement, options de `R`... Utiliser un projet `RStudio` présente donc de multiples avantages : 
+> 
+> * Il centralise l'ensemble des éléments d'un projet : codes, réglages, documentation, et sorties (articles, présentations) ;
+> * Il facilite la compréhension du traitement pour les utilisateurs extérieurs et rend plus aisées les évolutions postérieures du projet ;
+> * Il organise l'interaction entre les fichiers (plusieurs codes, rédaction de documents avec R markdown...) et avec les données ;
+> * Il renforce la portabilité : le répertoire de travail par défaut d’un projet est le dossier où se situe le fichier `.Rproj`. Cela rend les scripts indépendants de l'arborescence de la machine. Ainsi, si vous avez un code `traitement.R` situé dans le même dossier que le fichier `.Rproj`, alors le chemin de ce code est `./traitement.R`, où que soit situé le dossier du projet.
+
+Ensuite, il est important de privilégier les fonctions comme évoqué précédemment
+afin d'avoir un fichier qui n'accumule pas 50 000 lignes de code 
+pour l'ensemble du projet de données. Les fonctions sont stockés dans un 
+ou plusieurs fichiers `R` (idéalement organisés de manière thématique en 
+regroupant une ou plusieurs fonctions faisant des opérations proches). 
+Supposons que le fichier qui les utilise s'appelle `main.R` [^1]
+[^1]: Nous évoquerons plus tard le principe de `targets` qui permet d'avoir
+un _pipeline_ de données plus fiable que cette méthode.
+
+```
+project
+│   .gitignore    
+│   .gitlab-ci.yml    
+│   main.R   
+│   README.md
+│
+└───input
+│   │   source.csv
+│
+└───R
+│   │   utils.R
+│   │   figures.R
+|   |   statsdesc.R
+|   |   ...
+│   
+└───output
+    │   superfigure.png
+    │   agregat.csv
+    |   ...
+
+```
+
+
+{{% /panel %}}
+{{< /panelset >}}
+
+
+
 
 ### Séparation données/code/config/environnement d'exécution
 
@@ -455,3 +622,4 @@ Sur un projet personnel, terminé ou en cours :
 - [_google style guide_](https://google.github.io/styleguide/Rguide.html)
 - [Cours de Pierre-Antoine Champin](https://perso.liris.cnrs.fr/pierre-antoine.champin/enseignement/algo/cours/algo/bonnes_pratiques.html)
 - [R Packages](https://r-pkgs.org/index.html) par Hadley Wickham and Jenny Bryan
+- [La documentation collaborative `utilitR`](https://www.book.utilitr.org)
