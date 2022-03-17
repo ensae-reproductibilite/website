@@ -378,7 +378,9 @@ Les incontournables sont :
 `Ropensci` a également lancé un appel à contribution pour proposer
 un guide des bonnes pratiques adapté aux projets de données 
 gouvernementaux
-[sur Github](https://github.com/ropensci-org/community-calls/issues/26)
+[sur Github](https://github.com/ropensci-org/community-calls/issues/26).
+L'OCDE devrait également lancer un manuel sur le sujet dans les prochains
+mois. 
 
 {{% /panel %}}
 {{< /panelset >}}
@@ -409,13 +411,24 @@ les projets RStudio (
 et les éléments présentés dans la partie sur la
 [structuration des projets](#structure)).
 
-Les packages suivants font partie de la palette du développeurs
-* `usethis`
-* `devtools`
-* `here`
-* `Roxygen`
-* `goodpractice`
-* Addins `RStudio`
+Les packages suivants font partie de la palette du développeur: 
+
+* [`usethis`](https://usethis.r-lib.org/): s'il fallait n'en retenir qu'un (ce
+qui serait tout de même un peu dommage...). Le couteau-suisse de la création
+et de la gestion des options d'un projet
+* [`devtools`](https://github.com/r-lib/devtools): le meilleur ami de la
+personne qui développe les packages. Le livre [R Packages](https://r-pkgs.org/index.html)
+donne de nombreux exemples à son propos. 
+* [`here`](https://here.r-lib.org/): pour en finir avec la galère des chemins
+relatifs, des dossiers de travail, etc.
+* [`Roxygen`](https://cran.r-project.org/web/packages/roxygen2/vignettes/roxygen2.html): 
+le package dédié à la documentation des fonctions
+* [`goodpractice`](https://github.com/MangoTheCat/goodpractice): des diagnostics
+pratiques sur la qualité du code
+
+Enfin, `RStudio` propose de nombreux _addins_ (extensions) bien pratiques.
+La plupart sont installés avec des _packages_ de _helpers_, n'hésitez
+pas à en tester quelques uns. 
 
 {{% /panel %}}
 {{< /panelset >}}
