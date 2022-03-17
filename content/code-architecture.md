@@ -496,6 +496,24 @@ permettront d'améliorer la qualité de vos codes.
 
 ## Principes d'architecture
 
+Comme `Git` est un pré-requis, tout projet présente un fichier `.gitignore`
+(il est très important, surtout quand on manipule des données qui ne
+devraient pas se retrouver sur `Github` ou `Gitlab`).
+
+Les _output_ sont stockés dans un dossier séparé, de même que les _inputs_
+(idéalement ils ne sont même pas stockés avec le code, nous reviendrons
+sur la distinction code-stockage-exécution plus tard). Ne pas
+oublier d'ajouter les dossiers ou extensions qui vont bien dans
+le `.gitignore` pour ne pas les committer.
+
+Idéalement, un projet utilise de l'intégration continue (voir partie XXX) : 
+
+- si vous utilisez `Gitlab`, les instructions sont stockées dans
+le fichier `gitlab-ci.yml`
+- si vous utilisez `Github`, cela se passe dans le dossier `.github/workflows`
+
+
+
 {{< panelset class="nommage" >}}
 {{% panel name="Python :snake:" %}}
 
@@ -504,12 +522,48 @@ permettront d'améliorer la qualité de vos codes.
 
 {{% panel name="R" %}}
 
+La première recommandation (si ce n'est obligation) est de privilégier
+les projets `RStudio`. Voici ce qu'en dit la 
+[documentation collaborative `utilitR`](https://www.book.utilitr.org)
+
 > Le principe d'un projet `RStudio` est de rassembler tous les éléments de contexte propres à ce projet : espace de travail, historique de commandes, variables d'environnement, options de `R`... Utiliser un projet `RStudio` présente donc de multiples avantages : 
 > 
 > * Il centralise l'ensemble des éléments d'un projet : codes, réglages, documentation, et sorties (articles, présentations) ;
 > * Il facilite la compréhension du traitement pour les utilisateurs extérieurs et rend plus aisées les évolutions postérieures du projet ;
 > * Il organise l'interaction entre les fichiers (plusieurs codes, rédaction de documents avec R markdown...) et avec les données ;
 > * Il renforce la portabilité : le répertoire de travail par défaut d’un projet est le dossier où se situe le fichier `.Rproj`. Cela rend les scripts indépendants de l'arborescence de la machine. Ainsi, si vous avez un code `traitement.R` situé dans le même dossier que le fichier `.Rproj`, alors le chemin de ce code est `./traitement.R`, où que soit situé le dossier du projet.
+
+Ensuite, il est important de privilégier les fonctions comme évoqué précédemment
+afin d'avoir un fichier qui n'accumule pas 50 000 lignes de code 
+pour l'ensemble du projet de données. Les fonctions sont stockés dans un 
+ou plusieurs fichiers `R` (idéalement organisés de manière thématique en 
+regroupant une ou plusieurs fonctions faisant des opérations proches). 
+Supposons que le fichier qui les utilise s'appelle `main.R` [^1]
+[^1]: Nous évoquerons plus tard le principe de `targets` qui permet d'avoir
+un _pipeline_ de données plus fiable que cette méthode.
+
+```
+project
+│   .gitignore    
+│   .gitlab-ci.yml    
+│   main.R   
+│   README.md
+│
+└───input
+│   │   source.csv
+│
+└───R
+│   │   utils.R
+│   │   figures.R
+|   |   statsdesc.R
+|   |   ...
+│   
+└───output
+    │   superfigure.png
+    │   agregat.csv
+    |   ...
+
+```
 
 
 {{% /panel %}}
