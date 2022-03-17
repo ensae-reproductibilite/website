@@ -74,6 +74,18 @@ Chaque dossier ou fichier est représenté par un chemin d'accès, qui correspon
 
 Comme tout ce qui touche de près ou de loin au terminal, la seule manière de bien comprendre ces notions est de les appliquer. Les exercices de fin de chapitre vous permettront d'appliquer ces concepts à des cas pratiques.
 
+## Lancer des commandes
+
+Le rôle d'un terminal est de lancer des commandes. Ces commandes peuvent être de deux nature : 
+- manipulation du *filesystem* (créer, lire, modifier des dossiers ou fichiers)
+- lancement de programmes
+
+### Manipulation du *filesystem*
+
+
+
+### Lancement de programmes
+
 ## Notions de terminal
 
 - commande et paramètres
@@ -101,7 +113,9 @@ Comme tout ce qui touche de près ou de loin au terminal, la seule manière de b
 - apt install
 - apt update
 
+## Tricks
 
+- autocomplémetion
 
 # Application
 
