@@ -581,12 +581,85 @@ project
 
 ### Templates
 
--   R : RProjects
+{{< panelset class="nommage" >}}
+{{% panel name="Python :snake:" %}}
+
 -   Python : cookiescutter
+
+
+{{% /panel %}}
+
+{{% panel name="R" %}}
+
+Dans l'ensemble, la structure d'un projet en `R` est une variation
+sur le thème du projet `RStudio`. Ce qui en général
+va distinguer les types différents projets est la présence
+de fichiers à la racine ou dans un dossier `R/`
+
+Il existe un certain nombre de _templates_ de projets. Ceux-ci
+sont accessibles lorsqu'on créé un nouveau projet
+via `File > New Project`:
+
+![](/rstudio-templates.png)
+
+- Les projets sous forme de 
+packages permettent d'intégrer de manière cohérente un ensemble
+de fonctions. Le package peut contenir exclusivement du code `R` 
+ou du code `C++` (via `Rcpp`)
+- Les projets sous forme de site web (`bookdown` pour la documentation,
+`blogdown` pour des sites web plus généraux) gèrent la transformation
+entre des fichiers sources `R Markdown` et un site web à l'arborescence 
+cohérente. 
+- Les projets `shiny` attendent une structure particulière pour gérer
+l'interaction entre l'interface graphique et les calculs à effectuer
+en réaction aux actions sur l'interface. Le _framework_ 
+`golem` permet de formaliser
+de manière plus propre les projets shiny
+
+Le package `usethis` offre des fonctionalités pratiques pour enrichir 
+un projet de nouvelles options
+ou changer de type de projet en cours de route (par exemple basculer d'un
+projet basique à un _package_). 
+
+{{% /panel %}}
+{{< /panelset >}}
+
 
 ## Packages
 
+La meilleure façon d'assurer la reproductibilité d'un projet est
+d'intégrer ses scripts dans une structure de _package_.
+Un gros projet
+de _data-science_ va ainsi dépendre d'un ou plusieurs _packages_, ce qui 
+
+- assure une gestion cohérente des dépendances
+- offre une certaine structure pour la documentation
+- facilitera sa réutilisation (les utilisateurs peuvent n'être intéressés
+que par une partie du projet)
+- permettra des économies d'échelle (on peut réutiliser
+l'un des packages pour un autre projet)
+- facilite le debuggage (il est
+plus facile d'identifier une erreur quand elle est dans un package)
+- ...
+
+
 ### Gestion des dépendances
+
+{{< panelset class="nommage" >}}
+{{% panel name="Python :snake:" %}}
+
+-   Python : cookiescutter
+
+
+{{% /panel %}}
+
+{{% panel name="R" %}}
+
+Fichier `Descrption`
+
+{{% /panel %}}
+{{< /panelset >}}
+
 
 ### Documentation
 
