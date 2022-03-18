@@ -167,14 +167,30 @@ Cette liste illustre la variété des utilisations des variables d'environnement
 - la variable `LANG` spécifie la *locale*, un concept qui permet de définir la langue et l'encodage utilisés par défaut par Linux ;
 - la variable `CONDA_PYTHON_EXE` existe uniquement parce que l'on a installé `conda` comme système de gestion de packages `Python`. C'est l'existance de cette variable qui fait que la commande `python mon_script.py` va utiliser comme binaire la version de `Python` qui nous intéresse.
 
+Une variable d'environnement essentielle et que l'on est fréquemment ammené à modifier dans les applications de data science est la variable `$PATH`. Elle consiste en une concaténation de chemins absolus, séparés par `:`, qui spécifie les dossiers dans lesquels Linux va chercher les exécutables lorsqu'on lance une commande, ainsi que l'ordre de la recherche. Regardons la valeur du `$PATH` sur le terminal du service VSCode.
+
+```bash
+$ echo $PATH
+/home/coder/local/bin/conda/bin:/home/coder/local/bin/conda/condabin:/home/coder/local/bin/conda/envs/basesspcloud/bin:/home/coder/local/bin/conda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+```
+
+L'ordre de recherche est de gauche à droite. C'est donc parce que le dossier `/home/coder/local/bin/conda/bin` est situé en premier que l'interpréteur `Python` qui sera choisi lorsqu'on lance un script `Python` est celui issu de `Conda`, et non celui contenu par défaut dans `/usr/bin` par exemple.
+
 L'existence et la configuration adéquate des variables d'environnement est essentielle pour le bon fonctionnement de nombreux outils très utilisés en data science, comme `Git` ou encore `Spark` par exemple. Il est donc nécessaire de comprendre leur fonctionnement pour pouvoir lire des documentations techniques et adapter la configuration d'un serveur en cas de bug lié à une variable d'environnement manquante ou mal configurée.
 
 ## Permissions
 
+La sécurité est un enjeu central en Linux, qui permet une gestion très fine des permissions sur les différents fichiers et programmes.
 
+Une différence majeure par rapport à d'autres systèmes d'exploitation, notamment Windows, est qu'aucun utilisateur n'a par défaut les droits complets d'administrateur (*root*). Il n'est donc pas possible nativement d'accéder au parties sensibles du système, ou bien de lancer certains types de programme. Par exemple, si l'on essaie de lister les fichiers du dossier `/root`, on obtient une erreur.
 
-- root / user
-- sudo
+```bash
+$ ls /root
+ls: cannot open directory '/root': Permission denied
+```
+Dans la pratique du quotidien, certaines opérations telles que l'installation de binaires ou de packages nécessitent cependant des droits administrateurs. Dans ce cas, il est d'usage d'utiliser la commande `sudo` (Substitute User DO), qui permet de prendre les droits *root* le temps de l'exécution de la commande. une bonne pratique de sécurité, en particulier dans les scripts `shell` que l'on peut être amenés à écrire ou exécuter, est de limiter l'utilisation de cette commande aux cas où elle s'avère essentielle.
+
+Une autre subtilité concerne justement l'exécution de scripts `shell`. Par défaut, qu'il soit créé par l'utilisateur ou téléchargé d'internet, n'est pas exécutable. C'est bien entendu une mesure de sécurité pour éviter l'exécution automatique de scripts potentiellement malveillants. Pour pouvoir exécuter un tel script, il faut attribuer des droits d'exécution au fichier avec la commande suivante : `chmod +x mon_script.sh`. Il devient alors possible d'exécuter le script classiquement.
 
 ## Gestionnaire de paquets
 
