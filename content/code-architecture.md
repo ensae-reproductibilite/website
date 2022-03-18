@@ -131,7 +131,7 @@ Si vous préférez le _CamelCase_, utilisez-le systématiquement dans tout le sc
 - Ne pas utiliser de noms qui sont déjà des fonctions de base `R` (`mean` par exemple).
 Cela ne génère pas toujours d'erreur mais cela évite des erreurs difficilement détectables! Voici un exemple d'erreur difficile à détecter:
 
-```{r exemple T}
+```r
 # On commence avec équivalence TRUE et T
 TRUE == T
 2 == TRUE
