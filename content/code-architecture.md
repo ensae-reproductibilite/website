@@ -764,6 +764,54 @@ vous amènera à adopter de bons gestes.
 
 ### Maintenance
 
+
+L'objectif des conseils de ce cours est
+de réduire le coût de la
+maintenance à long terme en adoptant les structures
+les plus légères, automatisées et 
+réutilisables. 
+
+Les notebooks Jupyter sont très pratiques pour tâtonner
+et expérimenter. Cependant, ils présentent un certain
+nombre d'inconvénients à long terme qui peuvent 
+rendre impossible à maintenir le code écrit
+avec dans un notebook:
+
+- tous les objets (fonctions, classes et données)
+sont définis et disponibles dans le même fichier.
+Le moindre changement à une fonction nécessite de retrouver
+l'emplacement dans le code, écrire et faire tourner à nouveau
+une ou plusieurs cellules. 
+- quand on tâtonne, on écrit du code dans des cellules. 
+Dans un cahier, on utiliserait la marge mais cela n'existe
+pas avec un notebook. On créé donc de nouvelles cellules, 
+pas nécessairement dans l'ordre. Quand il est
+nécessaire de faire tourner à nouveau le notebook, cela
+provoque des erreurs difficile à debugger (il est nécessaire
+de retrouver l'ordre logique du code, ce qui n'est pas
+évident). 
+- les notebooks incitent à faire des copier-coller de cellules
+et modifier marginalement le code plutôt qu'à utiliser
+des fonctions. 
+- il est quasi-impossible d'avoir un versioning avec Git des notebooks
+qui fonctionne. Les notebooks étant, en arrière plan, de gros fichiers
+JSON, ils ressemblent plus à des données que des codes sources. Git ne
+parvient pas à identifier les blocs de code qui ont changé
+- passage en production des notebooks coûteux alors qu'un script bien
+fait est beaucoup plus facile à passer en prod (voir suite cours)
+- Jupyter manque d'extensions pour mettre en oeuvre les bonnes pratiques
+(linters, etc.). VSCode au contraire est très bien 
+- Risques de révélation de données confidentielles puisque les outputs
+des blocs de code, par exemple les `head`, sont écrits en dur dans
+le code source. 
+
+Globalement, les notebooks sont un bon outil pour tâtonner ou pour
+faire communiquer. Mais pour maintenir un projet à long terme, 
+il vaut mieux privilégier les scripts. Les
+recommandations de ce cours visent à rendre le plus léger possible
+la maintenance à long terme de projets _data-science_ en favorisant
+la reprise par d'autres (ou par soi dans le futur)
+
 # Application
 
 Sur un projet personnel, terminé ou en cours :
