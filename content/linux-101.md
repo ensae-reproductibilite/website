@@ -78,14 +78,14 @@ Comme tout ce qui touche de près ou de loin au terminal, la seule manière de b
 
 Le rôle d'un terminal est de lancer des commandes. Ces commandes peuvent être classées en trois grandes catégories : 
 - navigation au sein du *filesystem* 
-- manipulations du *filesystem* (créer, lire, modifier des dossiers/fichiers)
+- manipulations de fichiers (créer, lire, modifier des dossiers/fichiers)
 - lancement de programmes
 
 ### Navigation au sein du *filesystem*
 
 Lorsqu'on lance un programme à partir du terminal, celui-ci a pour référence le répertoire courant dans lequel on se trouve au moment du lancement. Par exemple, si l'on exécute un script Python en se trouvant dans un certain répertoire, tous les chemins des fichiers utilisés dans le script seront relatifs au répertoire courant d'exécution — à moins d'utiliser uniquement des chemins absolus, ce qui n'est pas une bonne pratique en termes de reproductibilité puisque cela lie votre projet à la structure de votre *filesystem* particulier.
 
-Ainsi, la très grande majorité des opérations que l'on est amené à réaliser dans un terminal consiste simplement à se déplacer au sein du *filesystem*. Les trois commandes suivantes sont donc essentielles, il faut les pratiquer jusqu'à ce qu'elles deviennent une seconde nature.
+Ainsi, la très grande majorité des opérations que l'on est amené à réaliser dans un terminal consiste simplement à se déplacer au sein du *filesystem*. Les commandes principales pour naviguer et se repérer dans le *filesystem* sont présentées dans la table suivante.
 
 | Commande                          | Description                                                     |
 |-----------------------------------|-----------------------------------------------------------------|
@@ -101,13 +101,45 @@ La commande `cd` accepte aussi bien des chemins absolus que des chemins relatifs
 | **cd ~**                       | revenir dans le répertoire HOME de l'utilisateur courant               |
 
 La première commande est l'occasion de revenir sur une convention d'écriture importante pour les chemins relatifs :
-- `.` représente le répertoire courant. Ainsi, `cd .` revient à changer de répertoire courant... pour le répertoire courant, ce qui bien sûr ne change rien. Mais le `.` est très utile pour le lancement de programmes, notamment lorsque l'on souhaite spécifier qu'un programme doit s'exécuter dans le répertoire courant ;
+- `.` représente le répertoire courant. Ainsi, `cd .` revient à changer de répertoire courant... pour le répertoire courant, ce qui bien sûr ne change rien. Mais le `.` est très utile pour la copie de fichiers (cf. [section suivante](#manipulation)) ou encore lorsque l'on doit passer des paramètres à un programme (cf. section [Lancement de programmes](#lancement)) ;
 - `..` représente le répertoire parent du répertoire courant.
 
-### Lancement de programmes
+Ces différentes commandes constituent la très grande majorité des usages dans un terminal. Il est essentiel de les pratiquer jusqu'à ce qu'elles deviennent une seconde nature.
 
+### Manipulation de fichiers {#manipulation}
+
+Les commandes suivantes permettent de manipuler le *filesystem*. Dans la mesure où il est généralement possible de réaliser toutes ces opérations à l'aide d'interfaces graphiques (notamment, l'explorateur de fichiers), celles-ci sont moins essentielles que celles permettant de se déplacer dans le *filesystem*. Nous vous recommandons malgré tout de les pratiquer également, et ce pour plusieurs raisons :
+- effectuer un maximum d'opérations via le terminal permet de bien comprendre son fonctionnement et donc de gagner en autonomie ;
+- en devenant efficient sur ces commandes, vous vous rendrez compte que manipuler le *filesystem* via le terminal est en fait plus rapide que via une interface graphique ;
+- lorsqu'on est amené à manipuler un terminal pour interagir avec un serveur, il n'y a souvent pas la moindre interface graphique, auquel cas il n'y a pas d'autre choix que d'opérer uniquement à partir du terminal.
+
+| Commande                          | Description                       |
+|-----------------------------------|-----------------------------------|
+| `cp fichierdepart fichierarrivee` | copier (CoPy) un fichier           |
+| `mv fichierdepart fichierarrivee` | déplacer (MoVe) un fichier        |
+| `rm nomdufichier`                 | supprimer (ReMove) un fichier     |
+| `cat nomdufichier`                | afficher le contenu du fichier    |
+| `mkdir nomdudossier`              | créer (MaKe DIRectory) un dossier |
+| `touch nomdufichier`              | créer un fichier vide             |
+
+### Lancement de programmes {#lancement}
+
+Le rôle du terminal est de lancer des programmes. Lancer un programme se fait à partir d'un fichier dit exécutable, qui peut être de deux formes :
+- un **binaire**, i.e. un programme dont le code n'est pas lisible par l'humain ;
+- un **script**, i.e. un fichier texte contenant une série d'instructions à exécuter. Le langage du terminal Linux est le `shell`, et les scripts associés ont pour extension `.sh`.
+
+Dans les deux cas, la syntaxe de lancement d'un programme est la même : le nom de l'exécutable, suivi d'éventuels paramètres, séparés par des espaces. Par exemple, la commande `python monscript.py` exécute le binaire `python` et lui passe comme unique argument le nom d'un script `.py` (contenu dans le répertoire courant), qui va donc être exécuté via `Python`. De la même manière, toutes les commandes vues précédemment pour se déplacer dans le *filesystem* ou manipuler des fichiers sont des exécutables et fonctionnent donc selon ce principe. Par exemple, `cp fichierdepart fichierarrivee` lance le binaire `cp` en lui passant deux arguments : le chemin du fichier à copier et le chemin d'arrivée.
+
+Dans les exemples de commandes précédents, les paramètres étaient passés en mode positionnel : l'exécutable attend des arguments dans un certain ordre, ce qui est clair dans le cas de `cp` par exemple. Mais le nombre des arguments n'est pas toujours fixé à l'avance, du fait de la présence de paramètres optionnels. Ainsi, la plupart des exécutables permettent le passage d'arguments optionnels, qui modifient le comportement de l'exécutable, via des *flags*. Par exemple, on a vu que `cp` permettait de copier un fichier à un autre endroit du *filesystem*, mais peut-on copier un dossier et l'ensemble de son contenu avec ? Nativement non, mais l'ajout d'un paramètre le permet : `cp -R dossierdepart dossierarrivee` permet de copier *récursivement* le dossier et tout son contenu. Notons que les *flags* ont très souvent un équivalent en toute lettre, qui s'écrit quant à lui avec deux tirers. Par exemple, la commande précédente peut s'écrire de manière équivalente `cp --recursive dossierdepart dossierarrivee`. Il est fréquent de voir les deux syntaxes en pratique, parfois même mélangées au sein d'une même commande.
 
 ## Variables d'environnement
+
+- def
+- echo
+- HOME
+- PATH
+- export
+- persistence & bashrc
 
 ## Permissions
 
@@ -125,6 +157,12 @@ La première commande est l'occasion de revenir sur une convention d'écriture i
 ## Tricks
 
 - autocomplétion
+- which
+- man & help
+
+## Disclaimer
+
+- much more to it
 
 # Application
 
