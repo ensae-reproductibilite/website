@@ -108,10 +108,7 @@ Ces différentes commandes constituent la très grande majorité des usages dans
 
 ### Manipulation de fichiers {#manipulation}
 
-Les commandes suivantes permettent de manipuler le *filesystem*. Dans la mesure où il est généralement possible de réaliser toutes ces opérations à l'aide d'interfaces graphiques (notamment, l'explorateur de fichiers), celles-ci sont moins essentielles que celles permettant de se déplacer dans le *filesystem*. Nous vous recommandons malgré tout de les pratiquer également, et ce pour plusieurs raisons :
-- effectuer un maximum d'opérations via le terminal permet de bien comprendre son fonctionnement et donc de gagner en autonomie ;
-- en devenant efficient sur ces commandes, vous vous rendrez compte que manipuler le *filesystem* via le terminal est en fait plus rapide que via une interface graphique ;
-- lorsqu'on est amené à manipuler un terminal pour interagir avec un serveur, il n'y a souvent pas la moindre interface graphique, auquel cas il n'y a pas d'autre choix que d'opérer uniquement à partir du terminal.
+Les commandes suivantes permettent de manipuler le *filesystem*. Il en existe beaucoup d'autres, mais elles couvrent la plupart des besoins.
 
 | Commande                          | Description                       |
 |-----------------------------------|-----------------------------------|
@@ -121,6 +118,11 @@ Les commandes suivantes permettent de manipuler le *filesystem*. Dans la mesure 
 | `cat nomdufichier`                | afficher le contenu du fichier    |
 | `mkdir nomdudossier`              | créer (MaKe DIRectory) un dossier |
 | `touch nomdufichier`              | créer un fichier vide             |
+
+Dans la mesure où il est généralement possible de réaliser toutes ces opérations à l'aide d'interfaces graphiques (notamment, l'explorateur de fichiers), celles-ci sont moins essentielles que celles permettant de se déplacer dans le *filesystem*. Nous vous recommandons malgré tout de les pratiquer également, et ce pour plusieurs raisons :
+- effectuer un maximum d'opérations via le terminal permet de bien comprendre son fonctionnement et donc de gagner en autonomie ;
+- en devenant efficient sur ces commandes, vous vous rendrez compte que manipuler le *filesystem* via le terminal est en fait plus rapide que via une interface graphique ;
+- lorsqu'on est amené à manipuler un terminal pour interagir avec un serveur, il n'y a souvent pas la moindre interface graphique, auquel cas il n'y a pas d'autre choix que d'opérer uniquement à partir du terminal.
 
 ### Lancement de programmes {#lancement}
 
@@ -134,14 +136,42 @@ Dans les exemples de commandes précédents, les paramètres étaient passés en
 
 ## Variables d'environnement
 
-- def
-- echo
-- HOME
-- PATH
-- export
-- persistence & bashrc
+Comme tout langage de programmation, le langage `shell` permet d'assigner et d'utiliser des variables dans des commandes. Pour afficher le contenu d'une variable, on utilise la commande `echo`, qui est l'équivalent de la fonction `print` en `Python` ou en `R`.
+
+```bash
+$ MY_VAR="toto"
+$ echo $MY_VAR
+toto
+```
+
+Quelques remarques importantes :
+- la syntaxe pour la création de variable est précise : aucun espace d'un côté comme de l'autre du `=` ;
+- en `Shell`, on ne manipule que du texte. Dans notre exemple, on aurait donc pu écrire `MY_VAR=toto` pour le même résultat. Par contre, si l'on veut assigner à une variable une valeur contenant des espaces, les guillemets deviennent indispensables pour ne pas obtenir un message d'erreur ;
+- pour accéder à la valeur d'une variable, on la préfixe d'un `$`.
+
+Notre objectif avec ce tutoriel n'est pas de savoir coder en `shell`, on ne va donc pas s'attarder sur les propriétés des variables. En revanche, introduire ce concept était nécessaire pour en présenter un autre, essentiel quant à lui dans la pratique quotidienne du data scientist : les variables d'environnement. Pour faire une analogie — un peu simpliste — avec les langages de programmation, ce sont des sortes de variables "globales", dans la mesure où elles vont être accessibles à tous les programmes lancés à partir d'un terminal, et vont modifier leur comportement.
+
+La liste des variables d'environnement peut être affichée à l'aide de la commande `env`. Il y a généralement un grand nombre de variables d'environnement prééxistantes ; en voici un échantillon obtenu à partir du terminal du service VSCode.
+
+```bash
+$ env
+SHELL=/bin/bash
+HOME=/home/coder
+LANG=en_US.UTF-8
+CONDA_PYTHON_EXE=/home/coder/local/bin/conda/bin/python
+```
+
+Cette liste illustre la variété des utilisations des variables d'environnements :
+- la variable `$SHELL` précise l'exécutable utilisé pour lancer le terminal, dans notre cas `bash` (Bourne-Again SHell, l'implémentation moderne du `shell`) ;
+- la variable `$HOME` donne l'emplacement du répertoire utilisateur. En fait, le symbole `~` que l'on a rencontré plus haut référence cette même variable ;
+- la variable `LANG` spécifie la *locale*, un concept qui permet de définir la langue et l'encodage utilisés par défaut par Linux ;
+- la variable `CONDA_PYTHON_EXE` existe uniquement parce que l'on a installé `conda` comme système de gestion de packages `Python`. C'est l'existance de cette variable qui fait que la commande `python mon_script.py` va utiliser comme binaire la version de `Python` qui nous intéresse.
+
+L'existence et la configuration adéquate des variables d'environnement est essentielle pour le bon fonctionnement de nombreux outils très utilisés en data science, comme `Git` ou encore `Spark` par exemple. Il est donc nécessaire de comprendre leur fonctionnement pour pouvoir lire des documentations techniques et adapter la configuration d'un serveur en cas de bug lié à une variable d'environnement manquante ou mal configurée.
 
 ## Permissions
+
+
 
 - root / user
 - sudo
