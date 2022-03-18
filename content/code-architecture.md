@@ -655,7 +655,71 @@ plus facile d'identifier une erreur quand elle est dans un package)
 
 {{% panel name="R" %}}
 
-Fichier `Descrption`
+Un projet utilise généralement un certain nombre de librairies 
+externes. Dans le code, on utilise en général la syntaxe
+`pkg::function` (syntaxe à préférer pour éviter toute ambiguité)
+ou `library(pkg)`
+puis `function`. Cependant, cela ne garantit pas que le code soit
+fonctionnel: quelqu'un qui n'a pas installé les librairies en 
+question se retrouvera avec une erreur. Il est donc nécessaire 
+de lister les dépendances à installer si on désire
+que le code tourne sans soucis. C'est le rôle du fichier `DESCRIPTION`
+
+> The job of the `DESCRIPTION` file is to store important metadata
+about your package.
+> When you first start writing packages,
+you’ll mostly use these metadata to record what packages are needed
+to run your package.
+> However, as time goes by, other aspects of the metadata file will
+become useful to you,
+such as revealing what your package does (via the Title and Description)
+and whom to contact (you!) if there are any problems.
+> 
+> ...
+>
+> It’s the job of the DESCRIPTION to list the packages that
+your package needs to work.
+> R has a rich set of ways to describe different types of dependencies.
+> A key point is whether a dependency is needed by regular users or is only
+> needed for development tasks or optional functionality.
+>
+> Hadley Wickham et Jenny Brian, [_R Packages_](https://r-pkgs.org/description.html)
+
+Le fichier `DESCRIPTION` a vocation à lister les dépendances nécessaires
+à installer pour qu'un code soit fonctionnel. Initialement prévu pour
+les _packages_, il est devenu plus courant de le trouver (à l'image
+du `requirements` de `Python`).
+
+En effet, quand
+un projet comporte ce fichier, on peut installer l'ensemble des dépendances
+listées dans le `DESCRIPTION` en une ligne, ce qui est bien pratique :
+
+```r
+devtools::install_deps()
+```
+
+Pour créer ce fichier, l'idéal est d'utiliser le package `usethis` qui
+va initialiser ce fichier à partir d'un _template_:
+
+```r
+usethis::use_description(check_name = FALSE)
+```
+
+Dans ce fichier, les dépendances seront listées dans divers champs, en 
+fonction du degré de dépendance du code à ces librairies (
+pour simplifier, les _packages_ indispensables seront listés dans 
+un champ `Imports`, ceux qui peuvent servir pour des éléments
+annexes dans un champ `Suggests`)
+
+```r
+Imports:
+    dplyr,
+    tidyr
+```
+
+L'utilisateur qui fera `devtools::install_deps()` se retrouvera alors
+à installer `dplyr` et `tidyr` s'il ne les a pas déjà. 
+
 
 {{% /panel %}}
 {{< /panelset >}}
@@ -667,7 +731,36 @@ Fichier `Descrption`
 
 ### Tests unitaires
 
+{{< panelset class="nommage" >}}
+{{% panel name="Python :snake:" %}}
+
+-   Python : cookiescutter
+
+
+{{% /panel %}}
+
+{{% panel name="R" %}}
+
+Le package [`testthat`](https://testthat.r-lib.org/) offre 
+des fonctionalités très intéressantes pour les tests.
+Le manuel [R Packages](https://r-pkgs.org/tests.html)
+présente un certain nombre d'exemples.
+
+
+{{% /panel %}}
+{{< /panelset >}}
+
 ### Publication
+
+Quand on débute, on est souvent timide et on désire ne rendre public
+son code que lorsque celui-ci est propre. C'est une erreur classique:
+
+{{< tweet 589068687669243905 >}}
+
+Comme pour nettoyer un appartement, les petits gestes en continu
+sont beaucoup plus efficace qu'un grand ménage de printemps.
+Prendre l'habitude de mettre son code immédiatement sur `Github`
+vous amènera à adopter de bons gestes. 
 
 ### Maintenance
 
