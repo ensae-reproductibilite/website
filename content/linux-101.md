@@ -66,7 +66,7 @@ Quelques observations :
 - le répertoire racine contient un ensemble de sous-dossiers, dont la plupart ont un rôle essentiellement technique. Il est tout de même utile d'en décrire les principaux :
   - `/bin` : contient les binaires, i.e. les programmes exécutables ;
   - `/etc` : contient les fichiers de configuration ;
-  - `/home` : contient l'ensemble des dossiers et fichiers personnels de l'utilisateur. Ce répertoire est souvent représenté par le symbole `~`. C'était notamment le cas dans l'illustration du terminal VSCode ci-dessus, ce qui signifie qu'on se trouvait formellement dans le répertoire `/home/work`.
+  - `/home` : contient l'ensemble des dossiers et fichiers personnels des différents utilisateurs. Chaque utilisateur a un répertoire dit "HOME" qui a pour chemin `/home/<username>` Ce répertoire est souvent représenté par le symbole `~`. C'était notamment le cas dans l'illustration du terminal VSCode ci-dessus, ce qui signifie qu'on se trouvait formellement dans le répertoire `/home/coder/work`, `coder` étant l'utilisateur par défaut du service VSCode sur le SSP Cloud.
 
 Chaque dossier ou fichier est représenté par un chemin d'accès, qui correspond simplement à sa position dans le *filesystem*. Il existe deux moyens de spécifier un chemin :
 - en utilisant un chemin **absolu**, c'est à dire en indiquant le chemin complet du dossier ou fichier depuis la racine. En Linux, on reconnaît donc un chemin absolu par le fait qu'il commence forcément par `/`.
@@ -76,27 +76,36 @@ Comme tout ce qui touche de près ou de loin au terminal, la seule manière de b
 
 ## Lancer des commandes
 
-Le rôle d'un terminal est de lancer des commandes. Ces commandes peuvent être de deux nature : 
-- manipulation du *filesystem* (créer, lire, modifier des dossiers ou fichiers)
+Le rôle d'un terminal est de lancer des commandes. Ces commandes peuvent être classées en trois grandes catégories : 
+- navigation au sein du *filesystem* 
+- manipulations du *filesystem* (créer, lire, modifier des dossiers/fichiers)
 - lancement de programmes
 
-### Manipulation du *filesystem*
+### Navigation au sein du *filesystem*
 
+Lorsqu'on lance un programme à partir du terminal, celui-ci a pour référence le répertoire courant dans lequel on se trouve au moment du lancement. Par exemple, si l'on exécute un script Python en se trouvant dans un certain répertoire, tous les chemins des fichiers utilisés dans le script seront relatifs au répertoire courant d'exécution — à moins d'utiliser uniquement des chemins absolus, ce qui n'est pas une bonne pratique en termes de reproductibilité puisque cela lie votre projet à la structure de votre *filesystem* particulier.
 
+Ainsi, la très grande majorité des opérations que l'on est amené à réaliser dans un terminal consiste simplement à se déplacer au sein du *filesystem*. Les trois commandes suivantes sont donc essentielles, il faut les pratiquer jusqu'à ce qu'elles deviennent une seconde nature.
+
+| Commande                          | Description                                                     |
+|-----------------------------------|-----------------------------------------------------------------|
+| **pwd**                             | afficher (Print Working Directory) le chemin (absolu) du dossier courant |
+| **cd chemin**                       | changer (Change Directory) de dossier courant                   |
+| **ls**                              | lister les fichiers dans le dossier courant                     |
+
+La commande `cd` accepte aussi bien des chemins absolus que des chemins relatifs. En pratique, il est assez pénible de manipuler des chemins absolus, qui peuvent facilement être très longs. On utilisera donc essentiellement des chemins relatifs, ce qui revient à se déplacer à partir du répertoire courant. Pour se faire, voici quelques utilisations très fréquentes de la commande `cd`.
+
+| Commande                          | Description                                                     |
+|-----------------------------------|-----------------------------------------------------------------|
+| **cd ..**                             | remonter d'un niveau dans l'arborescence (dossier parent) |
+| **cd ~**                       | revenir dans le répertoire HOME de l'utilisateur courant               |
+
+La première commande est l'occasion de revenir sur une convention d'écriture importante pour les chemins relatifs :
+- `.` représente le répertoire courant. Ainsi, `cd .` revient à changer de répertoire courant... pour le répertoire courant, ce qui bien sûr ne change rien. Mais le `.` est très utile pour le lancement de programmes, notamment lorsque l'on souhaite spécifier qu'un programme doit s'exécuter dans le répertoire courant ;
+- `..` représente le répertoire parent du répertoire courant.
 
 ### Lancement de programmes
 
-## Notions de terminal
-
-- commande et paramètres
-- autocomplétion
-- pwd
-- ls
-- cd (move up, down, get back to home)
-- mv
-- cp
-- mkdir
-- cat
 
 ## Variables d'environnement
 
@@ -115,7 +124,7 @@ Le rôle d'un terminal est de lancer des commandes. Ces commandes peuvent être 
 
 ## Tricks
 
-- autocomplémetion
+- autocomplétion
 
 # Application
 
