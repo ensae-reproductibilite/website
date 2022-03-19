@@ -135,7 +135,7 @@ Le rôle du terminal est de lancer des programmes. Lancer un programme se fait �
 - un **binaire**, i.e. un programme dont le code n'est pas lisible par l'humain ;
 - un **script**, i.e. un fichier texte contenant une série d'instructions à exécuter. Le langage du terminal Linux est le `shell`, et les scripts associés ont pour extension `.sh`.
 
-Dans les deux cas, la syntaxe de lancement d'un programme est la même : le nom de l'exécutable, suivi d'éventuels paramètres, séparés par des espaces. Par exemple, la commande `python monscript.py` exécute le binaire `python` et lui passe comme unique argument le nom d'un script `.py` (contenu dans le répertoire courant), qui va donc être exécuté via `Python`. De la même manière, toutes les commandes vues précédemment pour se déplacer dans le *filesystem* ou manipuler des fichiers sont des exécutables et fonctionnent donc selon ce principe. Par exemple, `cp fichierdepart fichierarrivee` lance le binaire `cp` en lui passant deux arguments : le chemin du fichier à copier et le chemin d'arrivée.
+Dans les deux cas, la syntaxe de lancement d'une commande est : le nom de l'exécutable, suivi d'éventuels paramètres, séparés par des espaces. Par exemple, la commande `python monscript.py` exécute le binaire `python` et lui passe comme unique argument le nom d'un script `.py` (contenu dans le répertoire courant), qui va donc être exécuté via `Python`. De la même manière, toutes les commandes vues précédemment pour se déplacer dans le *filesystem* ou manipuler des fichiers sont des exécutables et fonctionnent donc selon ce principe. Par exemple, `cp fichierdepart fichierarrivee` lance le binaire `cp` en lui passant deux arguments : le chemin du fichier à copier et le chemin d'arrivée.
 
 Dans les exemples de commandes précédents, les paramètres étaient passés en mode positionnel : l'exécutable attend des arguments dans un certain ordre, ce qui est clair dans le cas de `cp` par exemple. Mais le nombre des arguments n'est pas toujours fixé à l'avance, du fait de la présence de paramètres optionnels. Ainsi, la plupart des exécutables permettent le passage d'arguments optionnels, qui modifient le comportement de l'exécutable, via des *flags*. Par exemple, on a vu que `cp` permettait de copier un fichier à un autre endroit du *filesystem*, mais peut-on copier un dossier et l'ensemble de son contenu avec ? Nativement non, mais l'ajout d'un paramètre le permet : `cp -R dossierdepart dossierarrivee` permet de copier *récursivement* le dossier et tout son contenu. Notons que les *flags* ont très souvent un équivalent en toute lettre, qui s'écrit quant à lui avec deux tirers. Par exemple, la commande précédente peut s'écrire de manière équivalente `cp --recursive dossierdepart dossierarrivee`. Il est fréquent de voir les deux syntaxes en pratique, parfois même mélangées au sein d'une même commande.
 
@@ -167,7 +167,7 @@ CONDA_PYTHON_EXE=/home/coder/local/bin/conda/bin/python
 ```
 
 Cette liste illustre la variété des utilisations des variables d'environnements :
-- la variable `$SHELL` précise l'exécutable utilisé pour lancer le terminal, dans notre cas `bash` (Bourne-Again SHell, l'implémentation moderne du `shell`) ;
+- la variable `$SHELL` précise l'exécutable utilisé pour lancer le terminal ;
 - la variable `$HOME` donne l'emplacement du répertoire utilisateur. En fait, le symbole `~` que l'on a rencontré plus haut référence cette même variable ;
 - la variable `LANG` spécifie la *locale*, un concept qui permet de définir la langue et l'encodage utilisés par défaut par Linux ;
 - la variable `CONDA_PYTHON_EXE` existe uniquement parce que l'on a installé `conda` comme système de gestion de packages `Python`. C'est l'existance de cette variable qui fait que la commande `python mon_script.py` va utiliser comme binaire la version de `Python` qui nous intéresse.
@@ -219,23 +219,91 @@ $ ./test.sh # Exécuter le script test.sh
 # Le script étant vide, il ne se passe rien
 ```
 
+## Les scripts shell
+
+Maintenant que nous avons vu les variables et les permissions, revenons sur les scripts `shell` précédemment évoqués. A l'instar d'un script `Python`, un script `shell` permet d'automatiser une série de commandes lancées dans un terminal. Le but de ce tutoriel n'est pas de savoir écrire des scripts `shell` complexes, travail généralement dévolu aux les *data engineers* ou les *sysadmin* (administrateurs système), mais de comprendre leur structure, leur fonctionnement, et de savoir lancer des scripts simples. Ces compétences sont essentielles lorsqu'on se préoccupe de mise en production. A titre d'exemple, comme nous le verrons dans le chapitre sur la [portabilité]({{< ref "/content/portability.md" >}}), il est fréquent d'utiliser un script `shell` comme *entrypoint* d'une image `docker`, afin de spécifier les commandes que doit lancer le conteneur lors de son initialisation.
+
+Illustrons leur structure ainsi que leur fonctionnement à l'aide d'un script simple. Considérons les commandes suivantes, que l'on met dans un fichier `monscript.sh` dans le répertoire courant.
+
+```bash
+#!/bin/bash
+SECTION=$1
+CHAPTER=$2
+FORMATION_DIR=/home/coder/work/formation
+mkdir -p $FORMATION_DIR/$SECTION/$CHAPTER
+touch $FORMATION_DIR/$SECTION/$CHAPTER/test.txt
+```
+
+Analysons la structure de ce script :
+- la première ligne est classique, elle se nomme le *shebang* : elle indique au système quel interpréteur utiliser pour exécuter ce script. Dans notre cas, et de manière générale, on utilise `bash` (Bourne-Again SHell, l'implémentation moderne du `shell`) ;
+- les lignes 2 et 3 assignent à des variables les arguments passés au script dans la commande. Par défaut, ceux-ci sont assignés à des variables `$n` où $n$ est la position de l'argument, en commençant à 1 ;
+- la ligne 4 assigne un chemin à une variable
+- la ligne 5 crée le chemin complet, défini à partir des variables créées précédemment. Le paramètre `-p` est important : il précise à `mkdir` d'agir de manière récursive, c'est à dire de créer les dossiers intermédiaires qui n'existent pas encore ;
+- la ligne 6 crée un fichier texte vide dans le dossier créé avec la commande précédente.
+
+Exécutons maintenant ce script, en prenant soin de lui donner les permission adéquates au préalable.
+
+```bash
+$ chmod +x monscript.sh
+$ bash monscript.sh section2 chapitre3
+$ ls formation/section1/chapitre2/
+text.txt
+```
+
+Opération réussie : le dossier a bien été créé et contient un fichier `test.txt`.
+
 ## Gestionnaire de paquets
 
-- Principe / différence avec Windows
-- Distributions Linux
-- Présentation d'apt
-- apt install
-- apt update
+Une différence fondamentale entre Linux et Windows tient à la manière dont on installe un logiciel. Sur Windows, on va chercher un installateur (un fichier exécutable en `.exe`) sur le site du logiciel, et on l'exécute. En Linux, on passe généralement par un gestionnaire de packages qui va chercher les logiciels sur un répertoire centralisé, à la manière de `pip` en `Python` par exemple.
+
+Pourquoi cette différence ? Une raison importante est que, contrairement à Windows, il existe une multitude de distributions différentes de Linux (Debian, Ubuntu, Mint, etc.), qui fonctionnent différemment et peuvent avoir différentes versions. En utilisant le *package manager* (gestionnaire de paquets) propre à la distribution en question, on s'assure de télécharger le logiciel adapté à sa distribution. Dans ce cours, on fait le choix d'utiliser une distribution `Debian` et son gestionnaire de paquets associé `apt`. `Debian` est en effet un choix populaire pour les servers de part sa stabilité et sa simplicité, et sera également familière aux utilisateurs d'`Ubuntu`, distribution très populaire pour les ordinateurs personnels et qui est basée sur `Debian`.
+
+L'utilisation d'`apt` est très simple. La seule difficulté est de savoir le nom du paquet que l'on souhaite installer, ce qui nécessite en général d'utiliser un moteur de recherche. L'installation de paquets est également un cas où il faut utiliser `sudo`, puisque cela implique souvent l'accès à des répertoires protégés. 
+
+```bash
+$ sudo apt install tree
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following NEW packages will be installed:
+  tree
+0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
+...
+```
+
+Désinstaller un package est également simple : c'est l'opération inverse. Par sécurité, le terminal vous demande si vous êtes sûr de votre choix en vous demandant de tapper la lettre y ou la lettre n. On peut passer automatiquement cette étape en ajoutant le paramètre `-y`
+
+```bash
+$ sudo apt remove -y tree
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following packages will be REMOVED:
+  tree
+0 upgraded, 0 newly installed, 1 to remove and 0 not upgraded.
+...
+```
+
+Avant d'installer un package, il est toujours préférable de mettre à jour la base des packages, pour s'assurer qu'on obtiendra bien la dernière version.
+
+```bash
+$ sudo apt update
+Hit:1 http://deb.debian.org/debian bullseye InRelease
+Hit:2 http://deb.debian.org/debian bullseye-updates InRelease
+Hit:3 http://security.debian.org/debian-security bullseye-security InRelease
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+All packages are up to date.
+```
 
 ## Tricks
 
-- autocomplétion
-- which
-- man & help
+On l'a dit et redit : devenir à l'aise avec le terminal Linux est essentiel et demande de la pratique. Il existe néanmoins quelques astuces qui peuvent grandement simplifier la vie et donc faciliter la prise de bonnes habitudes.
 
-## Disclaimer
+La première est l'autocomplétion. Dès lors que vous écrivez une commande contenant un nom d'exécutable, un chemin sur le *filesystem*, ou autre, n'hésitez pas à utiliser la touche `TAB` (touche au-dessus de celle qui verrouille la majuscule) de votre clavier. Dans la majorité des cas, cela va vous faire gagner un temps précieux.
 
-- much more to it
+Une seconde astuce, qui n'en est pas vraiment une, est de lire la documentation d'une commande lorsqu'on n'est pas sûr de sa syntaxe ou des paramètres admissibles. Via le terminal, la documentation d'une commande peut être affichée en exécutant `man` suivie de la commande en question, par exemple : `man cp`. Comme il n'est pas toujour très pratique de lire de longs textes dans un petit terminal, on peut également chercher la documentation d'une commande sur le site [man7](https://man7.org/linux/man-pages/index.html).
 
 # Application
 
