@@ -188,9 +188,31 @@ Une différence majeure par rapport à d'autres systèmes d'exploitation, notamm
 $ ls /root
 ls: cannot open directory '/root': Permission denied
 ```
-Dans la pratique du quotidien, certaines opérations telles que l'installation de binaires ou de packages nécessitent cependant des droits administrateurs. Dans ce cas, il est d'usage d'utiliser la commande `sudo` (Substitute User DO), qui permet de prendre les droits *root* le temps de l'exécution de la commande. une bonne pratique de sécurité, en particulier dans les scripts `shell` que l'on peut être amenés à écrire ou exécuter, est de limiter l'utilisation de cette commande aux cas où elle s'avère essentielle.
+Dans la pratique du quotidien, certaines opérations telles que l'installation de binaires ou de packages nécessitent cependant des droits administrateurs. Dans ce cas, il est d'usage d'utiliser la commande `sudo` (Substitute User DO), qui permet de prendre les droits *root* le temps de l'exécution de la commande. 
 
-Une autre subtilité concerne justement l'exécution de scripts `shell`. Par défaut, qu'il soit créé par l'utilisateur ou téléchargé d'internet, n'est pas exécutable. C'est bien entendu une mesure de sécurité pour éviter l'exécution automatique de scripts potentiellement malveillants. Pour pouvoir exécuter un tel script, il faut attribuer des droits d'exécution au fichier avec la commande suivante : `chmod +x mon_script.sh`. Il devient alors possible d'exécuter le script classiquement.
+```bash
+$ sudo ls /root
+
+```
+
+Le dossier `/root` étant vide, la commande `ls` renvoie une chaîne de caractères vide, mais nous n'avons plus de problème de permission. Notons qu'une bonne pratique de sécurité, en particulier dans les scripts `shell` que l'on peut être amenés à écrire ou exécuter, est de limiter l'utilisation de cette commande aux cas où elle s'avère nécessaire.
+
+Une autre subtilité concerne justement l'exécution de scripts `shell`. Par défaut, qu'il soit créé par l'utilisateur ou téléchargé d'internet, un script n'est pas exécutable.
+
+```bash
+$ touch test.sh # Créer le script test.sh (vide)
+$ ./test.sh # Exécuter le script test.sh
+bash: ./test.sh: Permission denied
+```
+
+C'est bien entendu une mesure de sécurité pour éviter l'exécution automatique de scripts potentiellement malveillants. Pour pouvoir exécuter un tel script, il faut attribuer des droits d'exécution au fichier avec la commande `chmod`. Il devient alors possible d'exécuter le script classiquement.
+
+```bash
+$ chmod +x test.sh # Donner des droits d'exécution au script test.sh
+$ ./test.sh # Exécuter le script test.sh
+
+# Le script étant vide, il ne se passe rien
+```
 
 ## Gestionnaire de paquets
 
