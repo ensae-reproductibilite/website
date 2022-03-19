@@ -44,9 +44,14 @@ Lançons un terminal pour présenter son fonctionnement basique. On prend pour e
 Décrivons d'abord les différentes inscriptions qui arrivent à l'initialisation :
 - `(base)` : cette inscription n'est pas directement liée au terminal, elle provient du fait que l'on utilise un environnement `conda`. Nous verrons le fonctionnement des environnements virtuels en détail dans le chapitre sur la [portabilité]({{< ref "/content/portability.md" >}}) ;
 - `coder@vscode-824991-64744dd6d8-zbgv5` : le nom de l'utilisateur (ici `coder`) et le nom de la machine (ici, un conteneur, notion que l'on verra là encore dans le chapitre sur la [portabilité]({{< ref "/content/portability.md" >}}))
-- `~/work` : le chemin du répertoire courant, i.e. à partir duquel va être lancée toute commande.
+- `~/work` : le chemin du répertoire courant, i.e. à partir duquel va être lancée toute commande. On comprendra mieux la signification de ce chemin dans la section suivante.
 
-Afin de bien comprendre les notions de chemin et de répertoire courant, intéressons nous d'abord au fonctionnement d'un *filesystem*.
+Pour éviter la lourdeur des images et permettre de copier/coller facilement les commandes, on représentera dans la suite du tutoriel (et du cours) le terminal du servvice VSCode par des bandes de texte sur fond noir, comme dans l'exemple suivant. Les lignes commençant par un `$` sont celles avec lesquelles une commande est lancée, et les lignes sans `$` représentent le résultat d'une commande. Attention à ne pas inclure le `$` lorsque vous lancez les commandes, il sert simplement à différencier celles-ci des résultats.
+
+```bash
+$ echo "une petite illustration"
+echo "une petite illustration"
+```
 
 ## Notions de *filesystem*
 
@@ -167,7 +172,7 @@ Cette liste illustre la variété des utilisations des variables d'environnement
 - la variable `LANG` spécifie la *locale*, un concept qui permet de définir la langue et l'encodage utilisés par défaut par Linux ;
 - la variable `CONDA_PYTHON_EXE` existe uniquement parce que l'on a installé `conda` comme système de gestion de packages `Python`. C'est l'existance de cette variable qui fait que la commande `python mon_script.py` va utiliser comme binaire la version de `Python` qui nous intéresse.
 
-Une variable d'environnement essentielle et que l'on est fréquemment ammené à modifier dans les applications de data science est la variable `$PATH`. Elle consiste en une concaténation de chemins absolus, séparés par `:`, qui spécifie les dossiers dans lesquels Linux va chercher les exécutables lorsqu'on lance une commande, ainsi que l'ordre de la recherche. Regardons la valeur du `$PATH` sur le terminal du service VSCode.
+Une variable d'environnement essentielle, et que l'on est fréquemment ammené à modifier dans les applications de data science, est la variable `$PATH`. Elle consiste en une concaténation de chemins absolus, séparés par `:`, qui spécifie les dossiers dans lesquels Linux va chercher les exécutables lorsqu'on lance une commande, ainsi que l'ordre de la recherche. Regardons la valeur du `$PATH` sur le terminal du service VSCode.
 
 ```bash
 $ echo $PATH
