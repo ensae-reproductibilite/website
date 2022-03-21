@@ -58,7 +58,11 @@ Un certain nombre d'assistants au développement de projet
 (des packages d'_helpers_ et des extensions aux environnements
 de développement comme `VisualStudio` ou `RStudio`) ont 
 émergé pour gagner en productivité et faciliter le
-lancement d'un projet. 
+lancement d'un projet (voir
+[ce post très complet sur les extensions VisualStudio](https://realpython.com/advanced-visual-studio-code-python/)). 
+L'idée générale est de privilégier une structure de projet
+bien plus fiable qu'une suite sans structure de scripts
+ou un notebook jupyter (voir [ce post de blog sur ce sujet](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/))
 
 Les éléments suivants ne sont pas exhaustifs. Ils visent à pointer vers
 quelles problématiques prioritaires en proposant quelques conseils. 
@@ -837,3 +841,5 @@ Sur un projet personnel, terminé ou en cours :
 - [Cours de Pierre-Antoine Champin](https://perso.liris.cnrs.fr/pierre-antoine.champin/enseignement/algo/cours/algo/bonnes_pratiques.html)
 - [R Packages](https://r-pkgs.org/index.html) par Hadley Wickham and Jenny Bryan
 - [La documentation collaborative `utilitR`](https://www.book.utilitr.org)
+- [Project Oriented Workflow]([ce post de blog sur ce sujet](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/))
+- [Un post très complet sur les extensions VisualStudio](https://realpython.com/advanced-visual-studio-code-python/)
