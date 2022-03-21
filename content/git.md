@@ -41,18 +41,13 @@ En outre, ces outils fonctionnent avec tous les langages informatiques car ils r
 
 ## Git
 
+Plusieurs logiciels de contrôle de version existent sur le marché. En principe, le logiciel Git, développé initialement pour fournir une solution décentralisée et *open-source* dans le cadre du développement du noyau Linux, est devenu largement hégémonique. Aussi, toutes les application de ce cours s'effectueront à l'aide du logiciel Git.
+
 ## GitHub
 
+Le contrôle de version avec Git implique de synchroniser son répertoire local avec une copie distante, située sur un serveur hébergeant des projets Git. Ce serveur peut être un serveur interne à une organisation, ou bien être fourni par un hébergeur externe. Les deux alternatives les plus populaires en la matière sont GitHub et GitLab. Dans ce cours, nous utiliserons GitHub, qui est devenu au fil des années la référence pour l'hébergement des projets open-source. En pratique, les deux services sont relativement semblables, et tous les concepts présentés se retrouvent sous une forme similaire sur les deux plateformes.
 
 # Des bases de Git
-
-## Pourquoi faire ?
-
-- Stockage du code sur un serveur distant => perte impossible
-- Historique complet des choix effectués tout au long du projet
-- Possibilité de revenir à n'importe quelle version du projet
-- Pratique du contrôle de version en vue d'un usage collaboratif
-- Vitrine des projets effectués
 
 ## Principes
 
@@ -73,13 +68,6 @@ En outre, ces outils fonctionnent avec tous les langages informatiques car ils r
 
 
 # Organiser le travail collaboratif
-
-## Pourquoi faire ?
-
-- Tous les avantages de l'usage individuel dans un cadre collaboratif
-- Git est distribué => multiple backups d'un projet
-- Travail simultané sur les mêmes fichiers sans risque de perte
-- Outil de référence dans l'environnement open-source
 
 ## Principes
 
