@@ -11,16 +11,9 @@ layout: single
 
 
 # Les bonnes pratiques de développement
-
-## Origines
   
 ## Pourquoi s'intéresser aux bonnes pratiques ?
 
-## Public visé
-
-Ce cours s'adresse à des data scientists. L'objectif n'est pas d'acquérir des compétences techniques pointues dans des domaines comme l'infrastructure informatique, l'administration de serveurs, la mise en production et la maintenance de *pipelines* de données, ou encore le développement applicatif. Ces compétences font l'objet de métiers à part entière, que sont respectivement les *data architects*, les *sysadmin*, les *data engineers* et les développeurs. 
-
-En revanche, face à la taille croissante des projets de *data science* et donc des équipes qui les portent, le *data scientist* tend à se retrouver à l'interface de ces différentes professions, avec lesquelles il doit communiquer de manière efficiente pour mener ces projets à bien. Ce cours vise à fournir, plus que des connaissances techniques pointues, les élements de langage nécessaires pour pouvoir jouer ce rôle d'interface en communiquant à la fois avec les équipes métiers et les équipes techniques qui entourent un projet de *data science*.
 
 ### Le code comme outil de communication
         
@@ -52,14 +45,20 @@ En revanche, face à la taille croissante des projets de *data science* et donc 
 - Projet open-source
 
 
-# Approche pédagogique
+# Modalités pratiques
 
-## Apprentissage par la pratique
+## Public visé
 
-Le parti pris de ce cours est que seules la pratique et la confrontation à des problèmes réels à partir de projets personnels permettent d'acquérir des concepts informatiques. Ce site doit être vu comme une base documentaire : il couvre une large variété de sujets liés aux bonnes pratiques de développement et à la mise en production, mais ne saurait prétendre à l'exhaustivité — aussi bien en termes d'étendue des sujets parcourus que de la profondeur avec laquelle chaque sujet est traité.
+Ce cours s'adresse à des data scientists. L'objectif n'est pas d'acquérir des compétences techniques pointues dans des domaines comme l'infrastructure informatique, l'administration de serveurs, la mise en production et la maintenance de *pipelines* de données, ou encore le développement applicatif. Ces compétences font l'objet de métiers à part entière, que sont respectivement les *data architects*, les *sysadmin*, les *data engineers* et les développeurs. 
 
-Chaque cours sera centré autour d'un sujet 
+En revanche, face à la taille croissante des projets de *data science* et donc des équipes qui les portent, le *data scientist* tend à se retrouver à l'interface de ces différentes professions, avec lesquelles il doit communiquer de manière efficiente pour mener ces projets à bien. Ce cours vise à fournir, plus que des connaissances techniques pointues, les élements de langage nécessaires pour pouvoir jouer ce rôle d'interface en communiquant à la fois avec les équipes métiers et les équipes techniques qui entourent un projet de *data science*.
 
+## Approche pédagogique
+
+Le parti pris de ce cours est que seule la pratique, et en particulier la confrontation à des problèmes issus de projets réels, permet d'acquérir efficacement des concepts informatiques. Aussi, une large part du cours consistera en l'application des notions étudiées à des cas concrets. Chaque chapitre
+
+<!--Ce site doit être vu comme une base documentaire : il couvre une large variété de sujets liés aux bonnes pratiques de développement et à la mise en production, mais ne saurait prétendre à l'exhaustivité — aussi bien en termes d'étendue des sujets parcourus que de la profondeur avec laquelle chaque sujet est traité. Par ailleurs, comme nous l'avons vu précédemment, les bonnes pratiques doivent être comprises comme un continuum, sur lequel on vient se placer en fonction des caractéristiques du projet concerné. Aussi, il n'est pas souhaitable d'appliquer toutes
+-->
 ## Langages
 
 Les principes présentés dans ce cours sont pour la plupart agnostiques du langage de programmation utilisé. Ce choix n'est pas qu'éditorial, c'est selon nous un aspect fondamental du sujet des bonnes pratiques. Trop souvent, des différences de langage entre les phases de développement (ex : R, Python) et de mise en production (ex : Java) érigent des murs artificiels qui réduisent fortement la capacité à valoriser des projets de *data science*. A l'inverse, plus les différentes équipes qui forment le cycle de vie d'un projet s'accorderont pour appliquer le même ensemble de bonnes pratiques, plus ces équipes développeront un langage commun, et plus les déploiements seront facilités. Un exemple parlant est l'utilisation de la conteneurisation : si le *data scientist* met à disposition une image `Docker` comme *output* de sa phase de développement et que le *data engineer* s'occupe de déployer cette image sur une infrastructure dédiée, le contenu même de l'application en termes de langage importe finalement assez peu. Cet exemple, certes simpliste, illustre malgré tout l'enjeu des bonnes pratiques en matière de communication au sein d'un projet.
@@ -75,4 +74,4 @@ Cependant, nous choisissons comme environnement de référence tout au long de c
 - via un cluster Kubernetes sous-jacent, le SSP Cloud met à disposition une infrastructure robuste permettant le déploiement automatisé d'applications potentiellement intensives en données, ce qui permet de **simuler un véritable environnement de production** ;
 - le SSP Cloud est construit selon les standards les plus récents des infrastructures *data science*, et permet donc d'**acquérir les bonnes pratiques de manière organique** :
   - les services sont lancés via des conteneurs, configurés par des images *Docker*. Cela permet de garantir une forte **reproductibilité** des déploiements, au prix d'une phase de développement un peu plus coûteuse ;
-  - le SSP Cloud est basé sur une approche dite *cloud native* : il est construit sur un ensemble modulaire de briques logicielles, qui permettent d'appliquer une séparation nette du code, des données, de la configuration et de l'environnement d'exécution, principe majeur des bonnes pratiques qui reviendra tout au long de ce cours.
+  - le SSP Cloud est basé sur une **approche dite *cloud native*** : il est construit sur un ensemble modulaire de briques logicielles, qui permettent d'appliquer une séparation nette du code, des données, de la configuration et de l'environnement d'exécution, principe majeur des bonnes pratiques qui reviendra tout au long de ce cours.
