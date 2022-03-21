@@ -236,7 +236,7 @@ touch $FORMATION_DIR/$SECTION/$CHAPTER/test.txt
 
 Analysons la structure de ce script :
 - la première ligne est classique, elle se nomme le *shebang* : elle indique au système quel interpréteur utiliser pour exécuter ce script. Dans notre cas, et de manière générale, on utilise `bash` (Bourne-Again SHell, l'implémentation moderne du `shell`) ;
-- les lignes 2 et 3 assignent à des variables les arguments passés au script dans la commande. Par défaut, ceux-ci sont assignés à des variables `$n` où $n$ est la position de l'argument, en commençant à 1 ;
+- les lignes 2 et 3 assignent à des variables les arguments passés au script dans la commande. Par défaut, ceux-ci sont assignés à des variables `n` où `n` est la position de l'argument, en commençant à 1 ;
 - la ligne 4 assigne un chemin à une variable
 - la ligne 5 crée le chemin complet, défini à partir des variables créées précédemment. Le paramètre `-p` est important : il précise à `mkdir` d'agir de manière récursive, c'est à dire de créer les dossiers intermédiaires qui n'existent pas encore ;
 - la ligne 6 crée un fichier texte vide dans le dossier créé avec la commande précédente.
