@@ -49,21 +49,30 @@ Le contrôle de version avec Git implique de synchroniser son répertoire local 
 
 # Des bases de Git
 
+Ce cours part du principe que les lecteurs sont déjà familiers avec l'utilisation de Git, au travers de projets individuels ou collectifs. Aussi, nous rappelons dans cette section les notions essentielles de Git, mais nous ne présenterons pas leur implémentation pratique. Le lecteur souhaitant un rappel plus complet peut par exemple se référer à la [formation au travail collaboratif avec Git et RStudio](https://collaboratif-git-formation-insee.netlify.app/index.html) donnée à l'Insee, dont sont issus de nombreuses ressources utilisées dans ce chapitre.
+
 ## Principes
 
-- local/remote/origin
-- 3 zones de Git
-- add/commit/push/pull
-- checkout/log
-- .gitignore
+### Dépôt distant et dépôt local
+
+![](/localremote.png)
+
+### Les trois états d'un fichier
+
+![](/areas.png)
+
+### Principales commandes
+
+![](/completeworkflow.png)
+[Source](https://www.edureka.co/blog/git-tutorial/)
 
 ## En pratique
 
-- Git est un logiciel
-- CLI : git bash
-- Outils graphiques
-  - Intégration R Studio
-  - Plugin Jupyter-git
+Git est un logiciel, qui peut être téléchargé sur le [site officiel](https://git-scm.com/downloads) pour différents systèmes d'exploitation. Il existe cependant différentes manières d'utiliser Git :
+- le client en ligne de commande : c'est l'implémentation standard, et donc la plus complète. C'est celle qu'on utilisera dans ce cours. Le client Git est installé par défaut sur les différents services du SSP Cloud (VSCode, RStudio, Jupyter, etc.) et peut donc être utilisé via n'importe quel terminal. La [documentation](https://docs.sspcloud.fr/onyxia-guide/controle-de-version) du SSP Cloud détaille la procédure ;
+- des interfaces graphiques : elles facilitent la prise en main de Git via des guides visuels, mais ne permettent pas de réaliser toutes les opérations permises par Git
+  - l'interface native de `RStudio` pour les utilisateurs de `R` : très complète et stable. La [formation au travail collaboratif avec Git et RStudio](https://collaboratif-git-formation-insee.netlify.app/index.html) présente son utilisation de manière détaillée ;
+  - le plugin `Jupyter-git` pour les utilisateurs de `Python` : elle implémente les principales *features* de Git, mais reste assez instable.
 
 
 
