@@ -20,7 +20,7 @@ layout: single
 
 Ce cours s'adresse à des data scientists. L'objectif n'est pas d'acquérir des compétences techniques pointues dans des domaines comme l'infrastructure informatique, l'administration de serveurs, la mise en production et la maintenance de *pipelines* de données, ou encore le développement applicatif. Ces compétences font l'objet de métiers à part entière, que sont respectivement les *data architects*, les *sysadmin*, les *data engineers* et les développeurs. 
 
-En revanche, face à la taille croissante des projets de *data science* et donc des équipes qui les portent, le *data scientist* tend à se retrouver à l'interface de ces différentes professions, avec lesquelles il doit communiquer de manière efficiente pour mener ces projets à bien. Ce cours vise à fournir, plus qu'une compétence technique pointue, les élements de langage nécessaires pour pouvoir jouer ce rôle d'interface en communiquant à la fois avec les équipes métiers et les équipes techniques qui entourent un projet de *data science*. 
+En revanche, face à la taille croissante des projets de *data science* et donc des équipes qui les portent, le *data scientist* tend à se retrouver à l'interface de ces différentes professions, avec lesquelles il doit communiquer de manière efficiente pour mener ces projets à bien. Ce cours vise à fournir, plus que des connaissances techniques pointues, les élements de langage nécessaires pour pouvoir jouer ce rôle d'interface en communiquant à la fois avec les équipes métiers et les équipes techniques qui entourent un projet de *data science*.
 
 ### Le code comme outil de communication
         
@@ -56,7 +56,9 @@ En revanche, face à la taille croissante des projets de *data science* et donc 
 
 ## Apprentissage par la pratique
 
-- Application des concepts dès le début sur projets personnels
+Le parti pris de ce cours est que seules la pratique et la confrontation à des problèmes réels à partir de projets personnels permettent d'acquérir des concepts informatiques. Ce site doit être vu comme une base documentaire : il couvre une large variété de sujets liés aux bonnes pratiques de développement et à la mise en production, mais ne saurait prétendre à l'exhaustivité — aussi bien en termes d'étendue des sujets parcourus que de la profondeur avec laquelle chaque sujet est traité.
+
+Chaque cours sera centré autour d'un sujet 
 
 ## Langages
 
@@ -69,7 +71,7 @@ Les exemples présentés dans ce cours seront pour l'essentiel en `Python` et en
 A l'instar du langage, les principes appliqués dans ce cours sont agnostiques à l'infrastructure utilisée pour faire tourner les exemples proposés. Il est donc à la fois possible et souhaitable d'appliquer les bonnes pratiques aussi bien à un projet individuel développé sur un ordinateur personnel qu'à un projet collaboratif visant à être déployé sur une infrastructure de production dédiée.
 
 Cependant, nous choisissons comme environnement de référence tout au long de ce cours le [SSP Cloud](https://datalab.sspcloud.fr/home), une plateforme de services pour la *data science* développée à l'Insee et accessible aux élèves des écoles statistiques. Les raisons de ce choix sont multiples :
-- l'environnement de développement est normalisé : les serveurs du SSP Cloud ont une configuration homogène — notamment, ils se basent sur une même distribution Linux (Debian) —
+- **l'environnement de développement est normalisé** : les serveurs du SSP Cloud ont une configuration homogène — notamment, ils se basent sur une même distribution Linux (Debian) — ce qui garantit la reproductibilité des exemples présentés tout au long du cours ;
 - via un cluster Kubernetes sous-jacent, le SSP Cloud met à disposition une infrastructure robuste permettant le déploiement automatisé d'applications potentiellement intensives en données, ce qui permet de **simuler un véritable environnement de production** ;
 - le SSP Cloud est construit selon les standards les plus récents des infrastructures *data science*, et permet donc d'**acquérir les bonnes pratiques de manière organique** :
   - les services sont lancés via des conteneurs, configurés par des images *Docker*. Cela permet de garantir une forte **reproductibilité** des déploiements, au prix d'une phase de développement un peu plus coûteuse ;
