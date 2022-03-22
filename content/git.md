@@ -60,13 +60,17 @@ Le graphique suivant illustre les principes fondamentaux de Git.
 
 Lorsqu'on utilise Git, il est important de **bien distinguer ce qui se passe en local** (sur son poste, sur le serveur sur lequel on travaille...) **de ce qui se passe en *remote***, i.e. en intéragissant avec un serveur distant. Comme le montre le graphique, l'essentiel du contrôle de version se passe en réalité en local. 
 
-En théorie, sur un projet individuel, il est même possible de réaliser l'ensemble du contrôle de version en mode hors-ligne. Pour cela, il suffit d'indiquer à Git le projet (dossier) que l'on souhaite versionner en utilisant la commande `git init`. Cette commande a pour effet de créer un dossier `.git` à la racine du projet, dans lequel Git va stocker tout l'historique du projet (commits, branches, etc.) et permettre de naviguer entre les versions. A cause du `.` qui préfixe son nom, ce dossier est généralement caché par défaut, ce qui n'est pas problématique dans la mesure où il n'y a jamais besoin de le parcourir ou de le modifier à la main en pratique. Retenez simplement que **c'est la présence de ce dossier `.git` qui fait qu'un dossier est considéré comme un projet Git**, et donc que vous pouvez utilisez les commandes de Git dans ce dossier à l'aide d'un terminal. 
+En théorie, sur un projet individuel, il est même possible de réaliser l'ensemble du contrôle de version en mode hors-ligne. Pour cela, il suffit d'indiquer à Git le projet (dossier) que l'on souhaite versionner en utilisant la commande `git init`. Cette commande a pour effet de créer un dossier `.git` à la racine du projet, dans lequel Git va stocker tout l'historique du projet (commits, branches, etc.) et permettre de naviguer entre les versions. A cause du `.` qui préfixe son nom, ce dossier est généralement caché par défaut, ce qui n'est pas problématique dans la mesure où il n'y a jamais besoin de le parcourir ou de le modifier à la main en pratique. Retenez simplement que **c'est la présence de ce dossier `.git` qui fait qu'un dossier est considéré comme un projet Git**, et donc que vous pouvez utilisez les commandes usuelles de Git dans ce dossier à l'aide d'un terminal :
+- `git status` : affiche les modifications du projet par rapport à la version précédente ;
+- `git add chemin_du_fichier` : ajoute un fichier nouveau ou modifié à la zone de *staging* de Git en vue d'un commit ;
+- `git add -A` : ajoute tous les fichiers nouveaux ou modifiés à la zone de *staging* ;
+- `git commit -m "message de commit"` : crée un commit, i.e. une photographie des modifications (ajouts, modifications, suppressions) apportées au projet depuis la dernière version, et lui assigne un message décrivant ces changements. Les commits sont l'unité de base de l'historique du projet construit par Git.
 
 En pratique, travailler uniquement en local n'est pas très intéressant. Pour pouvoir travailler de manière collaborative, on va vouloir **synchroniser les différentes copies locales du projet à un répertoire centralisé**, qui maintient de fait la "source de vérité" (*single source of truth*). Même sur un projet individuel, il fait sens de synchroniser son répertoire local à une copie distante pour assurer l'intégrité du code de son projet en cas de problème matériel.
 
 En général, on va donc initialiser le projet dans l'autre sens :
 - créer un nouveau projet sur GitHub
-- générer un jeton d'accès (*personal access token*)
+- générer un [jeton d'accès](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) (*personal access token*)
 - cloner le projet en local via la méthode HTTPS : `git clone https://github.com/<username>/<project_name>.git`
 
 Le projet cloné est un projet Git — il contient le dossier `.git` — synchronisé par défaut avec le répertoire distant. On peut le vérifier avec la commande `remote` de Git :
@@ -77,10 +81,9 @@ origin  https://github.com/linogaliana/ensae-reproductibilite-website.git (fetch
 origin  https://github.com/linogaliana/ensae-reproductibilite-website.git (push)
 ```
 
-Le projet local est bien lié au répertoire distant sur GitHub, auquel Git donne par défaut le nom `origin`. Cette synchronisation permet d'utiliser les commandes classiques : 
+Le projet local est bien lié au répertoire distant sur GitHub, auquel Git donne par défaut le nom `origin`. Cette synchronisation permet d'utiliser les commandes usuelles : 
 - `git pull` : récupérer les changements (*fetch*) sur le *remote* et les appliquer au projet local
 - `git push` : envoyer les changements locaux sur le *remote*
-
 
 ## En pratique
 
@@ -117,6 +120,11 @@ Git est un logiciel, qui peut être téléchargé sur le [site officiel](https:/
 
 # Bonnes pratiques de Git
 
+- messages de commit
+- commits réguliers
+- quoi versionner
+- .gitignore
+df
 
 # Application
 
