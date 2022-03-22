@@ -38,17 +38,28 @@ Les deux normes les plus connues sont la norme `PEP8` (code)
 et la norme `PEP257` (documentation).
 
 Dans l'univers `R`, la formalisation
-a été moins organisée. Néanmoins, des standards ont émergé, à travers
+a été moins organisée. Ce langage est plus permissif que `Python`
+sur certains aspects (possibilité d'utiliser `<-` ou `=` pour l'assignation,
+pas d'erreur en cas de mauvaise indentation...). 
+Néanmoins, des standards ont émergé, à travers
 un certain nombre de _style guides_ dont les plus connus
 sont le
 [_tidyverse style guide_](https://style.tidyverse.org/googl) et le
-[_google style guide_](https://google.github.io/styleguide/Rguide.html).
+[_google style guide_](https://google.github.io/styleguide/Rguide.html)[^2]
+(voir [ce post](https://blog.r-hub.io/2022/03/21/code-style/) qui pointe vers
+un certain nombre de ressources sur le sujet)
 Ces conventions ne sont pas immuables: les langages et leurs usages
 évoluent, ce qui nécessite de mettre à jour les conventions. Cependant,
 adopter dans la mesure de possible certains des réflexes préconisés par ces
 conventions devrait améliorer la capacité à être compris par la communauté,
 bénéficier d'apport de celle-ci pour adapter le code ou réduire la 
-difficulté à faire évoluer un code. 
+difficulté à faire évoluer un code. La cohérence dans un code est important:
+si on choisit une convention, par exemple _snake case_ plutôt que
+_camel case_, le mieux est de s'y tenir. 
+
+[^2]: Il existe d'autres guides de style notamment le [MLR style guide](https://github.com/mlr-org/mlr3/wiki/Style-Guide#theoretical-style-guide)
+qui est un _framework_ orienté objet de _Machine Learning_ en `R`.
+
 
 Les conventions vont au-delà de la syntaxe. Un certain nombre de standards
 d'organisation d'un projet ont émergé. La structuration d'un projet
@@ -105,6 +116,50 @@ choix des noms des objets afin d’assurer la lisibilité des programmes.
 {{< panelset class="nommage" >}}
 {{% panel name="Python :snake:" %}}
 
+Un certain nombre de conseils sont présents dans le 
+[Hitchhiker's Guide to Python](https://docs.python-guide.org/writing/style/)
+qui vise à faire connaître les préceptes du _"Zen of Python"_ (PEP 20):
+
+```python
+import this
+```
+
+```
+The Zen of Python, by Tim Peters
+
+Beautiful is better than ugly.
+Explicit is better than implicit.
+Simple is better than complex.
+Complex is better than complicated.
+Flat is better than nested.
+Sparse is better than dense.
+Readability counts.
+Special cases aren't special enough to break the rules.
+Although practicality beats purity.
+Errors should never pass silently.
+Unless explicitly silenced.
+In the face of ambiguity, refuse the temptation to guess.
+There should be one-- and preferably only one --obvious way to do it.
+Although that way may not be obvious at first unless you're Dutch.
+Now is better than never.
+Although never is often better than *right* now.
+If the implementation is hard to explain, it's a bad idea.
+If the implementation is easy to explain, it may be a good idea.
+Namespaces are one honking great idea -- let's do more of those!
+```
+
+La présentation suivante illustre quelques uns de ces principes:
+
+<object data="https://raw.githubusercontent.com/hblanks/zen-of-python-by-example/master/pep20_by_example.pdf" type="application/pdf" width="700px" height="700px">
+    <embed src="https://raw.githubusercontent.com/hblanks/zen-of-python-by-example/master/pep20_by_example.pdf">
+        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="https://raw.githubusercontent.com/hblanks/zen-of-python-by-example/master/pep20_by_example.pdf">Download PDF</a>.</p>
+    </embed>
+</object>
+
+<br>
+
+Voici quelques conseils complémentaires. 
+
 - Adopter les mêmes standards que la communauté pour les noms de package
 
 ```python
@@ -114,6 +169,20 @@ import numpy as np
 # trompeur
 import numpy as pd
 ```
+
+- Faire attention aux _namespaces_ pour éviter les conflits entre fonctions.
+Cela implique de ne pas importer l'ensemble des fonctions d'un package de
+la manière suivante:
+
+```python
+from numpy import *
+from math import *
+```
+
+Dans ce cas, on va se retrouver avec des conflits potentiels entre les
+fonctions du package `numpy` et du package `math` qui portent le même
+nom (`floor` par exemple). 
+
 
 {{% /panel %}}
 {{% panel name="R" %}}
@@ -129,7 +198,7 @@ au _CamelCase_
 (préconisation du [tidyverse style guide](https://style.tidyverse.org/syntax.html)).
 Si vous préférez le _CamelCase_, utilisez-le systématiquement dans tout le script pour uniformiser le code.
 
-- Ne pas utiliser `T` ou `F` pour nommer des variables**
+- Ne pas utiliser `T` ou `F` pour nommer des variables
 (car en plus d'être rarement des noms explicites ce sont les abréviations des booléens `TRUE` et `FALSE`)
 
 - Ne pas utiliser de noms qui sont déjà des fonctions de base `R` (`mean` par exemple).
@@ -270,7 +339,205 @@ pour documenter un code).
 
 ### Limiter la redondance {#redondance}
 
--   utiliser des fonctions
+Un bon principe à suivre est _"don't repeat yourself !"_ (DRY).
+Celui-ci réduit la charge de code à écrire, à comprendre et à 
+tenir à jour. 
+
+{{< tweet 598532170160873472 >}}
+
+Ce [post](https://www.earthdatascience.org/courses/intro-to-earth-data-science/write-efficient-python-code/intro-to-clean-code/dry-modular-code/) donne quelques bonnes pratiques
+pour réduire la redondance des codes. 
+
+Supposons qu'on dispose d'une table de données qui utilise le code `−99` pour représenter les valeurs manquantes. On désire remplacer l'ensemble des `−99` par des `NA`.
+
+{{< panelset class="nommage" >}}
+{{% panel name="Python :snake:" %}}
+
+```python
+# On fixe la racine pour être sûr de tous avoir le même dataset
+np.random.seed(1234)
+
+# On créé un dataframe
+a = np.random.randint(1, 10, size = (5,6))
+df = np.insert(
+    a,
+    np.random.choice(len(a), size=6),
+    -99,
+)
+df = pd.DataFrame(df.reshape((6,6)), columns=[chr(x) for x in range(97, 103)])
+```
+
+{{% /panel %}}
+
+{{% panel name="R" %}}
+
+```r
+# On fixe la racine pour être sûr de tous avoir le même dataset
+set.seed(1014)
+
+# On créé un dataframe
+df <- data.frame(replicate(6, sample(c(1:10, -99), 6, rep = TRUE)))
+names(df) <- letters[1:6]
+```
+
+
+{{% /panel %}}
+{{< /panelset >}}
+
+Un premier jet de code pourrait prendre la forme suivante:
+
+{{< panelset class="nommage" >}}
+{{% panel name="Python :snake:" %}}
+
+```python
+# Dupliquer les données
+df2 = df.copy()
+# Remplacer les -99 par des NA
+df2.loc[df2['a'] == -99,'a'] = np.nan
+df2.loc[df2['b'] == -99,'b'] = np.nan
+df2.loc[df2['c'] == -99,'c'] = np.nan
+df2.loc[df2['d'] == -99,'d'] = np.nan
+df2.loc[df2['e'] == -98,'e'] = np.nan
+df2.loc[df2['f'] == -99,'e'] = np.nan
+```
+
+{{% /panel %}}
+
+{{% panel name="R" %}}
+
+```r
+# Dupliquer les données
+df2 <- df
+# Remplacer les -99 par des NA
+df2$a[df2$a == -99] <- NA
+df2$b[df2$b == -99] <- NA
+df2$c[df2$c == -99] <- NA
+df2$d[df2$d == -99] <- NA
+df2$e[df2$e == -98] <- NA
+df2$f[df2$e == -99] <- NA
+df2
+```
+
+
+{{% /panel %}}
+{{< /panelset >}}
+
+Quelles sont les choses qui vous dérangent dans le code ci-dessus? Indice: regardez précisément le code et le dataframe (indice: surveillez la colonne `e` et la colonne `g`).
+
+On peut noter au moins deux problèmes:
+
+* Le code est long et répétitif, ce qui nuit à sa lisibilité;
+* Le code est très dépendant de la structure des données (nom et nombre de colonnes) et doit être adapté dès que celle-ci évolue;
+* On a introduit une erreur humaine dans le code, difficile à détecter, dans l'instruction concernant la colonne `e`. 
+
+On voit dans la première version de notre code qu'il y a une structure commune à toutes nos lignes de la forme `.[. == -99] <- NA`. Cette structure va servir de base à notre fonction, en vue de généraliser le traitement que nous voulons faire.
+
+{{< panelset class="nommage" >}}
+{{% panel name="Python :snake:" %}}
+
+```python
+def fix_missing(x: pd.Series):
+    x[x == -99] = np.nan
+    return x
+
+df2 = df.copy()
+df2['a'] = fix_missing(df['a'])
+df2['b'] = fix_missing(df['b'])
+df2['c'] = fix_missing(df['c'])
+df2['d'] = fix_missing(df['d'])
+df2['e'] = fix_missing(df['e'])
+df2['f'] = fix_missing(df['f'])
+```
+
+{{% /panel %}}
+
+{{% panel name="R" %}}
+
+```r
+fix_missing <- function(x) {
+  x[x == -99] <- NA
+  x
+}
+df2 <- df
+df2$a <- fix_missing(df2$a)
+df2$b <- fix_missing(df2$b)
+df2$c <- fix_missing(df2$c)
+df2$d <- fix_missing(df2$d)
+df2$e <- fix_missing(df2$e)
+df2$f <- fix_missing(df2$f)
+df2
+```
+
+{{% /panel %}}
+{{< /panelset >}}
+
+Cette seconde version du code est meilleure que la première version, car on a réglé le problème d'erreur humaine (il n'est plus possible de taper `-98` au lieu de `-99`). Mais le code reste long et répétitif, et n'élimine pas encore toute possibilité d'erreur, car il est toujours possible de se tromper dans le nom des variables. 
+
+La prochaine étape est ainsi d'éliminer ce risque d'erreur en combinant deux fonctions (ce qu'on appelle combinaison de fonctions). La première `fix_missing()` sert à régler le problème sur un vecteur. La seconde généralisera ce procédé à toutes les colonnes. Comme `R` est un langage vectoriel, c'est une approche fréquente de construire des fonctions sur des vecteurs et les appliquer ensuite à plusieurs colonnes.
+
+
+{{< panelset class="nommage" >}}
+{{% panel name="Python :snake:" %}}
+
+```python
+def fix_missing(x: pd.Series):
+    x[x == -99] = np.nan
+    return x
+df2 = df.copy()
+df2 = df2.apply(fix_missing)
+```
+
+{{% /panel %}}
+
+{{% panel name="R" %}}
+
+Il est possible d'appliquer `lapply` à un `dataframe` car un `dataframe` est en fait une liste de vecteurs (les colonnes du `dataframe`). Toutefois, comme `lapply` renvoie une liste, on a besoin d'utiliser une petite astuce pour s'assurer que la sortie de la fonction prenne la forme d'un `dataframe` et non d'une liste. A la place d'assigner le résultat sous la forme `df <- lapply(.....)` on va faire `df[] <- lapply(...)`. Ecrivez la boucle `lapply` permettant d'appliquer `fix_missing` a l'ensemble des colonnes du *dataframe*:
+
+```r
+df2 <- df
+# Définir une fonction
+fix_missing <- function(x) {
+  x[x == -99] <- NA
+  x
+}
+# Appliquer la fonction à toutes les colonnes du dataframe
+df2[] <- lapply(df2, fix_missing)
+df2
+```
+
+{{% /panel %}}
+{{< /panelset >}}
+
+Cette troisième version du code a plusieurs avantages sur les deux autres versions:
+
+1. Elle est plus concise et plus lisible;
+2. Si on a un changement de code pour les valeurs manquantes, il suffit de le mettre à un seul endroit;
+3. Elle fonctionne quels que soient le nombre de colonnes et le nom des colonnes;
+4. On ne peut pas traiter une colonne différemment des autres par erreur.
+
+De plus, le code est facilement généralisable. Par exemple, à partir de la même structure, écrire le code qui permet de ne traiter que les colonnes *a*,*b* et *e*.
+
+{{< panelset class="nommage" >}}
+{{% panel name="Python :snake:" %}}
+
+```python
+df2 = df.copy()
+df2[['a','b','e']] = df2[['a','b','e']].apply(fix_missing)
+```
+
+{{% /panel %}}
+
+{{% panel name="R" %}}
+
+```r
+df2 <- df
+df2[c("a","b","e")] <- lapply(c("a","b","e"), function(col) fix_missing(df2[col]))
+```
+
+{{% /panel %}}
+{{< /panelset >}}
+
+
 
 ### Documentation {#documentation}
 
@@ -843,3 +1110,4 @@ Sur un projet personnel, terminé ou en cours :
 - [La documentation collaborative `utilitR`](https://www.book.utilitr.org)
 - [Project Oriented Workflow]([ce post de blog sur ce sujet](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/))
 - [Un post très complet sur les extensions VisualStudio](https://realpython.com/advanced-visual-studio-code-python/)
+- ["Coding style, coding etiquette"](https://blog.r-hub.io/2022/03/21/code-style/)
