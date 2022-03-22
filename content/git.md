@@ -103,11 +103,34 @@ Dans la section précédente, on a présenté une manière de travailler assez b
 - on va généralement vouloir garder une version "propre" du projet (ex : une application fonctionnelle), et expérimenter par ailleurs pour développer de nouvelles fonctionnalités ;
 - on peut être amené à travailler à plusieurs sur les mêmes fichiers et ce de façon simultanée, ce qui peut générer des conflits complexes à gérer
 
-On le voit bien : dès lors qu'un projet gagne de l'ampleur, il est impératif de s'interroger en amont sur l'organisation du travail et de trouver des manières de collaborer efficacement. On va pour cela s'inspirer de modèles d'organisation qui ont fait leurs preuves, les *workflows*, ce qui va nous amener à nous intéresser à une des fonctionnalités majeures de Git : les branches. On verra enfin que les services tels que GitHub ou GitLab fournissent des fonctionnalités additionnelles (*issues* et *pull requests*) qui permettent de grandement faciliter le travail collaboratif avec Git.
-
-## Workflows
+On le voit bien : **dès lors qu'un projet gagne de l'ampleur, il est impératif de s'interroger en amont sur l'organisation du travail et de trouver des manières de collaborer efficacement**. On va pour cela s'inspirer de modèles d'organisation qui ont fait leurs preuves, les ***workflows***, ce qui va nous amener à nous intéresser à une des fonctionnalités majeures de Git : les **branches**. On verra également que les services tels que GitHub ou GitLab fournissent des fonctionnalités additionnelles (***issues***, ***pull requests*** et ***forks***) qui permettent de grandement faciliter le travail collaboratif avec Git.
 
 ## Branches
+
+La possibilité de créer des branches est l'une des fonctionnalités majeures de Git. La création d'une branche au sein d'un projet permet de diverger de la ligne principale de développement (généralement appelée `master`, terme tendant à disparaître au profit de celui de `main`) sans impacter cette ligne. Cela permet de séparer le nouveau développement et de faire cohabiter plusieurs versions, pouvant évoluer séparément et pouvant être facilement rassemblées si nécessaire.
+
+Pour comprendre comment fonctionnent les branches, il nous faut revenir un peu plus en détail sur la manière dont Git stocke l'historique du projet. Comme nous l'avons vu, l'unité temporelle de Git est le commit, qui correspond à une photographie à un instant donné de l'état du projet. Chaque commit est uniquement identifié par un *hash*, une longue suite de caractères. La commande `git log`, qui liste les différents commits d'un projet, permet d'afficher ce *hash* ainsi que diverses métadonnées (auteur, date, message) associées au commit.
+
+```bash
+$ git log
+commit e58b004d3b68bdf28093fe6ad6036b5d13216e55 (HEAD -> master, origin/master, origin/HEAD)
+Author: Lino Galiana <xxx@yahoo.fr>
+Date:   Tue Mar 22 14:34:04 2022 +0100
+
+    ajoute code équivalent python
+
+...
+```
+
+Une branche est simplement un pointeur vers un commit. Dans l'exemple précédent, on a imprimé les informations du dernier commit en date. On voit donc que la branche `master`, la branche principale, pointe vers ce commit. Si l'on faisait un nouveau commit, le pointeur se décalerait et la branche `master` pointerait à présent sur le nouveau commit. Dans ce contexte, créer une nouvelle branche revient simplement à créer un nouveau pointeur. La figure suivante illustre ce qui se passe si l'on crée une branche nommée `testing` à partir du dernier commit.
+
+![](/newbranch.png)
+
+
+
+![](/ghflow.png)
+
+## Workflows
 
 ## Principes
 
@@ -131,6 +154,7 @@ On le voit bien : dès lors qu'un projet gagne de l'ampleur, il est impératif d
 - fixer les conflits
 - gestion des droits d'accès
 - contributions open source
+- workflows
 
 # Application
 
