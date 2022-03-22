@@ -69,6 +69,19 @@ En général, on va donc initialiser le projet dans l'autre sens :
 - générer un jeton d'accès (*personal access token*)
 - cloner le projet en local via la méthode HTTPS : `git clone https://github.com/<username>/<project_name>.git`
 
+Le projet cloné est un projet Git — il contient le dossier `.git` — synchronisé par défaut avec le répertoire distant. On peut le vérifier avec la commande `remote` de Git :
+
+```bash
+$ git remote -v
+origin  https://github.com/linogaliana/ensae-reproductibilite-website.git (fetch)
+origin  https://github.com/linogaliana/ensae-reproductibilite-website.git (push)
+```
+
+Le projet local est bien lié au répertoire distant sur GitHub, auquel Git donne par défaut le nom `origin`. Cette synchronisation permet d'utiliser les commandes classiques : 
+- `git pull` : récupérer les changements (*fetch*) sur le *remote* et les appliquer au projet local
+- `git push` : envoyer les changements locaux sur le *remote*
+
+
 ## En pratique
 
 Git est un logiciel, qui peut être téléchargé sur le [site officiel](https://git-scm.com/downloads) pour différents systèmes d'exploitation. Il existe cependant différentes manières d'utiliser Git :
