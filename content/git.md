@@ -39,11 +39,11 @@ Pourtant, il existe un outil informatique puissant afin de répondre à tous ces
 
 En outre, ces outils fonctionnent avec tous les langages informatiques car ils reposent sur la comparaison des lignes et des caractères des programmes, indépendamment du langage. En bref, c'est la bonne manière pour partager des codes et travailler à plusieurs sur un projet de *data science*. En réalité, il ne serait pas exagéré de dire que **l'utilisation du contrôle de version est la bonne pratique la plus fondamentale de tout projet faisant intervenir du code**, et qu'elle conditionne largement toutes les autres.
 
-## Git
+## Pourquoi Git ?
 
 Plusieurs logiciels de contrôle de version existent sur le marché. En principe, le logiciel Git, développé initialement pour fournir une solution décentralisée et *open-source* dans le cadre du développement du noyau Linux, est devenu largement hégémonique. Aussi, **toutes les application de ce cours s'effectueront à l'aide du logiciel Git**.
 
-## GitHub
+## Pourquoi GitHub ?
 
 Travailler de manière collaborative avec Git implique de synchroniser son répertoire local avec une copie distante, située sur un serveur hébergeant des projets Git. Ce serveur peut être un serveur interne à une organisation, ou bien être fourni par un hébergeur externe. Les deux alternatives les plus populaires en la matière sont GitHub et GitLab. Dans ce cours, **nous utiliserons GitHub, qui est devenu au fil des années la référence pour l'hébergement des projets open-source**. En pratique, les deux services sont relativement semblables, et tous les concepts présentés se retrouvent sous une forme similaire sur les deux plateformes.
 
@@ -53,7 +53,7 @@ Travailler de manière collaborative avec Git implique de synchroniser son répe
 
 Ce cours part du principe que les lecteurs sont déjà familiers avec l'utilisation de Git, au travers de projets individuels ou collectifs. Aussi, nous rappelons dans cette section les notions essentielles de Git, mais nous ne présenterons pas leur implémentation pratique. Le lecteur souhaitant un rappel plus complet peut par exemple se référer à la [formation au travail collaboratif avec Git et RStudio](https://collaboratif-git-formation-insee.netlify.app/index.html) donnée à l'Insee, dont sont issues de nombreuses ressources utilisées dans ce chapitre.
 
-## Principes
+## Principes et commandes usuelles
 
 Le graphique suivant illustre les principes fondamentaux de Git.
 
@@ -83,7 +83,7 @@ origin  https://github.com/linogaliana/ensae-reproductibilite-website.git (fetch
 origin  https://github.com/linogaliana/ensae-reproductibilite-website.git (push)
 ```
 
-Le projet local est bien lié au répertoire distant sur GitHub, auquel Git donne par défaut le nom `origin`. Cette synchronisation permet d'utiliser les commandes usuelles : 
+Le projet local est bien lié au répertoire distant sur GitHub, auquel Git donne par défaut le nom `origin`. Ce lien permet d'utiliser les commandes de synchronisation usuelles : 
 - `git pull` : récupérer les changements (*fetch*) sur le *remote* et les appliquer au projet local
 - `git push` : envoyer les changements locaux sur le *remote*
 
@@ -98,6 +98,12 @@ Git est un logiciel, qui peut être téléchargé sur le [site officiel](https:/
 
 
 # Git avancé
+
+Dans la section précédente, on a présenté une manière de travailler assez basique : dès lors que l'on a réalisé un ensemble de modifications cohérent sur le projet, on produit un commit, ce qui permet de construire progressivement l'historique du projet. Si cette méthode peut tout à fait convenir à des petits projets, elle montre rapidement ses limites dès lors que les projets gagnent en maturité ou deviennent collaboratifs :
+- on va généralement vouloir garder une version "propre" du projet (ex : une application fonctionnelle), et expérimenter par ailleurs pour développer de nouvelles fonctionnalités ;
+- on peut être amené à travailler à plusieurs sur les mêmes fichiers et ce de façon simultanée, ce qui peut générer des conflits complexes à gérer
+
+On le voit bien : dès lors qu'un projet gagne de l'ampleur, il est impératif de s'interroger en amont sur l'organisation du travail et de trouver des manières de collaborer efficacement. On va pour cela s'inspirer de modèles d'organisation qui ont fait leurs preuves, les *workflows*, ce qui va nous amener à nous intéresser à une des fonctionnalités majeures de Git : les branches. On verra enfin que les services tels que GitHub ou GitLab fournissent des fonctionnalités additionnelles (*issues* et *pull requests*) qui permettent de grandement faciliter le travail collaboratif avec Git.
 
 ## Workflows
 
