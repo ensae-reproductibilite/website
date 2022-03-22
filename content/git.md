@@ -47,6 +47,8 @@ Plusieurs logiciels de contrôle de version existent sur le marché. En principe
 
 Travailler de manière collaborative avec Git implique de synchroniser son répertoire local avec une copie distante, située sur un serveur hébergeant des projets Git. Ce serveur peut être un serveur interne à une organisation, ou bien être fourni par un hébergeur externe. Les deux alternatives les plus populaires en la matière sont GitHub et GitLab. Dans ce cours, **nous utiliserons GitHub, qui est devenu au fil des années la référence pour l'hébergement des projets open-source**. En pratique, les deux services sont relativement semblables, et tous les concepts présentés se retrouvent sous une forme similaire sur les deux plateformes.
 
+
+
 # Des bases de Git
 
 Ce cours part du principe que les lecteurs sont déjà familiers avec l'utilisation de Git, au travers de projets individuels ou collectifs. Aussi, nous rappelons dans cette section les notions essentielles de Git, mais nous ne présenterons pas leur implémentation pratique. Le lecteur souhaitant un rappel plus complet peut par exemple se référer à la [formation au travail collaboratif avec Git et RStudio](https://collaboratif-git-formation-insee.netlify.app/index.html) donnée à l'Insee, dont sont issues de nombreuses ressources utilisées dans ce chapitre.
@@ -95,20 +97,15 @@ Git est un logiciel, qui peut être téléchargé sur le [site officiel](https:/
 
 
 
-# Organiser le travail collaboratif
+# Git avancé
+
+## Workflows
+
+## Branches
 
 ## Principes
 
-- Branches
-- Gestion des conflits de version
-- Worflows (focus : GH flow)
-- Droits d'accès
-- Fork
-
 ## Outils collaboratifs
-
-- Issues
-- Pull Requests
 
 ## Contributions à des projets open-source
 
@@ -124,7 +121,10 @@ Git est un logiciel, qui peut être téléchargé sur le [site officiel](https:/
 - commits réguliers
 - quoi versionner
 - .gitignore
-df
+- revenir en arrière
+- fixer les conflits
+- gestion des droits d'accès
+- contributions open source
 
 # Application
 
