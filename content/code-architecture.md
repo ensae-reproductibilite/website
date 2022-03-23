@@ -1111,6 +1111,6 @@ Sur un projet personnel, terminé ou en cours :
 - [Cours de Pierre-Antoine Champin](https://perso.liris.cnrs.fr/pierre-antoine.champin/enseignement/algo/cours/algo/bonnes_pratiques.html)
 - [R Packages](https://r-pkgs.org/index.html) par Hadley Wickham and Jenny Bryan
 - [La documentation collaborative `utilitR`](https://www.book.utilitr.org)
-- [Project Oriented Workflow]([ce post de blog sur ce sujet](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/))
+- [Project Oriented Workflow](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/)
 - [Un post très complet sur les extensions VisualStudio](https://realpython.com/advanced-visual-studio-code-python/)
 - ["Coding style, coding etiquette"](https://blog.r-hub.io/2022/03/21/code-style/)
