@@ -268,3 +268,4 @@ Pour faciliter les contributions, les projets open-source spécifient bien souve
 - collaboratif
   - cadavre exquis
   - PR à partir d'un fork
+  
