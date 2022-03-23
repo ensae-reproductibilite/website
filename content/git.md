@@ -103,9 +103,11 @@ Dans la section précédente, on a présenté une manière de travailler assez b
 - on va généralement vouloir garder une version "propre" du projet (ex : une application fonctionnelle), et expérimenter par ailleurs pour développer de nouvelles fonctionnalités ;
 - on peut être amené à travailler à plusieurs sur les mêmes fichiers et ce de façon simultanée, ce qui peut générer des conflits complexes à gérer
 
-On le voit bien : **dès lors qu'un projet gagne de l'ampleur, il est impératif de s'interroger en amont sur l'organisation du travail et de trouver des manières de collaborer efficacement**. On va pour cela s'inspirer de modèles d'organisation qui ont fait leurs preuves, les ***workflows***, ce qui va nous amener à nous intéresser à une des fonctionnalités majeures de Git : les **branches**. On verra également que les services tels que GitHub ou GitLab fournissent des fonctionnalités additionnelles (***issues***, ***pull requests*** et ***forks***) qui permettent de grandement faciliter le travail collaboratif avec Git.
+On le voit bien : **dès lors qu'un projet gagne de l'ampleur, il est impératif de s'interroger en amont sur l'organisation du travail et de trouver des manières de collaborer efficacement**. On va pour cela s'inspirer de modèles d'organisation (***workflows***) qui ont fait leurs preuves, ce qui va nous amener à nous intéresser à une des fonctionnalités majeures de Git : les **branches**. On verra également que les services tels que GitHub ou GitLab fournissent des fonctionnalités additionnelles (***issues***, ***pull requests*** et ***forks***) qui permettent de grandement faciliter le travail collaboratif avec Git.
 
 ## Branches
+
+### Concept
 
 La possibilité de créer des branches est l'une des fonctionnalités majeures de Git. La création d'une branche au sein d'un projet permet de diverger de la ligne principale de développement (généralement appelée `master`, terme tendant à disparaître au profit de celui de `main`) sans impacter cette ligne. Cela permet de séparer le nouveau développement et de **faire cohabiter plusieurs versions, pouvant évoluer séparément et pouvant être facilement rassemblées si nécessaire**.
 
@@ -124,7 +126,9 @@ Date:   Tue Mar 22 14:34:04 2022 +0100
 
 Une branche est simplement un pointeur vers un commit. Dans l'exemple précédent, on a imprimé les informations du dernier commit en date. La branche principale (`master`) pointe vers ce commit. Si l'on faisait un nouveau commit, le pointeur se décalerait et la branche `master` pointerait à présent sur le nouveau commit. 
 
-Dans ce contexte, créer une nouvelle branche revient simplement à créer un nouveau pointeur vers un commit donné. Supposons que l'on crée une branche `testing` à partir du dernier commit.
+### Branches locales
+
+Dans ce contexte, créer une nouvelle branche (en local) revient simplement à créer un nouveau pointeur vers un commit donné. Supposons que l'on crée une branche `testing` à partir du dernier commit.
 
 ```bash
 $ git branch testing  # Crée une nouvelle branche
@@ -154,17 +158,23 @@ Cette divergence n'est pas problématique en soi : il est normal que les différ
 - les modifications opérées en parallèle sur les deux branches ne concernent pas les mêmes fichiers ou les mêmes parties des fichiers. Dans ce cas, Git est capable de fusionner (*merge*) les changements automatiquement et tout se passe sans encombre ;
 - dans le cas contraire, survient un *merge conflict* : les branches ont divergé de telle sorte qu'il n'est pas possible pour Git de fusionner les changements automatiquement. Il faut alors résoudre les conflits manuellement.
 
-La résolution des conflits est une étape souvent douloureuse lors de l'apprentissage de Git. Aussi, nous conseillons dans la mesure du possible de ne pas fusionner des branches manuellement en local avec Git. Rappellons en effet que toutes les opérations que nous avons effectuées dans cette section se sont passés en local, le répertoire distant est resté totalement inchangé. Dans les sections suivantes, nous verrons comment une bonne organisation préalable du travail en équipe, combinée aux outils collaboratifs fournis par GitHub, permet de rendre le processus de fusion des branches largement indolore.
+La résolution des conflits est une étape souvent douloureuse lors de l'apprentissage de Git. Aussi, nous conseillons dans la mesure du possible de ne pas fusionner des branches manuellement en local avec Git — c'est d'ailleurs pour cette raison que nous n'avons pas détaillé les commandes pour le faire. Dans les sections suivantes, nous verrons comment une bonne organisation préalable du travail en équipe, combinée aux outils collaboratifs fournis par GitHub, permet de rendre le processus de fusion des branches largement indolore.
 
-## Workflows
+### Branches *remote*
+
+Rappellons que toutes les opérations que nous avons effectuées dans cette section se sont passés en local, le répertoire distant est resté totalement inchangé.
+
+## Workflow collaboratif
+
+Comme on l'a vu précédemment, si le modèle des branches de Git semble idéal pour gérer le travail collaboratif et asynchrone, il peut également s'avérer rapidement complexe à manipuler en l'absence d'une bonne organisation du travail en équipe. De nombreux modèles ("*workflows*") existent en la matière, avec des complexités plus ou moins grandes selon la nature du projet. Nous conseillons d'adopter dans la plupart des cas un modèle très simple : le ***GitHub Flow***.
+
+### Le GitHub flow
 
 ![](/ghflow.png)
 
-## Principes
+## Issues
 
-## Outils collaboratifs
-
-## Contributions à des projets open-source
+## Contributer à des projets open-source
 
 - via Fork + PR
 - suivre les règles de contribution du projet
