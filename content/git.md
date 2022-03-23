@@ -95,6 +95,7 @@ Le projet local est bien lié au répertoire distant sur GitHub, auquel Git donn
 - `git pull` : récupérer les changements (*fetch*) sur le *remote* et les appliquer au projet local
 - `git push` : envoyer les changements locaux sur le *remote*
 
+
 ## En pratique
 
 Git est un logiciel, qui peut être téléchargé sur le [site officiel](https://git-scm.com/downloads) pour différents systèmes d'exploitation. Il existe cependant différentes manières d'utiliser Git :
@@ -258,8 +259,6 @@ Vouloir contribuer à un projet open-source est très louable, mais ne peut pas 
 Pour faciliter les contributions, les projets open-source spécifient bien souvent la manière dont les utilisateurs peuvent contribuer ainsi que le format attendu. En général, ces règles de contribution sont spécifiées dans un fichier `CONTRIBUTING.md` situé à la racine du projet GitHub, ou a défaut dans le `README` du projet. Il est essentiel de bien lire ce document s'il existe afin de s'assurer de proposer des contributions pertinentes.
 
 
-
-- .gitignore
 
 # Application
 
