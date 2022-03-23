@@ -146,9 +146,19 @@ $ git checkout testing  # Changement de branche
 Switched to branch 'testing'
 ```
 
-![](/ghflow.png)
+On se situe désormais sur la branche `testing`, sur laquelle on peut laisser libre cours à sa créativité sans risquer d'impacer la branche principale du projet. Mais que se passe-t-il si, pendant que l'on développe sur `testing`, un autre membre du projet commit sur `master` ? On dit que les historiques ont divergé. La figure suivante illustre à quoi ressemble à présent l'historique du projet (et suppose que l'on est repassé sur `master`).
+
+![](/divergence.png)
+
+Cette divergence n'est pas problématique en soi : il est normal que les différentes parties et expérimentations d'un projet avancent à différents rythmes. La difficulté est de savoir comment réconcillier les différents changements si l'on décide que la branche `testing` doit être intégrée dans `master`. Deux situations peuvent survenir :
+- les modifications opérées en parallèle sur les deux branches ne concernent pas les mêmes fichiers ou les mêmes parties des fichiers. Dans ce cas, Git est capable de fusionner (*merge*) les changements automatiquement et tout se passe sans encombre ;
+- dans le cas contraire, survient un *merge conflict* : les branches ont divergé de telle sorte qu'il n'est pas possible pour Git de fusionner les changements automatiquement. Il faut alors résoudre les conflits manuellement.
+
+La résolution des conflits est une étape souvent douloureuse lors de l'apprentissage de Git. Aussi, nous conseillons dans la mesure du possible de ne pas fusionner des branches manuellement en local avec Git. Rappellons en effet que toutes les opérations que nous avons effectuées dans cette section se sont passés en local, le répertoire distant est resté totalement inchangé. Dans les sections suivantes, nous verrons comment une bonne organisation préalable du travail en équipe, combinée aux outils collaboratifs fournis par GitHub, permet de rendre le processus de fusion des branches largement indolore.
 
 ## Workflows
+
+![](/ghflow.png)
 
 ## Principes
 
