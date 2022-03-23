@@ -1085,6 +1085,8 @@ la reprise par d'autres (ou par soi dans le futur)
 
 # Application
 
+{{% box status="exercise" title="Application" icon="fas fa-pencil-alt" %}}
+
 Sur un projet personnel, terminé ou en cours :
 
 -   utiliser un linter pour améliorer la qualité du code au maximum (seuil ?)
@@ -1099,6 +1101,7 @@ Sur un projet personnel, terminé ou en cours :
 
 -   faire du projet un package
 
+{{% /box %}}
 
 # Références
 
