@@ -162,15 +162,51 @@ La résolution des conflits est une étape souvent douloureuse lors de l'apprent
 
 ### Branches *remote*
 
-Rappellons que toutes les opérations que nous avons effectuées dans cette section se sont passés en local, le répertoire distant est resté totalement inchangé.
+Rappellons que toutes les opérations que nous avons effectuées sur les branches dans cette section se sont passés en local, le répertoire distant est resté totalement inchangé.
 
 ## Workflow collaboratif
 
-Comme on l'a vu précédemment, si le modèle des branches de Git semble idéal pour gérer le travail collaboratif et asynchrone, il peut également s'avérer rapidement complexe à manipuler en l'absence d'une bonne organisation du travail en équipe. De nombreux modèles ("*workflows*") existent en la matière, avec des complexités plus ou moins grandes selon la nature du projet. Nous conseillons d'adopter dans la plupart des cas un modèle très simple : le ***GitHub Flow***.
+Comme on l'a vu précédemment, si le modèle des branches de Git semble idéal pour gérer le travail collaboratif et asynchrone, il peut également s'avérer rapidement complexe à manipuler en l'absence d'une bonne organisation du travail en équipe. De nombreux modèles ("*workflows*") existent en la matière, avec des complexités plus ou moins grandes selon la nature du projet. Nous conseillons d'adopter dans la plupart des cas un modèle très simple : le [GitHub Flow](https://docs.github.com/en/get-started/quickstart/github-flow).
 
-### Le GitHub flow
+Le *GitHub Flow* est une méthode d'organisation minimaliste du travail collaboratif, qui est progressivement devenue la norme dans les projets open-source. Elle est résumée par la figure suivante, dont nous détaillons par la suite les différentes étapes.
 
 ![](/ghflow.png)
+
+### Définition des rôles des contributeurs
+
+Dans tout projet collaboratif, une première étape essentielle est de bien délimiter les rôles des différents contributeurs. Les différents participants au projet ont en effet généralement des rôles différents dans l'organisation, des niveaux différents de pratique de Git, etc. Il est important de refléter ces différents rôles dans l'organisation du travail collaboratif.
+
+Sur les différents hébergeurs de projets Git, cela prend la forme de rôles que l'on attribue aux différents membres du porjet. Les *mainteneurs* sont les seuls à pouvoir écrire directement sur `master`. Les *contributeurs* sont quant à eux tenus de développer sur des branches. Cela permet de protéger la branche principale, qui doit rester une version propre et jamais compromise du projet.
+
+Notons que la possibilité de donner des rôles sur les projets GitHub n'est possible que dans le cadre d'organisations (payantes), donc dans un contexte professionnel ou de projets open-source d'une certaine ampleur. Pour des petits projets, il est nécessaire de s'astreindre à une certaine rigueur individuelle pour respecter cette organisation.
+
+### Développement sur des branches de court-terme
+
+Les contributeurs développent uniquement sur des branches. Il est d'usage de créer une branche par fonctionnalité, en lui donnant un nom reflétant la fonctionnalité en cours de développement (ex : `ajout-tests-unitaires`). Les différents contributeurs à la fonctionnalité en cours de développement font des commits sur la branche, en prenant bien soin de `pull` régulièrement les éventuels changements pour ne pas risquer de conflits de version. Pour la même raison, il est préférable de faire des branches dites de court-terme, c'est à dire propres à une petite fonctionnalité, quite à diviser une fonctionnalité en séries d'implémentations. Cela permet de limiter les éventuels conflits à gérer lors de la fusion finale de la branche avec `master`.
+
+### Pull Request
+
+Une fois la série de modifications terminée, vient le temps de rassembler les différents travaux, par l’intermédiaire de la fusion entre la branche et `master`. Il faut alors “demander” de fusionner (*pull request*) sur GitHub. Cela ouvre une page liée à la *pull request*, qui rappelle les différents changements apportés et leurs auteurs, et permet d'entamer une discussion à propos de ces changements.
+
+### Processus de *review*
+
+Les différents membres du projet peuvent donc analyser et commenter les changements, poser des questions, suggérer des modifications, apporter d'autres contributions, etc. Il est par exemple possible de mentionner un membre de l’équipe par l’intermédiaire de `@personne`. Il est également possible de procéder à une *code review*, par exemple par un développeur plus expérimenté.
+
+### Résolution des éventuels conflits
+
+En adoptant cette manière de travailler, `master` ne sera modifiée que via des *pull requests*. Il ne devrait donc jamais y avoir le moindre conflit à régler sur `master `, les seuls conflits possibles se passent sur les branches. Par exemple, dans le cas où une autre *pull request* aurait été fusionnée sur `master` depuis l'ouverture de la *pull request* en question.
+
+Dans le cas d'un conflit à gérer, le conflit doit être résolu dans la branche et pas dans `master`. Voici la marche à suivre :
+
+- appliquez le conseil de survie : faites une copie de sauvegarde de votre clone
+- dans votre clone, placez vous sur la branche en question : `git checkout nom-de-la-branche`
+- fusionnez `master` dans la branche : `git merge master`
+- résolvez les éventuels conflits dans les fichiers concernés
+- finalisez le commit de merge et poussez-le sur la branche *remote*, ce qui le fera apparaître dans la *pull request*
+
+### Fusion de la branche
+
+Si tout est en ordre, la branche peut être fusionnée. Seuls les *mainteneurs*, qui ont les droits sur `master`, peuvent fusionner la *pull request*. 
 
 ## Issues
 
