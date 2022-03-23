@@ -162,7 +162,18 @@ La résolution des conflits est une étape souvent douloureuse lors de l'apprent
 
 ### Branches *remote*
 
-Rappellons que toutes les opérations que nous avons effectuées sur les branches dans cette section se sont passés en local, le répertoire distant est resté totalement inchangé.
+Rappellons que toutes les opérations que nous avons effectuées sur les branches dans cette section se sont passés en local, le répertoire distant est resté totalement inchangé. Pour pouvoir collaborer sur une branche ou bien en faire une *pull request* (cf. supra), il faut pousser la branche sur le répertoire distant. La commande est simple : `git push origin <branche>`.
+
+```bash
+$ git push origin testing
+Counting objects: 24, done.
+Delta compression using up to 8 threads.
+Compressing objects: 100% (15/15), done.
+Writing objects: 100% (24/24), 1.91 KiB | 0 bytes/s, done.
+Total 24 (delta 2), reused 0 (delta 0)
+To https://github.com/linogaliana/ensae-reproductibilite-website
+ * [new branch]      testing -> testing
+```
 
 ## Workflow collaboratif
 
