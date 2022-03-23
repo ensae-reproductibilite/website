@@ -107,9 +107,9 @@ On le voit bien : **dès lors qu'un projet gagne de l'ampleur, il est impératif
 
 ## Branches
 
-La possibilité de créer des branches est l'une des fonctionnalités majeures de Git. La création d'une branche au sein d'un projet permet de diverger de la ligne principale de développement (généralement appelée `master`, terme tendant à disparaître au profit de celui de `main`) sans impacter cette ligne. Cela permet de séparer le nouveau développement et de faire cohabiter plusieurs versions, pouvant évoluer séparément et pouvant être facilement rassemblées si nécessaire.
+La possibilité de créer des branches est l'une des fonctionnalités majeures de Git. La création d'une branche au sein d'un projet permet de diverger de la ligne principale de développement (généralement appelée `master`, terme tendant à disparaître au profit de celui de `main`) sans impacter cette ligne. Cela permet de séparer le nouveau développement et de **faire cohabiter plusieurs versions, pouvant évoluer séparément et pouvant être facilement rassemblées si nécessaire**.
 
-Pour comprendre comment fonctionnent les branches, il nous faut revenir un peu plus en détail sur la manière dont Git stocke l'historique du projet. Comme nous l'avons vu, l'unité temporelle de Git est le commit, qui correspond à une photographie à un instant donné de l'état du projet. Chaque commit est uniquement identifié par un *hash*, une longue suite de caractères. La commande `git log`, qui liste les différents commits d'un projet, permet d'afficher ce *hash* ainsi que diverses métadonnées (auteur, date, message) associées au commit.
+Pour comprendre comment fonctionnent les branches, il nous faut revenir un peu plus en détail sur la manière dont Git stocke l'historique du projet. Comme nous l'avons vu, l'unité temporelle de Git est le commit, qui correspond à une photographie à un instant donné de l'état du projet (*snapshot*). Chaque commit est uniquement identifié par un *hash*, une longue suite de caractères. La commande `git log`, qui liste les différents commits d'un projet, permet d'afficher ce *hash* ainsi que diverses métadonnées (auteur, date, message) associées au commit.
 
 ```bash
 $ git log
@@ -122,11 +122,29 @@ Date:   Tue Mar 22 14:34:04 2022 +0100
 ...
 ```
 
-Une branche est simplement un pointeur vers un commit. Dans l'exemple précédent, on a imprimé les informations du dernier commit en date. On voit donc que la branche `master`, la branche principale, pointe vers ce commit. Si l'on faisait un nouveau commit, le pointeur se décalerait et la branche `master` pointerait à présent sur le nouveau commit. Dans ce contexte, créer une nouvelle branche revient simplement à créer un nouveau pointeur. La figure suivante illustre ce qui se passe si l'on crée une branche nommée `testing` à partir du dernier commit.
+Une branche est simplement un pointeur vers un commit. Dans l'exemple précédent, on a imprimé les informations du dernier commit en date. La branche principale (`master`) pointe vers ce commit. Si l'on faisait un nouveau commit, le pointeur se décalerait et la branche `master` pointerait à présent sur le nouveau commit. 
+
+Dans ce contexte, créer une nouvelle branche revient simplement à créer un nouveau pointeur vers un commit donné. Supposons que l'on crée une branche `testing` à partir du dernier commit.
+
+```bash
+$ git branch testing  # Crée une nouvelle branche
+$ git branch  # Liste les branches existantes
+* master  # La branche sur laquelle on se situe
+  testing  # La nouvelle branche créée
+```
+
+La figure suivante illustre l'effet de cette création sur l'historique Git.
 
 ![](/newbranch.png)
 
+Désormais, deux branches (`master` et `testing`) pointent vers le même commit. Si l'on effectue à présent des commits sur la branche `testing`, on va diverger de la branche principale, ce qui permet de développer une nouvelle fonctionnalité sans risquer d'impacter `master`. 
 
+Pour savoir sur quelle branche on se situe à instant donné — et donc sur quelle branche on va commiter — Git utilise un pointeur spécial, appelé `HEAD`, qui pointe vers la branche courante. On comprend à présent mieux la signification de `HEAD -> master` dans l'output de la commande `git log` vu précédemment. Cet élément spécifie la situation *locale* actuelle et signifie : on se situe actuellement sur la branche `master`, qui pointe sur le commit `e58b004`. Pour changer de branche, i.e. déplacer le `HEAD`, on utilise la commande `git checkout`. Par exemple, pour passer de la branche `master` sur laquelle on est par défaut à la branche `testing` :
+
+```bash
+$ git checkout testing  # Changement de branche
+Switched to branch 'testing'
+```
 
 ![](/ghflow.png)
 
@@ -140,6 +158,7 @@ Une branche est simplement un pointeur vers un commit. Dans l'exemple précéden
 
 - via Fork + PR
 - suivre les règles de contribution du projet
+
 
 
 
