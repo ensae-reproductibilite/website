@@ -221,12 +221,33 @@ Si tout est en ordre, la branche peut être fusionnée. Seuls les *mainteneurs*,
 - "*Create a merge commit*" : tous les commits réalisés sur la branche apparaîtront dans l'historique du projet ;
 - "*Squash and merge*" : les différents commits réalisés sur la branche seront rassemblés en un commit unique. Cette option est généralement préférable lorsqu'on utilise des branches de court-terme : elles permettent de garder l'historique plus lisible. 
 
-## Contributions à l'open-source
-
-- via Fork + PR
-- suivre les règles de contribution du projet
 
 
+# Contribuer à un projet open-source
+
+Il peut arriver que l'on veuille contribuer à un projet sur lequel on n'est pas enregistré comme collaborateur. C'est par exemple le cas dès lors que l'on souhaite contribuer à un projet open-source. Il existe différentes manières de proposer une contribution, et les possibilités de contribution sont généralement formalisées.
+
+## Utiliser les *issues*
+
+La manière la plus simple de contribuer à un projet open-source est d'ouvrir une *issue*. Sur GitHub, cela se fait sur la page du projet, sous l'onglet *Issue* (cf. [documentation officielle](https://docs.github.com/en/issues/tracking-your-work-with-issues/quickstart)). Les *issues* peuvent avoir différentes nature :
+- suggestion d'amélioration (sans code)
+- notification de bug
+- rapports d'expérience
+- etc.
+
+Les *issues* sont une manière très peu couteuse de contributer à un projet, mais leur importance est capitale, dans la mesure où il est impossible pour les développeurs d'un projet de penser en amont à toutes les utilisations possibles et donc tous les bugs possibles d'une application.
+
+## Proposer une *pull request*
+
+Une autre manière, plus ambitieuse, de contribuer à l'open source est de proposer des *pull requests*. Concrètement, l'idée est de proposer une amélioration ou bien de résoudre un bug sous forme de code, que les mainteneurs du projet peuvent ensuite décider d'intégrer au code existant.
+
+La procédure pour proposer une *pull request* à un projet sur lequel on n'a aucun droit est très similaire à celle décrite ci-dessus dans le cas normal. La principale différence est que, du fait de l'absence de droits, il est impossible de pousser une branche locale sur le répertoire du projet. On va donc devoir créer au préalable un *fork*, i.e. une copie du projet que l'on crée dans son espace personnel sur GitHub. C'est sur cette copie que l'on va appliquer la procédure décrite précédemment, en prenant bien soin de travailler sur une branche et non sur `master`. Une fois les modifications pertinentes effectuées sur la branche du *fork*, GitHub propose de créer une *pull request* sur le dépôt original. Cette *pull request* sera alors visible des mainteneurs du projet, qui pourront l'évaluer et décider d'adopter (ou non) les changements proposés.
+
+## Respecter les règles de contribution
+
+Vouloir contribuer à un projet open-source est très louable, mais ne peut pas pour autant se faire n'importe comment. Un projet est constitué de personnes, qui ont développé ensemble une manière de travailler, des standards de bonnes pratiques, etc. Pour s'assurer que sa contribution ne reste pas lettre morte, il est indispensable de s'imprégner un minimum de la culture du projet.
+
+Pour faciliter les contributions, les projets open-source spécifient bien souvent la manière dont les utilisateurs peuvent contribuer ainsi que le format attendu. En général, ces règles de contribution sont spécifiées dans un fichier `CONTRIBUTING.md` situé à la racine du projet GitHub, ou a défaut dans le `README` du projet. Il est essentiel de bien lire ce document s'il existe afin de proposer des contributions pertinentes.
 
 
 
@@ -236,11 +257,6 @@ Si tout est en ordre, la branche peut être fusionnée. Seuls les *mainteneurs*,
 - commits réguliers
 - quoi versionner
 - .gitignore
-- revenir en arrière
-- fixer les conflits
-- gestion des droits d'accès
-- contributions open source
-- workflows
 
 # Application
 
