@@ -217,11 +217,11 @@ Dans le cas d'un conflit à gérer, le conflit doit être résolu dans la branch
 
 ### Fusion de la branche
 
-Si tout est en ordre, la branche peut être fusionnée. Seuls les *mainteneurs*, qui ont les droits sur `master`, peuvent fusionner la *pull request*. 
+Si tout est en ordre, la branche peut être fusionnée. Seuls les *mainteneurs*, qui ont les droits sur `master`, peuvent fusionner la *pull request*. En termes d'historique du projet, deux choix sont possibles :
+- "*Create a merge commit*" : tous les commits réalisés sur la branche apparaîtront dans l'historique du projet ;
+- "*Squash and merge*" : les différents commits réalisés sur la branche seront rassemblés en un commit unique. Cette option est généralement préférable lorsqu'on utilise des branches de court-terme : elles permettent de garder l'historique plus lisible. 
 
-## Issues
-
-## Contributer à des projets open-source
+## Contributions à l'open-source
 
 - via Fork + PR
 - suivre les règles de contribution du projet
