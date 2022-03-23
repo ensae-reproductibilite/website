@@ -68,6 +68,14 @@ En théorie, sur un projet individuel, il est même possible de réaliser l'ense
 - `git add -A` : ajoute tous les fichiers nouveaux ou modifiés à la zone de *staging* ;
 - `git commit -m "message de commit"` : crée un commit, i.e. une photographie des modifications (ajouts, modifications, suppressions) apportées au projet depuis la dernière version, et lui assigne un message décrivant ces changements. Les commits sont l'unité de base de l'historique du projet construit par Git.
 
+{{% box status="important" title="Bonnes pratiques pour les commits" icon="fas fa-pencil-alt" %}}
+
+- messages de commit
+- commits réguliers
+- quoi versionnr
+
+{{% /box %}}
+
 En pratique, travailler uniquement en local n'est pas très intéressant. Pour pouvoir travailler de manière collaborative, on va vouloir **synchroniser les différentes copies locales du projet à un répertoire centralisé**, qui maintient de fait la "source de vérité" (*single source of truth*). Même sur un projet individuel, il fait sens de synchroniser son répertoire local à une copie distante pour assurer l'intégrité du code de son projet en cas de problème matériel.
 
 En général, on va donc initialiser le projet dans l'autre sens :
@@ -247,15 +255,10 @@ La procédure pour proposer une *pull request* à un projet sur lequel on n'a au
 
 Vouloir contribuer à un projet open-source est très louable, mais ne peut pas pour autant se faire n'importe comment. Un projet est constitué de personnes, qui ont développé ensemble une manière de travailler, des standards de bonnes pratiques, etc. Pour s'assurer que sa contribution ne reste pas lettre morte, il est indispensable de s'imprégner un minimum de la culture du projet.
 
-Pour faciliter les contributions, les projets open-source spécifient bien souvent la manière dont les utilisateurs peuvent contribuer ainsi que le format attendu. En général, ces règles de contribution sont spécifiées dans un fichier `CONTRIBUTING.md` situé à la racine du projet GitHub, ou a défaut dans le `README` du projet. Il est essentiel de bien lire ce document s'il existe afin de proposer des contributions pertinentes.
+Pour faciliter les contributions, les projets open-source spécifient bien souvent la manière dont les utilisateurs peuvent contribuer ainsi que le format attendu. En général, ces règles de contribution sont spécifiées dans un fichier `CONTRIBUTING.md` situé à la racine du projet GitHub, ou a défaut dans le `README` du projet. Il est essentiel de bien lire ce document s'il existe afin de s'assurer de proposer des contributions pertinentes.
 
 
 
-# Bonnes pratiques de Git
-
-- messages de commit
-- commits réguliers
-- quoi versionner
 - .gitignore
 
 # Application
