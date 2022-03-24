@@ -87,6 +87,14 @@ Le projet local est bien lié au répertoire distant sur GitHub, auquel Git donn
 - `git pull` : récupérer les changements (*fetch*) sur le *remote* et les appliquer au projet local
 - `git push` : envoyer les changements locaux sur le *remote*
 
+## Implémentations
+
+Git est un logiciel, qui peut être téléchargé sur le [site officiel](https://git-scm.com/downloads) pour différents systèmes d'exploitation. Il existe cependant différentes manières d'utiliser Git :
+- le **client en ligne de commande** : c'est l'implémentation standard, et donc la plus complète. C'est celle qu'on utilisera dans ce cours. Le client Git est installé par défaut sur les différents services du SSP Cloud (VSCode, RStudio, Jupyter, etc.) et peut donc être utilisé via n'importe quel terminal. La [documentation](https://docs.sspcloud.fr/onyxia-guide/controle-de-version) du SSP Cloud détaille la procédure ;
+- des **interfaces graphiques** : elles facilitent la prise en main de Git via des guides visuels, mais ne permettent pas de réaliser toutes les opérations permises par Git
+  - l'interface native de `RStudio` pour les utilisateurs de `R` : très complète et stable. La [formation au travail collaboratif avec Git et RStudio](https://collaboratif-git-formation-insee.netlify.app/index.html) présente son utilisation de manière détaillée ;
+  - le plugin `Jupyter-git` pour les utilisateurs de `Python` : elle implémente les principales *features* de Git, mais s'avère assez instable à l'usage.
+
 ## Bonnes pratiques
 
 Le contrôle de version est une bonne pratique de développement en soi... mais son utilisation admet elle même des bonnes pratiques qui, lorsqu'elles sont appliquées, permettent d'en tirer le plus grand profit.
@@ -154,14 +162,6 @@ De manière générale, il est conseillé de réaliser des commits réguliers lo
 - il est plus facile de revenir en arrière en cas d'erreur si les commits portent sur des changements ciblés et cohérents ;
 - le processus de *review* d'une *pull request* est facilité, car les différents blocs de modification sont plus clairement séparés ;
 - dans une approche d'intégration continue — concept que l'on verra en détail dans le chapitre sur la [mise en production]({{< ref "/content/deployment.md" >}}) — faire des commits et des PR régulièrement permet de déployer de manière continue les changements en production, et donc d'obtenir les *feedbacks* des utilisateurs et d'adapter plus rapidement si besoin.
-
-## Implémentations
-
-Git est un logiciel, qui peut être téléchargé sur le [site officiel](https://git-scm.com/downloads) pour différents systèmes d'exploitation. Il existe cependant différentes manières d'utiliser Git :
-- le **client en ligne de commande** : c'est l'implémentation standard, et donc la plus complète. C'est celle qu'on utilisera dans ce cours. Le client Git est installé par défaut sur les différents services du SSP Cloud (VSCode, RStudio, Jupyter, etc.) et peut donc être utilisé via n'importe quel terminal. La [documentation](https://docs.sspcloud.fr/onyxia-guide/controle-de-version) du SSP Cloud détaille la procédure ;
-- des **interfaces graphiques** : elles facilitent la prise en main de Git via des guides visuels, mais ne permettent pas de réaliser toutes les opérations permises par Git
-  - l'interface native de `RStudio` pour les utilisateurs de `R` : très complète et stable. La [formation au travail collaboratif avec Git et RStudio](https://collaboratif-git-formation-insee.netlify.app/index.html) présente son utilisation de manière détaillée ;
-  - le plugin `Jupyter-git` pour les utilisateurs de `Python` : elle implémente les principales *features* de Git, mais s'avère assez instable à l'usage.
 
 
 
@@ -317,9 +317,6 @@ Vouloir contribuer à un projet open-source est très louable, mais ne peut pas 
 
 Pour faciliter les contributions, les projets open-source spécifient bien souvent la manière dont les utilisateurs peuvent contribuer ainsi que le format attendu. En général, ces règles de contribution sont spécifiées dans un fichier `CONTRIBUTING.md` situé à la racine du projet GitHub, ou a défaut dans le `README` du projet. Il est essentiel de bien lire ce document s'il existe afin de s'assurer de proposer des contributions pertinentes.
 
-
-
-# Application
 
 {{% box status="exercise" title="Application" icon="fas fa-pencil-alt" %}}
 
