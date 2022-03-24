@@ -68,14 +68,6 @@ En théorie, sur un projet individuel, il est même possible de réaliser l'ense
 - `git add -A` : ajoute tous les fichiers nouveaux ou modifiés à la zone de *staging* ;
 - `git commit -m "message de commit"` : crée un commit, i.e. une photographie des modifications (ajouts, modifications, suppressions) apportées au projet depuis la dernière version, et lui assigne un message décrivant ces changements. Les commits sont l'unité de base de l'historique du projet construit par Git.
 
-{{% box status="important" title="Bonnes pratiques pour les commits" icon="fas fa-pencil-alt" %}}
-
-- messages de commit
-- commits réguliers
-- quoi versionnr
-
-{{% /box %}}
-
 En pratique, travailler uniquement en local n'est pas très intéressant. Pour pouvoir travailler de manière collaborative, on va vouloir **synchroniser les différentes copies locales du projet à un répertoire centralisé**, qui maintient de fait la "source de vérité" (*single source of truth*). Même sur un projet individuel, il fait sens de synchroniser son répertoire local à une copie distante pour assurer l'intégrité du code de son projet en cas de problème matériel.
 
 En général, on va donc initialiser le projet dans l'autre sens :
@@ -95,8 +87,62 @@ Le projet local est bien lié au répertoire distant sur GitHub, auquel Git donn
 - `git pull` : récupérer les changements (*fetch*) sur le *remote* et les appliquer au projet local
 - `git push` : envoyer les changements locaux sur le *remote*
 
+## Bonnes pratiques
 
-## En pratique
+Le contrôle de version est une bonne pratique de développement en soi... mais son utilisation admet elle même des bonnes pratiques qui, lorsqu'elles sont appliquées, permettent d'en tirer le plus grand profit.
+
+### Que versionne-t-on ?
+
+#### Uniquement des fichiers texte
+
+A chaque commit, Git calcule les *différences* entre les versions successives du projet, afin de ne pas avoir à stocker une image complète de ce dernier à chaque fois. C'est ce qui permet aux projets Git de rester très légers par défaut, et donc aux différentes opérations impliquant le *remote* (`clone`, `push`, `pull`..) d'être très rapides. 
+
+La contrepartie de cette légèreté est une contrainte sur les types d'objets que l'on doit versionner. Les différences sont calculables uniquement sur des fichiers de type texte : codes source, fichiers texte, fichiers de configuration non-sensibles... Voici donc une liste non-exhaustive des extensions de fichier que l'on retrouve fréquemment dans un dépôt Git d'un projet `R` ou `Python` : `.py`, `.R`, `.Rmd`, `.txt`, `.json`, `.xml`, `.yaml`, `.toml`, et bien d'autres.
+
+En revanche tous les fichiers binaires — pour faire simple, tous les fichiers qui ne peuvent pas être ouverts dans un éditeur de texte basique sans produire une suite inintelligible de caractères — n'ont généralement pas destination à se retrouver sur un dépôt Git. Du fait de leur formatage (binaire), Git ne peut pas calculer les différences entre versions pour ces fichiers et c'est donc le fichier entier qui est sauvegardé dans l'historique à chaque changement, ce qui peut très rapidement faire croître la taille du dépôt. Pour éviter de versionner ces fichiers par erreur, on va les ajouter au fichier `.gitignore` (cf. [supra](#gitignore)).
+
+#### Pas de données
+
+Comme expliqué en introduction, le fil rouge de ce cours sur les bonnes pratiques est l'importance de bien séparer code, données et environnement d'exécution afin de favoriser la reproductibilité des projets de *data science*. Ce principe doit s'appliquer également à l'usage du contrôle de version, et ce pour différentes raisons.
+
+A priori, inclure ces données dans un dépôt Git peut sembler une bonne idée en termes de reproductibilité. En *machine learning* par exemple, on est souvent amené à réaliser de nombreuses expérimentations à partir d'un même modèle appliqué à différentes transformations des données initiales, transformations que l'on pourrait versionner. En pratique, il est généralement préférable de versionner le code qui permet de générer ces transformations et donc les expérimentations associées, dans la mesure où le suivi des versions des *datasets* peut s'avérer rapidement complexe. Pour de plus gros projets, des alternatives spécifiques existent : c'est le champ du *MLOps*, domaine en constante expansion qui vise à rendre les *pipelines* de *machine learning* plus reproductibles.
+
+Enfin, la structure même de Git n'est techniquement pas faite pour le stockage de données. Si des petits *datasets* dans un format texte ne poseront pas de problème, des données volumineuses (à partir de plusieurs Mo) vont faire croître la taille du dépôt et donc ralentir significativement les opérations de synchronisation avec le *remote*.
+
+#### Pas d'informations locales
+
+Là encore en vertu du principe de séparation données / code/ environnement, les données locales, i.e. spécifiques à l'environnement de travail sur lequel le code a été exécuté, n'ont pas vocation à être versionnées. Par exemple, des fichiers de configuration spécifiques à un poste de travail, des chemins d'accès spécifiques à un ordinateur donné, etc. Cela demande une plus grande rigueur lors de la construction du projet, mais garantit par là même une meilleure reproductiblité pour les futurs utilisateurs du projet.
+
+#### Pas d'*outputs*
+
+Les *outputs* d'un projet (graphiques, publications, modèle entraîné...) n'ont pas vocation à être versionné, en vertu des différents arguments présentés ci-dessus :
+- il ne s'agit généralement pas de fichiers de type texte ;
+- le code source du projet doit dans tous les cas permettre des les regénérer à l'identique.
+
+#### Utiliser un `.gitignore` {#gitignore}
+
+On a listé précédemment un large éventail de fichiers qui n'ont, par nature, pas vocation à être versionné. Bien entendu, faire attention à ne pas ajouter ces différents fichiers au moment de chaque `git add` serait assez pénible. Git simplifie largement cette procédure en nous donnant la possibilité de remplir un fichier `.gitignore`, situé à la racine du projet, qui spécifie l'ensemble des fichiers et types de fichiers que l'on ne souhaite pas versionner dans le cadre du projet courant.
+
+De manière générale, il y a pour chaque langage des fichiers que l'on ne souhaitera jamais versionner. Pour en tenir compte, une première bonne pratique est de choisir le `.gitignore` associé au langage du projet lors de la création du dépôt sur GitHub. Ce faisant, le projet est initialité avec un `gitignore` déjà existant et pré-rempli de chemins et de types de fichiers qui ne sont pas à versionner. Regardons un extrait du `gitignore Python` pour comprendre sa structure et son fonctionnement.
+
+```
+pip-log.txt
+__pycache__/
+*.log
+```
+
+Chaque ligne du `gitignore` spécifie un élément à ignorer du contrôle de version, élément qui peut être un ficher/dossier ou bien une règle concernant un ensemble de fichiers/dossiers. Sauf si spécifié explicitement, les chemins sont relatifs à la racine du projet.  L'extrait du `gitignore Python` illustre les différentes possibilités :
+- ligne 1 : ignore le fichier `pip-log.txt` ;
+- ligne 2 : ignore le dossier `__pycache__/` ;
+- ligne 3 : ignore tous les fichiers dont l'extension est `.log`.
+
+De nombreuses autres possiblités existent, et sont détaillées par exemple dans la [documentation de Git](https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository#_ignoring). 
+
+### Messages des commits
+
+### Fréquence des commits
+
+## Implémentations
 
 Git est un logiciel, qui peut être téléchargé sur le [site officiel](https://git-scm.com/downloads) pour différents systèmes d'exploitation. Il existe cependant différentes manières d'utiliser Git :
 - le **client en ligne de commande** : c'est l'implémentation standard, et donc la plus complète. C'est celle qu'on utilisera dans ce cours. Le client Git est installé par défaut sur les différents services du SSP Cloud (VSCode, RStudio, Jupyter, etc.) et peut donc être utilisé via n'importe quel terminal. La [documentation](https://docs.sspcloud.fr/onyxia-guide/controle-de-version) du SSP Cloud détaille la procédure ;
