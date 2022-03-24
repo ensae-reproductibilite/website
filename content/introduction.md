@@ -40,7 +40,13 @@ Face à ces constats, un **ensemble de règles informelles** ont été conventio
 
 ## Pourquoi s'intéresser aux bonnes pratiques ?
 
+Tout cela est bien intéressant, mais en quoi est-ce pertinent pour le *data scientist*, dont le rôle n'est pas de développer des applications mais de donner du sens aux données ? Notre sentiment est que, du fait du développement rapide de la *data science* et conséquemment de la croissance de la taille moyenne des projets, l'activité du *data scientist* tend à se rapprocher par certains aspects de celle du développeur :
+- les analyses de *data science* sont intenses en code ;
+- il doit travailler de manière collaborative au sein de projets de grande envergure ;
+- il est de plus en plus amené à travailler à partir de données massives, ce qui nécessite de travailler sur des infrastructures *big data* informatiquement complexes ;
+- il est amené à interagir avec des profils informatiques pour déployer ses modèles et les rendre accessible à des utilisateurs.
 
+Aussi, il fait sens pour le *data scientist* moderne de s'intéresser aux bonnes pratiques en vigueur dans la communauté des développeurs. Bien entendu, celles-ci doivent être adaptées aux spécificités des projets basés sur des données. 
 
 ### Le code comme outil de communication
         
@@ -49,7 +55,7 @@ Face à ces constats, un **ensemble de règles informelles** ont été conventio
         
 ### L'enjeu majeur de la reproductibilité
 
-### Préalable à la mise en production
+### Déploiement et automatisation
 
 ## Un continuum de bonnes pratiques
 
