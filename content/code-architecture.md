@@ -13,6 +13,10 @@ layout: single
 
 <br>
 
+Lorsque l'on s'initie à la pratique de la *data science*, il est assez naturel de voir le code d'une manière très fonctionnelle : je veux réaliser une tâche donnée — par exemple un algorithme de classification — et je vais donc assembler dans un *notebook* des bouts de code, souvent trouvés sur internet, jusqu'à obtenir un projet qui réalise la tâche voulue. La structure du projet importe assez peu, tant qu'elle permet d'importer correctement les données nécessaires à la tâche en question. Si cette approche flexible et minimaliste fonctionne très bien lors de la phase d'apprentissage, il est malgré tout indispensable de s'en détacher à progressivement à mesure que l'on progresse et que l'on peut être amené à réaliser des projets plus professionnels ou bien à intégrer des projets collaboratifs.
+
+En particulier, il est important de proposer, parmi les multiples manières de résoudre un problème informatique, une solution qui soit intelligible par d'autres personnes parlant le langage. Le code est en effet lu bien plus souvent qu'il n'est écrit, c'est donc avant tout un outil de communication. De même, la maintenance d'un code demande généralement plus de moyens que sa phase de développement initial, il est donc important de penser en amont la qualité de son code et la structure de son projet de sorte à le rendre au maximum maintenable dans le temps. Afin de faciliter ces réflexions, des tentatives plus ou moins institutionnalisées de définir des conventions ont émergé. Ces conventions dépendent naturellement du langage utilisé, mais les principes sous-jacents s'appliquent de manière universelle aux projets de *data science*.
+
 `Python` est un langage très lisible.
 Avec un peu d’effort sur le nom des objets,
 sur la gestion des dépendances et sur la structure du programme,
@@ -23,13 +27,6 @@ une acquisition rapide des bases.
 `Python`.
 Cependant, les packages les plus utiles pour l'analyse de données (notamment
 `dplyr` ou `data.table`) offrent une grammaire un peu plus transparente.
-
-Il est important de proposer, parmi 
-les multiples manières de résoudre un problème informatique, une solution
-qui soit intelligible par d'autres personnes parlant le langage. 
-C'est donc naturellement que des tentatives, plus ou moins
-institutionnalisées, de définir des 
-conventions ont émergé. 
 
 La communauté `Python` a abouti à un certain nombre de normes,
 dites `PEP` (_Python Enhancement Proposal_),
