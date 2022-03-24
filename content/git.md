@@ -321,10 +321,13 @@ Pour faciliter les contributions, les projets open-source spécifient bien souve
 
 # Application
 
+{{% box status="exercise" title="Application" icon="fas fa-pencil-alt" %}}
+
 - individuel
   - exercice guidé add/commit/push/pull/checkout
   - mise sur GitHub d'un projet personnel
 - collaboratif
   - cadavre exquis
   - PR à partir d'un fork
-  
+
+{{% /box %}}
