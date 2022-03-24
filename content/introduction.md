@@ -9,10 +9,28 @@ layout: single
 
 
 
+# Vue d'ensemble
+
+Ce cours s'adresse aux praticiens de la *data science*, entendue ici au sens large comme la combinaison de techniques issues des mathématiques, de la statistique et de l'informatique pour produire de la connaissance utile à partir de données. Cela inclut donc tout autant les *data scientists* travaillant dans le privé ou dans des administrations que les chercheurs en sciences sociales dont les travaux ont une dimension computationnelle.
+
+Il part du constat que les formations académiques dans ce domaine adoptent souvent une orientation essentiellement technique, visant une compréhension fine des modèles manipulés, mais ne discutent que rarement des problèmes pratiques qui forment le quotidien du *data scientist* dans un contexte professionnel. Ce cours vise à combler ce manque en proposant des pistes de solution à diverses questions que peuvent se poser les *data scientists* lorsqu'ils transitionnent du contexte de la formation initiale à des projets réels :
+- comment travailler de manière collaborative sur un projet ?
+- comment partager du code et s'assurer que celui-ci va tourner sans erreur dans un autre environnement d'exécution ?
+- comment passer d'un environnement de développement — par exemple, des notebooks — à un environnement de production — par exemple, un serveur de production ?
+- comment déployer un modèle de *data science*, et rendre celui-ci accessible à des utilisateurs afin de le valoriser ?
+- comment automatiser les différentes étapes de son projet afin de simplifier sa maintenance ?
+
+Afin de proposer des réponses à ces interrogations, ce cours présente **un ensemble de bonnes pratiques et d'outils issus de différents domaines de l'informatique**, comme le développement logiciel, l'infrastructure, l'administration de serveurs, le déploiement applicatif, etc.. L'objectif n'est bien entendu pas de développer une expertise dans chacun de ces domaines, dans la mesure où ces compétences font l'objet de métiers à part entière, que sont les développeurs, les *data architects*, les *sysadmin*, ou encore les *data engineers*. 
+
+En revanche, face à la taille croissante des projets de *data science* et donc des équipes qui les portent, le *data scientist* tend à se retrouver à l'interface de ces différentes professions, avec lesquelles il doit communiquer de manière efficiente pour mener ces projets à bien. **Ce cours vise à fournir, plus que des connaissances techniques pointues, les élements de langage nécessaires pour pouvoir jouer ce rôle d'interface en communiquant à la fois avec les équipes métiers et les équipes techniques qui entourent un projet de *data science***.
+
+
+
 
 # Les bonnes pratiques de développement
   
 ## Pourquoi s'intéresser aux bonnes pratiques ?
+
 
 
 ### Le code comme outil de communication
@@ -45,13 +63,8 @@ layout: single
 - Projet open-source
 
 
+
 # Modalités pratiques
-
-## Public visé
-
-Ce cours s'adresse à des data scientists. L'objectif n'est pas d'acquérir des compétences techniques pointues dans des domaines comme l'infrastructure informatique, l'administration de serveurs, la mise en production et la maintenance de *pipelines* de données, ou encore le développement applicatif. Ces compétences font l'objet de métiers à part entière, que sont respectivement les *data architects*, les *sysadmin*, les *data engineers* et les développeurs. 
-
-En revanche, face à la taille croissante des projets de *data science* et donc des équipes qui les portent, le *data scientist* tend à se retrouver à l'interface de ces différentes professions, avec lesquelles il doit communiquer de manière efficiente pour mener ces projets à bien. Ce cours vise à fournir, plus que des connaissances techniques pointues, les élements de langage nécessaires pour pouvoir jouer ce rôle d'interface en communiquant à la fois avec les équipes métiers et les équipes techniques qui entourent un projet de *data science*.
 
 ## Approche pédagogique
 
