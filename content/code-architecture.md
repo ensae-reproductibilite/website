@@ -14,7 +14,7 @@ layout: single
 
 > The code is read much more often than it is written.
 >
-> Guido Van Rossum [créateur de Python]
+> <div title="Guido Van Rossum est le créateur de Python, c'est donc quelqu'un qu'il vaut mieux écouter">Guido Van Rossum</div>
 
 Lorsque l'on s'initie à la pratique de la *data science*, il est assez naturel de voir le code d'une manière très fonctionnelle : je veux réaliser une tâche donnée — par exemple un algorithme de classification — et je vais donc assembler dans un *notebook* des bouts de code, souvent trouvés sur internet, jusqu'à obtenir un projet qui réalise la tâche voulue. La structure du projet importe assez peu, tant qu'elle permet d'importer correctement les données nécessaires à la tâche en question. Si cette approche flexible et minimaliste fonctionne très bien lors de la phase d'apprentissage, il est malgré tout indispensable de s'en détacher à progressivement à mesure que l'on progresse et que l'on peut être amené à réaliser des projets plus professionnels ou bien à intégrer des projets collaboratifs.
 
@@ -41,41 +41,51 @@ et la norme `PEP257` (documentation).
 
 Dans l'univers `R`, la formalisation
 a été moins organisée. Ce langage est plus permissif que `Python`
-sur certains aspects (possibilité d'utiliser `<-` ou `=` pour l'assignation,
-pas d'erreur en cas de mauvaise indentation...). 
+sur certains aspects[^1].
 Néanmoins, des standards ont émergé, à travers
 un certain nombre de _style guides_ dont les plus connus
 sont le
 [_tidyverse style guide_](https://style.tidyverse.org/googl) et le
 [_google style guide_](https://google.github.io/styleguide/Rguide.html)[^2]
 (voir [ce post](https://blog.r-hub.io/2022/03/21/code-style/) qui pointe vers
-un certain nombre de ressources sur le sujet)
+un certain nombre de ressources sur le sujet).
+
 Ces conventions ne sont pas immuables: les langages et leurs usages
 évoluent, ce qui nécessite de mettre à jour les conventions. Cependant,
-adopter dans la mesure de possible certains des réflexes préconisés par ces
+adopter dans la mesure du possible certains des réflexes préconisés par ces
 conventions devrait améliorer la capacité à être compris par la communauté,
-bénéficier d'apport de celle-ci pour adapter le code ou réduire la 
-difficulté à faire évoluer un code. La cohérence dans un code est important:
+augmenter les chances de 
+bénéficier d'apport de celle-ci pour adapter le code mais aussi réduire la 
+difficulté à faire évoluer un code.
+Il existe beaucoup de philosophies différentes sur le style de codage et,
+en fait, le plus important est
+la cohérence :
 si on choisit une convention, par exemple _snake case_ plutôt que
 _camel case_, le mieux est de s'y tenir. 
+
+[^1]: Par exemple, en `R`, il est possible d'utiliser `<-` ou `=`
+pour l'assignation,
+on ne recontre pas d'erreur en cas de mauvaise indentation...
 
 [^2]: Il existe d'autres guides de style notamment le [MLR style guide](https://github.com/mlr-org/mlr3/wiki/Style-Guide#theoretical-style-guide)
 qui est un _framework_ orienté objet de _Machine Learning_ en `R`.
 
 
 Les conventions vont au-delà de la syntaxe. Un certain nombre de standards
-d'organisation d'un projet ont émergé. La structuration d'un projet
+d'organisation d'un projet ont émergé.
+La structuration d'un projet
 permet d'immédiatement identifier les éléments de code et les éléments
 annexes (par exemple les dépendances à gérer, la documentation, etc.).
-Un certain nombre d'assistants au développement de projet
-(des packages d'_helpers_ et des extensions aux environnements
-de développement comme `VisualStudio` ou `RStudio`) ont 
+Un certain nombre d'assistants au développement de projets orientés données
+(des packages d'_helpers_, des extensions aux environnements
+de développement comme `VisualStudio` ou `RStudio`...) ont 
 émergé pour gagner en productivité et faciliter le
 lancement d'un projet (voir
 [ce post très complet sur les extensions VisualStudio](https://realpython.com/advanced-visual-studio-code-python/)). 
 L'idée générale est de privilégier une structure de projet
 bien plus fiable qu'une suite sans structure de scripts
-ou un notebook jupyter (voir [ce post de blog sur ce sujet](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/))
+ou un notebook jupyter (voir [ce post de blog sur ce sujet](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/)).
+
 
 ## Comment adopter ces bonnes pratiques ?
 
@@ -83,15 +93,13 @@ Les éléments exposés dans ce chapitre ne sont pas exhaustifs. Ils visent à p
 
 Dans la lignée de la vision des bonnes pratiques comme continuum proposée en [introduction]({{< ref "/content/introduction.md" >}}), il n'est pas nécessairement souhaitable d'appliquer toutes les recommendations présentées dans ce chapitre à chaque projet. Nous recommandons de les voir plutôt comme des bonnes habitudes à acquérir en opérant un va-et-vient régulier entre la pratique et la théorie. Par exemple, à la lecture de ce chapitre, vous allez certainement retenir en particulier certaines règles qui tranchent avec vos pratiques actuelles. Vous pouvez alors essayer d'appliquer ces nouvelles règles pendant un certain temps puis, lorsque celles-ci seront devenues naturelles, revenir à ce guide et appliquer le processus à nouveau. En procédant ainsi de manière incrémentale, vous améliorerez progressivement la qualité de vos projets sans avoir l'impression de passer trop de temps sur des micro-détails, au détriment des objectifs globaux du projet.
 
-
-
-# Qualité du code
+# 1. Qualité du code
 
 ## Principes généraux
 
 
 Les premières conventions à évoquer ont trait à la syntaxe du code et
-ont les objectifs suivants:
+ont les objectifs suivants, qui seront détaillés par la suite :
 
 - [Améliorer la lisibilité](#lisibilite) ce qui est indispensable pour
 rendre la démarche intelligible par d'autres mais aussi pour soi, lorsqu'on
@@ -117,9 +125,12 @@ choix des noms des objets afin d’assurer la lisibilité des programmes.
 {{< panelset class="nommage" >}}
 {{% panel name="Python :snake:" %}}
 
-Un certain nombre de conseils sont présents dans le 
-[Hitchhiker's Guide to Python](https://docs.python-guide.org/writing/style/)
-qui vise à faire connaître les préceptes du _"Zen of Python"_ (PEP 20):
+Un certain nombre de conseils sont présents dans le [Hitchhiker's Guide to Python](https://docs.python-guide.org/writing/style/)
+qui vise à faire connaître les préceptes du _"Zen of Python"_ (PEP 20).
+[Ce post de blog](https://towardsdatascience.com/the-zen-of-python-a-guide-to-pythons-design-principles-93f3f76d088a) illustre quelques uns
+de ces principes avec des exemples.
+Vous pouvez retrouver ces conseils dans `Python` en 
+tapant le code suivant:
 
 ```python
 import this
@@ -149,15 +160,7 @@ If the implementation is easy to explain, it may be a good idea.
 Namespaces are one honking great idea -- let's do more of those!
 ```
 
-La présentation suivante illustre quelques uns de ces principes:
 
-<object data="https://raw.githubusercontent.com/hblanks/zen-of-python-by-example/master/pep20_by_example.pdf" type="application/pdf" width="700px" height="700px">
-    <embed src="https://raw.githubusercontent.com/hblanks/zen-of-python-by-example/master/pep20_by_example.pdf">
-        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="https://raw.githubusercontent.com/hblanks/zen-of-python-by-example/master/pep20_by_example.pdf">Download PDF</a>.</p>
-    </embed>
-</object>
-
-<br>
 
 Voici quelques conseils complémentaires. 
 
@@ -219,25 +222,62 @@ TRUE == T
 - Le `return` n'est pas obligatoire en `R` mais il peut être utile
 d'expliciter l'objet retourné.
 Le [tidyverse style guide](https://style.tidyverse.org/functions.html#return)
-recommande de ne pas le faire, le
-[Google style guide](https://google.github.io/styleguide/Rguide.html#use-explicit-returns)
+recommande de ne pas le faire, le [Google style guide](https://google.github.io/styleguide/Rguide.html#use-explicit-returns)
 recommande de toujours expliciter. Nous recommandons de toujours mettre un
 `return`.
-
-- Faire attention au type d'objet renvoyé par `R`. `R` ne propose pas de typage
-fort, il est donc possible qu'une fonction renvoie des objets de nature
-différente en fonction de conditions `if` (selon les cas une liste, un vecteur,
-un dataframe, etc.). Cela peut amener à des surprises lorsqu'on utilise une 
-telle fonction dans un code. Il est recommandé d'éviter ce comportement
-en proposant des fonctions différentes si l'_output_ d'une fonction 
-est de nature différente. 
-
-- Privilégier la programmation orientée objet lorsqu'une fonction doit
-s'adapter au type d'objet en entrée (par exemple aller chercher des
-éléments différents pour un objet `lm` ou un objet `glm`)
 {{% /panel %}}
 {{< /panelset  >}}
 
+En complément de ces premières recommandations, il est conseillé
+de suivre ces deux principes lorsqu'on commence à programmer
+des fonctions (ce qui, comme cela est évoqué plus bas, est
+toujours recommandé).
+
+- Faire attention au type d'objet renvoyé par `Python` ou `R`.
+Ces deux langages ne proposent pas de typage
+fort,
+il est donc possible qu'une fonction renvoie des objets de nature différente
+en fonction, par exemple,
+de conditions `if` (selon les cas une liste, un vecteur,
+un dataframe, etc.). Cela peut amener à des surprises lorsqu'on utilise une 
+telle fonction dans un code. Il est recommandé d'éviter ce comportement
+en proposant des fonctions différentes si l'_output_ d'une fonction
+est de nature différente. Ce principe de précaution (mais aussi d'information)
+renvoie au paradigme de
+la [programmation défensive](https://en.wikipedia.org/wiki/Defensive_programming).
+
+- Privilégier la programmation orientée objet lorsqu'une fonction doit
+s'adapter au type d'objet en entrée (par exemple aller chercher des
+éléments différents pour un objet `lm` ou un objet `glm`).
+Cela évite les codes _spaghetti_ :spaghetti: inutilement complexes qui sont impossibles à débugger.
+
+{{% box status="hint" title="Hint" icon="fa fa-lightbulb" %}}
+
+`Python` propose une fonctionalité assez plaisante qui est
+le _`type hinting`_
+([doc officielle](https://docs.python.org/3/library/typing.html)
+et [tutoriel sur realpython.com](https://realpython.com/lessons/type-hinting/)).
+Celle-ci permet d'indiquer le type d'argument attendu par une fonction
+et celui qui sera renvoyé par la fonction. Par exemple, la personne ayant écrit la fonction suivante 
+
+```python
+def calcul_moyenne(df: pd.DataFrame, col : str = "y") -> pd.DataFrame:
+    return df[col].mean()
+```
+
+propose d'utiliser deux types d'inputs (un `DataFrame pandas` et une chaine de caractère) et indique qu'elle renverra un `DataFrame pandas`. A noter que c'est indicatif, non contraignant. En effet, le code ci-dessus fonctionnera si on fournit en argument `col` une liste puisque `pandas` sait gérer cela à l'étape `df[col].mean()`
+
+{{% /box %}}
+
+<br>
+
+{{% box status="note" title="Note: le code spaghetti :spaghetti: " icon="fa fa-comment" %}}
+Le code `spaghetti` est un style d'écriture qui favorise l'apparition du syndrome du plat de spaghettis : 
+un code impossible à déméler parce qu'il fait un usage excessif de conditions, d'exceptions en tous sens, de gestion des événements complexes. Il devient quasi-impossible de savoir quelles ont été les conditions à l'origine de telle ou telle erreur sans exécuter ligne à ligne (et celles-ci sont excessivement nombreuses du fait de mauvaises pratiques de programmation) le programme. 
+
+En fait, la programmation spaghetti qualifie tout ce qui ne permet pas de déterminer le qui, le quoi et le comment. Le code est donc plus long à mettre à jour car cela nécessite de remonter un à un le fil des renvois.
+
+{{% /box %}}
 
 ### Concision  {#concision}
 
@@ -247,6 +287,24 @@ sont souvent signes de répétitions et sont difficiles à débugger.
 
 {{< panelset class="nommage" >}}
 {{% panel name="Python :snake:" %}}
+
+- Privilégier les `list comprehensions` lorsque cela est possible:
+
+```python
+liste_nombres = range(10)
+
+# très mauvais
+y = []
+for x in liste_nombres:
+  y.append(x*x)
+
+# mieux
+y = [x*x for x in liste_nombres]
+```
+
+- Privilégier les appels à des fonctions à des blocs 
+copier-coller
+en changeant un seul détail. 
 
 {{% /panel %}}
 
@@ -317,13 +375,63 @@ tant pour des raisons techniques (que le logiciel sache où aller
 chercher des fonctions nécessaires pour avoir un code fonctionnel)
 que pour des raisons conventionnelles (que les utilisateurs comprennent les
 dépendances à s'installer pour être en mesure de réutiliser le code). 
-Pour cette raison, il est de bonne pratique de lister les dépendances
-de deux manières:
 
-* en début de script, l'ensemble des fonctions issues de librairies externes
+Pour cette raison, il est de bonne pratique de lister les dépendances
+de deux manières.
+
+:one: En début de script, l'ensemble des fonctions issues de librairies externes
 ou les packages à importer doivent être listés ;
-* dans un fichier externe (voir la [partie structure](#structure) et le chapitre portabilité),
+
+{{< panelset class="nommage" >}}
+{{% panel name="Python :snake:" %}}
+
+Les imports se mettent conventionnellement en début de script, qu'il s'agisse d'import de packages dans leur ensemble ou seulement de certaines fonctions:
+
+```python
+import pandas as pd
+from sklearn.model_selection import cross_val_score
+```
+
+Dans le premier cas, on fait ensuite référence aux fonctions en les faisant 
+précéder du nom du package :
+
+```python
+pd.DataFrame([0,1])
+```
+
+Cela permet de dire à `Python` d'aller chercher dans le _namespace_ `pd` (alias pour `pandas` qui est lui-même un ensemble de scripts enregistrés sur le disque) la fonction `DataFrame`.
+
+{{% /panel %}}
+
+{{% panel name="R" %}}
+
+`R` ne permet que l'import de la librairie dans son ensemble (sauf dans les _packages_, nous verrons cela plus tard).
+
+```r
+library(data.table)
+```
+
+Ensuite, on peut faire référence directement aux fonctions du package, par exemple `data.table`. Cependant, il est recommandé de privilégier la notion `pkg::function` (ici `data.table::data.table`) qui permet à `R` d'être certain d'aller chercher la fonction dans le bon _namespace_
+
+{{% /panel %}}
+{{< /panelset >}}
+
+:two: Dans un fichier externe (voir la [partie structure](#structure) et le chapitre portabilité),
 les dépendances à installer sont listées.
+
+{{< panelset class="nommage" >}}
+{{% panel name="Python :snake:" %}}
+
+Il s'agit du fichier `requirements.txt`
+
+{{% /panel %}}
+
+{{% panel name="R" %}}
+
+Il s'agit du fichier `DESCRIPTION`
+
+{{% /panel %}}
+{{< /panelset >}}
 
 
 Un code reproductible doit pouvoir s'exécuter de manière linéaire.
