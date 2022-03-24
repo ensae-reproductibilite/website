@@ -140,7 +140,20 @@ De nombreuses autres possiblités existent, et sont détaillées par exemple dan
 
 ### Messages des commits
 
-### Fréquence des commits
+Le commit est l'unité de temps de Git, et donc fondamentalement ce qui permet de remonter dans l'historique d'un projet. Afin de pouvoir bénéficier à plein de cet avantage de Git, il est capital d'accompagner ses commits de messages pertinents, en se plaçant dans la perspective que l'on peut être amené plusieurs semaines ou mois plus tard à vouloir retrouver du code dans l'historique de son projet. Les quelques secondes prises à chaque commit pour réfléchir à une description pertinente du bloc de modifications que l'on apporte au projet peuvent donc faire gagner un temps précieux à la longue.
+
+De nombreuses conventions existent pour rédiger des messages de commit pertinents. Nous rappelons ici les plus importantes :
+- contenu : le message doit détailler **le pourquoi plutôt que le comment** des modifications. Par exemple, plutôt que "Ajoute le fichier test.py", on préférera écrire "Ajout d'une série de tests unitaires" ;
+- style : le message doit être à l'impératif et former une phrase (sans point à la fin) ;
+- longueur : le message du commit doit être court (< 72 caractères). S'il n'est pas possible de trouver un message de cette taille qui résume le commit, c'est généralement un signe que le commit regroupe trop de changements (cf. [point suivant](#freq)). Le fait de devoir mettre des `+` ou des `&` / `et` dans un message de commit pour séparer les changements est également un bon indicateur d'un commit trop gros.
+
+### Fréquence des commits {#freq}
+
+De manière générale, il est conseillé de réaliser des commits réguliers lorsque l'on travaille sur un projet. Une règle simple que l'on peut par exemple appliquer est la suivante : dès lors qu'un ensemble de modifications forment un tout cohérent et peuvent être résumées par un message simple, il est temps d'en faire un commit. Cette approche a de nombreux avantages :
+- si l'on fait suivre chaque commit d'un `push` — ce qui est conseillé en pratique — on s'assure de disposer régulièreemnt d'une copie de ses travaux, ce qui limite le risque de perte ;
+- il est plus facile de revenir en arrière en cas d'erreur si les commits portent sur des changements ciblés et cohérents ;
+- le processus de *review* d'une *pull request* est facilité, car les différents blocs de modification sont plus clairement séparés ;
+- dans une approche d'intégration continue — concept que l'on verra en détail dans le chapitre sur la [mise en production]({{< ref "/content/deployment.md" >}}) — faire des commits et des PR régulièrement permet de déployer de manière continue les changements en production, et donc d'obtenir les *feedbacks* des utilisateurs et d'adapter plus rapidement si besoin.
 
 ## Implémentations
 
