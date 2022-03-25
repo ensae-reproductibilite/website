@@ -80,30 +80,26 @@ C'est en quelque sorte la récompense de l'application des bonnes pratiques : d�
 
 ### Outils supplémentaires
 
-Plusieurs outils présentés tout au long de ce cours, tels que les logiciels Git et Docker, impliquent l'utilisation du terminal ainsi que des connaissances de base du fonctionnement d'un système Linux. Dans le chapitre [Démystifier le terminal Linux pour gagner en autonomie]({{< ref "/content/linux101.md" >}}), nous présentons les connaissances essentielles des systèmes Linux qu'un *data scientist* doit posséder pour pouvoir être autonome dans ses déploiements et dans l'application des bonnes pratiques de développement.
+Plusieurs outils présentés tout au long de ce cours, tels que les logiciels Git et Docker, impliquent l'utilisation du terminal ainsi que des connaissances de base du fonctionnement d'un système Linux. Dans le chapitre [Démystifier le terminal Linux pour gagner en autonomie]({{< ref "/content/linux-101.md" >}}), nous présentons les connaissances essentielles des systèmes Linux qu'un *data scientist* doit posséder pour pouvoir être autonome dans ses déploiements et dans l'application des bonnes pratiques de développement.
 
 La reproductibilité étant une quête sans fin, nous concluons ce cours par un chapitre nommé [Des ressources pour aller plus loin dans l'industrialisation de son projet]({{< ref "/content/advanced-notions.md" >}}). Comme son nom l'indique, il vise à pointer vers un certain nombre de ressources qui permettent d'améliorer encore et toujours ses pratiques et de s'intéresser à des sujets qui dépassent le cadre de ce cours, comme la sécurité ou encore les spécificités liées au déploiement et à la maintenance de modèles de *machine learning*.
 
 ## Un continuum de bonnes pratiques
 
-### Comment fixer le bon niveau ?
-            
-- Ambitions du projet (état de l'existant, potentiel évolutif, potentiel collaboratif)
-- Ressources (moyens humain, temps, existence d'une communauté de contributeurs)
-- Contraintes (échéance, niveau de qualité attendu, mise en production, environnement d'exécution, enjeux de sécurité)
+La notion de bonnes pratiques ne doit pas être vue de manière binaire : il n'y a pas d'un côté les projets qui les appliquent et de l'autre ceux qui ne les appliquent pas. Les bonnes pratiques ont un coût, qu'il ne faut pas négliger — même si leur application évite aussi des coûts futurs, notamment en terme de maintenance. Il faut donc plutôt **voir les bonnes pratiques comme un spectre, sur lequel on vient positionner son projet en fonction de différents critères** :
+- **ambitions** : le projet est-il amené à évoluer, prendre de l'ampleur ? Est-il destiné à devenir collaboratif, que ce soit dans le cadre d'une équipe en organisation ou bien en *open-source* ? Les *outputs* du projet ont-ils vocation à être diffusés au grand public ?
+- **ressources** : quels sont les moyens humain du projet ? Pour un projet *open-source*, existe-t-il une communauté potentiel de contributeurs ?
+- **contraintes** : le projet a-t-il une échéance proche ? Des exigences de qualité ont-elles été fixées ? Est-il destiné à la mise en production ? Existe-t-il des enjeux de sécurité forts ?
+
+Il n'est donc pas question pour nous de suggérer que tout projet de *data science* doit respecter toutes les bonnes pratiques présentées dans ce cours. 
 
 ### Un socle minimal pour les projets de data science ?
 
-- Standards de code
-- Architecture de projet
-- Git
-- Gestion des dépendances
-
-### Le bon curseur peut changer en fonction de l'évolution du projet
-
-- Passage en production
-- Projet open-source
-
+Cela étant dit, nous sommes convaincus qu'il est important pour tout *data scientist* de réfléchir à ces questions pour améliorer ces pratiques au fil du temps. En particulier, nous pensons qu'il est possible de définir un socle, i.e. un ensemble minimal de bonnes pratiques qui apportent universellement plus qu'elles ne coûtent. Notre suggestion pour un tel socle est la suivante :
+- contrôler la qualité de son code en utilisant des outils dédiés (cf. chapitre [Structuration et Qualité du Code]({{< ref "/content/code-architecture.md" >}})) ;
+- adopter une structure de projet standardisée en utilisant des *templates* prêts à l'emploi (cf. chapitre [Structuration et Qualité du Code]({{< ref "/content/code-architecture.md" >}})) ;
+- utiliser Git pour versionner le code de ses projets, qu'ils soient indiviudels ou collectis (cf. chapitre [Versionner son code et travailler collaborativement avec Git]({{< ref "/content/git.md" >}})) ;
+- contrôler les dépendances de son projet en développant dans des environnements virtuels (cf. chapitre [Portabilité]({{< ref "/content/portability.md" >}})).
 
 
 # Modalités pratiques
