@@ -46,7 +46,9 @@ Tout cela est bien intéressant, mais en quoi est-ce pertinent pour le *data sci
 - il est de plus en plus amené à travailler à partir de données massives, ce qui nécessite de travailler sur des infrastructures *big data* informatiquement complexes ;
 - il est amené à interagir avec des profils informatiques pour déployer ses modèles et les rendre accessible à des utilisateurs.
 
-Aussi, il fait sens pour le *data scientist* moderne de s'intéresser aux bonnes pratiques en vigueur dans la communauté des développeurs. Bien entendu, celles-ci doivent être adaptées aux spécificités des projets basés sur des données. Les bonnes pratiques que nous verrons dans ce cours peuvent être regroupées en trois grandes familles.
+Aussi, il fait sens pour le *data scientist* moderne de s'intéresser aux bonnes pratiques en vigueur dans la communauté des développeurs. Bien entendu, celles-ci doivent être adaptées aux spécificités des projets basés sur des données. Faisons à présent un tour d'horizon des bonnes pratiques et des outils que nous verrons tout au long ce cours.
+
+## Contenu du cours
 
 ### Voir le code comme un outil de communication
         
@@ -60,9 +62,25 @@ Le *data scientist*, quel que soit son contexte de travail, est amené à travai
 
 ### Maximiser la reproductibilité
 
-Le troisième pillier des bonnes pratiques discutées dans ce cours est la **reproductibilité**. Un projet est dit reproductible lorsque, **avec le même code et les mêmes données, il est possible de reproduire les résultats obtenus**. Notons bien que le problème de la reproductibilité est différent de celui de la **réplicabilité**. La réplicabilité est un concept *scientifique*, qui signifie qu'un même procédé expérimental donne des résultats analogues sur des jeux de données différents. La **reproductibilité** est un concept *technique* : elle ne signifie pas que le protocole expérimental est scientifiquement correct, mais qu'il a été spécifié et diffusé d'une manière qui permet à tous de reproduire les résultats obtenus.
+Le troisième pillier des bonnes pratiques discutées dans ce cours est la **reproductibilité**. Un projet est dit reproductible lorsque, **avec le même code et les mêmes données, il est possible de reproduire les résultats obtenus**. Notons bien que le problème de la reproductibilité est différent de celui de la **réplicabilité**. La réplicabilité est un concept *scientifique*, qui signifie qu'un même procédé expérimental donne des résultats analogues sur des jeux de données différents. La reproductibilité est un concept *technique* : elle ne signifie pas que le protocole expérimental est scientifiquement correct, mais qu'il a été spécifié et diffusé d'une manière qui permet à tous de reproduire les résultats obtenus.
 
-**La notion de reproductibilité est le fil rouge de ce cours** : toutes les notions vues dans les différents chapitres y contribuent. Le fait de produire du code et des projets qui respectent les conventions communautaires, comme le fait d'utiliser le contrôle de version, contribuent à rendre le code plus lisible et documenté, et donc reproductible. Il faut néanmoins aller plus loin pour atteindre une véritable reproductibilité, et réfléchir à la notion d'environnement d'exécution. Un code n'est pas un objet autonome, il est toujours exécuté sur un environnement (ordinateur personnel, serveur, etc.), et ces environnements peuvent être très différents (système d'exploitation, librairies installées, contraintes de sécurité, etc.). C'est pourquoi il faut réfléchir à la **portabilité de son code, i.e. sa capacité à s'exécuter de manière attendue sur différents environnements**. Le chapitre [Portabilité]({{< ref "/content/portability.md" >}}) présente une série d'outils qui permettent d'accroître la portabilité d'un projet.
+**La notion de reproductibilité est le fil rouge de ce cours** : toutes les notions vues dans les différents chapitres y contribuent. Le fait de produire du code et des projets qui respectent les conventions communautaires, comme le fait d'utiliser le contrôle de version, contribuent à rendre le code plus lisible et documenté, et donc reproductible. 
+
+Il faut néanmoins aller plus loin pour atteindre une véritable reproductibilité, et réfléchir à la notion d'**environnement d'exécution**. Un code n'est pas un objet autonome, il est toujours exécuté sur un environnement (ordinateur personnel, serveur, etc.), et ces environnements peuvent être très différents (système d'exploitation, librairies installées, contraintes de sécurité, etc.). C'est pourquoi il faut réfléchir à la **portabilité de son code, i.e. sa capacité à s'exécuter de manière attendue sur différents environnements**. Le chapitre [Portabilité]({{< ref "/content/portability.md" >}}) présente une série d'outils qui permettent d'accroître la portabilité d'un projet.
+
+### Faciliter la mise en production
+
+Pour qu'un projet de *data science* crée *in fine* de la valeur, il faut qu'il soit déployé sous une forme valorisable de sorte à toucher son public. Cela implique deux choses :
+- trouver le format de diffusion adapté, i.e. qui valorise au mieux les résultas obtenus auprès des utilisateurs potentiels ;
+- faire transitionner le projet de l'environnement dans lequel il a été développé vers une infrastructure de production, i.e. permettant un déploiement robuste de l'*output* du projet.
+
+Dans le chapitre [Déployer et valoriser son projet de data science]({{< ref "/content/deployment.md" >}}), nous proposons des pistes permettant de répondre à ces deux besoins. Nous présentons un certain nombre de formats standards (API, application, rapport automatisé, site internet) qui permettent à un projet de *data science* d'être valorisé, ainsi que les outils modernes qui permettent de les produire. Nous détaillons ensuite les concepts essentiels du déploiement sur une infrastructure de production, et illustrons ces derniers par des exemples de déploiements dans un environnement *cloud* moderne.
+
+C'est en quelque sorte la récompense de l'application des bonnes pratiques : dès lors que l'on s'est donné la peine de produire un code et un projet appliquant des standards de qualité, que l'on a bien versionné son code, et que l'on a pris des mesures pour le rendre portable, le déploiement du projet dans un environnement de production s'en trouve largement facilité.
+
+### Outils supplémentaires
+
+
 
 ## Un continuum de bonnes pratiques
 
