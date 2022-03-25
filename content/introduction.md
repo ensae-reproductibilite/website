@@ -86,7 +86,11 @@ La reproductibilité étant une quête sans fin, nous concluons ce cours par un 
 
 ## Un continuum de bonnes pratiques
 
-La notion de bonnes pratiques ne doit pas être vue de manière binaire : il n'y a pas d'un côté les projets qui les appliquent et de l'autre ceux qui ne les appliquent pas. Les bonnes pratiques ont un coût, qu'il ne faut pas négliger — même si leur application évite aussi des coûts futurs, notamment en terme de maintenance. Il faut donc plutôt **voir les bonnes pratiques comme un spectre, sur lequel on vient positionner son projet en fonction de différents critères** :
+La notion de bonnes pratiques ne doit pas être vue de manière binaire : il n'y a pas d'un côté les projets qui les appliquent et de l'autre ceux qui ne les appliquent pas. Les bonnes pratiques ont un coût, qu'il ne faut pas négliger — même si leur application évite aussi des coûts futurs, notamment en terme de maintenance. Il faut donc plutôt **voir les bonnes pratiques comme un spectre, sur lequel on vient positionner son projet en fonction de différents critères**.
+
+### Comment fixer le bon seuil ?
+
+La détermination du seuil pertinent doit résulter d'un arbitrage entre différents critères liés au projet :
 - **ambitions** : le projet est-il amené à évoluer, prendre de l'ampleur ? Est-il destiné à devenir collaboratif, que ce soit dans le cadre d'une équipe en organisation ou bien en *open-source* ? Les *outputs* du projet ont-ils vocation à être diffusés au grand public ?
 - **ressources** : quels sont les moyens humain du projet ? Pour un projet *open-source*, existe-t-il une communauté potentiel de contributeurs ?
 - **contraintes** : le projet a-t-il une échéance proche ? Des exigences de qualité ont-elles été fixées ? Est-il destiné à la mise en production ? Existe-t-il des enjeux de sécurité forts ?
