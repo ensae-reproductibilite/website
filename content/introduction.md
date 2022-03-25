@@ -52,11 +52,11 @@ Aussi, il fait sens pour le *data scientist* moderne de s'intéresser aux bonnes
         
 La première bonne pratique à adopter est de considérer le code comme un outil de communication, et non simplement de manière fonctionnelle. Un code ne sert pas seulement à réaliser une tâche donnée, il a vocation à être diffusé, réutilisé, maintenu, que ce soit dans le contexte d'une équipe dans une organisation ou bien en *open-source*. Pour favoriser cette communicabilité du code, des conventions ont été developpées en matière de qualité du code et de structuration des projets, qu'il est utile d'appliquer dans ses projets. Nous présentons ces conventions dans le chapitre [Structuration et Qualité du Code]({{< ref "/content/code-architecture.md" >}}).
 
-Il est pour les mêmes raisons indispensable d'appliquer les principes du contrôle de version, qui permettent une documentation en continu des projets, ce qui accroît leur réutilisabilité et leur maintenabilité dans le temps. Nous présentons pour cela l'utilisation du logiciel Git dans le chapitre [Versionner son code et travailler collaborativement avec Git]({{< ref "/content/git.md" >}}).
+Il est pour les mêmes raisons indispensable d'appliquer les principes du contrôle de version, qui permettent une documentation en continu des projets, ce qui accroît fortement leur réutilisabilité et leur maintenabilité dans le temps. Nous présentons pour cela l'utilisation du logiciel Git dans le chapitre [Versionner son code et travailler collaborativement avec Git]({{< ref "/content/git.md" >}}).
 
 ### Travailler de manière collaborative
 
-Le *data scientist*, quel que soit son contexte de travail, est amené à travailler dans le cadre de projets en équipe. Cela implique de définir une organisation du travail ainsi que d'utiliser des outils permettant de collaborer sur un projet de manière efficace et sécurisée. Nous présentons un ensemble de bonnes pratiques sur le sujet dans le chapitre [Versionner son code et travailler collaborativement avec Git]({{< ref "/content/git.md" >}}).
+Le *data scientist*, quel que soit son contexte de travail, est amené à travailler dans le cadre de projets en équipe. Cela implique de définir une organisation du travail ainsi que d'utiliser des outils permettant de collaborer sur un projet de manière efficace et sécurisée. Nous présentons une manière moderne de travailler collaborativement avec Git et GitHub dans le chapitre [Versionner son code et travailler collaborativement avec Git]({{< ref "/content/git.md" >}}).
 
 ### Viser la reproductibilité
 
