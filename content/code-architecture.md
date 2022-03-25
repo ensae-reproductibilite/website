@@ -7,11 +7,20 @@ draft: false
 layout: single
 ---
 
+
+# Introduction
+
+## L'enjeu d'un code lisible et maintenable
+
 > The code is read much more often than it is written.
 >
 > <div title="Guido Van Rossum est le créateur de Python, c'est donc quelqu'un qu'il vaut mieux écouter">Guido Van Rossum</div>
 
-<br>
+Lorsque l'on s'initie à la pratique de la *data science*, il est assez naturel de voir le code d'une manière très fonctionnelle : je veux réaliser une tâche donnée — par exemple un algorithme de classification — et je vais donc assembler dans un *notebook* des bouts de code, souvent trouvés sur internet, jusqu'à obtenir un projet qui réalise la tâche voulue. La structure du projet importe assez peu, tant qu'elle permet d'importer correctement les données nécessaires à la tâche en question. Si cette approche flexible et minimaliste fonctionne très bien lors de la phase d'apprentissage, il est malgré tout indispensable de s'en détacher à progressivement à mesure que l'on progresse et que l'on peut être amené à réaliser des projets plus professionnels ou bien à intégrer des projets collaboratifs.
+
+En particulier, il est important de proposer, parmi les multiples manières de résoudre un problème informatique, une solution qui soit intelligible par d'autres personnes parlant le langage. Le code est en effet lu bien plus souvent qu'il n'est écrit, c'est donc avant tout un outil de communication. De même, la maintenance d'un code demande généralement beaucoup plus de moyens que sa phase de développement initial, il est donc important de penser en amont la qualité de son code et la structure de son projet de sorte à le rendre au maximum maintenable dans le temps. Afin de faciliter ces réflexions, des tentatives plus ou moins institutionnalisées de définir des conventions ont émergé. Ces conventions dépendent naturellement du langage utilisé, mais les principes sous-jacents s'appliquent de manière universelle à tout projet basé sur du code.
+
+## De l'importance de suivre les conventions
 
 `Python` est un langage très lisible.
 Avec un peu d’effort sur le nom des objets,
@@ -23,13 +32,6 @@ une acquisition rapide des bases.
 `Python`.
 Cependant, les packages les plus utiles pour l'analyse de données (notamment
 `dplyr` ou `data.table`) offrent une grammaire un peu plus transparente.
-
-Il est important de proposer, parmi 
-les multiples manières de résoudre un problème informatique, une solution
-qui soit intelligible par d'autres personnes parlant le langage. 
-C'est donc naturellement que des tentatives, plus ou moins
-institutionnalisées, de définir des 
-conventions ont émergé. 
 
 La communauté `Python` a abouti à un certain nombre de normes,
 dites `PEP` (_Python Enhancement Proposal_),
@@ -84,17 +86,11 @@ L'idée générale est de privilégier une structure de projet
 bien plus fiable qu'une suite sans structure de scripts
 ou un notebook jupyter (voir [ce post de blog sur ce sujet](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/)).
 
-L'objectif de ce chapitre est d'acculturer à certaines bonnes pratiques à 
-avoir en tête pour améliorer la reproductibilité des projets tout en 
-gagnant en productivité dès l'initialisation du projet. 
-Les éléments suivants ne sont pas exhaustifs. Ils visent à pointer vers
-quelles problématiques prioritaires en proposant quelques conseils. 
-Ils sont complémentaires d'un
-[guide des bonnes pratiques `utilitR`](https://www.pratiques.utilitr.org)
-qui vise à présenter de manière plus formelle quelques recommandations.
-Les onglets `Python` et `R` permettent de comparer, à chaque fois, 
-les deux langages. Globalement, les recommandations divergent rarement, 
-ces deux langages ayant une logique très proche. 
+## Comment adopter ces bonnes pratiques ?
+
+Les éléments exposés dans ce chapitre ne sont pas exhaustifs. Ils visent à pointer vers quelques problématiques prioritaires tout en proposant des conseils pratiques. Ils sont complémentaires du [guide des bonnes pratiques `utilitR`](https://www.pratiques.utilitr.org) qui vise à présenter de manière plus formelle quelques recommendations.
+
+Dans la lignée de la vision des bonnes pratiques comme continuum proposée en [introduction]({{< ref "/content/introduction.md" >}}), il n'est pas nécessairement souhaitable d'appliquer toutes les recommendations présentées dans ce chapitre à chaque projet. Nous recommandons de les voir plutôt comme des bonnes habitudes à acquérir en opérant un va-et-vient régulier entre la pratique et la théorie. Par exemple, à la lecture de ce chapitre, vous allez certainement retenir en particulier certaines règles qui tranchent avec vos pratiques actuelles. Vous pouvez alors essayer d'appliquer ces nouvelles règles pendant un certain temps puis, lorsque celles-ci seront devenues naturelles, revenir à ce guide et appliquer le processus à nouveau. En procédant ainsi de manière incrémentale, vous améliorerez progressivement la qualité de vos projets sans avoir l'impression de passer trop de temps sur des micro-détails, au détriment des objectifs globaux du projet.
 
 # 1. Qualité du code
 
@@ -104,17 +100,17 @@ ces deux langages ayant une logique très proche.
 Les premières conventions à évoquer ont trait à la syntaxe du code et
 ont les objectifs suivants, qui seront détaillés par la suite :
 
-1. [Améliorer la lisibilité](#lisibilite) ce qui est indispensable pour
+- [Améliorer la lisibilité](#lisibilite) ce qui est indispensable pour
 rendre la démarche intelligible par d'autres mais aussi pour soi, lorsqu'on
-reprend un code écrit il y a quelques temps
-2. [Favoriser la concision](#concision) pour réduire le risque d'erreur
-et rendre la démarche plus claire. 
-3. Suivre les règles explicites ou les conventions d'un langage pour
-[assurer le fonctionnement et la cohérence](#coherence) d'un code
-4. [Limiter la redondance](#redondance) ce qui permet de simplifier
-un code (paradigme du _don't repeat yourself_)
-5. [Documenter un code](#documentation) ce qui facilite son acquisition
-par d'autres (à condition de ne pas aller dans l'excès de documentation)
+reprend un code écrit il y a quelques temps ;
+- [Favoriser la concision](#concision) pour réduire le risque d'erreur
+et rendre la démarche plus claire ;
+- Suivre les règles explicites ou les conventions d'un langage pour
+[assurer le fonctionnement et la cohérence](#coherence) d'un code ;
+- [Limiter la redondance](#redondance) ce qui permet de simplifier
+un code (paradigme du _don't repeat yourself_) ;
+- [Documenter un code](#documentation) ce qui facilite son acquisition
+par d'autres (à condition de ne pas aller dans l'excès de documentation).
 
 
 ### Lisibilité  {#lisibilite}
