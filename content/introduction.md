@@ -40,8 +40,8 @@ Face à ces constats, un **ensemble de règles informelles** ont été conventio
 
 ## Pourquoi s'intéresser aux bonnes pratiques ?
 
-Tout cela est bien intéressant, mais en quoi est-ce pertinent pour le *data scientist*, dont le rôle n'est pas de développer des applications mais de donner du sens aux données ? Notre sentiment est que, du fait du développement rapide de la *data science* et conséquemment de la croissance de la taille moyenne des projets, l'activité du *data scientist* tend à se rapprocher par certains aspects de celle du développeur :
-- les analyses de *data science* sont intenses en code ;
+Tout cela est bien intéressant, mais en quoi est-ce pertinent pour le *data scientist*, dont le rôle n'est pas de développer des applications mais de donner du sens aux données ? Du fait du développement rapide de la *data science* et conséquemment de la croissance de la taille moyenne des projets, l'activité du *data scientist* tend à se rapprocher par certains aspects de celle du développeur :
+- les projets sur lesquels travaille le *data scientist* sont intenses en code ;
 - il doit travailler de manière collaborative au sein de projets de grande envergure ;
 - il est de plus en plus amené à travailler à partir de données massives, ce qui nécessite de travailler sur des infrastructures *big data* informatiquement complexes ;
 - il est amené à interagir avec des profils informatiques pour déployer ses modèles et les rendre accessible à des utilisateurs.
@@ -50,7 +50,7 @@ Aussi, il fait sens pour le *data scientist* moderne de s'intéresser aux bonnes
 
 ### Voir le code comme un outil de communication
         
-La première bonne pratique à adopter est de considérer le code comme un outil de communication, et non simplement de manière fonctionnelle. Un code ne sert pas seulement à réaliser une tâche donnée, il a vocation à être diffusé, réutilisé, maintenu, que ce soit dans le contexte d'une équipe dans une organisation ou bien en *open-source*. Pour favoriser cette communicabilité du code, des conventions ont été developpées en matière de qualité du code et de structuration des projets, qu'il est utile d'appliquer dans ses projets. Nous présentons ces conventions dans le chapitre [Structuration et Qualité du Code]({{< ref "/content/code-architecture.md" >}}).
+La première bonne pratique à adopter est de considérer le code comme un outil de communication, et non simplement de manière fonctionnelle. Un code ne sert pas seulement à réaliser une tâche donnée, il a vocation à être diffusé, réutilisé, maintenu, que ce soit dans le contexte d'une équipe dans une organisation ou bien en *open-source*. Pour favoriser cette communication du code, des conventions ont été developpées en matière de qualité du code et de structuration des projets, qu'il est utile d'appliquer dans ses projets. Nous présentons ces conventions dans le chapitre [Structuration et Qualité du Code]({{< ref "/content/code-architecture.md" >}}).
 
 Il est pour les mêmes raisons indispensable d'appliquer les principes du contrôle de version, qui permettent une documentation en continu des projets, ce qui accroît fortement leur réutilisabilité et leur maintenabilité dans le temps. Nous présentons pour cela l'utilisation du logiciel Git dans le chapitre [Versionner son code et travailler collaborativement avec Git]({{< ref "/content/git.md" >}}).
 
@@ -58,9 +58,11 @@ Il est pour les mêmes raisons indispensable d'appliquer les principes du contr�
 
 Le *data scientist*, quel que soit son contexte de travail, est amené à travailler dans le cadre de projets en équipe. Cela implique de définir une organisation du travail ainsi que d'utiliser des outils permettant de collaborer sur un projet de manière efficace et sécurisée. Nous présentons une manière moderne de travailler collaborativement avec Git et GitHub dans le chapitre [Versionner son code et travailler collaborativement avec Git]({{< ref "/content/git.md" >}}).
 
-### Viser la reproductibilité
+### Maximiser la reproductibilité
 
+Le troisième pillier des bonnes pratiques discutées dans ce cours est la **reproductibilité**. Un projet est dit reproductible lorsque, **avec le même code et les mêmes données, il est possible de reproduire les résultats obtenus**. Notons bien que le problème de la reproductibilité est différent de celui de la **réplicabilité**. La réplicabilité est un concept *scientifique*, qui signifie qu'un même procédé expérimental donne des résultats analogues sur des jeux de données différents. La **reproductibilité** est un concept *technique* : elle ne signifie pas que le protocole expérimental est scientifiquement correct, mais qu'il a été spécifié et diffusé d'une manière qui permet à tous de reproduire les résultats obtenus.
 
+**La notion de reproductibilité est le fil rouge de ce cours** : toutes les notions vues dans les différents chapitres y contribuent. Le fait de produire du code et des projets qui respectent les conventions communautaires, comme le fait d'utiliser le contrôle de version, contribuent à rendre le code plus lisible et documenté, et donc reproductible. Il faut néanmoins aller plus loin pour atteindre une véritable reproductibilité, et réfléchir à la notion d'environnement d'exécution. Un code n'est pas un objet autonome, il est toujours exécuté sur un environnement (ordinateur personnel, serveur, etc.), et ces environnements peuvent être très différents (système d'exploitation, librairies installées, contraintes de sécurité, etc.). C'est pourquoi il faut réfléchir à la **portabilité de son code, i.e. sa capacité à s'exécuter de manière attendue sur différents environnements**. Le chapitre [Portabilité]({{< ref "/content/portability.md" >}}) présente une série d'outils qui permettent d'accroître la portabilité d'un projet.
 
 ## Un continuum de bonnes pratiques
 
