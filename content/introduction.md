@@ -80,7 +80,9 @@ C'est en quelque sorte la récompense de l'application des bonnes pratiques : d�
 
 ### Outils supplémentaires
 
+Plusieurs outils présentés tout au long de ce cours, tels que les logiciels Git et Docker, impliquent l'utilisation du terminal ainsi que des connaissances de base du fonctionnement d'un système Linux. Dans le chapitre [Démystifier le terminal Linux pour gagner en autonomie]({{< ref "/content/linux101.md" >}}), nous présentons les connaissances essentielles des systèmes Linux qu'un *data scientist* doit posséder pour pouvoir être autonome dans ses déploiements et dans l'application des bonnes pratiques de développement.
 
+La reproductibilité étant une quête sans fin, nous concluons ce cours par un chapitre nommé [Des ressources pour aller plus loin dans l'industrialisation de son projet]({{< ref "/content/advanced-notions.md" >}}). Comme son nom l'indique, il vise à pointer vers un certain nombre de ressources qui permettent d'améliorer encore et toujours ses pratiques et de s'intéresser à des sujets qui dépassent le cadre de ce cours, comme la sécurité ou encore les spécificités liées au déploiement et à la maintenance de modèles de *machine learning*.
 
 ## Un continuum de bonnes pratiques
 
