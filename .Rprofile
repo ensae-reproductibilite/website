@@ -33,13 +33,13 @@ reminder_box <- function(boxtype = "warning", type = c("markdown","html")){
                  exercise = "fas fa-pencil-alt")
   box <- c(
     sprintf(
-      '{{< panel status="%s" title="%s" icon="%s" >}}',
+      '{{< box status="%s" title="%s" icon="%s" >}}',
       boxtype,
       Hmisc::capitalize(boxtype),
       icon
     ),
     "Example",
-    "{{< /panel >}}"
+    "{{< /box >}}"
   )
   if (type == "html") cat(box, sep = "\n")
   
