@@ -99,10 +99,10 @@ Il n'est donc pas question pour nous de suggérer que tout projet de *data scien
 
 ### Un socle minimal pour les projets de data science ?
 
-Cela étant dit, nous sommes convaincus qu'il est important pour tout *data scientist* de réfléchir à ces questions pour améliorer ces pratiques au fil du temps. En particulier, nous pensons qu'il est possible de définir un socle, i.e. un ensemble minimal de bonnes pratiques qui apportent universellement plus qu'elles ne coûtent. Notre suggestion pour un tel socle est la suivante :
+Cela étant dit, nous sommes convaincus qu'il est important pour tout *data scientist* de réfléchir à ces questions pour améliorer ces pratiques au fil du temps. En particulier, nous pensons qu'il est possible de définir un socle, i.e. un **ensemble minimal de bonnes pratiques** qui apportent plus d'avantages qu'elles ne coûtent à implémenter. Notre suggestion pour un tel socle est la suivante :
 - contrôler la qualité de son code en utilisant des outils dédiés (cf. chapitre [Structuration et Qualité du Code]({{< ref "/content/code-architecture.md" >}})) ;
 - adopter une structure de projet standardisée en utilisant des *templates* prêts à l'emploi (cf. chapitre [Structuration et Qualité du Code]({{< ref "/content/code-architecture.md" >}})) ;
-- utiliser Git pour versionner le code de ses projets, qu'ils soient indiviudels ou collectis (cf. chapitre [Versionner son code et travailler collaborativement avec Git]({{< ref "/content/git.md" >}})) ;
+- utiliser Git pour versionner le code de ses projets, qu'ils soient individuels ou collectifs (cf. chapitre [Versionner son code et travailler collaborativement avec Git]({{< ref "/content/git.md" >}})) ;
 - contrôler les dépendances de son projet en développant dans des environnements virtuels (cf. chapitre [Portabilité]({{< ref "/content/portability.md" >}})).
 
 
@@ -110,13 +110,13 @@ Cela étant dit, nous sommes convaincus qu'il est important pour tout *data scie
 
 ## Approche pédagogique
 
-Le parti pris de ce cours est que seule la pratique, et en particulier la confrontation à des problèmes issus de projets réels, permet d'acquérir efficacement des concepts informatiques. Aussi, une large part du cours consistera en l'application des notions étudiées à des cas concrets. Chaque chapitre
+Le parti pris de ce cours est que seule la pratique, et en particulier la confrontation à des problèmes issus de projets réels, permet d'acquérir efficacement des concepts informatiques. Aussi, une large part du cours consistera en l'**application des notions étudiées à des cas concrets**. Chaque chapitre se concluera pas des applications touchant à des sujets réalistes de *data science*.
 
-<!--Ce site doit être vu comme une base documentaire : il couvre une large variété de sujets liés aux bonnes pratiques de développement et à la mise en production, mais ne saurait prétendre à l'exhaustivité — aussi bien en termes d'étendue des sujets parcourus que de la profondeur avec laquelle chaque sujet est traité. Par ailleurs, comme nous l'avons vu précédemment, les bonnes pratiques doivent être comprises comme un continuum, sur lequel on vient se placer en fonction des caractéristiques du projet concerné. Aussi, il n'est pas souhaitable d'appliquer toutes
--->
+Pour l'évaluation générale du cours, l'idée sera de partir d'un projet personnel, idéalement terminé, et de lui appliquer un maximum de bonnes pratiques présentées dans ce cours.
+
 ## Langages
 
-Les principes présentés dans ce cours sont pour la plupart agnostiques du langage de programmation utilisé. Ce choix n'est pas qu'éditorial, c'est selon nous un aspect fondamental du sujet des bonnes pratiques. Trop souvent, des différences de langage entre les phases de développement (ex : R, Python) et de mise en production (ex : Java) érigent des murs artificiels qui réduisent fortement la capacité à valoriser des projets de *data science*. A l'inverse, plus les différentes équipes qui forment le cycle de vie d'un projet s'accorderont pour appliquer le même ensemble de bonnes pratiques, plus ces équipes développeront un langage commun, et plus les déploiements seront facilités. Un exemple parlant est l'utilisation de la conteneurisation : si le *data scientist* met à disposition une image `Docker` comme *output* de sa phase de développement et que le *data engineer* s'occupe de déployer cette image sur une infrastructure dédiée, le contenu même de l'application en termes de langage importe finalement assez peu. Cet exemple, certes simpliste, illustre malgré tout l'enjeu des bonnes pratiques en matière de communication au sein d'un projet.
+Les principes présentés dans ce cours sont pour la plupart **agnostiques du langage de programmation utilisé**. Ce choix n'est pas qu'éditorial, c'est selon nous un aspect fondamental du sujet des bonnes pratiques. Trop souvent, des différences de langage entre les phases de développement (ex : R, Python) et de mise en production (ex : Java) érigent des murs artificiels qui réduisent fortement la capacité à valoriser des projets de *data science*. A l'inverse, plus les différentes équipes qui forment le cycle de vie d'un projet s'accordent pour appliquer le même ensemble de bonnes pratiques, plus ces équipes développent un langage commun, et plus les déploiements en sont facilités. Un exemple parlant est l'utilisation de la conteneurisation : si le *data scientist* met à disposition une image `Docker` comme *output* de sa phase de développement et que le *data engineer* s'occupe de déployer cette image sur une infrastructure dédiée, le contenu même de l'application en termes de langage importe finalement assez peu. Cet exemple, certes simpliste, illustre malgré tout l'enjeu des bonnes pratiques en matière de communication au sein d'un projet.
 
 Les exemples présentés dans ce cours seront pour l'essentiel en `Python` et en `R`. La principale raison et que ces langages sont enseignés dans la majorité des cursus de *data science*. Encore une fois, il est tout à fait possible d'appliquer les mêmes principes avec d'autres langages, et nous encourageons les étudiants à s'essayer à cet exercice formateur.
 
