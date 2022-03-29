@@ -1482,6 +1482,105 @@ On va donc alléger encore le script `titanic.py` en repassant certains élémen
 dans le notebook. Cela implique de modulariser le script, autrement dit
 de n'y garder que des fonctions qu'on va appliquer dans le notebook.
 
+{{% box status="exercise" title="Modularisation" icon="fas fa-pencil-alt" %}}
+
+- Créer un nouveau `Notebook` avec `VisualStudio`. Pour cela, ouvrir la 
+_Command Palette_ avec le raccourci <kbd>F1</kbd>, taper _"New Notebook"_
+et cliquer sur la suggestion de Visual Studio. Cela permettra de repartir de
+presque 0, le notebook initial étant surchargé
+
+- Créez une cellule markdown avec le titre adéquat et les premières lignes
+de l'ancien markdown (faites un copier-coller du contenu, ne réécrivez pas
+tout...)
+
+- Dans une cellule markdown, créer une 
+
+```markdown
+## Import des données
+```
+
+- En dessous, écrivez les éléments minimum pour importer les données. 
+
+<!-----
+import pandas as pd
+
+TrainingData = pd.read_csv('train.csv')
+TestData = pd.read_csv('test.csv')
+------>
+
+- Dans le notebook, créez une fonction pour générer les graphiques tels que
+
+```python
+fig, axes=plt.subplots(1,2, figsize=(12, 6)) #layout matplotlib 1 ligne 2 colonnes taile 16*8
+fig1_pclass=sns.countplot(data=TrainingData, x ="Pclass",    ax=axes[0]).set_title("fréquence des Pclass")
+fig2_pclass=sns.barplot(data=TrainingData, x= "Pclass",y= "Survived", ax=axes[1]).set_title("survie des Pclass")
+```
+
+(il y en a d'autres). Le fait de passer par un notebook permet d'afficher
+les figures, c'est plus pratique quand on tâtonne.
+
+- Dans votre script, retirez les lignes de code qui génèrent ces graphiques
+et les remplacer par l'appel à la fonction `create_figure_frequence`
+(suggestion de noms) après avoir testé dans le notebook.
+Mettre votre nouvelle fonction `create_figure_frequence` dans le script également.
+
+- Dans votre script, remontez toutes les fonctions juste en dessous de la partie
+d'import des packages. Cela vous permettra de les séparer du code en vrac
+qui est encore à nettoyer.
+
+A ce stade vous pouvez déjà faire un commit du script `titanic.py`
+
+```python
+git add titanic.py
+git commit -m "fonction graphique"
+```
+
+<!----
+https://github.com/linogaliana/ensae-reproductibilite-projet/commit/46f3822a36104099c3f9f2da9fb7527742d566a0
+----->
+
+- Créer un nouveau script nommé `monmodule.py`. Y mettre
+les imports de package (attention il y en a partout) et les fonctions.
+Les retirer de `titanic.py`, cela va l'alléger.
+
+- Faire un commit
+
+```python
+git add titanic.py monmodule.py titanic_light.ipynb
+git commit -m "exporte les fonctions dans monmodule"
+```
+
+- Redémarrer le kernel de `titanic_light.ipynb`. Testez à nouveau
+l'import des données depuis le module et tester à nouveau
+votre fonction `create_figure_frequence`.
+Si vous rencontrez l'erreur suivante, c'est parce que vous n'avez
+pas géré l'import de cette fonction:
+
+```python
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+Input In [3], in <cell line: 1>()
+----> 1 create_figure_frequence(TrainingData, "Pclass")
+
+NameError: name 'create_figure_frequence' is not defined
+```
+
+- Dans ce cas, mettez le code suivant dans la partie des imports de
+package de votre notebook (on verra
+plus tard comment faire proprement):
+
+```python
+from monmodule import *
+```
+
+- A ce stade, faites un tag `v0.4`:
+
+```shell
+git tag -a v0.4 -m "Commence la modularisation"
+git push origin v0.4
+```
+
+{{% /box %}}
 
 <!----
 # Application sur un projet personnel
