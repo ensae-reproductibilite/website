@@ -1191,7 +1191,300 @@ recommandations de ce cours visent à rendre le plus léger possible
 la maintenance à long terme de projets _data-science_ en favorisant
 la reprise par d'autres (ou par soi dans le futur)
 
-# Application
+# Application: nettoyer un code
+
+L'objectif de cette mise en application est d'illustrer comment, en
+pratique, s'organise une mise au propre d'un code où il y a 
+eu du laisser-aller.
+
+Nous allons nous placer dans la situation où on a un _notebook_
+qui mélange de nombreuses étapes de traitement de données. 
+Le nettoyage va se faire progressivement. Chaque exercice va
+représenter une étape du nettoyage et sera identifiée par 
+un `tag` `Git`. Cela permettra dans le futur de bien voir
+les évolutions à chaque étape et facilement comparer l'état
+du projet entre deux instants
+
+{{% box status="warning" title="Warning" icon="fa fa-exclamation-triangle" %}}
+Il est important de bien lire les consignes et d'y aller progressivement.
+Certaines étapes peuvent être rapides, d'autres plus fastidieuses ;
+certaines être assez guidées, d'autres vous laisser plus de liberté.
+Si vous n'effectuez pas une étape, vous risquez de ne pas pouvoir passer à
+l'étape suivante qui en dépend.
+
+Bien que l'exercice soit applicable sur toute configuration bien faite, nous 
+recommandons de privilégier l'utilisation du `SSP Cloud` où tous les 
+outils sont pré-installés et pré-configurés. 
+{{% /box %}}
+
+Le plan général est le suivant :
+
+1. :one: Récupérer le dépot
+2. :two: Notebook monolithe -> script avec des redondances
+3. :three: Notebook avec fonctions par partie
+3. :four:  Fonctions dans des modules + notebook qui les appelle
+4. :five:  main.py qui appelle les modules
+5. :six:   Nettoyer code des modules avec le linter jusqu'à un certain score
+6. :seven: Cookiecutterize
+7. :eight: requirements.txt
+8. :nine: Données dans S3
+
+<!---(je pensais faire celui là, meme si c un peu overkill : https://github.com/drivendata/cookiecutter-data-science)--->
+
+__Objectif__: obtenir une note par le package `pylint` supérieure à XX
+
+## Etape 1: forker et clôner le modèle d'exemple
+
+Le dépôt est disponible sur `Github` <i class="fab fa-github"></i>
+à l'adresse
+https://github.com/avouacr/ensae-reproductibilite-projet
+
+
+{{% box status="exercise" title="Exercice préliminaire" icon="fa fa-rocket" %}}
+
+- Ouvrir un service `vscode` sur le `SSP Cloud`. Vous pouvez aller
+dans la page `My Services` et cliquer sur `New service`. Sinon, vous
+pouvez cliquer
+[directement par ce lien](https://datalab.sspcloud.fr/launcher/inseefrlab-helm-charts-datascience/vscode?autoLaunch=false)
+
+- Forker le dépôt `Github` <i class="fab fa-github"></i> https://github.com/avouacr/ensae-reproductibilite-projet
+
+- Clôner __votre__ dépôt `Github` <i class="fab fa-github"></i> en utilisant le
+terminal depuis `Visual Studio` (`Terminal > New Terminal`).
+Pour rappel, la commande est
+
+```shell
+git clone URL_DEPOT_GIT
+```
+
+où `URL_DEPOT_GIT` est l'adresse que vous avez copier-coller depuis le bouton
+clône de `Github`
+(normalement de la forme
+`https://github.com/<USERNAME_GITHUB>/ensae-reproductibilite-projet.git`)
+
+- Se placer dans le terminal dans le dossier en question. 
+
+```shell
+cd ensae-reproductibilite-projet
+```
+
+- Créez une branche `nettoyage`. Pour rappel, la commande est
+
+```shell
+git checkout -b nettoyage
+#Switched to a new branch 'nettoyage'
+```
+
+
+- Si vous ne l'avez pas déjà fait avant, créez un _token_ `Github` et 
+conservez le à portée de main (dans un fichier texte ou dans un gestionnaire
+de mot de passe)
+
+{{% /box %}}
+
+
+## Etape 2: passer le notebook sous forme de script
+
+{{% box status="exercise" title="Compréhension du problème" icon="fas fa-pencil-alt" %}}
+
+- Vous pouvez ouvrir le notebook depuis le service `VScode`
+et essayer de faire tourner les deux premières cellules
+de code (sélectionnez en haut
+le _kernel_ `basesspcloud`). Vous devriez rencontrer l'erreur
+suivante:
+
+
+```python
+---------------------------------------------------------------------------
+FileNotFoundError                         Traceback (most recent call last)
+Input In [1], in <cell line: 3>()
+      1 import os
+      2 print(os.getcwd())
+----> 3 os.chdir('/home/coder/work/ensae-reproductibility-project')
+      5 TrainingData = pd.read_csv('train.csv')
+      6 TestData = pd.read_csv('test.csv')
+
+FileNotFoundError: [Errno 2] No such file or directory: '/home/coder/work/ensae-reproductibility-project'
+```
+
+Clairement, le notebook n'est pas reproductible en l'état. Modifier dans
+la cellule l'élément problématique. Tester l'exécution
+de la cellule. Si la cellule en dessus `TrainingData.head()`
+fonctionne, vous pouvez faire un commit pour valider :
+
+<!--- correction: retirer le `os.chdir` ----->
+
+```shell
+git add -u
+git commit -m "Fix problem with csv paths"
+```
+
+- Pousser les résultats sur `Github`
+
+```shell
+git push origin nettoyage
+```
+ce qui devrait donner un code proche de celui-ci. 
+```shell
+Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Delta compression using up to 56 threads
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 370 bytes | 370.00 KiB/s, done.
+Total 3 (delta 2), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+remote: 
+remote: Create a pull request for 'nettoyage' on GitHub by visiting:
+remote:      https://github.com/linogaliana/ensae-reproductibilite-projet/pull/new/nettoyage
+remote: 
+To https://github.com/linogaliana/ensae-reproductibilite-projet.git
+ * [new branch]      nettoyage -> nettoyage
+```
+
+- Si vous voulez comprendre le souci du contrôle de version avec les _notebooks_,
+vous pouvez regarder le diff de votre commit. Voici un exemple
+qui même une modification minime d'un notebook rend compliqué le suivi 
+de la modification:
+https://github.com/linogaliana/ensae-reproductibilite-projet/commit/8db69a51d5819dfa364535b45430bb018472e790
+{{% /box %}}
+
+Maintenant qu'on comprend la difficulté qu'impliquerait un nettoyage
+directement dans le notebook, nous allons privilégier les scripts
+et ne retourner au format des _notebooks_ que lorsque cela est 
+intéressant (pour la visualisation des résultats notamment).
+
+{{% box status="exercise" title="D'un notebook à un script" icon="fas fa-pencil-alt" %}}
+
+- On va utiliser que `jupytext` pour la conversion en script python. 
+Vous pouvez vous référer à la [documentation officielle](https://jupytext.readthedocs.io/en/latest/using-cli.html)
+
+```shell
+pip install jupytext
+jupytext --to py titanic.ipynb
+#[jupytext] Reading titanic.ipynb in format ipynb
+#[jupytext] Writing titanic.py
+```
+
+- Faire un commit de ce nouveau fichier 
+
+```shell
+git add titanic.py
+git commit -m "Passage en script"
+```
+
+- Créer le tag `v0.2`:
+
+```shell
+git tag -a v0.2 -m "Passage sous forme de script"
+git push origin v0.2
+```
+
+- Regarder la note de `pylint` via la ligne de commande:
+
+```python
+pylint titanic.py
+#Your code has been rated at -26.04/10
+```
+
+{{% /box %}}
+
+
+## Etape 3: réduire le nombre de lignes de code dans le script
+
+
+Le notebook `titanic.ipynb` était terriblement long et présentait un certain 
+nombre de redondances. Le script `titanic.py` a hérité de ces problèmes. 
+
+Le script mélange du texte et des commentaires, on est perdu. On va retirer
+tout ce qui n'est pas nécessaire pour pouvoir se concentrer sur ce qui 
+est essentiel.
+
+{{% box status="exercise" title="Premier nettoyage du script" icon="fas fa-pencil-alt" %}}
+
+- Retirer les commentaires qui empêchent la lecture (vous pouvez en garder
+quelques uns mais il y a un gros élagage à faire)
+
+- Quand vous êtes contents, faire un commit
+
+```shell
+git add titanic.py
+git commit -m "Retire ce qui heurte la lecture"
+```
+
+Evaluer à nouveau la qualité du code:
+
+```shell
+pylint titanic.py
+#----------------------------------------------------------------------
+#Your code has been rated at -17.47/10 (previous run: -26.04/10, +8.57)
+```
+
+C'est déjà mieux mais c'est pas glorieux... L'intérêt principal
+d'avoir nettoyé votre code est pour vous faciliter sa lecture
+et la première détection de violations aux bonnes pratiques. 
+
+- Repérez des élements où il y a répétition (une liste d'exemples ci-dessous
+à ne réveler que si vous n'en trouvez pas) : 
+    + {{% spoiler %}}Les plots{{% /spoiler %}}
+    + {{% spoiler %}}La suppression de certaines variables{{% /spoiler %}}
+    + {{% spoiler %}}L'extraction et l'ajout de la variable titre{{% /spoiler %}}
+    + {{% spoiler %}}Les labels encoding{{% /spoiler %}}
+
+- On va commencer par s'occuper de la création de la variable `Title` dans
+les deux bases. Créer la fonction prenant en entrée un dataframe et un
+nom de colonne qui permet de faire cela. Au passage, vous pouvez vous 
+éviter l'application d'`apply` si vous utilisez les bonnes fonctions
+`pandas`
+<!----
+Je propose de partir de là car pour les plots se sera plus simple quand on
+les fera modulariser et aller dans un notebook
+---->
+<!---- Suggestion: 
+https://github.com/linogaliana/ensae-reproductibilite-projet/commit/f960ddd09d44aeffc48d9fb324cc3782b0da6e1b
+----->
+
+- A ce stade, vous n'avez sans doute pas créé la documentation de votre
+fonction. Cela générera un nouveau warning du linter que nous gérerons
+plus tard. 
+
+- Faire cela à d'autres endroits, notamment au niveau du `LabelEncoder`. 
+Avez-vous remarquez que cela vous évitera une erreur ? Faire un `commit`
+
+```shell
+git add titanic.py
+git commit -m "Des éléments de nettoyage"
+```
+
+- Continuez à utiliser des fonctions pour éviter de vous répéter. Cela
+devrait déjà améliorer votre note `pylint`:
+
+```shell
+----------------------------------------------------------------------
+Your code has been rated at -12.81/10 (previous run: -17.47/10, +4.66)
+```
+
+- Quand vous commencez à être content, faites un tag `v0.3`:
+
+```shell
+git tag -a v0.3 -m "Les premières fonctions"
+git push origin v0.3
+```
+
+
+{{% /box %}}
+
+## Etape 4: séparer des éléments entre le script et le notebook
+
+Tout n'a pas vocation à être dans un script. Les _notebooks_ sont pratiques
+pour tester des choses ou afficher des dataframes et figures. 
+
+On va donc alléger encore le script `titanic.py` en repassant certains éléments
+dans le notebook. Cela implique de modulariser le script, autrement dit
+de n'y garder que des fonctions qu'on va appliquer dans le notebook.
+
+
+<!----
+# Application sur un projet personnel
 
 {{% box status="exercise" title="Application" icon="fas fa-pencil-alt" %}}
 
@@ -1210,6 +1503,8 @@ Sur un projet personnel, terminé ou en cours :
 -   faire du projet un package
 
 {{% /box %}}
+----->
+
 
 # Références
 
