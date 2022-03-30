@@ -1473,7 +1473,7 @@ git push origin v0.3
 
 {{% /box %}}
 
-## Etape 4: séparer des éléments entre le script et le notebook
+## Etape 4: création d'un module
 
 Tout n'a pas vocation à être dans un script. Les _notebooks_ sont pratiques
 pour tester des choses ou afficher des dataframes et figures. 
@@ -1581,6 +1581,119 @@ git push origin v0.4
 ```
 
 {{% /box %}}
+
+
+## Etape 5: simplification pour intégrer dans un notebook
+
+A ce stade, on a déjà réduit certaines redondances, mais pas toutes dans
+le script principal. On a mis dans un nouveau notebook l'import des données
+et on teste une ou deux fonctions dedans. 
+
+On va aller plus loin à partir de maintenant en création une unique fonction
+de _data cleaning_ En effet, on fait à peu près la même chose sur les
+deux dataframes. On peut donc diviser quasiment par deux le nombre de lignes
+de la partie de _data cleaning_. Cela rendra le script plus fiable.
+
+{{% box status="exercise" title="Modularisation" icon="fas fa-pencil-alt" %}}
+
+On se focalise sur la partie de _feature engineering_
+
+- Répérer tous les `drop` et les regrouper ensemble à la fin du preprocessing.
+Utiliser le fait que `drop` accepte une liste pour réduire le nombre de lignes.
+
+- Repérer les lignes où on effectue la même opération sur `TrainingData` et
+`TestData`. Remplacer par une seule ligne sur un `DataFrame` `df` (celui-ci 
+sera un argument d'une fonction ultérieure):
+    + Au passage, remarquez que vous
+corrigez des erreurs difficiles à repérer (observez l'imputation de la 
+variable `Age` dans `TestData`)
+    + Au passage, il y a des `apply` qui peuvent être remplacés par des
+méthodes natives de `pandas`
+
+- Sauvegarder le script et faire un commit
+
+```shell
+git add titanic.py
+git commit -m "Retire des redondances preprocessing"
+```
+
+- A ce stade, il y a des appels à un `DataFrame` `df` à différents
+endroits du script. Regrouper les lignes en question. Vous pouvez
+remarquer qu'elles ne sont pas très nombreuses, une vingtaine environ. 
+
+- Créer une fonction prenant en _input_ `df`. Attention, cetaines lignes
+de code demandent une variable externe (`meanAge` par exemple). Les mettre
+en _input_. 
+
+- Mettre cette fonction dans le script `monmodule.py`. Faire un commit
+des différents fichiers
+
+```shell
+git add -u
+git commit -m "Création de la fonction de feature engineering"
+```
+
+Voici, à ce stade, par exemple, un fichier `monmodule.py` 
+[sur Github](https://github.com/linogaliana/ensae-reproductibilite-projet/blob/a66a4134ef0a6f75ba613e26aabcba8188e82c0a/monmodule.py).
+Le fichier `titanic.py` associé
+est [là](https://github.com/linogaliana/ensae-reproductibilite-projet/blob/a66a4134ef0a6f75ba613e26aabcba8188e82c0a/titanic.py).
+Il est encore loin d'être propre. Mais le nombre de lignes a bien été réduit. 
+
+On peut évaluer avec `pylint` les deux scripts:
+
+```python
+pylint titanic.py
+#----------------------------------------------------------------------
+#Your code has been rated at -17.30/10 (previous run: -25.17/10, +7.87)
+
+pylint monmodule.py
+#-------------------------------------------------------------------
+#Your code has been rated at -6.10/10 (previous run: -7.00/10, +0.90)
+```
+
+En apparence, on n'a amélioré que marginalement les notes. 
+Cependant, on a substantiellement réduit le nombre de lignes
+donc le nettoyage du code sera plus aisé. 
+
+- Retirer de `titanic.py` les éléments de graphique pour les mettre dans
+le notebook `titanic_light.ipynb`. Inclure également l'appel
+à votre fonction de _feature engineering_. Ne pas oublier, avant le
+_feature engineering_, de créer les variables `passengerId` et
+`meanAge`. 
+
+Voici un exemple du notebook à ce stade [sur Github](https://github.com/linogaliana/ensae-reproductibilite-projet/blob/nettoyage/titanic_light.ipynb)
+
+- Créer une fonction d'import et nettoyage des données qui regroupe ces 
+différentes étapes. Celle-ci doit renvoyer le dictionnaire suivant:
+`{"train": TrainingData, "test": TestData}`. Voici, par exemple,
+la fonction obtenue (la vôtre peut être différente) :
+
+```python
+def import_clean_data():
+    TrainingData = pd.read_csv('train.csv')
+    TestData = pd.read_csv('test.csv')
+    passengerId = TestData['PassengerId']
+    meanAge=round(TrainingData['Age'].mean())
+    TrainingData = feature_engineering(TrainingData, meanAge)
+    TestData = feature_engineering(TestData, meanAge)
+    return {"train": TrainingData, "test": TestData}
+```
+
+On a réduit beaucoup le code dans le notebook. Mais il y en a encore trop.
+On va améliorer le notebook en retirant les blocs de code, mettant le code
+associé dans `titanic.py` et en faisant `%run titanic.py`.
+Cela donne, chez moi, le script `titanic.py` disponible
+[ici](https://github.com/linogaliana/ensae-reproductibilite-projet/blob/bb65345043ad519c6584651cfe8adbf59af2e27e/titanic.py)
+Le notebook associé est [ici](https://github.com/linogaliana/ensae-reproductibilite-projet/blob/bb65345043ad519c6584651cfe8adbf59af2e27e/titanic_light.ipynb)
+
+
+Maintenant, si vous avez le temps, faire pareil pour la partie _machine learning_. 
+{{% /box %}}
+
+## Etape 6: linter
+
+
+
 
 <!----
 # Application sur un projet personnel
