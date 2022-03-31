@@ -1219,8 +1219,8 @@ outils sont pré-installés et pré-configurés.
 
 Le plan général est le suivant :
 
-0. :zero: Forker le dépôt et créer une branche de travail 
-1. :one: Rendre le notebook `titanic.ipynb` reproductible
+0. :zero: Forker le dépôt et créer une branche de travail .
+1. :one: S'assurer que le notebook `titanic.ipynb` s'exécute correctement.
 2. :two: Mettre en fonctions les parties importantes de l'analyse (import des données, feature engineering, entraînement et évaluation du modèle) et mettre ces fonctions dans un module `functions.py`.
 3. :three:  Créer un script `main.py` qui reproduit l'analyse de bout en bout sans passer par un notebook.
 4. :four:  Appliquer les recommendations du linter `PyLint` aux scripts `main.py` et `functions.py`, viser une note minimale de 9/10 pour le premier et 6/10 pour le second.
