@@ -33,8 +33,3 @@ layout: single
 ## Orchestration
 
 ## CI/CD
-
-
-
-# Application
-

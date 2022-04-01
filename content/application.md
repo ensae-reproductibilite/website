@@ -249,4 +249,10 @@ On a donc à présent une version du projet qui est largement partageable. Du mo
 
 Dans cette seconde partie, on va voir différentes manières de **normaliser l'environnement d'exécution afin de produire un projet portable**. On sera alors tout proche de pouvoir mettre le projet en production.
 
+Cette partie fait intervenir les notions suivantes : 
+- **environnements virtuels**
+- **images et conteneurs `Docker`**
+
+Le plan de la partie est le suivant :
+
 # Partie 3 : mise en production
