@@ -11,7 +11,7 @@ layout: single
 
 # Vue d'ensemble
 
-Ce cours s'adresse aux praticiens de la *data science*, entendue ici au sens large comme la combinaison de techniques issues des mathématiques, de la statistique et de l'informatique pour produire de la connaissance utile à partir de données. Cela inclut donc tout autant les *data scientists* travaillant dans le privé ou dans des administrations que les chercheurs dont les travaux font intervenir des traitements computationnels à partir de données.
+Ce cours s'adresse aux praticiens de la *data science*, entendue ici au sens large comme la combinaison de techniques issues des mathématiques, de la statistique et de l'informatique pour produire de la connaissance utile à partir de données. Cela inclut donc tout autant les *data scientists* et statisticiens travaillant dans le privé ou dans des administrations que les chercheurs dont les travaux font intervenir des traitements computationnels à partir de données.
 
 Il part du constat que les formations académiques dans ce domaine adoptent souvent une orientation essentiellement technique, visant une compréhension fine des modèles manipulés, mais ne discutent que rarement des problèmes pratiques qui forment le quotidien du *data scientist* dans un contexte professionnel. Ce cours vise à combler ce manque en proposant des pistes de solution à diverses questions que peuvent se poser les *data scientists* lorsqu'ils transitionnent du contexte de la formation initiale à des projets réels :
 - comment travailler de manière collaborative sur un projet ?
