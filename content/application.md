@@ -47,7 +47,7 @@ Cette première partie vise à **rendre le projet conforme aux bonnes pratiques*
 Le plan de la partie est le suivant :
 
 0. :zero: Forker le dépôt et créer une branche de travail.
-1. :one: S'assurer que le notebook `titanic.ipynb` s'exécute correctement.
+1. :one: S'assurer que le notebook s'exécute correctement.
 2. :two: Mettre en fonctions les parties importantes de l'analyse (import des données, feature engineering, entraînement et évaluation du modèle) et mettre ces fonctions dans un module `functions.py`.
 3. :three:  Créer un script `main.py` qui reproduit l'analyse de bout en bout sans passer par un notebook.
 4. :four:  Appliquer les recommendations du linter `PyLint` aux scripts `main.py` et `functions.py`, viser une note minimale de 9/10 pour le premier et 6/10 pour le second.
@@ -59,7 +59,7 @@ Le plan de la partie est le suivant :
 
 
 
-## Etape 0: forker le dépôt d'exemple
+## Etape 0: forker le dépôt d'exemple et créer une branche de travail
 
 - Ouvrir un service `vscode` sur le [SSP Cloud](https://datalab.sspcloud.fr/home). Vous pouvez aller
 dans la page `My Services` et cliquer sur `New service`. Sinon, vous
@@ -90,6 +90,24 @@ $ cd ensae-reproductibilite-projet
 $ git checkout -b nettoyage
 Switched to a new branch 'nettoyage'
 ```
+
+## Etape 1 : s'assurer que le notebook s'exécute correctement
+
+La première étape est simple, mais souvent oubliée : vérifier que le code fonctionne correctement. 
+
+- Ouvrir dans VSCode le notebook `titanic.ipynb`, et choisir comme kernel `basesspcloud`
+- Exécuter le notebook en entier pour vérifier s'il fonctionne
+- Corriger l'erreur qui empêche la bonne exécution.
+
+Il est maintenant temps de *commit* les changements effectués avec Git :
+
+```shell
+git add titanic.ipynb
+git commit -m "Corrige l'erreur qui empêchait l'exécution"
+git push
+```
+
+Essayez de *commit* vos changements à chaque étape de l'exercice, c'est une bonne habitude à prendre.
 
 
 # Partie 2 : construction d'un projet portable et reproductible
