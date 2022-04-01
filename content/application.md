@@ -46,8 +46,8 @@ Cette première partie vise à **rendre le projet conforme aux bonnes pratiques*
 
 Le plan de la partie est le suivant :
 
-0. :zero: Forker le dépôt et créer une branche de travail.
-1. :one: S'assurer que le notebook s'exécute correctement.
+0. :zero: Forker le dépôt et créer une branche de travail
+1. :one: S'assurer que le notebook s'exécute correctement
 2. :two: Modularisation : mise en fonctions et mise en module
 3. :three: Utiliser un `main` script
 4. :four:  Appliquer les standards de qualité de code
@@ -239,6 +239,18 @@ Des dossiers parasites `__pycache__` se sont glissés dans notre projet. Ils se 
 
 {{% box status="tip" title="Note" icon="fa fa-hint" %}}
 En pratique, mieux vaut adopter l'habitude de toujours mettre un `.gitignore`, pertinent selon le langage du projet, dès le début du projet. GitHub offre cette option à l'initialisation d'un projet.
+{{% /box %}}
+
+## Etape 9 : ouvrir une *pull request* sur le dépôt du projet
+
+Enfin terminé ! Enfin presque... On s'est donné beaucoup de mal à nettoyer ce dépôt et le mettre aux standards, autant valoriser ce travail. On va pour cela faire une *pull request* sur le [dépôt du projet initial](https://github.com/avouacr/ensae-reproductibilite-projet), c'est à dire proposer à l'auteur d'intégrer tous les changements que vous avez effectué en committant à chaque étape. 
+
+Suivre la procédure décrite dans la [documentation GitHub](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork) pour créer une *pull request* à partir de votre *fork*. Pour la branche *upstream* (le dépôt cible), on va choisir `master`. Par contre, pour la branche locale (celle sur votre dépôt), on va choisir la branche `nettoyage`.
+
+Si tout s'est bien passé, vous devriez à présent voir votre *pull request* sur le dépôt cible ([ici](https://github.com/avouacr/ensae-reproductibilite-projet/pulls)). Bravo, vous venez de faire votre première contribution à l'open source !
+
+{{% box status="warning" title="Warning" icon="fa fa-exclamation-triangle" %}}
+Faire une *pull request* via la branche `master` d’un *fork* est très mal vu. En effet, il faut souvent faire des contorsionnements pour réussir à faire coïncider deux histoires qui n’ont pas de raison de coïncider. On s'évite beaucoup de problèmes en prenant l'habitude de toujours faire ses *pull requests* à partir d'une autre branche que `master`.
 {{% /box %}}
 
 # Partie 2 : construction d'un projet portable et reproductible {#partie2}
