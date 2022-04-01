@@ -1219,14 +1219,15 @@ outils sont pré-installés et pré-configurés.
 
 Le plan général est le suivant :
 
-0. :zero: Forker le dépôt et créer une branche de travail .
+0. :zero: Forker le dépôt et créer une branche de travail.
 1. :one: S'assurer que le notebook `titanic.ipynb` s'exécute correctement.
 2. :two: Mettre en fonctions les parties importantes de l'analyse (import des données, feature engineering, entraînement et évaluation du modèle) et mettre ces fonctions dans un module `functions.py`.
 3. :three:  Créer un script `main.py` qui reproduit l'analyse de bout en bout sans passer par un notebook.
 4. :four:  Appliquer les recommendations du linter `PyLint` aux scripts `main.py` et `functions.py`, viser une note minimale de 9/10 pour le premier et 6/10 pour le second.
-5. :five: S'inspirer du cookiecutter datascience (template de projet) pour construire une structure de package.
+5. :five: S'inspirer du template de projet [cookiecutter datascience](https://drivendata.github.io/cookiecutter-data-science/) pour construire une structure de package.
 6. :six: Exporter l'environnement Conda pour favoriser la portabilité du projet.
 7. :seven: Mettre les données dans son bucket personnel sur le stockage MinIO du SSP Cloud et adapter la fonction d'import de données.
+8. :eight: Nettoyer le projet Git d'éventuels fichiers/dossiers indésirables (ex : les dossiers __pycache__) et ajouter le [fichier .gitignore adapté à Python](https://github.com/github/gitignore/blob/main/Python.gitignore) à la racine du projet. Ajouter le dossier `data/` au `.gitignore` pour éviter tout versioning de données.
 
 
 
