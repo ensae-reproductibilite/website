@@ -1,5 +1,5 @@
 ---
-title: "Appliquer les concepts présentés à un projet de data science"
+title: "Appliquer les concepts étudiés à un projet de data science"
 date: 2022-03-03
 author: "Romain Avouac et Lino Galiana"
 draft: false
@@ -9,17 +9,16 @@ layout: single
 
 
 
-L'objectif de cette mise en application est d'illustrer comment, en
-pratique, s'organise une mise au propre d'un code où il y a 
-eu du laisser-aller.
+L'objectif de cette mise en application est d'**illustrer les différentes étapes qui séparent la phase de développement d'un projet de celle de la mise en production**. Elle permettra de mettre en pratique les différents concepts présentés tout au long du cours.
 
-Nous allons nous placer dans la situation où on a un _notebook_
-qui mélange de nombreuses étapes de traitement de données. 
-Le nettoyage va se faire progressivement. Chaque exercice va
-représenter une étape du nettoyage et sera identifiée par 
-un `tag` `Git`. Cela permettra dans le futur de bien voir
-les évolutions à chaque étape et facilement comparer l'état
-du projet entre deux instants
+Nous nous plaçons dans une situation initiale correspondant à la fin de la phase de développement d'un projet de data science. On a un notebook un peu monolithique, qui réalise les étapes classiques d'un *pipeline* de *machine learning* :
+- import de données
+- statistiques descriptives et visualisations
+- *feature engineering*
+- entraînement d'un modèle
+- évaluation du modèle
+
+**L'objectif est d'améliorer le projet de manière incrémentale jusqu'à pouvoir le mettre en production, en le valorisant sous une forme adaptée.** 
 
 {{% box status="warning" title="Warning" icon="fa fa-exclamation-triangle" %}}
 Il est important de bien lire les consignes et d'y aller progressivement.
@@ -29,11 +28,23 @@ Si vous n'effectuez pas une étape, vous risquez de ne pas pouvoir passer à
 l'étape suivante qui en dépend.
 
 Bien que l'exercice soit applicable sur toute configuration bien faite, nous 
-recommandons de privilégier l'utilisation du `SSP Cloud` où tous les 
-outils sont pré-installés et pré-configurés. 
+recommandons de privilégier l'utilisation du [SSP Cloud](https://datalab.sspcloud.fr/home), où tous les 
+outils nécessaires sont pré-installés et pré-configurés. 
 {{% /box %}}
 
-Le plan général est le suivant :
+
+
+
+# Partie 1 : application des bonnes pratiques
+
+Cette première partie vise à **rendre le projet conforme aux bonnes pratiques** présentées dans le cours. Elle fait intervenir les notions suivantes : 
+- utilisation du **terminal**
+- **qualité du code**
+- **architecture de projets**
+- **contrôle de version** avec Git
+- **travail collaboratif** avec Git et GitHub
+
+Le plan de la partie est le suivant :
 
 0. :zero: Forker le dépôt et créer une branche de travail.
 1. :one: S'assurer que le notebook `titanic.ipynb` s'exécute correctement.
@@ -44,10 +55,11 @@ Le plan général est le suivant :
 6. :six: Exporter l'environnement Conda pour favoriser la portabilité du projet.
 7. :seven: Mettre les données dans son bucket personnel sur le stockage MinIO du SSP Cloud et adapter la fonction d'import de données. Supprimer les fichiers `train.csv` et `test.csv` du dépôt Git.
 8. :eight: Nettoyer le projet Git d'éventuels fichiers/dossiers indésirables (ex : les dossiers __pycache__) et ajouter le [fichier .gitignore adapté à Python](https://github.com/github/gitignore/blob/main/Python.gitignore) à la racine du projet. Ajouter le dossier `data/` au `.gitignore` pour éviter tout versioning de données.
+9. :nine: Ouvrir une *pull request* sur le dépôt du projet.
 
 
 
-## Etape 1: forker et clôner le modèle d'exemple
+## Etape 0: forker et clôner le modèle d'exemple
 
 Le dépôt est disponible sur `Github` <i class="fab fa-github"></i>
 à l'adresse
@@ -95,3 +107,8 @@ conservez le à portée de main (dans un fichier texte ou dans un gestionnaire
 de mot de passe)
 
 {{% /box %}}
+
+
+# Partie 2 : construction d'un projet portable et reproductible
+
+# Partie 3 : mise en production
