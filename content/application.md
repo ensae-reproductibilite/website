@@ -50,8 +50,8 @@ Le plan de la partie est le suivant :
 1. :one: S'assurer que le notebook s'exécute correctement.
 2. :two: Modularisation : mise en fonctions et mise en module
 3. :three: Utiliser un `main` script
-4. :four:  Appliquer les recommendations du linter `PyLint` aux scripts `main.py` et `functions.py`, viser une note minimale de 9/10 pour le premier et 6/10 pour le second.
-5. :five: S'inspirer du template de projet [cookiecutter datascience](https://drivendata.github.io/cookiecutter-data-science/) pour construire une structure de package.
+4. :four:  Appliquer un *linter* au code
+5. :five: Adopter une structure standardisée de package
 6. :six: Exporter l'environnement Conda pour favoriser la portabilité du projet.
 7. :seven: Mettre les données dans son bucket personnel sur le stockage MinIO du SSP Cloud et adapter la fonction d'import de données. Supprimer les fichiers `train.csv` et `test.csv` du dépôt Git.
 8. :eight: Nettoyer le projet Git d'éventuels fichiers/dossiers indésirables (ex : les dossiers __pycache__) et ajouter le [fichier .gitignore adapté à Python](https://github.com/github/gitignore/blob/main/Python.gitignore) à la racine du projet. Ajouter le dossier `data/` au `.gitignore` pour éviter tout versioning de données.
@@ -117,7 +117,7 @@ Nous allons **mettre en fonctions les parties importantes de l'analyse, et les m
 - créer une (ou plusieurs) fonction(s) pour réaliser les étapes de *feature engineering*
 - créer une fonction qui réalise le *split train/test* de validation
 - créer une fonction qui entraîne et évalue un classifieur `RandomForest`, et qui prend en paramètre le nombre d'arbres (`n_estimators`). La fonction doit imprimer à la fin la performance obtenue et la matrice de confusion.
-- mettre ces fonctions dans un module (script `.py`)
+- mettre ces fonctions dans un module `functions.py`
 - importer les fonctions via le module dans le notebook et vérifier que l'on retrouve bien les différents résultats en utilisant les fonctions.
 
 {{% box status="warning" title="Warning" icon="fa fa-exclamation-triangle" %}}
@@ -129,7 +129,7 @@ Attention à bien **spécifier les dépendances** (packages à importer) dans le
 Fini le temps de l'expérimentation : on va maintenant essayer de se passer complètement du notebook. Pour cela, on va utiliser un `main` script, c'est à dire un script qui reproduit l'analyse en important et en exécutant les différentes fonctions dans l'ordre attendu.
 
 - créer un script `main.py` (convention de nommage pour les `main` scripts en Python)
-- importer les fonctions nécessaires à partir du module. Ne pas faire d' `import *`, ce n'est pas une bonne pratique ! Appeler les fonctions une par une en les séparant par des virgules
+- importer les fonctions nécessaires à partir du module `functions.py`. Ne pas faire d' `import *`, ce n'est pas une bonne pratique ! Appeler les fonctions une par une en les séparant par des virgules
 - programmer leur exécution dans l'ordre attendu dans le script
 - vérifier que tout fonctionne bien en exécutant le `main` script à partir de l'exécutable Python :
 
@@ -138,6 +138,28 @@ $ python main.py
 ```
 
 Si tout a correctement fonctionné, la performance du `RandomForest` et la matrice de confusion devraient s'afficher dans la console.
+
+## Etape 4 : appliquer un *linter* au code
+
+On va maintenant améliorer la qualité de notre code en appliquant les standards communautaires. Pour cela, on va utiliser le *linter* classique `PyLint`. 
+
+Pour appliquer le linter à un script `.py`, la syntaxe à entrer dans le terminal est la suivante : 
+```shell
+$ pylint mon_script.py
+```
+Le linter renvoie alors une série d'irrégularités, en précisant à chaque fois la ligne de l'erreur et le message d'erreur associé (ex : mauvaise identation). Il renvoie finalement une note sur 10, qui estime la qualité du code à l'aune des standards communautaires (PEP8 et PEP257).
+
+- appliquer une première fois le linter, respectivement aux scripts `functions.py` et `main.py`. Noter les notes obtenues.
+- à partir des codes d'erreur, modifier le code pour résoudre les différents problèmes un par un
+- viser une note minimale de 9/10 pour `main.py` et 6/10 pour `functions.py`.
+
+{{% box status="warning" title="Warning" icon="fa fa-exclamation-triangle" %}}
+N'hésitez pas à taper un code d'erreur sur un moteur de recherche pour obtenir plus d'informations si jamais le message n'est pas clair !
+{{% /box %}}
+
+## Etape 5 : adopter une structure standardisée de package
+
+S'inspirer du template de projet [cookiecutter datascience](https://drivendata.github.io/cookiecutter-data-science/) pour construire une structure de package.
 
 # Partie 2 : construction d'un projet portable et reproductible
 
