@@ -7,13 +7,9 @@ draft: false
 layout: single
 ---
 
-# Liste des séances
+# Supports des séances
 
-Les slides présentées en séance sont accessibles avec
+Les slides présentées en séance sont accessibles via
 les liens suivants:
 
-- [Séance 1](https://avouacr.pages.lab.sspcloud.fr/ensae-reproductibilite-slides/)
-
-# Evaluation
-
-Pas d'évaluation cette année
+- [Séance 1](https://avouacr.github.io/ensae-reproductibilite-slides/)

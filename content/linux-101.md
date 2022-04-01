@@ -301,9 +301,9 @@ All packages are up to date.
 
 On l'a dit et redit : devenir à l'aise avec le terminal Linux est essentiel et demande de la pratique. Il existe néanmoins quelques astuces qui peuvent grandement simplifier la vie et donc faciliter la prise de bonnes habitudes.
 
-La première est l'autocomplétion. Dès lors que vous écrivez une commande contenant un nom d'exécutable, un chemin sur le *filesystem*, ou autre, n'hésitez pas à utiliser la touche `TAB` (touche au-dessus de celle qui verrouille la majuscule) de votre clavier. Dans la majorité des cas, cela va vous faire gagner un temps précieux.
+La première est l'**autocomplétion**. Dès lors que vous écrivez une commande contenant un nom d'exécutable, un chemin sur le *filesystem*, ou autre, n'hésitez pas à utiliser la touche `TAB` (touche au-dessus de celle qui verrouille la majuscule) de votre clavier. Dans la majorité des cas, cela va vous faire gagner un temps précieux.
 
-Une seconde astuce, qui n'en est pas vraiment une, est de lire la documentation d'une commande lorsqu'on n'est pas sûr de sa syntaxe ou des paramètres admissibles. Via le terminal, la documentation d'une commande peut être affichée en exécutant `man` suivie de la commande en question, par exemple : `man cp`. Comme il n'est pas toujour très pratique de lire de longs textes dans un petit terminal, on peut également chercher la documentation d'une commande sur le site [man7](https://man7.org/linux/man-pages/index.html).
+Une seconde astuce, qui n'en est pas vraiment une, est de lire la **documentation** d'une commande lorsqu'on n'est pas sûr de sa syntaxe ou des paramètres admissibles. Via le terminal, la documentation d'une commande peut être affichée en exécutant `man` suivie de la commande en question, par exemple : `man cp`. Comme il n'est pas toujours très pratique de lire de longs textes dans un petit terminal, on peut également chercher la documentation d'une commande sur le site [man7](https://man7.org/linux/man-pages/index.html).
 
 # Application
 
@@ -313,4 +313,3 @@ Une seconde astuce, qui n'en est pas vraiment une, est de lire la documentation 
 - lancer un script Python avec des paramètres à partir du terminal
 - faire installer un package qui nécessite sudo
 - faire installer un package Python qui nécessite des librairies systèmes, à installer via apt
-
