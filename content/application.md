@@ -48,7 +48,7 @@ Le plan de la partie est le suivant :
 
 0. :zero: Forker le dépôt et créer une branche de travail.
 1. :one: S'assurer que le notebook s'exécute correctement.
-2. :two: Mettre en fonctions les parties importantes de l'analyse (import des données, feature engineering, entraînement et évaluation du modèle) et mettre ces fonctions dans un module `functions.py`.
+2. :two: Modularisation : mise en fonctions et mise en module
 3. :three:  Créer un script `main.py` qui reproduit l'analyse de bout en bout sans passer par un notebook.
 4. :four:  Appliquer les recommendations du linter `PyLint` aux scripts `main.py` et `functions.py`, viser une note minimale de 9/10 pour le premier et 6/10 pour le second.
 5. :five: S'inspirer du template de projet [cookiecutter datascience](https://drivendata.github.io/cookiecutter-data-science/) pour construire une structure de package.
@@ -108,6 +108,17 @@ git push
 ```
 
 Essayez de *commit* vos changements à chaque étape de l'exercice, c'est une bonne habitude à prendre.
+
+## Etape 2 :
+
+Nous allons mettre en fonctions les parties importantes de l'analyse, et les mettre dans un module afin de pouvoir les importer directement depuis le notebook. En reformattant le code présent dans le notebook :
+
+- créer une fonction qui importe les données d'entraînement (`train.csv`) et de test (`test.csv`) et renvoie des `DataFrames` pandas
+- créer une (ou plusieurs) fonction(s) pour réaliser les étapes de *feature engineering*
+- créer une fonction qui réalise le *split train/test* de validation
+- créer une fonction qui entraîne et évalue un classifieur `RandomForest`, et qui prend en paramètre le nombre d'arbres (`n_estimators`). La fonction doit imprimer à la fin la performance obtenue et la matrice de confusion.
+- mettre ces fonctions dans un module (script `.py`)
+- importer les fonctions via le module dans le notebook et vérifier que l'on retrouve bien les différents résultats en utilisant les fonctions.
 
 
 # Partie 2 : construction d'un projet portable et reproductible
