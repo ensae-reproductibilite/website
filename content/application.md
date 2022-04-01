@@ -53,7 +53,7 @@ Le plan de la partie est le suivant :
 4. :four:  Appliquer un *linter* au code
 5. :five: Adopter une architecture standardisée de projet
 6. :six: Fixer l'environnement d'exécution
-7. :seven: Mettre les données dans son bucket personnel sur le stockage MinIO du SSP Cloud et adapter la fonction d'import de données. Supprimer les fichiers `train.csv` et `test.csv` du dépôt Git.
+7. :seven: Stocker les données de manière externe
 8. :eight: Nettoyer le projet Git d'éventuels fichiers/dossiers indésirables (ex : les dossiers __pycache__) et ajouter le [fichier .gitignore adapté à Python](https://github.com/github/gitignore/blob/main/Python.gitignore) à la racine du projet. Ajouter le dossier `data/` au `.gitignore` pour éviter tout versioning de données.
 9. :nine: Ouvrir une *pull request* sur le dépôt du projet.
 
@@ -215,6 +215,19 @@ Vous devriez à présent avoir un fichier `environement.yml` à la racine de vot
 {{% box status="tip" title="Note" icon="fa fa-hint" %}}
 En réalité, on a triché : on a exporté l'environnement de base du VSCode SSP Cloud, qui contient beaucoup plus de packages que ceux utilisés par notre projet. On verra dans la [Partie 2](#partie2) de l'application comment fixer proprement les dépendances de notre projet.
 {{% /box %}}
+
+## Etape 7 : stocker les données de manière externe
+
+{{% box status="warning" title="Warning" icon="fa fa-exclamation-triangle" %}}
+Cette étape n'est pas facile. Vous devrez suivre la [documentation du SSP Cloud](https://docs.sspcloud.fr/onyxia-guide/stockage-de-donnees) pour la réaliser.
+{{% /box %}}
+
+Comme on l'a vu dans le cours, les données ne sont pas censées être versionnées sur un projet Git. L'idéal pour éviter cela tout en maintenant la reproductibilité est d'utiliser une solution de stockage externe. On va utiliser pour cela `MinIO`, la solution de stockage de type `S3` offerte par le SSP Cloud. 
+
+- créer un dossier `ensae-reproductibilite` dans votre bucket personnel via l'[interface utilisateur](https://datalab.sspcloud.fr/mes-fichiers)
+- modifier votre fonction d'import des données pour qu'elle récupère les données à partir de MinIO. Elle devra prendre en paramètres le nom du bucket et le dossier dans lequel sont contenues les données sur MinIO.
+- modifier le `main` script pour appeler la fonction avec les paramètres propres à votre compte
+- vérifier le bon fonctionnement de votre application
 
 # Partie 2 : construction d'un projet portable et reproductible {#partie2}
 
