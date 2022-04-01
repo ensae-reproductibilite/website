@@ -54,9 +54,8 @@ Le plan de la partie est le suivant :
 5. :five: Adopter une architecture standardisée de projet
 6. :six: Fixer l'environnement d'exécution
 7. :seven: Stocker les données de manière externe
-8. :eight: Nettoyer le projet Git d'éventuels fichiers/dossiers indésirables (ex : les dossiers __pycache__) et ajouter le [fichier .gitignore adapté à Python](https://github.com/github/gitignore/blob/main/Python.gitignore) à la racine du projet. Ajouter le dossier `data/` au `.gitignore` pour éviter tout versioning de données.
+8. :eight: Nettoyer le projet Git
 9. :nine: Ouvrir une *pull request* sur le dépôt du projet.
-
 
 
 ## Etape 0: forker le dépôt d'exemple et créer une branche de travail
@@ -213,7 +212,7 @@ $ conda env export > environment.yml
 Vous devriez à présent avoir un fichier `environement.yml` à la racine de votre projet, qui contient les dépendances et leurs versions.
 
 {{% box status="tip" title="Note" icon="fa fa-hint" %}}
-En réalité, on a triché : on a exporté l'environnement de base du VSCode SSP Cloud, qui contient beaucoup plus de packages que ceux utilisés par notre projet. On verra dans la [Partie 2](#partie2) de l'application comment fixer proprement les dépendances de notre projet.
+En réalité, on aun peu triché : on a exporté l'environnement de base du VSCode SSP Cloud, qui contient beaucoup plus de packages que ceux utilisés par notre projet. On verra dans la [Partie 2](#partie2) de l'application comment fixer proprement les dépendances de notre projet.
 {{% /box %}}
 
 ## Etape 7 : stocker les données de manière externe
@@ -227,7 +226,20 @@ Comme on l'a vu dans le cours, les données ne sont pas censées être versionn�
 - créer un dossier `ensae-reproductibilite` dans votre bucket personnel via l'[interface utilisateur](https://datalab.sspcloud.fr/mes-fichiers)
 - modifier votre fonction d'import des données pour qu'elle récupère les données à partir de MinIO. Elle devra prendre en paramètres le nom du bucket et le dossier dans lequel sont contenues les données sur MinIO.
 - modifier le `main` script pour appeler la fonction avec les paramètres propres à votre compte
+- supprimer les fichiers `.csv` du dossier `data` de votre projet, on n'en a plus besoin vu qu'on les importe de l'extérieur
 - vérifier le bon fonctionnement de votre application
+
+## Etape 8 : nettoyer le projet Git
+
+Des dossiers parasites `__pycache__` se sont glissés dans notre projet. Ils se créent automatiquement à l'exécution d'un script en Python, afin de rendre plus rapide les exécutions ultérieures. Ils n'ont cependant pas de raison d'être versionnés, vu que ce sont des fichiers locaux (spécifiques à un environnement d'exécution donné).
+
+- supprimer les différents dossiers `__pycache__` du projet
+- ajouter le [fichier .gitignore adapté à Python](https://github.com/github/gitignore/blob/main/Python.gitignore) à la racine du projet
+- ajouter le dossier `data/` au `.gitignore` pour éviter tout ajout involontaire de données au dépôt Git
+
+{{% box status="tip" title="Note" icon="fa fa-hint" %}}
+En pratique, mieux vaut adopter l'habitude de toujours mettre un `.gitignore`, pertinent selon le langage du projet, dès le début du projet. GitHub offre cette option à l'initialisation d'un projet.
+{{% /box %}}
 
 # Partie 2 : construction d'un projet portable et reproductible {#partie2}
 
