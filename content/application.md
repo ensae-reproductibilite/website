@@ -50,7 +50,7 @@ Le plan de la partie est le suivant :
 1. :one: S'assurer que le notebook s'exécute correctement.
 2. :two: Modularisation : mise en fonctions et mise en module
 3. :three: Utiliser un `main` script
-4. :four:  Appliquer un *linter* au code
+4. :four:  Appliquer les standards de qualité de code
 5. :five: Adopter une architecture standardisée de projet
 6. :six: Fixer l'environnement d'exécution
 7. :seven: Stocker les données de manière externe
@@ -138,7 +138,7 @@ $ python main.py
 
 Si tout a correctement fonctionné, la performance du `RandomForest` et la matrice de confusion devraient s'afficher dans la console.
 
-## Etape 4 : appliquer un *linter* au code
+## Etape 4 : appliquer les standards de qualité de code
 
 On va maintenant améliorer la qualité de notre code en appliquant les standards communautaires. Pour cela, on va utiliser le *linter* classique `PyLint`. 
 
