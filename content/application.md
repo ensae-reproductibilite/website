@@ -51,7 +51,7 @@ Le plan de la partie est le suivant :
 2. :two: Modularisation : mise en fonctions et mise en module
 3. :three: Utiliser un `main` script
 4. :four:  Appliquer un *linter* au code
-5. :five: Adopter une structure standardisée de package
+5. :five: adopter une architecture standardisée de projet
 6. :six: Exporter l'environnement Conda pour favoriser la portabilité du projet.
 7. :seven: Mettre les données dans son bucket personnel sur le stockage MinIO du SSP Cloud et adapter la fonction d'import de données. Supprimer les fichiers `train.csv` et `test.csv` du dépôt Git.
 8. :eight: Nettoyer le projet Git d'éventuels fichiers/dossiers indésirables (ex : les dossiers __pycache__) et ajouter le [fichier .gitignore adapté à Python](https://github.com/github/gitignore/blob/main/Python.gitignore) à la racine du projet. Ajouter le dossier `data/` au `.gitignore` pour éviter tout versioning de données.
@@ -153,13 +153,48 @@ Le linter renvoie alors une série d'irrégularités, en précisant à chaque fo
 - à partir des codes d'erreur, modifier le code pour résoudre les différents problèmes un par un
 - viser une note minimale de 9/10 pour `main.py` et 6/10 pour `functions.py`.
 
-{{% box status="warning" title="Warning" icon="fa fa-exclamation-triangle" %}}
+{{% box status="tip" title="Note" icon="fa fa-hint" %}}
 N'hésitez pas à taper un code d'erreur sur un moteur de recherche pour obtenir plus d'informations si jamais le message n'est pas clair !
 {{% /box %}}
 
-## Etape 5 : adopter une structure standardisée de package
+## Etape 5 : adopter une architecture standardisée de projet
 
-S'inspirer du template de projet [cookiecutter datascience](https://drivendata.github.io/cookiecutter-data-science/) pour construire une structure de package.
+On va maintenant modifier l'architecture de notre projet pour la rendre plus standardisée. Pour cela, on va utiliser le package *cookiecutter* qui génère des templates de projet. En particulier, on va choisir le [template datascience](https://drivendata.github.io/cookiecutter-data-science/) développé par la communauté pour s'inspirer de sa structure.
+
+{{% box status="tip" title="Note" icon="fa fa-hint" %}}
+L'idée de *cookiecutter* est de proposer des templates que l'on utilise pour initialiser un projet, afin de bâtir à l'avance une structure évolutive. La syntaxe à utiliser dans ce cas est la suivante : 
+```shell
+$ pip install cookiecutter
+$ cookiecutter https://github.com/drivendata/cookiecutter-data-science
+```
+
+Ici, on a déjà un projet, on va donc faire les choses dans l'autre sens : on va s'inspirer de la structure proposée afin de réorganiser celle de notre projet selon les standards communautaires.
+{{% /box %}}
+
+- analyser et comprendre la [structure de projet](https://drivendata.github.io/cookiecutter-data-science/#directory-structure) proposée par le template
+- créer les dossiers qui vous semblent pertinents pour contenir les différents éléments de notre projet selon le modèle
+- vous aller devoir séparer le module `functions.py` en différents modules afin de pouvoir entrer dans la structure suggérée dans le dossier `src` (le dossier destiné à contenir le code source de votre package)
+- vous devriez arriver à une structure semblable à celle-ci :
+
+```shell
+ensae-reproductibilite-projet
+├── data
+│   └── raw
+│       ├── test.csv
+│       └── train.csv
+├── main.py
+├── notebooks
+│   └── titanic.ipynb
+├── README.md
+└── src
+    ├── data
+    │   ├── import_data.py
+    │   └── train_test_split.py
+    ├── features
+    │   └── build_features.py
+    └── models
+        └── train_evaluate.py
+```
 
 # Partie 2 : construction d'un projet portable et reproductible
 
