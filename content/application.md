@@ -49,7 +49,7 @@ Le plan de la partie est le suivant :
 0. :zero: Forker le dépôt et créer une branche de travail.
 1. :one: S'assurer que le notebook s'exécute correctement.
 2. :two: Modularisation : mise en fonctions et mise en module
-3. :three:  Créer un script `main.py` qui reproduit l'analyse de bout en bout sans passer par un notebook.
+3. :three: Utiliser un `main` script
 4. :four:  Appliquer les recommendations du linter `PyLint` aux scripts `main.py` et `functions.py`, viser une note minimale de 9/10 pour le premier et 6/10 pour le second.
 5. :five: S'inspirer du template de projet [cookiecutter datascience](https://drivendata.github.io/cookiecutter-data-science/) pour construire une structure de package.
 6. :six: Exporter l'environnement Conda pour favoriser la portabilité du projet.
@@ -93,7 +93,7 @@ Switched to a new branch 'nettoyage'
 
 ## Etape 1 : s'assurer que le notebook s'exécute correctement
 
-La première étape est simple, mais souvent oubliée : vérifier que le code fonctionne correctement. 
+La première étape est simple, mais souvent oubliée : **vérifier que le code fonctionne correctement**. 
 
 - Ouvrir dans VSCode le notebook `titanic.ipynb`, et choisir comme kernel `basesspcloud`
 - Exécuter le notebook en entier pour vérifier s'il fonctionne
@@ -102,16 +102,16 @@ La première étape est simple, mais souvent oubliée : vérifier que le code fo
 Il est maintenant temps de *commit* les changements effectués avec Git :
 
 ```shell
-git add titanic.ipynb
-git commit -m "Corrige l'erreur qui empêchait l'exécution"
-git push
+$ git add titanic.ipynb
+$ git commit -m "Corrige l'erreur qui empêchait l'exécution"
+$ git push
 ```
 
 Essayez de *commit* vos changements à chaque étape de l'exercice, c'est une bonne habitude à prendre.
 
-## Etape 2 :
+## Etape 2 : Modularisation - mise en fonctions et mise en module
 
-Nous allons mettre en fonctions les parties importantes de l'analyse, et les mettre dans un module afin de pouvoir les importer directement depuis le notebook. En reformattant le code présent dans le notebook :
+Nous allons **mettre en fonctions les parties importantes de l'analyse, et les mettre dans un module afin de pouvoir les importer directement depuis le notebook**. En reformattant le code présent dans le notebook :
 
 - créer une fonction qui importe les données d'entraînement (`train.csv`) et de test (`test.csv`) et renvoie des `DataFrames` pandas
 - créer une (ou plusieurs) fonction(s) pour réaliser les étapes de *feature engineering*
@@ -120,6 +120,24 @@ Nous allons mettre en fonctions les parties importantes de l'analyse, et les met
 - mettre ces fonctions dans un module (script `.py`)
 - importer les fonctions via le module dans le notebook et vérifier que l'on retrouve bien les différents résultats en utilisant les fonctions.
 
+{{% box status="warning" title="Warning" icon="fa fa-exclamation-triangle" %}}
+Attention à bien **spécifier les dépendances** (packages à importer) dans le module pour que les fonctions puissent faire leur travail indépendamment du notebook !
+{{% /box %}}
+
+## Etape 3 : utiliser un `main` script
+
+Fini le temps de l'expérimentation : on va maintenant essayer de se passer complètement du notebook. Pour cela, on va utiliser un `main` script, c'est à dire un script qui reproduit l'analyse en important et en exécutant les différentes fonctions dans l'ordre attendu.
+
+- créer un script `main.py` (convention de nommage pour les `main` scripts en Python)
+- importer les fonctions nécessaires à partir du module. Ne pas faire d' `import *`, ce n'est pas une bonne pratique ! Appeler les fonctions une par une en les séparant par des virgules
+- programmer leur exécution dans l'ordre attendu dans le script
+- vérifier que tout fonctionne bien en exécutant le `main` script à partir de l'exécutable Python :
+
+```shell
+$ python main.py
+```
+
+Si tout a correctement fonctionné, la performance du `RandomForest` et la matrice de confusion devraient s'afficher dans la console.
 
 # Partie 2 : construction d'un projet portable et reproductible
 
