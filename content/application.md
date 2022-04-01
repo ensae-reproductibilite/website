@@ -51,8 +51,8 @@ Le plan de la partie est le suivant :
 2. :two: Modularisation : mise en fonctions et mise en module
 3. :three: Utiliser un `main` script
 4. :four:  Appliquer un *linter* au code
-5. :five: adopter une architecture standardisée de projet
-6. :six: Exporter l'environnement Conda pour favoriser la portabilité du projet.
+5. :five: Adopter une architecture standardisée de projet
+6. :six: Fixer l'environnement d'exécution
 7. :seven: Mettre les données dans son bucket personnel sur le stockage MinIO du SSP Cloud et adapter la fonction d'import de données. Supprimer les fichiers `train.csv` et `test.csv` du dépôt Git.
 8. :eight: Nettoyer le projet Git d'éventuels fichiers/dossiers indésirables (ex : les dossiers __pycache__) et ajouter le [fichier .gitignore adapté à Python](https://github.com/github/gitignore/blob/main/Python.gitignore) à la racine du projet. Ajouter le dossier `data/` au `.gitignore` pour éviter tout versioning de données.
 9. :nine: Ouvrir une *pull request* sur le dépôt du projet.
@@ -200,6 +200,22 @@ ensae-reproductibilite-projet
 Il est normal d'avoir des dossiers `__pycache__` qui traînent : ils se créent automatiquement à l'exécution d'un script en Python. On verra comment les supprimer définitivement à l'étape 8.
 {{% /box %}}
 
-# Partie 2 : construction d'un projet portable et reproductible
+## Etape 6 : fixer l'environnement d'exécution
+
+Afin de favoriser la portabilité du projet, il est d'usage de "fixer l'environnement", c'est à dire d'indiquer dans un fichier toutes les dépendances utilisées ainsi que leurs version. Il est conventionnellement localisé à la racine du projet.
+
+Sur le VSCode du SSP Cloud, on se situe dans un environnemnt `conda`. La commande pour exporter un environnement `conda` est la suivante : 
+
+```shell
+$ conda env export > environment.yml
+```
+
+Vous devriez à présent avoir un fichier `environement.yml` à la racine de votre projet, qui contient les dépendances et leurs versions.
+
+{{% box status="tip" title="Note" icon="fa fa-hint" %}}
+En réalité, on a triché : on a exporté l'environnement de base du VSCode SSP Cloud, qui contient beaucoup plus de packages que ceux utilisés par notre projet. On verra dans la [Partie 2](#partie2) de l'application comment fixer proprement les dépendances de notre projet.
+{{% /box %}}
+
+# Partie 2 : construction d'un projet portable et reproductible {#partie2}
 
 # Partie 3 : mise en production
