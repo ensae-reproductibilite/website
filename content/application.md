@@ -229,7 +229,7 @@ Comme on l'a vu dans le cours, les données ne sont pas censées être versionn�
 - supprimer les fichiers `.csv` du dossier `data` de votre projet, on n'en a plus besoin vu qu'on les importe de l'extérieur
 - vérifier le bon fonctionnement de votre application
 
-## Etape 8 : nettoyer le projet Git
+## Etape 8 : nettoyer le dépôt Git
 
 Des dossiers parasites `__pycache__` se sont glissés dans notre projet. Ils se créent automatiquement à l'exécution d'un script en Python, afin de rendre plus rapide les exécutions ultérieures. Ils n'ont cependant pas de raison d'être versionnés, vu que ce sont des fichiers locaux (spécifiques à un environnement d'exécution donné).
 
