@@ -59,54 +59,37 @@ Le plan de la partie est le suivant :
 
 
 
-## Etape 0: forker et clôner le modèle d'exemple
+## Etape 0: forker le dépôt d'exemple
 
-Le dépôt est disponible sur `Github` <i class="fab fa-github"></i>
-à l'adresse
-https://github.com/avouacr/ensae-reproductibilite-projet
-
-
-{{% box status="exercise" title="Exercice préliminaire" icon="fa fa-rocket" %}}
-
-- Ouvrir un service `vscode` sur le `SSP Cloud`. Vous pouvez aller
+- Ouvrir un service `vscode` sur le [SSP Cloud](https://datalab.sspcloud.fr/home). Vous pouvez aller
 dans la page `My Services` et cliquer sur `New service`. Sinon, vous
-pouvez cliquer
-[directement par ce lien](https://datalab.sspcloud.fr/launcher/inseefrlab-helm-charts-datascience/vscode?autoLaunch=false)
+pouvez lancer le service en cliquant directement [ici](https://datalab.sspcloud.fr/launcher/inseefrlab-helm-charts-datascience/vscode?autoLaunch=false).
+
+- Générer un jeton d'accès (*token*) sur GitHub afin de permettre l'authentification en ligne de commande à votre compte. La procédure est décrite [ici](https://docs.sspcloud.fr/onyxia-guide/controle-de-version#creer-un-jeton-dacces-token). Garder le jeton généré de côté.
 
 - Forker le dépôt `Github` <i class="fab fa-github"></i> https://github.com/avouacr/ensae-reproductibilite-projet
 
 - Clôner __votre__ dépôt `Github` <i class="fab fa-github"></i> en utilisant le
-terminal depuis `Visual Studio` (`Terminal > New Terminal`).
-Pour rappel, la commande est
+terminal depuis `Visual Studio` (`Terminal > New Terminal`) :
 
 ```shell
-git clone URL_DEPOT_GIT
+$ git clone https://<TOKEN>@github.com/avouacr/ensae-reproductibilite-projet.git
 ```
 
-où `URL_DEPOT_GIT` est l'adresse que vous avez copier-coller depuis le bouton
-clône de `Github`
-(normalement de la forme
-`https://github.com/<USERNAME_GITHUB>/ensae-reproductibilite-projet.git`)
+où `<TOKEN>` est à remplacer par le jeton que vous avez généré précédemment.
 
-- Se placer dans le terminal dans le dossier en question. 
+- Se placer avec le terminal dans le dossier en question : 
 
 ```shell
-cd ensae-reproductibilite-projet
+$ cd ensae-reproductibilite-projet
 ```
 
-- Créez une branche `nettoyage`. Pour rappel, la commande est
+- Créez une branche `nettoyage` :
 
 ```shell
-git checkout -b nettoyage
-#Switched to a new branch 'nettoyage'
+$ git checkout -b nettoyage
+Switched to a new branch 'nettoyage'
 ```
-
-
-- Si vous ne l'avez pas déjà fait avant, créez un _token_ `Github` et 
-conservez le à portée de main (dans un fichier texte ou dans un gestionnaire
-de mot de passe)
-
-{{% /box %}}
 
 
 # Partie 2 : construction d'un projet portable et reproductible
