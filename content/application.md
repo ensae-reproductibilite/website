@@ -196,6 +196,10 @@ ensae-reproductibilite-projet
         └── train_evaluate.py
 ```
 
+{{% box status="tip" title="Note" icon="fa fa-hint" %}}
+Il est normal d'avoir des dossiers `__pycache__` qui traînent : ils se créent automatiquement à l'exécution d'un script en Python. On verra comment les supprimer définitivement à l'étape 8.
+{{% /box %}}
+
 # Partie 2 : construction d'un projet portable et reproductible
 
 # Partie 3 : mise en production
