@@ -243,4 +243,10 @@ En pratique, mieux vaut adopter l'habitude de toujours mettre un `.gitignore`, p
 
 # Partie 2 : construction d'un projet portable et reproductible {#partie2}
 
+Dans la partie précédente, on a appliqué de manière incrémentale de nombreuses bonnes pratiques vues tout au long du cours. Ce faisant, on s'est déjà considérablement rapprochés d'une possible mise en production : le code est lisible, la structure du projet est normalisée et évolutive, et le code est proprement versionné sur un dépôt GitHub.
+
+On a donc à présent une version du projet qui est largement partageable. Du moins en théorie, car la pratique est souvent plus compliquée : il y a fort à parier que si vous essayez d'exécuter votre projet sur un autre environnement (typiquement, votre ordinateur personnel), les choses ne se passent pas du tout comme attendu. Cela signifique qu'**en l'état, le projet n'est pas portable : il n'est pas possible, sans modifications coûteuses, de l'exécuter dans un environnement différent de celui dans lequel il a été développé**.
+
+Dans cette seconde partie, on va voir différentes manières de **normaliser l'environnement d'exécution afin de produire un projet portable**. On sera alors tout proche de pouvoir mettre le projet en production.
+
 # Partie 3 : mise en production
