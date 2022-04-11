@@ -81,7 +81,7 @@ Le choix de la distribution importe assez peu en pratique, dans la mesure où no
 
 ![](/conda-eco.png)
 
-### Fonctionnement
+### En pratique
 
 #### Créer un environnement
 
@@ -277,5 +277,49 @@ Source : [docker.com](https://www.docker.com/resources/what-container/)
 ## Implémentations
 
 Comme pour les environnements virtuels, il existe différentes implémentations de la technologie des conteneurs. En pratique, l'implémentation offerte par `Docker` est devenue largement prédominante, au point qu'il est devenu courant d'utiliser de manière interchangeable les termes "conteneuriser" et "Dockeriser" une application. C'est donc cette implémentation que nous allons étudier et utiliser dans ce cours.
+
+## Docker
+
+### Installation
+
+Les instructions à suivre pour installer `Docker` selon son système d'exploiration sont détaillées dans la [documentation officielle](https://docs.docker.com/get-docker/).
+
+### *Worflow*
+
+Un conteneur Docker est mis à disposition sous la forme d'une image, c'est à dire d'un fichier binaire qui contient l'environnement nécessaire à l'exécution de l'application. Pour construire (*build*) l'image, on utilise un `Dockerfile`, un fichier texte qui contient la recette — sous forme de commandes Linux — de construction de l'environnement. L'image va être uploadée (*push*) sur un dépôt (*registry*), public (DockerHub) ou privé, depuis lequel les utilisateurs vont pouvoir télécharger l'image (*pull*). Le moteur Docker permet ensuite de lancer (*run*) un conteneur, c'est à dire une instance vivante de l'image.
+
+### En pratique
+
+#### Le `Dockerfile`
+
+A là base de chaque image `Docker` se trouve un `Dockerfile`. C'est un fichier texte qui contient une série de commandes qui permettent de construire l'image. Ces fichiers peuvent être plus ou moins complexes selon l'application que l'on cherche à conteneuriser, mais leur structure est assez normalisée. Pour s'en rendre compte, analysons ligne à ligne le `Dockerfile` permettant de "dockeriser" une application interactive construite avec le framework `Python` [Flask](https://flask.palletsprojects.com/en/2.1.x/).
+
+```bash
+FROM ubuntu:20.04
+
+RUN apt-get update -y && \
+    apt-get install -y software-properties-common python3-pip python3-dev
+    
+WORKDIR /app
+
+COPY requirements.txt /app/requirements.txt
+RUN pip install -r requirements.txt
+
+COPY . /app
+
+CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
+```
+
+- `FROM` : spécifie l'image de base. Une image Docker hérite toujours d'une image de base. Ici, on choisit l'image `Ubuntu` version `20.04`, tout va donc se passer comme si l'on développait sur une machine virtuelle vierge ayant pour système d'exploitation `Ubuntu 20.04` ;
+- `RUN` : lance une commande Linux. Ici, on installe `Python` ainsi que des librairies système nécessaires au bon fonctionnement de notre application ;
+- `WORKDIR` : spécifie le répertoire de travail de l'image. Ainsi, toutes les commandes suivantes seront exécutées depuis ce répertoire ;
+- `COPY` : copie un fichier local sur l'image `Docker`. Ici, on copie le fichier `requirements.txt` du projet, qui spécifie les dépendances `Python` de notre application, puis on les installe avec une commande `RUN` ;
+- `CMD` : spécifie la commande que doit exécuter le conteneur lors de son lancement. Ici, on utilise une commande `Python` pour lancer l'application `Flask` contenue dans les scripts du projet.
+
+#### Construction d'une image Docker
+
+#### Export d'une image Docker
+
+#### Exécuter une image Docker
 
 ## Limites
