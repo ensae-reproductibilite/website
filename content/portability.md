@@ -214,11 +214,17 @@ La technologie des conteneurs permet de répondre à ces différents problèmes.
 
 Avec les environnements virtuels, l'idée était de permettre à chaque utilisateur potentiel de notre projet d'installer sur son environnement d'exécution les packages nécessaires à la bonne exécution du projet. Néanmoins, comme on l'a vu, cette approche ne garantit pas une reproductibilité parfaite et a l'inconvénient de nécessiter beaucoup de gestion manuelle.
 
-Changeons de perspective : au lieu de distribuer une recette permettant à l'utilisateur de recréer l'environnement nécessaire sur sa machine, ne pourrait-on pas directement distribuer à l'utilisateur une machine contenant l'environnement pré-configuré ? Bien entendu, on ve pas configurer et envoyer des ordinateurs portables à tous les utilisateurs potentiels d'un projet. Une autre solution serait de distribuer des machines virtuelles, qui tournent sur un serveur et simulent un véritable ordinateur. Ces machines ont cependant l'inconvénient d'être assez lourdes, et complexes à répliquer et distribuer.
-
-Pour pallier ces différentes limites, on va utiliser la technologie des conteneurs. Comme les machines virtuelles, les conteneurs permettent d'empaqueter complètement l'environnement (librairies systèmes, application, configuration) qui permet de faire tourner l'application. Mais à l'inverse d'une machine virtuelle, le conteneur ne contient pas de système d'exploitation, il utilise celui de la machine hôte qui l'exécute. La technologie des conteneurs permet ainsi de garantir une très forte reproductibilité tout en restant suffisamment légère pour permettre une distribution et une expérience d'utilisation simple aux utilisateurs.
+Changeons de perspective : au lieu de distribuer une recette permettant à l'utilisateur de recréer l'environnement nécessaire sur sa machine, ne pourrait-on pas directement distribuer à l'utilisateur une machine contenant l'environnement pré-configuré ? Bien entendu, on ve pas configurer et envoyer des ordinateurs portables à tous les utilisateurs potentiels d'un projet. Une autre solution serait de distribuer des machines virtuelles, qui tournent sur un serveur et simulent un véritable ordinateur. Ces machines ont cependant l'inconvénient d'être assez lourdes, et complexes à répliquer et distribuer. Pour pallier ces différentes limites, on va utiliser la technologie des conteneurs.
 
 ## Fonctionnement
+
+Comme les machines virtuelles, les conteneurs permettent d'empaqueter complètement l'environnement (librairies systèmes, application, configuration) qui permet de faire tourner l'application. Mais à l'inverse d'une machine virtuelle, le conteneur ne contient pas de système d'exploitation, il utilise celui de la machine hôte qui l'exécute. La technologie des conteneurs permet ainsi de garantir une très forte reproductibilité tout en restant suffisamment légère pour permettre une distribution et un déploiement simple aux utilisateurs.
+
+**Différences entre l'approche conteneurs (gauche) et l'approche machines virtuelles (droite)**
+
+![](/docker-vm.png)
+
+Source : [docker.com](https://www.docker.com/resources/what-container/)
 
 ## Implémentations
 
