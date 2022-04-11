@@ -68,8 +68,11 @@ Le choix de la distribution importe assez peu en pratique, dans la mesure où no
 
 ### Fonctionnement
 
+
+
 ## Limites
 
+Développer dans des environnements virtuels est une bonne pratique, car cela accroît la portabilité d'une application. Néanmoins, cela ne permet pas d'atteindre une portabilité maximale garantissant une exécution identique sur tout environnement d'exécution.
 
 # Les conteneurs
 
