@@ -202,15 +202,21 @@ Pour supprimer l'environnement `dev`, on utilise la commande `conda env remove -
 
 Développer dans des environnements virtuels est une bonne pratique, car cela accroît la portabilité d'une application. Néanmoins, il y a plusieurs limites à leur utilisation :
 - les librairies système nécessaires à l'installation des packages ne sont pas gérées ;
-- devoir installer `conda`, `Python`, et les packages nécessaires à chaque changement d'environnement peut être assez long et pénible en pratique ;
 - les environnements virtuels ne permettent pas toujours de gérer des projets faisant intervenir différents langages de programmation ;
+- devoir installer `conda`, `Python`, et les packages nécessaires à chaque changement d'environnement peut être assez long et pénible en pratique ;
 - dans un environnement de production, gérer des environnements virtuels différents pour chaque projet peut s'avérer rapidement complexe pour les administrateurs système.
 
-La technologie des conteneurs permet de résoudre ces différents problèmes.
+La technologie des conteneurs permet de répondre à ces différents problèmes.
 
 # Les conteneurs
 
 ## Introduction
+
+Avec les environnements virtuels, l'idée était de permettre à chaque utilisateur potentiel de notre projet d'installer sur son environnement d'exécution les packages nécessaires à la bonne exécution du projet. Néanmoins, comme on l'a vu, cette approche ne garantit pas une reproductibilité parfaite et a l'inconvénient de nécessiter beaucoup de gestion manuelle.
+
+Changeons de perspective : au lieu de distribuer une recette permettant à l'utilisateur de recréer l'environnement nécessaire sur sa machine, ne pourrait-on pas directement distribuer à l'utilisateur une machine contenant l'environnement pré-configuré ? Bien entendu, on ve pas configurer et envoyer des ordinateurs portables à tous les utilisateurs potentiels d'un projet. Une autre solution serait de distribuer des machines virtuelles, qui tournent sur un serveur et simulent un véritable ordinateur. Ces machines ont cependant l'inconvénient d'être assez lourdes, et complexes à répliquer et distribuer.
+
+Pour pallier ces différentes limites, on va utiliser la technologie des conteneurs. Comme les machines virtuelles, les conteneurs permettent d'empaqueter complètement l'environnement (librairies systèmes, application, configuration) qui permet de faire tourner l'application. Mais à l'inverse d'une machine virtuelle, le conteneur ne contient pas de système d'exploitation, il utilise celui de la machine hôte qui l'exécute. La technologie des conteneurs permet ainsi de garantir une très forte reproductibilité tout en restant suffisamment légère pour permettre une distribution et une expérience d'utilisation simple aux utilisateurs.
 
 ## Fonctionnement
 
