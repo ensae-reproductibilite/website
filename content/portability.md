@@ -266,7 +266,7 @@ Changeons de perspective : au lieu de distribuer une recette permettant à l'uti
 
 ## Fonctionnement
 
-Comme les machines virtuelles, les conteneurs permettent d'empaqueter complètement l'environnement (librairies systèmes, application, configuration) qui permet de faire tourner l'application. Mais à l'inverse d'une machine virtuelle, le conteneur ne contient pas de système d'exploitation, il utilise celui de la machine hôte qui l'exécute. La technologie des conteneurs permet ainsi de garantir une très forte reproductibilité tout en restant suffisamment légère pour permettre une distribution et un déploiement simple aux utilisateurs.
+Comme les machines virtuelles, les conteneurs permettent d'empaqueter complètement l'environnement (librairies systèmes, application, configuration) qui permet de faire tourner l'application. Mais à l'inverse d'une machine virtuelle, le conteneur n'inclut pas de système d'exploitation propre, il utilise celui de la machine hôte qui l'exécute. La technologie des conteneurs permet ainsi de garantir une très forte reproductibilité tout en restant suffisamment légère pour permettre une distribution et un déploiement simple aux utilisateurs.
 
 **Différences entre l'approche conteneurs (gauche) et l'approche machines virtuelles (droite)**
 
@@ -275,5 +275,7 @@ Comme les machines virtuelles, les conteneurs permettent d'empaqueter complètem
 Source : [docker.com](https://www.docker.com/resources/what-container/)
 
 ## Implémentations
+
+Comme pour les environnements virtuels, il existe différentes implémentations de la technologie des conteneurs. En pratique, l'implémentation offerte par `Docker` est devenue largement prédominante, au point qu'il est devenu courant d'utiliser de manière interchangeable les termes "conteneuriser" et "Dockeriser" une application. C'est donc cette implémentation que nous allons étudier et utiliser dans ce cours.
 
 ## Limites
