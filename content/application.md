@@ -315,8 +315,83 @@ Et remplacer les lignes par l'import adéquat du yaml
 https://github.com/linogaliana/ensae-reproductibilite-projet-1/commit/4a9d935223b6af366d4cf2a2a208d98a25407fc6
 ----->
 
-## Etape 2: améliorer l'environnment `conda`
+## Etape 2 :  créer un environnement conda à partir du fichier `environment.yml`
 
-L'environnement `conda` 
+L'environnement `conda` créé avec `conda export` contient énormément
+de dépendances, dont de nombreuses qui ne nous sont pas nécessaires (il 
+en serait de même avec `pip freeze`). 
+Nous n'avons en effet besoin que des _packages_ présents dans les `import` 
+de nos scripts et de leurs dépendances.
+
+
+Vous avez obtenu un `environment.yml` beaucoup plus parcimonieux
+que celui généré par un `conda export` précédemment
+
+{{< panelset class="simplification" >}}
+
+{{% panel name="Approche générale :koala: " %}}
+
+* Créer un environnement vide avec `Python 3.10` 
+
+```
+conda create -n monenv python=3.10.0
+```
+
+* Activer cet environnment
+
+* Installer en ligne de commande avec pip les packages nécessaires
+pour faire tourner votre code
+
+<!---
+pip install pandas PyYAML s3fs scikit-learn
+---->
+
+* Faire un `pip freeze > requirements.txt` ou 
+`conda env export > environment.yml` (privilégier la deuxième option)
+
+* Retirer la section `prefix` (si elle est présente)
+et changer la section `name` en `monenv`
+
+
+{{% /panel %}}
+
+
+{{% panel name="Approche fainéante :sloth:" %}}
+
+Nous allons générer une version plus minimaliste grâce à l'utilitaire
+[`pipreqs`](https://github.com/bndr/pipreqs)
+
+* Installer `pipreqs` en `pip install`
+* En ligne de commande, depuis la racine du projet, faire `pipreqs`
+* Ouvrir le `requirements.txt` automatiquement généré. Il est beaucoup plus
+minimal que l'`environment.yml`. 
+* Remplacer toute la section `dependencies` du `environment.yml`
+par le contenu du `requirements.txt`
+(ne pas oublier l'indentation et le tiret en début de ligne)
+* Modifier le tiret à `scikit learn`. Il ne faut pas un _underscore_ mais
+un tiret
+* Ajouter la version de python `python=3.10.0` au début de la section `dependencies`
+
+
+* Retirer la section `prefix` (si elle est présente)
+et changer la section `name` en `monenv`
+* Créer l'environnement 
+
+
+```shell
+conda env create -f environment.yml
+```
+
+* Activer l'environnement
+
+{{% /panel %}}
+
+{{% /panelset %}}
+
+* Tester votre script en ligne de commande
+* `Commit` quand vous êtes contents
+
+
+## Etape 3: conteneuriser avec Docker :elephant:
 
 # Partie 3 : mise en production
