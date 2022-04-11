@@ -10,14 +10,17 @@ layout: single
 
 # La notion de portabilité
 
-Dans les chapitres précédents, nous avons vu un ensemble de bonnes pratiques qui permettent de considérablement améliorer la qualité d'un projet : rendre le code plus lisible, adopter une structure du projet normalisée et évolutive, et versionner proprement son code sur un dépôt GitHub.
+Dans les chapitres précédents, nous avons vu un ensemble de bonnes pratiques qui permettent de considérablement améliorer la qualité d'un projet : rendre le code plus lisible, adopter une structure du projet normalisée et évolutive, et versionner proprement son code sur un dépôt `GitHub`.
 
-Une fois ces bonnes pratiques appliquées à notre projet, ce dernier apparaît largement partageable. Du moins en théorie, car la pratique est souvent plus compliquée : il y a fort à parier que si vous essayez d'exécuter votre projet sur un autre environnement d'exécution (un autre ordinateur, un server, etc.), les choses ne se passent pas du tout comme attendu. Cela signifique qu'**en l'état, le projet n'est pas portable : il n'est pas possible, sans modifications coûteuses, de l'exécuter dans un environnement différent de celui dans lequel il a été développé**.
+Une fois ces bonnes pratiques appliquées à notre projet, ce dernier apparaît largement partageable. Du moins en théorie, car la pratique est souvent plus compliquée : il y a fort à parier que si vous essayez d'exécuter votre projet sur un autre environnement d'exécution (un autre ordinateur, un serveur, etc.), les choses ne se passent pas du tout comme attendu. Cela signifique qu'**en l'état, le projet n'est pas portable : il n'est pas possible, sans modifications coûteuses, de l'exécuter dans un environnement différent de celui dans lequel il a été développé**.
 
 La principale raison est qu'un code ne vit pas dans une bulle isolée, il contient en général de nombreuses adhérences, plus ou moins visibles, au langage et à l'environnement dans lesquels il a été développé :
 - des dépendances dans le langage du projet  ;
-- des dépendances dans d'autres langages (ex : `NumPy` est écrit en C et nécessite donc un compilateur C) ;
-- des librairies systèmes nécessaires pour installer certains packages (ex : les librairies de cartographie dynamique comme `Leaflet` nécessitent la librairie système `GDAL`), qui ne seront pas les mêmes selon le système d'exploitation utilisé.
+- des dépendances dans d'autres langages (ex : `NumPy` est écrit en `C` et nécessite donc un compilateur `C`) ;
+- des librairies systèmes nécessaires pour installer certains _packages_
+(par exemple, : les librairies de cartographie dynamique comme `Leaflet` ou `Folium`
+nécessitent la librairie système `GDAL`),
+qui ne seront pas les mêmes selon le système d'exploitation utilisé.
 
 Si le premier problème peut être géré relativement facilement en adoptant une [structure de package]({{< ref "/content/code-architecture.md" >}}) et en spécifiant bien les différentes dépendances utilisées, les deux autres nécessitent en général des outils plus avancés.
 
@@ -30,7 +33,7 @@ Ces outils vont nous permettre de **normaliser l'environnement afin de produire 
 
 ## Introduction
 
-Pour illustrer l'importance de travailler avec des environnements virtuels, mettons-nous à la place d'un.e aspirant *data scientist* qui commencerait ses premiers projets. Selon toute vraisemblance, il va commencer par installer une distribution de `Python` — souvent, via Anaconda — sur son poste et commencer à développer, projet après projet. Dans cette approche, les différents *packages* qu'il va être amené à utiliser vont être installés au même endroit. Cela pose plusieurs problèmes :
+Pour illustrer l'importance de travailler avec des environnements virtuels, mettons-nous à la place d'un.e aspirant *data scientist* qui commencerait ses premiers projets. Selon toute vraisemblance, il va commencer par installer une distribution de `Python` — souvent, via `Anaconda` — sur son poste et commencer à développer, projet après projet. Dans cette approche, les différents *packages* qu'il va être amené à utiliser vont être installés au même endroit. Cela pose plusieurs problèmes :
 - **conflits de version** : une application A peut dépendre de la version 1 d'un package là où une application B peut dépendre de la version 2 de ce même package. Une seule application peut donc fonctionner dans cette configuration ;
 - **version de `Python` fixe** — on ne peut avoir qu'une seule installation par système — là où on voudrait pouvoir avoir des versions différentes selon le projet ;
 - **reproductiblité limitée** : difficile de dire quel projet repose sur tel package, dans la mesure où ceux-ci s'accumulent en un même endroit au fil des projets ;
@@ -40,15 +43,27 @@ Les environnements virtuels constituent une solution à ces différents problèm
 
 ## Fonctionnement
 
-Le concept d'environnement virtuel est techniquement très simple. En `Python`, il s'agit d'un "dossier auto-suffisant qui contient une installation de `Python` pour une version particulière de `Python` ainsi que des *packages* additionnels", et qui est isolé des autres environnements existants. 
+Le concept d'environnement virtuel est techniquement très simple.
+On peut lui donner la définition suivante pour `Python` :
+
+> _"dossier auto-suffisant qui contient une installation de `Python`
+pour une version particulière de `Python` ainsi que des *packages* additionnels
+et qui est isolé des autres environnements existants."_
 
 On peut donc simplement voir les environnements virtuels comme un moyen de faire cohabiter sur un même système différentes installations de `Python` avec chacune leur propre liste de packages installés et leurs versions. Développer dans des environnements virtuels vierges à chaque début de projet est une très bonne pratique pour accroître la reproductibilité des analyses.
 
 ## Implémentations
 
-Il existe différentes implémentations des environnements virtuels en `Python`, dont chacune ont leurs spécificités et leur communauté d'utilisateurs. 
+Il existe différentes implémentations des environnements virtuels en `Python`, dont chacune ont leurs spécificités et leur communauté d'utilisateurs : 
 
-L'implémentation standard en `Python` est `venv`. Dans le domaine de la *data science*, l'implémentation la plus courante est sans doute `conda`. En pratique, ces implémentations sont relativement proches. La différence majeure est que `conda` est à la fois un *package manager* (comme `pip`) et un gestionnaire d'environnements virtuels (comme `venv`). Pendant longtemps, `conda` en tant que *package manager* s'est avéré très pratique en *data science*, dans la mesure où il gérait non seulement les dépendances `Python` mais aussi dans d'autres langages — comme des dépendances `C`. Par ailleurs, la *distribution* `Anaconda`, qui contient à la fois `Python`, `conda` et beaucoup de *packages* utiles pour la *data science*, explique également cette popularité auprès des *data scientists*. 
+* L'implémentation standard en `Python` est `venv`.
+* Dans le domaine de la *data science*, l'implémentation la plus courante est sans doute `conda`.
+
+En pratique, ces implémentations sont relativement proches.
+La différence majeure est que `conda` est à la fois un *package manager* (comme `pip`)
+et un gestionnaire d'environnements virtuels (comme `venv`).
+
+Pendant longtemps, `conda` en tant que *package manager* s'est avéré très pratique en *data science*, dans la mesure où il gérait non seulement les dépendances `Python` mais aussi dans d'autres langages — comme des dépendances `C`. Par ailleurs, la *distribution* `Anaconda`, qui contient à la fois `Python`, `conda` et beaucoup de *packages* utiles pour la *data science*, explique également cette popularité auprès des *data scientists*. 
 
 Pour toutes ces raisons, nous allons présenter l'utilisation de `conda` comme gestionnaire d'environnements virtuels. Les principes présentés restent néanmoins valides pour les autres implémentations
 
@@ -99,6 +114,7 @@ Comme indiqué dans les logs, Conda a créé notre environnement et nous indique
 On peut vérifier que l'environnement a bien été créé en listant les environnements installés sur le système.
 
 ```bash
+conda info --envs
 # conda environments:
 #
 base                    * /home/coder/local/bin/conda
@@ -108,13 +124,18 @@ dev                       /home/coder/local/bin/conda/envs/dev
 
 #### Activer un environnement
 
-Comme plusieurs environnements peuvent coexister sur un même système, il faut spécifier à Conda que l'on souhaite utiliser cet environnement pour la session courante du terminal.
+Comme plusieurs environnements peuvent coexister sur un même système,
+il faut spécifier à `Conda`
+que l'on souhaite utiliser cet environnement pour la session courante du terminal.
 
 ```bash
 $ conda activate dev
 ```
 
-Conda nous indique que l'on travaille à partir de maintenant dans l'environnement `dev` en indiquant son nom entre parenthèses au début de la ligne de commandes. Pour s'en assurer, vérifions avec la commande `which` l'emplacement de l'interpréteur Python qui sera utilisé si on lance une commande du type `python mon-script.py`.
+`Conda` nous indique que l'on travaille à partir de maintenant dans l'environnement `dev` en indiquant son nom entre parenthèses au début de la ligne de commandes. Autrement dit, `dev` devient pour un temps notre 
+environnement par défaut. 
+Pour s'en assurer,
+vérifions avec la commande `which` l'emplacement de l'interpréteur Python qui sera utilisé si on lance une commande du type `python mon-script.py`.
 
 ```bash
 (dev) $ which python 
@@ -140,7 +161,21 @@ ca-certificates           2022.3.29            h06a4308_0
 
 #### Installer un package
 
-La syntaxe pour installer un package avec Conda est très similaire à celle de `pip` : `conda install nom_du_package`. La différence est que là où `pip install` va installer un package à partir du répertoire [PyPI](https://pypi.org/), `conda install` va chercher le package sur les répertoires maintenus par les développeurs de Conda. Installons par exemple le package phare de *machine learning* `scikit-learn`.
+La syntaxe pour installer un package avec Conda est très similaire à celle de `pip` : 
+
+```shell
+conda install nom_du_package
+```
+
+La différence est que là où `pip install` va installer un package à partir du répertoire [PyPI](https://pypi.org/), `conda install` va chercher le package sur les répertoires maintenus par les développeurs de Conda[^1]. Installons par exemple le package phare de *machine learning* `scikit-learn`.
+
+[^1]: Ces répertoires sont, dans le langage `conda` les _canaux_.
+Le canal par défaut est maintenu par les développeurs d`Anaconda`. 
+Cependant, pour en assurer la stabilité, ce canal a une forte inertie. 
+La `conda-forge` a émergé pour offrir plus de flexibilité aux développeurs
+de _package_ qui peuvent ainsi mettre à disposition des versions plus
+récentes de leurs packages, comme sur  [PyPI](https://pypi.org/).
+
 
 ```bash
 (dev) $ conda install scikit-learn
@@ -158,13 +193,25 @@ Solving environment: done
 
 Là encore, Conda nous demande d'installer d'autres packages, qui sont des dépendances de `scikit-learn`. Par exemple, la librairie de calcul scientifique `NumPy`.
 
-L'autre différence majeure avec `pip` est que Conda utilise une méthode plus avancée — et donc également plus coûteuse en temps — de résolution des dépendances. En effet, différents packages peuvent spécifier différentes versions d'un même package dont ils dépendent tous les deux, ce qui provoque un conflit de version. Conda va par défaut appliquer un algorithme qui vise à gérer au mieux ces conflits, là où `pip` va choisir une approche plus minimaliste.
+L'autre différence majeure avec `pip` est que Conda utilise une méthode plus avancée — et donc également plus coûteuse en temps — de résolution des dépendances. En effet, différents packages peuvent spécifier différentes versions d'un même package dont ils dépendent tous les deux, ce qui provoque un conflit de version. Conda va par défaut appliquer un algorithme qui vise à gérer au mieux ces conflits, là où `pip` va choisir une approche plus minimaliste[^2].
 
-Il arrive que des packages disponibles sur le répertoire `PyPI` ne soient pas disponible sur les canaux gérés par Conda. Dans ce cas, il est possible d'installer un package dans l'environnement via la commande `pip install`. Il est néanmonins toujours préférable de privilégier une installation via Conda si disponible.
+[^2]: [`mamba`](https://mamba.readthedocs.io/en/latest/)
+est une alternative au système de gestion de dépendance par
+défaut de conda grâce à un _solver_ plus efficace. 
+En proposant celui-ci, le projet `mamba` vise à pallier l'un 
+des irritants principaux de `conda`, à savoir la lenteur du _solver_.
+
+
+Il arrive que des packages disponibles sur le répertoire `PyPI`
+ne soient pas disponible sur les canaux gérés par Conda.
+Dans ce cas, il est possible d'installer un package dans l'environnement via la commande `pip install`.
+Il est néanmonins toujours préférable de privilégier une installation via Conda si disponible.
 
 #### Exporter les spécifications de l'environnement
 
-Développer à partir d'un environnement vierge est une bonne pratique de reproductibilité : en partant d'une base minimale, on s'assure que seuls les packages effectivement nécessaire au bon fonctionnement de notre application ont été installés au fur et à mesure du projet. 
+Développer à partir d'un environnement vierge est une bonne pratique de reproductibilité :
+en partant d'une base minimale, on s'assure que seuls les packages effectivement nécessaires
+au bon fonctionnement de notre application ont été installés au fur et à mesure du projet. 
 
 Cela rend également notre projet plus portable : on peut exporter les spécifications de l'environnement (version de Python, canaux de téléchargement des packages, packages installés et leurs versions) dans un fichier, appelé par convention `environment.yml`.
 
@@ -172,7 +219,8 @@ Cela rend également notre projet plus portable : on peut exporter les spécific
 (dev) $ conda env export > environment.yml
 ```
 
-Ce fichier est mis par convention à la racine du dépôt Git du projet. Ainsi, les personnes souhaitant tester l'application peuvent recréer le même environnement Conda que celui qui a servi au développement via la commande suivante.
+Ce fichier est mis par convention à la racine du dépôt `Git` du projet.
+Ainsi, les personnes souhaitant tester l'application peuvent recréer le même environnement Conda que celui qui a servi au développement via la commande suivante.
 
 ```bash
 $ conda env create -f environment.yml
