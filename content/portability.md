@@ -114,6 +114,7 @@ Comme indiqué dans les logs, Conda a créé notre environnement et nous indique
 On peut vérifier que l'environnement a bien été créé en listant les environnements installés sur le système.
 
 ```bash
+conda info --envs
 # conda environments:
 #
 base                    * /home/coder/local/bin/conda
@@ -123,13 +124,18 @@ dev                       /home/coder/local/bin/conda/envs/dev
 
 #### Activer un environnement
 
-Comme plusieurs environnements peuvent coexister sur un même système, il faut spécifier à Conda que l'on souhaite utiliser cet environnement pour la session courante du terminal.
+Comme plusieurs environnements peuvent coexister sur un même système,
+il faut spécifier à `Conda`
+que l'on souhaite utiliser cet environnement pour la session courante du terminal.
 
 ```bash
 $ conda activate dev
 ```
 
-Conda nous indique que l'on travaille à partir de maintenant dans l'environnement `dev` en indiquant son nom entre parenthèses au début de la ligne de commandes. Pour s'en assurer, vérifions avec la commande `which` l'emplacement de l'interpréteur Python qui sera utilisé si on lance une commande du type `python mon-script.py`.
+`Conda` nous indique que l'on travaille à partir de maintenant dans l'environnement `dev` en indiquant son nom entre parenthèses au début de la ligne de commandes. Autrement dit, `dev` devient pour un temps notre 
+environnement par défaut. 
+Pour s'en assurer,
+vérifions avec la commande `which` l'emplacement de l'interpréteur Python qui sera utilisé si on lance une commande du type `python mon-script.py`.
 
 ```bash
 (dev) $ which python 
@@ -155,7 +161,21 @@ ca-certificates           2022.3.29            h06a4308_0
 
 #### Installer un package
 
-La syntaxe pour installer un package avec Conda est très similaire à celle de `pip` : `conda install nom_du_package`. La différence est que là où `pip install` va installer un package à partir du répertoire [PyPI](https://pypi.org/), `conda install` va chercher le package sur les répertoires maintenus par les développeurs de Conda. Installons par exemple le package phare de *machine learning* `scikit-learn`.
+La syntaxe pour installer un package avec Conda est très similaire à celle de `pip` : 
+
+```shell
+conda install nom_du_package
+```
+
+La différence est que là où `pip install` va installer un package à partir du répertoire [PyPI](https://pypi.org/), `conda install` va chercher le package sur les répertoires maintenus par les développeurs de Conda[^1]. Installons par exemple le package phare de *machine learning* `scikit-learn`.
+
+[^1]: Ces répertoires sont, dans le langage `conda` les _canaux_.
+Le canal par défaut est maintenu par les développeurs d`Anaconda`. 
+Cependant, pour en assurer la stabilité, ce canal a une forte inertie. 
+La `conda-forge` a émergé pour offrir plus de flexibilité aux développeurs
+de _package_ qui peuvent ainsi mettre à disposition des versions plus
+récentes de leurs packages, comme sur  [PyPI](https://pypi.org/).
+
 
 ```bash
 (dev) $ conda install scikit-learn
@@ -173,13 +193,25 @@ Solving environment: done
 
 Là encore, Conda nous demande d'installer d'autres packages, qui sont des dépendances de `scikit-learn`. Par exemple, la librairie de calcul scientifique `NumPy`.
 
-L'autre différence majeure avec `pip` est que Conda utilise une méthode plus avancée — et donc également plus coûteuse en temps — de résolution des dépendances. En effet, différents packages peuvent spécifier différentes versions d'un même package dont ils dépendent tous les deux, ce qui provoque un conflit de version. Conda va par défaut appliquer un algorithme qui vise à gérer au mieux ces conflits, là où `pip` va choisir une approche plus minimaliste.
+L'autre différence majeure avec `pip` est que Conda utilise une méthode plus avancée — et donc également plus coûteuse en temps — de résolution des dépendances. En effet, différents packages peuvent spécifier différentes versions d'un même package dont ils dépendent tous les deux, ce qui provoque un conflit de version. Conda va par défaut appliquer un algorithme qui vise à gérer au mieux ces conflits, là où `pip` va choisir une approche plus minimaliste[^2].
 
-Il arrive que des packages disponibles sur le répertoire `PyPI` ne soient pas disponible sur les canaux gérés par Conda. Dans ce cas, il est possible d'installer un package dans l'environnement via la commande `pip install`. Il est néanmonins toujours préférable de privilégier une installation via Conda si disponible.
+[^2]: [`mamba`](https://mamba.readthedocs.io/en/latest/)
+est une alternative au système de gestion de dépendance par
+défaut de conda grâce à un _solver_ plus efficace. 
+En proposant celui-ci, le projet `mamba` vise à pallier l'un 
+des irritants principaux de `conda`, à savoir la lenteur du _solver_.
+
+
+Il arrive que des packages disponibles sur le répertoire `PyPI`
+ne soient pas disponible sur les canaux gérés par Conda.
+Dans ce cas, il est possible d'installer un package dans l'environnement via la commande `pip install`.
+Il est néanmonins toujours préférable de privilégier une installation via Conda si disponible.
 
 #### Exporter les spécifications de l'environnement
 
-Développer à partir d'un environnement vierge est une bonne pratique de reproductibilité : en partant d'une base minimale, on s'assure que seuls les packages effectivement nécessaire au bon fonctionnement de notre application ont été installés au fur et à mesure du projet. 
+Développer à partir d'un environnement vierge est une bonne pratique de reproductibilité :
+en partant d'une base minimale, on s'assure que seuls les packages effectivement nécessaires
+au bon fonctionnement de notre application ont été installés au fur et à mesure du projet. 
 
 Cela rend également notre projet plus portable : on peut exporter les spécifications de l'environnement (version de Python, canaux de téléchargement des packages, packages installés et leurs versions) dans un fichier, appelé par convention `environment.yml`.
 
@@ -187,7 +219,8 @@ Cela rend également notre projet plus portable : on peut exporter les spécific
 (dev) $ conda env export > environment.yml
 ```
 
-Ce fichier est mis par convention à la racine du dépôt Git du projet. Ainsi, les personnes souhaitant tester l'application peuvent recréer le même environnement Conda que celui qui a servi au développement via la commande suivante.
+Ce fichier est mis par convention à la racine du dépôt `Git` du projet.
+Ainsi, les personnes souhaitant tester l'application peuvent recréer le même environnement Conda que celui qui a servi au développement via la commande suivante.
 
 ```bash
 $ conda env create -f environment.yml
