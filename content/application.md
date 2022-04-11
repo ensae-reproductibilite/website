@@ -203,7 +203,8 @@ Il est normal d'avoir des dossiers `__pycache__` qui traînent : ils se créent 
 
 Afin de favoriser la portabilité du projet, il est d'usage de "fixer l'environnement", c'est à dire d'indiquer dans un fichier toutes les dépendances utilisées ainsi que leurs version. Il est conventionnellement localisé à la racine du projet.
 
-Sur le VSCode du SSP Cloud, on se situe dans un environnemnt `conda`. La commande pour exporter un environnement `conda` est la suivante : 
+Sur le VSCode du SSP Cloud, on se situe dans un environnement `conda`.
+La commande pour exporter un environnement `conda` est la suivante : 
 
 ```shell
 $ conda env export > environment.yml
@@ -218,7 +219,8 @@ En réalité, on aun peu triché : on a exporté l'environnement de base du VSCo
 ## Etape 7 : stocker les données de manière externe
 
 {{% box status="warning" title="Warning" icon="fa fa-exclamation-triangle" %}}
-Cette étape n'est pas facile. Vous devrez suivre la [documentation du SSP Cloud](https://docs.sspcloud.fr/onyxia-guide/stockage-de-donnees) pour la réaliser.
+Cette étape n'est pas facile. Vous devrez suivre la [documentation du SSP Cloud](https://docs.sspcloud.fr/onyxia-guide/stockage-de-donnees) pour la réaliser. Une aide-mémoire est également disponible dans le cours
+de [Python pour les data-scientists](https://linogaliana-teaching.netlify.app/reads3/#)
 {{% /box %}}
 
 Comme on l'a vu dans le cours, les données ne sont pas censées être versionnées sur un projet Git. L'idéal pour éviter cela tout en maintenant la reproductibilité est d'utiliser une solution de stockage externe. On va utiliser pour cela `MinIO`, la solution de stockage de type `S3` offerte par le SSP Cloud. 
@@ -229,6 +231,11 @@ Comme on l'a vu dans le cours, les données ne sont pas censées être versionn�
 - supprimer les fichiers `.csv` du dossier `data` de votre projet, on n'en a plus besoin vu qu'on les importe de l'extérieur
 - vérifier le bon fonctionnement de votre application
 
+<!-----
+mc cp train.csv s3/lgaliana/ensae-reproductibilite/train.csv
+mc cp test.csv s3/lgaliana/ensae-reproductibilite/test.csv
+----->
+
 ## Etape 8 : nettoyer le dépôt Git
 
 Des dossiers parasites `__pycache__` se sont glissés dans notre projet. Ils se créent automatiquement à l'exécution d'un script en Python, afin de rendre plus rapide les exécutions ultérieures. Ils n'ont cependant pas de raison d'être versionnés, vu que ce sont des fichiers locaux (spécifiques à un environnement d'exécution donné).
@@ -238,7 +245,9 @@ Des dossiers parasites `__pycache__` se sont glissés dans notre projet. Ils se 
 - ajouter le dossier `data/` au `.gitignore` pour éviter tout ajout involontaire de données au dépôt Git
 
 {{% box status="tip" title="Note" icon="fa fa-hint" %}}
-En pratique, mieux vaut adopter l'habitude de toujours mettre un `.gitignore`, pertinent selon le langage du projet, dès le début du projet. GitHub offre cette option à l'initialisation d'un projet.
+En pratique, mieux vaut adopter l'habitude de toujours mettre un `.gitignore`, pertinent selon le langage du projet, dès le début du projet. `GitHub` offre cette option à l'initialisation d'un projet. Le site
+[gitignore.io](https://www.toptal.com/developers/gitignore) propose des modèles
+selon le langage que vous utilisez qui peuvent être utiles.
 {{% /box %}}
 
 ## Etape 9 : ouvrir une *pull request* sur le dépôt du projet
@@ -255,14 +264,59 @@ Faire une *pull request* via la branche `master` d’un *fork* est très mal vu.
 
 # Partie 2 : construction d'un projet portable et reproductible {#partie2}
 
-Dans la partie précédente, on a appliqué de manière incrémentale de nombreuses bonnes pratiques vues tout au long du cours. Ce faisant, on s'est déjà considérablement rapprochés d'une possible mise en production : le code est lisible, la structure du projet est normalisée et évolutive, et le code est proprement versionné sur un dépôt GitHub.
+Dans la partie précédente, on a appliqué de manière incrémentale de nombreuses bonnes pratiques vues tout au long du cours. Ce faisant, on s'est déjà considérablement rapprochés d'une possible mise en production : le code est lisible, la structure du projet est normalisée et évolutive, et le code est proprement versionné sur un dépôt `GitHub`.
 
-On a donc à présent une version du projet qui est largement partageable. Du moins en théorie, car la pratique est souvent plus compliquée : il y a fort à parier que si vous essayez d'exécuter votre projet sur un autre environnement (typiquement, votre ordinateur personnel), les choses ne se passent pas du tout comme attendu. Cela signifique qu'**en l'état, le projet n'est pas portable : il n'est pas possible, sans modifications coûteuses, de l'exécuter dans un environnement différent de celui dans lequel il a été développé**.
+Les étapes précédentes peuvent être terriblement longues si on n'a pas adopté
+les bons gestes dès le début du projet. En adoptant quelques réflexes de bonnes
+pratiques, on économise ainsi énormément de temps, ce qui permet de se concentrer
+sur la valorisation du projet. 
+
+On a donc à présent une version du projet qui est largement partageable.
+Du moins en théorie, car la pratique est souvent plus compliquée : il y a fort à parier que si vous essayez d'exécuter votre projet sur un autre environnement (typiquement, votre ordinateur personnel),
+les choses ne se passent pas du tout comme attendu. Cela signifie qu'**en l'état, le projet n'est pas portable : il n'est pas possible, sans modifications coûteuses, de l'exécuter dans un environnement différent de celui dans lequel il a été développé**.
 
 Dans cette seconde partie, on va voir comment **normaliser l'environnement d'exécution afin de produire un projet portable**. On sera alors tout proche de pouvoir mettre le projet en production. Précisément, on se servira des outils suivants : 
 - **environnements virtuels**
 - **images et conteneurs `Docker`**
 
 Le plan de la partie est le suivant :
+
+## Etape 1: créer un répertoire de variables servant d'input
+
+Lors de l'étape 7, nous avons amélioré la qualité du script en 
+séparant stockage et code. Cependant, peut-être avez-vous remarqué
+que nous avons introduit un nom de _bucket_ personnel dans le script
+(voir [le fichier main.py](https://github.com/linogaliana/ensae-reproductibilite-projet-1/blob/19d3973b5fd849256b88e4ecd91495c41ab7e277/main.py#L9)).
+Il s'agit typiquement du genre de petit vice caché d'un script qui peut 
+générer une erreur: vous n'avez pas accès au bucket en question donc
+si vous essayez de faire tourner ce script en l'état, vous allez rencontrer
+une erreur.
+
+Une bonne pratique pour gérer ce type de configuration est d'utiliser un 
+fichier `yaml` qui stocke de manière hiérarchisée les variables globales. 
+
+En l'occurrence, nous n'avons besoin que de deux éléments pour pouvoir
+dé-personnaliser ce script :
+
+- le nom du bucket
+- l'emplacement dans le bucket
+
+Dans VSCode, créer un fichier `config.yaml` et le localiser à la racine
+de votre dépôt. Par exemple,
+
+```yaml
+input:
+  bucket: "lgaliana"
+  path: "ensae-reproductibilite"
+```
+
+Et remplacer les lignes par l'import adéquat du yaml
+<!-----
+https://github.com/linogaliana/ensae-reproductibilite-projet-1/commit/4a9d935223b6af366d4cf2a2a208d98a25407fc6
+----->
+
+## Etape 2: améliorer l'environnment `conda`
+
+L'environnement `conda` 
 
 # Partie 3 : mise en production
