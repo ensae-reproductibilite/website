@@ -72,7 +72,13 @@ Le choix de la distribution importe assez peu en pratique, dans la mesure où no
 
 ## Limites
 
-Développer dans des environnements virtuels est une bonne pratique, car cela accroît la portabilité d'une application. Néanmoins, cela ne permet pas d'atteindre une portabilité maximale garantissant une exécution identique sur tout environnement d'exécution.
+Développer dans des environnements virtuels est une bonne pratique, car cela accroît la portabilité d'une application. Néanmoins, il y a plusieurs limites à leur utilisation :
+- les librairies système nécessaires à l'installation des packages ne sont pas gérées ;
+- devoir installer `conda`, `Python`, et les packages nécessaires à chaque changement d'environnement peut être assez long et pénible en pratique ;
+- les environnements virtuels ne permettent pas toujours de gérer des projets faisant intervenir différents langages de programmation ;
+- dans un environnement de production, gérer des environnements virtuels différents pour chaque projet peut s'avérer rapidement complexe pour les administrateurs système.
+
+La technologie des conteneurs permet de résoudre ces différents problèmes.
 
 # Les conteneurs
 
