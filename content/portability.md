@@ -68,7 +68,89 @@ Le choix de la distribution importe assez peu en pratique, dans la mesure où no
 
 ### Fonctionnement
 
+#### Créer un environnement
 
+Pour commencer à utiliser Conda, commençons par créer un environnement vierge, nommé `dev`, en spécifiant la version de Python que l'on souhaite installer pour notre projet.
+
+```bash
+$ conda create -n dev python=3.9.7
+Collecting package metadata (current_repodata.json): done
+Solving environment: done
+
+## Package Plan ##
+
+  environment location: /home/coder/local/bin/conda/envs/dev
+
+  added / updated specs:
+    - python=3.9.7
+
+
+The following packages will be downloaded:
+...
+The following NEW packages will be INSTALLED:
+...
+Proceed ([y]/n)? y
+Downloading and Extracting Packages
+...
+```
+
+Comme indiqué dans les logs, Conda a créé notre environnement et nous indique son emplacement sur le *filesystem*. En réalité, l'environnement n'est jamais vraiment vierge : Conda nous demande — et il faut répondre oui en tapant "y" — d'installer un certain nombre de packages, qui sont ceux qui viennent avec la distribution Miniconda.
+
+#### Activer un environnement
+
+L'environnement a bien été créé. Mais comme peuvent coexister plusieurs environnements sur un même système, il faut spécifier à Conda que l'on souhaite utiliser cet environnement pour la session courante du terminal.
+
+```bash
+$ conda activate dev
+```
+
+Conda nous indique que l'on travaille à partir de maintenant dans l'environnement `dev` en indiquant son nom entre parenthèses au début de la ligne de commandes. Pour s'en assurer, vérifions avec la commande `which` l'emplacement de l'interpréteur Python qui sera utilisé si on lance une commande du type `python mon-script.py`.
+
+```bash
+(dev) $ which python 
+/home/coder/local/bin/conda/envs/dev/bin/python
+```
+
+On travaille bien dans l'environnement attendu : l'interpréteur qui se lance n'est pas celui du système global, mais bien celui spécifique à notre environnement virtuel.
+
+#### Lister les packages installés
+
+Une fois l'environnement activé, on peut lister les packages installés et leur version. Cela confirme qu'un certain nombre de packages sont installés par défaut lors de la création d'un environnement virtuel.
+
+```bash
+(dev) $ conda list
+# packages in environment at /home/coder/local/bin/conda/envs/dev:
+#
+# Name                    Version                   Build  Channel
+_libgcc_mutex             0.1                        main  
+_openmp_mutex             4.5                       1_gnu  
+ca-certificates           2022.3.29            h06a4308_0  
+...
+```
+
+#### Installer un package
+
+La syntaxe pour installer un package avec Conda est très similaire à celle de `pip` : `conda install nom_du_package`. La différence est que là où `pip install` va installer un package à partir du répertoire [PyPI](https://pypi.org/), `conda install` va chercher le package sur les répertoires maintenus par les développeurs de Conda. Installons par exemple le package phare de *machine learning* `scikit-learn`.
+
+```bash
+(dev) $ conda install scikit-learn
+Collecting package metadata (current_repodata.json): done
+Solving environment: done
+
+## Package Plan ##
+
+  environment location: /home/coder/local/bin/conda/envs/dev
+
+  added / updated specs:
+    - scikit-learn
+...
+```
+
+Là encore, Conda nous demande d'installer d'autres packages, qui sont des dépendances de `scikit-learn`. Par exemple, la librairie de calcul scientifique `NumPy`.
+
+L'autre différence majeure avec `pip` est que Conda utilise une méthode plus avancée — et donc également plus coûteuse en temps — de résolution des dépendances. En effet, différents packages peuvent spécifier différentes versions d'un même package dont ils dépendent tous les deux, ce qui provoque un conflit de version. Conda va par défaut appliquer un algorithme qui vise à gérer au mieux ces conflits, là où `pip` va choisir une approche plus minimaliste.
+
+Enfin, notons qu'il arrive que des packages disponibles sur le répertoire `PyPI` ne soit pas disponible sur les canaux gérés par Conda. Dans ce cas, il est possible d'installer un package classiquement via la commande `pip install`. Il est néanmonins toujours préférable de privilégier une installation via Conda si disponible.
 
 ## Limites
 
