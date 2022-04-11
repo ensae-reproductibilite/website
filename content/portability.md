@@ -96,9 +96,19 @@ Downloading and Extracting Packages
 
 Comme indiqué dans les logs, Conda a créé notre environnement et nous indique son emplacement sur le *filesystem*. En réalité, l'environnement n'est jamais vraiment vierge : Conda nous demande — et il faut répondre oui en tapant "y" — d'installer un certain nombre de packages, qui sont ceux qui viennent avec la distribution Miniconda.
 
+On peut vérifier que l'environnement a bien été créé en listant les environnements installés sur le système.
+
+```bash
+# conda environments:
+#
+base                    * /home/coder/local/bin/conda
+basesspcloud              /home/coder/local/bin/conda/envs/basesspcloud
+dev                       /home/coder/local/bin/conda/envs/dev
+```
+
 #### Activer un environnement
 
-L'environnement a bien été créé. Mais comme peuvent coexister plusieurs environnements sur un même système, il faut spécifier à Conda que l'on souhaite utiliser cet environnement pour la session courante du terminal.
+Comme plusieurs environnements peuvent coexister sur un même système, il faut spécifier à Conda que l'on souhaite utiliser cet environnement pour la session courante du terminal.
 
 ```bash
 $ conda activate dev
@@ -150,7 +160,43 @@ Là encore, Conda nous demande d'installer d'autres packages, qui sont des dépe
 
 L'autre différence majeure avec `pip` est que Conda utilise une méthode plus avancée — et donc également plus coûteuse en temps — de résolution des dépendances. En effet, différents packages peuvent spécifier différentes versions d'un même package dont ils dépendent tous les deux, ce qui provoque un conflit de version. Conda va par défaut appliquer un algorithme qui vise à gérer au mieux ces conflits, là où `pip` va choisir une approche plus minimaliste.
 
-Enfin, notons qu'il arrive que des packages disponibles sur le répertoire `PyPI` ne soit pas disponible sur les canaux gérés par Conda. Dans ce cas, il est possible d'installer un package classiquement via la commande `pip install`. Il est néanmonins toujours préférable de privilégier une installation via Conda si disponible.
+Il arrive que des packages disponibles sur le répertoire `PyPI` ne soient pas disponible sur les canaux gérés par Conda. Dans ce cas, il est possible d'installer un package dans l'environnement via la commande `pip install`. Il est néanmonins toujours préférable de privilégier une installation via Conda si disponible.
+
+#### Exporter les spécifications de l'environnement
+
+Développer à partir d'un environnement vierge est une bonne pratique de reproductibilité : en partant d'une base minimale, on s'assure que seuls les packages effectivement nécessaire au bon fonctionnement de notre application ont été installés au fur et à mesure du projet. 
+
+Cela rend également notre projet plus portable : on peut exporter les spécifications de l'environnement (version de Python, canaux de téléchargement des packages, packages installés et leurs versions) dans un fichier, appelé par convention `environment.yml`.
+
+```bash
+(dev) $ conda env export > environment.yml
+```
+
+Ce fichier est mis par convention à la racine du dépôt Git du projet. Ainsi, les personnes souhaitant tester l'application peuvent recréer le même environnement Conda que celui qui a servi au développement via la commande suivante.
+
+```bash
+$ conda env create -f environment.yml
+```
+
+#### Changer d'environnement
+
+Pour changer d'environnement, il suffit d'en activer un autre.
+
+```bash
+(dev) $ conda base
+(base) $ 
+```
+
+Pour sortir de tout environnement Conda, on utilise la commande `conda deactivate` :
+
+```bash
+(base) $ conda deactivate
+$ 
+```
+
+#### Supprimer un environnement
+
+Pour supprimer l'environnement `dev`, on utilise la commande `conda env remove -n dev`.
 
 ## Limites
 
