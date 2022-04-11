@@ -30,9 +30,9 @@ Ces outils vont nous permettre de **normaliser l'environnement afin de produire 
 
 ## Introduction
 
-Pour illustrer l'importance de travailler avec des environnements virtuels, mettons-nous à la place d'un.e aspirant *data scientist* qui commencerait ses premiers projets. Selon toute vraisemblance, il va commencer par installer une distribution de Python — souvent, via Anaconda — sur son poste et commencer à développer, projet après projet. Dans cette approche, les différents *packages* qu'il va être amené à utiliser vont être installés au même endroit. Cela pose plusieurs problèmes :
+Pour illustrer l'importance de travailler avec des environnements virtuels, mettons-nous à la place d'un.e aspirant *data scientist* qui commencerait ses premiers projets. Selon toute vraisemblance, il va commencer par installer une distribution de `Python` — souvent, via Anaconda — sur son poste et commencer à développer, projet après projet. Dans cette approche, les différents *packages* qu'il va être amené à utiliser vont être installés au même endroit. Cela pose plusieurs problèmes :
 - **conflits de version** : une application A peut dépendre de la version 1 d'un package là où une application B peut dépendre de la version 2 de ce même package. Une seule application peut donc fonctionner dans cette configuration ;
-- **version de Python fixe** — on ne peut avoir qu'une seule installation par système — là où on voudrait pouvoir avoir des versions différentes selon le projet ;
+- **version de `Python` fixe** — on ne peut avoir qu'une seule installation par système — là où on voudrait pouvoir avoir des versions différentes selon le projet ;
 - **reproductiblité limitée** : difficile de dire quel projet repose sur tel package, dans la mesure où ceux-ci s'accumulent en un même endroit au fil des projets ;
 - **portabilité limitée** : conséquence du point précédent, il est difficile de fixer dans un fichier les dépendances spécifiques à un projet.
 
@@ -40,23 +40,31 @@ Les environnements virtuels constituent une solution à ces différents problèm
 
 ## Fonctionnement
 
-Le concept d'environnement virtuel est techniquement très simple. En Python, il s'agit d'un "dossier auto-suffisant qui contient une installation de Python pour une version particulière de Python ainsi que des *packages* additionnels", et qui est isolé des autres environnements existants. 
+Le concept d'environnement virtuel est techniquement très simple. En `Python`, il s'agit d'un "dossier auto-suffisant qui contient une installation de `Python` pour une version particulière de `Python` ainsi que des *packages* additionnels", et qui est isolé des autres environnements existants. 
 
-On peut donc simplement voir les environnements virtuels comme un moyen de faire cohabiter sur un même système différentes installations de Python avec chacune leur propre liste de packages installés et leurs versions. Développer dans des environnements virtuels vierges à chaque début de projet est une très bonne pratique pour accroître la reproductibilité des analyses.
+On peut donc simplement voir les environnements virtuels comme un moyen de faire cohabiter sur un même système différentes installations de `Python` avec chacune leur propre liste de packages installés et leurs versions. Développer dans des environnements virtuels vierges à chaque début de projet est une très bonne pratique pour accroître la reproductibilité des analyses.
 
 ## Implémentations
 
-Il existe différentes implémentations des environnements virtuels en Python, dont chacune ont leurs spécificités et leur communauté d'utilisateurs. 
+Il existe différentes implémentations des environnements virtuels en `Python`, dont chacune ont leurs spécificités et leur communauté d'utilisateurs. 
 
-L'implémentation standard en Python est `venv`. Dans le domaine de la *data science*, l'implémentation la plus courante est sans doute `Conda`. En pratique, ces implémentations sont relativement proches. La différence majeure est que `Conda` est à la fois un *package manager* (comme `pip`) et un gestionnaire d'environnements virtuels (comme `venv`). Pendant longtemps, `Conda` en tant que *package manager* s'est avéré très pratique en *data science*, dans la mesure où il gérait non seulement les dépendances Python mais aussi dans d'autres langages — comme des dépendances `C`. Par ailleurs, la *distribution* `Anaconda`, qui contient à la fois Python, `Conda` et beaucoup de *packages* utiles pour la *data science*, explique également cette popularité auprès des *data scientists*. 
+L'implémentation standard en `Python` est `venv`. Dans le domaine de la *data science*, l'implémentation la plus courante est sans doute `conda`. En pratique, ces implémentations sont relativement proches. La différence majeure est que `conda` est à la fois un *package manager* (comme `pip`) et un gestionnaire d'environnements virtuels (comme `venv`). Pendant longtemps, `conda` en tant que *package manager* s'est avéré très pratique en *data science*, dans la mesure où il gérait non seulement les dépendances `Python` mais aussi dans d'autres langages — comme des dépendances `C`. Par ailleurs, la *distribution* `Anaconda`, qui contient à la fois `Python`, `conda` et beaucoup de *packages* utiles pour la *data science*, explique également cette popularité auprès des *data scientists*. 
 
-Pour toutes ces raisons, nous allons présenter l'utilisation de `Conda` comme gestionnaire d'environnements virtuels. Les principes présentés restent néanmoins valides pour les autres implémentations
+Pour toutes ces raisons, nous allons présenter l'utilisation de `conda` comme gestionnaire d'environnements virtuels. Les principes présentés restent néanmoins valides pour les autres implémentations
 
 ## Conda
 
 ### Installation
 
+Les instructions à suivre pour installer `conda` sont détaillées dans la [documentation officielle](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html). `conda` seul étant peu utile en pratique, il est généralement installé dans le cadre de distributions. Les deux plus populaires sont :
+- `Miniconda` : une distribution minimaliste contenant `conda`, `Python` ainsi qu'un petit nombre de packages techniques très utiles ;
+- `Anaconda` : une distribution assez volumineuse contenant `conda`, `Python`, d'autres logiciels (`R`, `Spyder`, etc.) ainsi qu'un ensemble de packages utiles pour la *data science* (`SciPy`, `NumPy`, etc.).
 
+Le choix de la distribution importe assez peu en pratique, dans la mesure où nous allons de toute manière utiliser des environnements virtuels vierges pour développer nos projets.
+
+**L'écosystème Conda**
+
+![](/conda-eco.png)
 
 ### Fonctionnement
 
