@@ -315,17 +315,25 @@ CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
 ```
 
 - `FROM` : spécifie l'image de base. Une image Docker hérite toujours d'une image de base. Ici, on choisit l'image `Ubuntu` version `20.04`, tout va donc se passer comme si l'on développait sur une machine virtuelle vierge ayant pour système d'exploitation `Ubuntu 20.04` ;
-- `RUN` : lance une commande Linux. Ici, on installe `Python` ainsi que des librairies système nécessaires au bon fonctionnement de notre application ;
+- `RUN` : lance une commande Linux. Ici, on met d'abord à jour la liste des packages téléchargeables via `apt`, puis on installe `Python` ainsi que des librairies système nécessaires au bon fonctionnement de notre application ;
 - `WORKDIR` : spécifie le répertoire de travail de l'image. Ainsi, toutes les commandes suivantes seront exécutées depuis ce répertoire ;
 - `COPY` : copie un fichier local sur l'image `Docker`. Ici, on copie d'abord le fichier `requirements.txt` du projet, qui spécifie les dépendances `Python` de notre application, puis on les installe avec une commande `RUN`. La seconde instruction `COPY` copie le répertoire du projet sur l'image ;
 - `EXPOSE` : informe `Docker` que le conteneur "écoute" sur le port 5000, qui est le port par défaut sur lequel est diffusé une application `Flask` ;
 - `CMD` : spécifie la commande que doit exécuter le conteneur lors de son lancement. Ici, on utilise une commande `Python` pour lancer l'application `Flask` contenue dans les scripts du projet.
 
-{{% box status="tip" title="Note" icon="fa fa-hint" %}}
+{{% box status="hint" title="Hint: choix des librairies système" icon="fa fa-lightbulb" %}}
+Avec la première commande `RUN` du `Dockerfile`, nous installons `Python` mais aussi des librairies système nécessaires au bon fonctionnement de l'application. Mais comment les avons-nous trouvées ?
+
+Par essai et erreur. Lors de l'étape de [build](#build) que l'on verra juste après, le moteur `Docker` va essayer de construire l'image selon les spécifications du `Dockerfile`, comme s'il partait d'un ordinateur vide contenant simplement `Ubuntu 20.04`. Si des librairies manquent, le processus de *build* devrait renvoyer une erreur, qui s'affichera dans les *logs* de l'application, affichés par défaut dans la console. Quand on a de la chance, les logs décrivent explicitement les librairies système manquantes. Mais souvent, les messages d'erreur ne sont pas très explicites, et il faut alors les copier dans un moteur de recherche bien connu pour trouver la réponse, souvent sur [Stackoverflow](https://stackoverflow.com/).
+{{% /box %}}
+
+{{% box status="note" title="Note: les commandes Docker" icon="fa fa-comment" %}}
 Nous n'avons vu que les commandes `Docker` les plus fréquentes, il en existe beaucoup d'autres en pratique. N'hésitez pas à consulter la [documentation officielle](https://docs.docker.com/engine/reference/builder/) pour comprendre leur utilisation.
 {{% /box %}}
 
-#### Construction d'une image Docker
+#### Construction d'une image Docker {#build}
+
+
 
 #### Export d'une image Docker
 
