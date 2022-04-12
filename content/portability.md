@@ -26,6 +26,9 @@ Si le premier problème peut être géré relativement facilement en adoptant un
 
 Ces outils vont nous permettre de **normaliser l'environnement afin de produire un projet portable**, i.e. exécutable sur une large variété d'environnements d'exécution. Cette étape est primordiale lorsque l'on se préoccupe de la mise en production d'un projet, car elle assure une transition relativement indolore entre l'environnement de développement et celui de production.
 
+![](https://img.devrant.com/devrant/rant/r_174386_yx6zV.jpg)
+
+Image empruntée à https://devrant.com/rants/174386/when-i-say-but-it-works-on-my-machine
 
 
 
