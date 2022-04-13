@@ -427,53 +427,68 @@ environnement plus minimaliste:
 
 ## Etape 3: conteneuriser avec Docker <i class="fab fa-docker"></i> {#docker}
 
-## Préliminaire
+### Préliminaire
 
-- Se rendre sur le bac à sable XXXX
-- Cloner votre dépôt Git
-- Créer via la ligne de commande un fichier `Dockerfile`, par exemple
+- Se rendre sur l'environnement bac à sable [Play with Docker](https://labs.play-with-docker.com)
+- Dans le terminal `Linux`, cloner votre dépôt `Github`  <i class="fab fa-github"></i>
+- Créer via la ligne de commande un fichier `Dockerfile`. Il y a plusieurs manières
+de procéder, en voici un exemple:
 
 ```shell
 echo "#Dockerfile pour reproduire mon super travail" > Dockerfile
 ```
 
-- Ouvrir ce fichier via l'éditeur
+- Ouvrir ce fichier via l'éditeur proposé par l'environnement bac à sable. 
 
 
-## Création d'un premier Dockerfile
+### Création d'un premier Dockerfile
 
-- Comme couche de départ, partir d'une image légère comme `ubuntu:20.04`
-- Dans une deuxième couche, faire un `apt get -y update` et
-installer `wget` qui va être nécessaire pour télécharger depuis la ligne
-de commande `Miniconda`
-- Troisième couche:
+
+
+- :one: Comme couche de départ, partir d'une image légère comme `ubuntu:20.04`
+- :two: Dans une deuxième couche, faire un `apt get -y update` et
+installer `wget` qui va être nécessaire pour télécharger `Miniconda`
+depuis la ligne
+de commande 
+- :three: Dans la troisième couche, nous allons installer `Miniconda` :
     + Télécharger la dernière version de `Miniconda` avec `wget` depuis
-l'url https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+l'url de téléchargement direct https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
     + Installer `Miniconda` dans le chemin `/home/coder/local/bin/conda`
-    + Effacer
-- En quatrième couche, on va installer `mamba` pour accélérer l'installation
+    + Effacer le fichier d'installation pour libérer de la place sur l'image
+- :four: En quatrième couche, on va installer `mamba` pour accélérer l'installation
 des packages dans notre environnement. 
-- Cinquième couche: création de l'environnement:
-    + Utiliser `COPY` pour récupérer le fichier `environment.yml` (sinon Docker
-ne saura pas le créer)
-    + Créer l'environnement vide (uniquement python 3.10)
+- :five: En cinquième couche, nous allons créer l'environnement `conda`:
+    + Utiliser `COPY` pour que `Docker` soit en mesure d'utiliser
+le fichier `environment.yml` (sinon `Docker`
+renverra une erreur)
+    + Créer l'environnement vide `monenv` (présentant uniquement `Python` 3.10) avec
+la commande  `conda` adéquate
     + Mettre à jour l'environnement en utilisant `environment.yml` avec `mamba`
-- Ajouter l'environnement `monenv` au `PATH` et utiliser le _fix_ suivant
+- :six: Utiliser `ENV` pour ajouter l'environnement `monenv` au `PATH` et utiliser le _fix_ suivant:
 
 ```python
 RUN echo "export PATH=$PATH" >> /home/coder/.bashrc  # Temporary fix while PATH gets overwritten by code-server
 ```
 
-- Sixième étape: exposer sur le port 5000
-- Dernière étape: utiliser `CMD` pour reproduire le comportement de `python main.py`
+- :seven: Exposer sur le port `5000`
+- :eight: En dernière étape, utiliser `CMD` pour reproduire le comportement de `python main.py`
+
+
+{{% box status="hint" title="Hint: `mamba`" icon="fa fa-lightbulb" %}}
+`mamba` est une alternative à `conda` pour installer des _packages_ dans un
+environnement `Miniconda`/`Anaconda`. `mamba` n'est pas obligatoire, `conda`
+peut suffire. Cependant, `mamba` est beaucoup plus rapide
+que `conda` pour installer des packages à installer ; il s'agit donc
+d'un utilitaire très pratique. 
+{{% /box %}}
 
 {{< panelset class="nommage" >}}
 
 {{% panel name="Indications supplémentaires" %}}
 
-Cliquer sur les onglets ci-dessus pour bénéficier
+Cliquer sur les onglets ci-dessus :point_up_2: pour bénéficier
 d'indications supplémentaires, pour vous aider. Cependant, essayez
-de ne pas les consulter immédiatement. 
+de ne pas les consulter immédiatement: n'hésitez pas à tâtonner. 
 
 
 {{% /panel %}}
@@ -515,16 +530,19 @@ RUN mamba env update -n monenv -f environment.yml
 
 ### Construire l'image
 
+Maintenant, nous avons défini notre recette. Il nous reste à
+faire notre plat et à le goûter
 
-```shell
+- Utiliser `docker build` pour créer une image avec le tag `my-python-app`
+- Vérifier les images dont vous disposez. Vous devriez avoir un résultat
+proche de celui-ci
+
+<!---
 docker build . -t my-python-app
-```
+docker images
+---->
 
 ```shell
-docker images
-```
-
-```
 REPOSITORY      TAG       IMAGE ID       CREATED         SIZE
 my-python-app   latest    c0dfa42d8520   6 minutes ago   2.23GB
 ubuntu          20.04     825d55fb6340   6 days ago      72.8MB
@@ -532,50 +550,64 @@ ubuntu          20.04     825d55fb6340   6 days ago      72.8MB
 
 ### Tester l'image: découverte du cache
 
-```shell
-docker run -it my-python-app
-```
+Il ne reste plus qu'à goûter la recette et voir si le plat est bon. 
 
-Problème: Docker ne sait pas trouver le fichier `main.py`. D'ailleurs,
+Utiliser `docker run` avec l'option `it` pour pouvoir appeler l'image
+depuis son tag
+
+<!----
+docker run -it my-python-app
+---->
+
+:warning: :bomb: :fire: 
+`Docker` ne sait pas où trouver le fichier `main.py`. D'ailleurs,
 il ne connait pas d'autres fichiers de notre application qui sont nécessaires
 pour faire tourner le code: `config.yaml` et le dossier `src`
 
 - Avant l'étape `EXPOSE` utiliser plusieurs `ADD` et/ou `COPY` pour que l'application
 dispose de tous les éléments minimaux pour être en mesure de fonctionner
 
-- Refaire tourner 
-
-```shell
+- Refaire tourner `docker run`
+<!---
 docker run -it my-python-app
-```
+--->
 
 {{% box status="tip" title="Note" icon="fa fa-hint" %}}
-Ici, le cache permet d'économiser beaucoup de temps. Par besoin de 
-refaire tourner toutes les étapes, `docker` agit de manière intelligente
-en faisant tourner uniquement les étapes nouvelles
+Ici, le _cache_ permet d'économiser beaucoup de temps. Par besoin de 
+refaire tourner toutes les étapes, `Docker` agit de manière intelligente
+en faisant tourner uniquement les nouvelles étapes.
 {{% /box %}}
 
 ### Corriger une faille de reproductibilité
 
-```shell
-docker run -it my-python-app
-```
-
 
 Vous devriez rencontrer une erreur liée à la variable d'environnement
 `AWS_ENDPOINT_URL`. C'est normal, elle est inconnue de cet environnement
-minimaliste. De plus, cet environnement ne sait pas
-comment accéder aux fichiers présents dans votre `minio` 
+minimaliste. D'ailleurs, `Docker` n'a aucune raison de connaître
+votre espace de stockage sur le `S3` du `SSP-Cloud` si vous ne lui dites
+pas. 
+Donc cet environnement ne sait pas
+comment accéder aux fichiers présents dans votre `minio`.
+
+Vous allez régler ce problème avec les étapes suivantes, :
 
 
-- Ouvrir au public le fichier et récupérer les liens d'upload
-- Les mettre dans config et modifier la fonction d'import
+- :one: Naviguer dans l'[interface du SSP-Cloud](https://datalab.sspcloud.fr/mes-fichiers)
+pour retrouver les liens d'accès direct de vos fichiers
+- :two: Dans `VSCode`, les mettre dans `config.yaml` (faire de nouvelles clés)
+- :three: Dans `VSCode`, modifier la fonction d'import pour s'adapter à ce changement.
+- :four: Faire un `commit` et pusher les fichiers
+- :five: Dans l'environnement bac à sable, faire un `pull` pour récupérer ces
+modifications
+- :six: Tester à nouveau le `build` (là encore le _cache_ est bien pratique !)
 
 <!---
 cf. 
 https://github.com/linogaliana/ensae-reproductibilite-projet-1/commit/56946b4c5cb860d50b908d98a87fb549624314a6
 ----->
 
-- build et run: cela devrait maintenant fonctionner
+
+:tada: A ce stade, la matrice de confusion doit fonctionner. Vous avez créé
+votre première application reproductible !
 
 # Partie 3 : mise en production
