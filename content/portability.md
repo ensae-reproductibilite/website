@@ -88,7 +88,7 @@ Le choix de la distribution importe assez peu en pratique, dans la mesure où no
 
 #### Créer un environnement
 
-Pour commencer à utiliser Conda, commençons par créer un environnement vierge, nommé `dev`, en spécifiant la version de Python que l'on souhaite installer pour notre projet.
+Pour commencer à utiliser `conda`, commençons par créer un environnement vierge, nommé `dev`, en spécifiant la version de Python que l'on souhaite installer pour notre projet.
 
 ```bash
 $ conda create -n dev python=3.9.7
@@ -352,8 +352,7 @@ La structure de notre projet est la suivante.
 │   └── requirements.txt
 ```
 
-Le script `hello-world.py` contient le code d'une application minimaliste,
-qui affiche simplement _"Hello, World!"_ sur une page web.
+Le script `hello-world.py` contient le code d'une application minimaliste, qui affiche simplement _"Hello, World!"_ sur une page web.
 
 ```python
 from flask import Flask
@@ -469,12 +468,12 @@ REPOSITORY                               TAG       IMAGE ID       CREATED       
 myflaskapp                               latest    57d2f410a631   2 hours ago      433MB
 ```
 
-Intéressons nous un peu plus en détail aux *logs* de l'étape de *build*. Entre les étapes, `Docker` affiche des suites de lettres et de chiffres un peu ésotériques, et nous parle de conteneurs intermédiaires. En fait, il faut voir une image `Docker` comme un empilement de couches (*layers*), qui sont elles-mêmes des images `Docker`. Quand on hérite d'une image avec l'instruction `FROM`, on spécifie donc à Docker la couche initiale, sur laquelle il va construire le reste de notre environnement. A chaque étape sa nouvelle couche, et à chaque couche son *hash*, un identifiant unique fait de lettres et de chiffres.
+Intéressons nous un peu plus en détail aux *logs* de l'étape de *build*. Entre les étapes, `Docker` affiche des suites de lettres et de chiffres un peu ésotériques, et nous parle de conteneurs intermédiaires. En fait, il faut voir une image `Docker` comme un empilement de couches (*layers*), qui sont elles-mêmes des images `Docker`. Quand on hérite d'une image avec l'instruction `FROM`, on spécifie donc à `Docker` la couche initiale, sur laquelle il va construire le reste de notre environnement. A chaque étape sa nouvelle couche, et à chaque couche son *hash*, un identifiant unique fait de lettres et de chiffres.
 
-Cela peut ressembler à des détails techniques, mais c'est en fait extrêmement utile en pratique car cela permet à `Docker` de faire du *caching*. Lorsque l'on développe un Dockerfile, il est fréquent de devoir modifier ce dernier de nombreuses fois avant de trouver la bonne recette, et on aimerait bien ne pas avoir à *rebuild* l'environnement complet à chaque fois. Docker gère cela très bien : il *cache* chacune des couches intermédiaires. Par exemple, si l'on modifie la 5ème commande du Dockerfile, Docker va utiliser le cache pour ne pas avoir à recalculer les étapes précédentes, qui n'ont pas changé. Cela s'appelle l'_"invalidation du cache"_ :
-dès lors qu'une étape du Dockerfile est modifiée, Docker va recalculer toutes les étapes suivantes, mais seulement celles-ci. Conséquence directe de cette observation : il faut toujours ordonner les étapes d'un Dockerfile de sorte à ce qui est le plus susceptible d'être souvent modifié soit à la fin du fichier, et inversement.
+Cela peut ressembler à des détails techniques, mais c'est en fait extrêmement utile en pratique car cela permet à `Docker` de faire du *caching*. Lorsque l'on développe un `Dockerfile`, il est fréquent de devoir modifier ce dernier de nombreuses fois avant de trouver la bonne recette, et on aimerait bien ne pas avoir à *rebuild* l'environnement complet à chaque fois. `Docker` gère cela très bien : il *cache* chacune des couches intermédiaires. Par exemple, si l'on modifie la 5ème commande du `Dockerfile`, `Docker` va utiliser le cache pour ne pas avoir à recalculer les étapes précédentes, qui n'ont pas changé. Cela s'appelle l'_"invalidation du cache"_ :
+dès lors qu'une étape du `Dockerfile` est modifiée, `Docker` va recalculer toutes les étapes suivantes, mais seulement celles-ci. Conséquence directe de cette observation : il faut toujours ordonner les étapes d'un `Dockerfile` de sorte à ce qui est le plus susceptible d'être souvent modifié soit à la fin du fichier, et inversement.
 
-Pour illustrer cela, regardons ce qui se passe si l'on modifie le nom du script qui lance l'application, et donc la valeur de la variable d'environnement `FLASK_APP` dans le Dockerfile.
+Pour illustrer cela, regardons ce qui se passe si l'on modifie le nom du script qui lance l'application, et donc la valeur de la variable d'environnement `FLASK_APP` dans le `Dockerfile`.
 
 ```bash
 $ docker build . -t myflaskapp
@@ -516,7 +515,7 @@ Successfully tagged myflaskapp:latest
 
 L'étape de *build* a pris quelques secondes au lieu de plusieurs minutes, et les *logs* montrent bien l'utilisation du cache faite par `Docker` : les étapes précédant le changement réutilisent les couches cachées, mais celle d'après sont recalculées.
 
-#### Exécuter une image Docker {#execution}
+#### Exécuter une image `Docker` {#execution}
 
 L'étape de *build* a permis de créer une *image* `Docker`. Une image doit être vue comme un *template* : elle permet d'exécuter l'application sur n'importe quel environnement d'exécution sur lequel un moteur `Docker` est installé. En l'état, on a donc juste *construit*, mais rien *lancé* : notre application ne tourne pas encore. Pour cela, il faut créer un *conteneur*, i.e. une instance vivante de l'image qui permet d'accéder à l'application. Cela se fait via la commande `docker run`.
 
@@ -546,7 +545,7 @@ Dans notre cas d'application, on se situe dans la seconde configuration puisque 
 
 Finalement, on a pu développer et exécuter une application complète sur notre environnement local, sans avoir eu à installer quoi que ce soit sur notre machine personnelle, à part `Docker.`
 
-#### Exporter une image Docker {#imp-exp-docker}
+#### Exporter une image `Docker` {#imp-exp-docker}
 
 Jusqu'à maintenant, toutes les commandes `Docker` que nous avons exécutées se sont passées en local. Ce mode de fonctionnement peut être intéressant pour la phase de développement. Mais comme on l'a vu, un des gros avantages de `Docker` est la facilité de redistribution des images construites, qui peuvent ensuite être utilisées par de nombreux utilisateurs pour faire tourner notre application. Pour cela, il nous faut uploader notre image sur un dépôt distant, à partir duquel les utilisateurs pourront la télécharger.
 
@@ -569,7 +568,7 @@ c5ec52c98b31: Pushed
 1.0.0: digest: sha256:b75fe53fd1990c3092ec41ab0966a9fbbb762f3047957d99327cc16e27c68cc9 size: 1574
 ```
 
-#### Importer une image Docker {#imp-exp-docker}
+#### Importer une image `Docker` {#imp-exp-docker}
 
 En supposant que le dépôt utilisé pour uploader l'image est public, la procédure que doit suivre un utilisateur pour la télécharger se résume à utiliser la commande `docker pull compte/projet:version`
 
@@ -587,4 +586,4 @@ Status: Downloaded newer image for avouacr/myflaskapp:1.0.0
 docker.io/avouacr/myflaskapp:1.0.0
 ```
 
-`Docker` va télécharger et extraire chacune des couches qui constituent l'image (ce qui peut parfois être long). L'utilisateur peut alors créer un conteneur à partir de l'image, en utilisant `docker run` comme illustré précédemment.
+`Docker` télécharge et extrait chacune des couches qui constituent l'image (ce qui peut parfois être long). L'utilisateur peut alors créer un conteneur à partir de l'image, en utilisant `docker run` comme illustré précédemment.
