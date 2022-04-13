@@ -32,7 +32,7 @@ Image empruntée à https://devrant.com/rants/174386/when-i-say-but-it-works-on-
 
 
 
-# Les environnements virtuels
+# Les environnements virtuels :snake:
 
 ## Introduction
 
@@ -298,24 +298,52 @@ Source : [docker.com](https://www.docker.com/resources/what-container/)
 
 Comme pour les environnements virtuels, il existe différentes implémentations de la technologie des conteneurs. En pratique, l'implémentation offerte par `Docker` est devenue largement prédominante, au point qu'il est devenu courant d'utiliser de manière interchangeable les termes _"conteneuriser"_ et _"Dockeriser"_ une application. C'est donc cette implémentation que nous allons étudier et utiliser dans ce cours.
 
-## Docker
+## Docker <i class="fab fa-docker"></i>
 
 ### Installation
 
-Les instructions à suivre pour installer `Docker` selon son système d'exploiration sont détaillées dans la [documentation officielle](https://docs.docker.com/get-docker/).
+Les instructions à suivre pour installer `Docker` <i class="fab fa-docker"></i>
+selon son système d'exploiration sont détaillées dans la [documentation officielle](https://docs.docker.com/get-docker/).
 Il existe également des environnements bacs à sable en ligne comme
 [Play with Docker](https://labs.play-with-docker.com).
 
 
 ### Principes
 
-Un conteneur Docker est mis à disposition sous la forme d'une **image**, c'est à dire d'un fichier binaire qui contient l'environnement nécessaire à l'exécution de l'application. Pour construire (*build*) l'image, on utilise un `Dockerfile`, un fichier texte qui contient la recette — sous forme de commandes Linux — de construction de l'environnement. L'image va être uploadée (*push*) sur un dépôt (*registry*), public (DockerHub) ou privé, depuis lequel les utilisateurs vont pouvoir télécharger l'image (*pull*). Le moteur Docker permet ensuite de lancer (*run*) un **conteneur**, c'est à dire une instance vivante de l'image.
+Un conteneur Docker est mis à disposition sous la forme d'une **image**, c'est à dire d'un fichier binaire qui contient l'environnement nécessaire à l'exécution de l'application.
+
+Pour construire (*build*) l'image, on utilise un `Dockerfile`, un fichier texte qui contient la recette — sous forme de commandes Linux — de construction de l'environnement. L'image va être uploadée (*push*) sur un dépôt (*registry*), public ou privé, depuis lequel les utilisateurs vont pouvoir télécharger l'image (*pull*). Le moteur Docker permet ensuite de lancer (*run*) un **conteneur**, c'est à dire une instance vivante de l'image.
+
+
+{{% box status="note" title="Note: les commandes Docker" icon="fa fa-comment" %}}
+Le répertoire d'images publiques le plus connu
+est [`DockerHub`](https://hub.docker.com/). Il s'agit d'un répertoire
+où n'importe qui peut proposer une image `Docker`, associée ou non
+à un projet disponible sur `Github` <i class="fab fa-github"></i>
+ou `Gitlab` <i class="fab fa-gitlab"></i>. 
+Il est possible de mettre à
+disposition de manière manuelle des images mais, comme nous le montrerons,
+il est beaucoup plus pratique d'utiliser des fonctionalités d'interaction
+automatique entre `DockerHub` et un dépôt `Git`.
+{{% /box %}}
+
+
 
 ### En pratique
 
 #### Application
 
-Afin de présenter l'utilisation de `Docker` en pratique, nous allons présenter les différentes étapes permettant de "dockeriser" une application web minimaliste construite avec le framework `Python` [Flask](https://flask.palletsprojects.com/en/2.1.x/). La structure de notre projet est la suivante.
+Afin de présenter l'utilisation de `Docker` en pratique,
+nous allons présenter les différentes étapes permettant de _"dockeriser"_
+une application web minimaliste construite avec le
+_framework_ `Python` [`Flask`](https://flask.palletsprojects.com/en/2.1.x/)[^2].
+
+[^2]: [`Flask`](https://flask.palletsprojects.com/en/2.1.x/) est un 
+_framework_ permettant de déployer, de manière légère,
+des applications reposant sur 
+`Python`. 
+
+La structure de notre projet est la suivante.
 
 ```bash
 ├── myflaskapp
@@ -324,9 +352,10 @@ Afin de présenter l'utilisation de `Docker` en pratique, nous allons présenter
 │   └── requirements.txt
 ```
 
-Le script `hello-world.py` contient le code d'une application minimaliste, qui affiche simplement "Hello, World!" sur une page web.
+Le script `hello-world.py` contient le code d'une application minimaliste,
+qui affiche simplement _"Hello, World!"_ sur une page web.
 
-```bash
+```python
 from flask import Flask
 
 app = Flask(__name__)
@@ -337,7 +366,8 @@ def hello_world():
     return "<p>Hello, World!</p>"
 ```
 
-Pour faire tourner l'application, il nous faut donc à la fois `Python` et le package `Flask`. Ces installations doivent être spécifiées dans le `Dockerfile` (cf. [section suivante](#dockerfile)). L'installation de `Flask` se fait via un fichier `requirements.txt`, qui contient juste la ligne suivante :
+Pour faire tourner l'application, il nous faut donc à la fois `Python` et le package `Flask`. Ces installations doivent être spécifiées dans le `Dockerfile` (cf. [section suivante](#dockerfile)). L'installation de `Flask`
+se fait via un fichier `requirements.txt` (voir le [chapitre précédent](#code-architecture)), qui contient juste la ligne suivante :
 
 ```bash
 Flask==2.1.1
@@ -441,7 +471,8 @@ myflaskapp                               latest    57d2f410a631   2 hours ago   
 
 Intéressons nous un peu plus en détail aux *logs* de l'étape de *build*. Entre les étapes, `Docker` affiche des suites de lettres et de chiffres un peu ésotériques, et nous parle de conteneurs intermédiaires. En fait, il faut voir une image `Docker` comme un empilement de couches (*layers*), qui sont elles-mêmes des images `Docker`. Quand on hérite d'une image avec l'instruction `FROM`, on spécifie donc à Docker la couche initiale, sur laquelle il va construire le reste de notre environnement. A chaque étape sa nouvelle couche, et à chaque couche son *hash*, un identifiant unique fait de lettres et de chiffres.
 
-Cela peut ressembler à des détails techniques, mais c'est en fait extrêmement utile en pratique car cela permet à `Docker` de faire du *caching*. Lorsque l'on développe un Dockerfile, il est fréquent de devoir modifier ce dernier de nombreuses fois avant de trouver la bonne recette, et on aimerait bien ne pas avoir à *rebuild* l'environnement complet à chaque fois. Docker gère cela très bien : il *cache* chacune des couches intermédiaires. Par exemple, si l'on modifie la 5ème commande du Dockerfile, Docker va utiliser le cache pour ne pas avoir à recalculer les étapes précédentes, qui n'ont pas changé. Cela s'appelle l'"invalidation du cache" : dès lors qu'une étape du Dockerfile est modifiée, Docker va recalculer toutes les étapes suivantes, mais seulement celles-ci. Conséquence directe de cette observation : il faut toujours ordonner les étapes d'un Dockerfile de sorte à ce qui est le plus susceptible d'être souvent modifié soit à la fin du fichier, et inversement.
+Cela peut ressembler à des détails techniques, mais c'est en fait extrêmement utile en pratique car cela permet à `Docker` de faire du *caching*. Lorsque l'on développe un Dockerfile, il est fréquent de devoir modifier ce dernier de nombreuses fois avant de trouver la bonne recette, et on aimerait bien ne pas avoir à *rebuild* l'environnement complet à chaque fois. Docker gère cela très bien : il *cache* chacune des couches intermédiaires. Par exemple, si l'on modifie la 5ème commande du Dockerfile, Docker va utiliser le cache pour ne pas avoir à recalculer les étapes précédentes, qui n'ont pas changé. Cela s'appelle l'_"invalidation du cache"_ :
+dès lors qu'une étape du Dockerfile est modifiée, Docker va recalculer toutes les étapes suivantes, mais seulement celles-ci. Conséquence directe de cette observation : il faut toujours ordonner les étapes d'un Dockerfile de sorte à ce qui est le plus susceptible d'être souvent modifié soit à la fin du fichier, et inversement.
 
 Pour illustrer cela, regardons ce qui se passe si l'on modifie le nom du script qui lance l'application, et donc la valeur de la variable d'environnement `FLASK_APP` dans le Dockerfile.
 
