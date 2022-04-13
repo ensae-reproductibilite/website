@@ -322,6 +322,8 @@ personnelle mais uniquement dans le conteneur Docker.
 
 ### En pratique
 
+
+
 #### Le `Dockerfile`
 
 A là base de chaque image `Docker` se trouve un `Dockerfile`. C'est un fichier texte qui contient une série de commandes qui permettent de construire l'image. Ces fichiers peuvent être plus ou moins complexes selon l'application que l'on cherche à conteneuriser, mais leur structure est assez normalisée. Pour s'en rendre compte, analysons ligne à ligne le `Dockerfile` permettant de "dockeriser" une application interactive construite avec le framework `Python` [Flask](https://flask.palletsprojects.com/en/2.1.x/). Cela nous permettra d'introduire les principales commandes `Docker` qui interviennent dans un `Dockerfile`.
@@ -380,10 +382,37 @@ Nous n'avons vu que les commandes `Docker` les plus fréquentes, il en existe be
 
 #### Construction d'une image Docker {#build}
 
+Pour construire une image à partir d'un `Dockerfile`, il suffit d'utiliser la commande `docker build`. Il faut ensuite spécifier deux éléments importnats :
+- le *build context*. Il faut indiquer à `Docker` le chemin de notre projet, qui doit contenir le `Dockerfile`. En pratique, il est plus simple de se mettre dans le dossier du projet via la commande `cd`, puis de passer `.` comme *build context* pour indiquer à `Docker` de *build* "ici" ;
+- le *tag*, c'est à dire le nom de l'image. Tant que l'on utilisee `Docker` en local, le *tag* importe peu. On verra par la suite que la structure du *tag* a de l'importance lorsque l'on souhaite [exporter ou importer une image `Docker`](#imp-exp-docker) à partir d'un dépôt distant.
 
+Regardons ce qui se passe en pratique lorsque l'on essaie de construire notre image.
 
-#### Export d'une image Docker
+```bash
+$ docker build -t myflaskapp .
+Sending build context to Docker daemon     47MB
+Step 1/8 : FROM ubuntu:20.04
+ ---> 825d55fb6340
+Step 2/8 : RUN apt-get update && apt-get install -y python3-pip python3-dev
+ ---> Running in 92b42d579cfa
+...
+done.
+Removing intermediate container 92b42d579cfa
+ ---> 8826d53e3c01
+Step 3/8 : WORKDIR /app
+ ---> Running in 153b32893c23
+Removing intermediate container 153b32893c23
+ ---> 7b4d22021986
+Step 4/8 : COPY requirements.txt /app/requirements.txt
+...
+Successfully built 125bd8da70ff
+Successfully tagged myflaskapp:latest
+```
+
+Le moteur `Docker` essaie de construire notre image séquentiellement à partir des commandes spécifiées dans le `Dockerfile`. 
 
 #### Exécuter une image Docker
+
+#### Exporter/importer une image Docker {#imp-exp-docker}
 
 ## Limites
