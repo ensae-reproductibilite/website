@@ -411,7 +411,7 @@ Pour construire une image à partir d'un `Dockerfile`, il suffit d'utiliser la c
 Regardons ce qui se passe en pratique lorsque l'on essaie de construire notre image.
 
 ```bash
-$ docker build . -t myflaskapp
+$ docker build -t myflaskapp .
 Sending build context to Docker daemon     47MB
 Step 1/8 : FROM ubuntu:20.04
  ---> 825d55fb6340
@@ -485,44 +485,75 @@ Successfully tagged myflaskapp:latest
 
 L'étape de *build* a pris quelques secondes au lieu de plusieurs minutes, et les *logs* montrent bien l'utilisation du cache faite par `Docker` : les étapes précédant le changement réutilisent les couches cachées, mais celle d'après sont recalculées.
 
-#### Exécuter une image Docker
+#### Exécuter une image Docker {#execution}
 
 L'étape de *build* a permis de créer une *image* `Docker`. Une image doit être vue comme un *template* : elle permet d'exécuter l'application sur n'importe quel environnement d'exécution sur lequel un moteur `Docker` est installé. En l'état, on a donc juste *construit*, mais rien *lancé* : notre application ne tourne pas encore. Pour cela, il faut créer un *conteneur*, i.e. une instance vivante de l'image qui permet d'accéder à l'application. Cela se fait via la commande `docker run`.
 
 ```bash
-$ docker run -d -p 80:5000 myflaskapp:latest
+$ docker run -d -p 8000:5000 myflaskapp:latest
 6a2ab0d82d051a3829b182ede7b9152f7b692117d63fa013e7dfe6232f1b9e81
 ```
 
 Détaillons la syntaxe de cette commande :
 - `docker run tag` : lance l'image dont on fournit le *tag*. Le *tag* est de la forme `repository/projet:version`. Ici, il n'y a pas de *repository* puisque tout est fait en local ;
 - `-d` : "détache" le conteneur du terminal qui le lance ;
-- `-p` : effectue un *mapping* entre un port de la machine qui exécute le conteneur, et le conteneur lui-même. Notre conteneur écoute sur le port 5000, et l'on veut que notre application soit exposée sur le port HTTP classique (80).
+- `-p` : effectue un *mapping* entre un port de la machine qui exécute le conteneur, et le conteneur lui-même. Notre conteneur écoute sur le port 5000, et l'on veut que notre application soit exposée sur le port 8000 de notre machine.
 
 Lorsque l'on exécute `docker run`, `Docker` nous répond simplement un *hash* qui identifie le conteneur que l'on a lancé. On peut vérifier qu'il tourne bien avec la commande `docker ps`, qui renvoie toutes les informations associées au conteneur.
 
 ```bash
 $ docker ps
 CONTAINER ID   IMAGE        COMMAND                  CREATED         STATUS         PORTS                                   NAMES
-6a2ab0d82d05   myflaskapp   "flask run --host=0.…"   7 seconds ago   Up 6 seconds   0.0.0.0:80->5000/tcp, :::80->5000/tcp   vigorous_kalam
+6a2ab0d82d05   myflaskapp   "flask run --host=0.…"   7 seconds ago   Up 6 seconds   0.0.0.0:8000->5000/tcp, :::8000->5000/tcp   vigorous_kalam
 ```
 
 Les conteneurs peuvent être utilisés pour réaliser des tâches très différentes. Grossièrement, on peut distinguer deux situations :
 - le conteneur effectue une tâche "one-shot", c'est à dire une opération qui a vocation à s'effectuer en un certain temps, suite à quoi le conteneur peut s'arrêter ;
 - le conteneur exécute une application. Dans ce cas, on souhaite que le conteneur reste en vie aussi longtemps que l'on souhaite utiliser l'application en question.
 
-Dans notre cas d'application, on se situe dans la seconde configuration puisque l'on veut exécuter une application web. Lorsque l'application tourne, elle expose sur le *localhost*, accessible depuis un navigateur web. Les calculs sont effectués sur un serveur local, et le navigateur sert d'interface avec l'utilisateur — comme lorsque vous utilisez un notebook `Jupyter` par exemple. 
+Dans notre cas d'application, on se situe dans la seconde configuration puisque l'on veut exécuter une application web. Lorsque l'application tourne, elle expose sur le *localhost*, accessible depuis un navigateur web — en l'occurence, à l'adresse [localhost:8000/](localhost:8000/). Les calculs sont effectués sur un serveur local, et le navigateur sert d'interface avec l'utilisateur — comme lorsque vous utilisez un notebook `Jupyter` par exemple. 
 
 Finalement, on a pu développer et exécuter une application complète sur notre environnement local, sans avoir eu à installer quoi que ce soit sur notre machine personnelle, à part `Docker.`
 
-<!--Parfois, cette instance peut être accessible (_expose_) sur
-un _localhost_ accessible, par exemple, depuis un navigateur _web_. Les calculs
-effectués sont reportés sur le serveur local et le navigateur sert d'interface
-avec l'utilisateur. Il est ainsi possible de mettre à disposition des
-logiciels dans cet environnement sans les avoir installés sur sa machine 
-personnelle mais uniquement dans le conteneur Docker.
--->
+#### Exporter une image Docker {#imp-exp-docker}
 
-#### Exporter/importer une image Docker {#imp-exp-docker}
+Jusqu'à maintenant, toutes les commandes `Docker` que nous avons exécutées se sont passées en local. Ce mode de fonctionnement peut être intéressant pour la phase de développement. Mais comme on l'a vu, un des gros avantages de `Docker` est la facilité de redistribution des images construites, qui peuvent ensuite être utilisées par de nombreux utilisateurs pour faire tourner notre application. Pour cela, il nous faut uploader notre image sur un dépôt distant, à partir duquel les utilisateurs pourront la télécharger.
 
-## Limites
+Plusieurs possibilités existent selon le contexte de travail : une entreprise peut avoir un dépôt interne par exemple. Si le projet est open-source, on peut utiliser le [DockerHub](https://hub.docker.com/). Le *workflow* pour uploader une image est le suivant :
+- créer un compte sur le DockerHub ;
+- créer un projet (public) sur le DockerHub, qui va héberger les images `Docker` du projet ;
+- sur un terminal, utiliser `docker login` pour s'authentifier au `DockerHub` ;
+- on va modifier le *tag* que l'on fournit lors du *build* pour spécifier le chemin attendu. Dans notre cas : `docker build -t compte/projet:version .` ;
+- uploader l'image avec `docker push compte/projet:version`
+
+```bash
+$ docker push avouacr/myflaskapp:1.0.0
+The push refers to repository [docker.io/avouacr/myflaskapp]
+71db96687fe6: Pushed 
+624877ac887b: Pushed 
+ea4ab6b86e70: Pushed 
+b5120a5bc48d: Pushed 
+5fa484a3c9d8: Pushed 
+c5ec52c98b31: Pushed 
+1.0.0: digest: sha256:b75fe53fd1990c3092ec41ab0966a9fbbb762f3047957d99327cc16e27c68cc9 size: 1574
+```
+
+#### Importer une image Docker {#imp-exp-docker}
+
+En supposant que le dépôt utilisé pour uploader l'image est public, la procédure que doit suivre un utilisateur pour la télécharger se résume à utiliser la commande `docker pull compte/projet:version`
+
+```bash
+$ docker pull avouacr/myflaskapp:1.0.0
+1.0.0: Pulling from avouacr/myflaskapp
+e0b25ef51634: Pull complete 
+c0445e4b247e: Pull complete 
+48ba4e71d1c2: Pull complete 
+ffd728caa80a: Pull complete 
+906a95f00510: Pull complete 
+d7d49b6e17ab: Pull complete 
+Digest: sha256:b75fe53fd1990c3092ec41ab0966a9fbbb762f3047957d99327cc16e27c68cc9
+Status: Downloaded newer image for avouacr/myflaskapp:1.0.0
+docker.io/avouacr/myflaskapp:1.0.0
+```
+
+`Docker` va télécharger et extraire chacune des couches qui constituent l'image (ce qui peut parfois être long). L'utilisateur peut alors créer un conteneur à partir de l'image, en utilisant `docker run` comme illustré précédemment.
