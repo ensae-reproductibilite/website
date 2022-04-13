@@ -9,7 +9,4 @@ layout: single
 
 # Supports des séances
 
-Les slides présentées en séance sont accessibles via
-les liens suivants:
-
-- [Séance 1](https://avouacr.github.io/ensae-reproductibilite-slides/)
+Les slides présentées en séance sont accessibles [à cette adresse](https://avouacr.github.io/ensae-reproductibilite-slides/).
