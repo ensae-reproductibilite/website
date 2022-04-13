@@ -249,6 +249,19 @@ $
 
 Pour supprimer l'environnement `dev`, on utilise la commande `conda env remove -n dev`.
 
+### Aide-mémoire
+
+| Commande | Principe |
+|----------|----------|
+| `conda create -n <env_name> python=<python_version>` | Création d'un environnement nommé `<env_name>` dont la version de Python est `<python_version>` |
+| `conda info --envs` | Lister les environnements |
+| `conda activate <env_name>` | Utiliser l'environnement `<env_name>` pour la session du terminal |
+| `conda list` | Lister les _packages_ dans l'environnement actif |
+| `conda install <pkg>` | Installer le _package_ `<pkg>` dans l'environnement actif |
+| `conda env export > environment.yml` | Exporter les spécifications de l’environnement dans un fichier `environment.yml` |
+
+
+
 ## Limites
 
 Développer dans des environnements virtuels est une bonne pratique, car cela accroît la portabilité d'une application. Néanmoins, il y a plusieurs limites à leur utilisation :
@@ -267,6 +280,10 @@ Avec les environnements virtuels, l'idée était de permettre à chaque utilisat
 
 Changeons de perspective : au lieu de distribuer une recette permettant à l'utilisateur de recréer l'environnement nécessaire sur sa machine, ne pourrait-on pas directement distribuer à l'utilisateur une machine contenant l'environnement pré-configuré ? Bien entendu, on ve pas configurer et envoyer des ordinateurs portables à tous les utilisateurs potentiels d'un projet. Une autre solution serait de distribuer des machines virtuelles, qui tournent sur un serveur et simulent un véritable ordinateur. Ces machines ont cependant l'inconvénient d'être assez lourdes, et complexes à répliquer et distribuer. Pour pallier ces différentes limites, on va utiliser la technologie des conteneurs.
 
+![](https://external-preview.redd.it/aR6WdUcsrEgld5xUlglgKX_0sC_NlryCPTXIHk5qdu8.jpg?auto=webp&s=5fe64dd318eec71711d87805d43def2765dd83cd)
+
+Image trouvée sur [reddit](https://www.reddit.com/r/ProgrammerHumor/comments/cw58z7/it_works_on_my_machine/)
+
 ## Fonctionnement
 
 Comme les machines virtuelles, les conteneurs permettent d'empaqueter complètement l'environnement (librairies systèmes, application, configuration) qui permet de faire tourner l'application. Mais à l'inverse d'une machine virtuelle, le conteneur n'inclut pas de système d'exploitation propre, il utilise celui de la machine hôte qui l'exécute. La technologie des conteneurs permet ainsi de garantir une très forte reproductibilité tout en restant suffisamment légère pour permettre une distribution et un déploiement simple aux utilisateurs.
@@ -279,17 +296,29 @@ Source : [docker.com](https://www.docker.com/resources/what-container/)
 
 ## Implémentations
 
-Comme pour les environnements virtuels, il existe différentes implémentations de la technologie des conteneurs. En pratique, l'implémentation offerte par `Docker` est devenue largement prédominante, au point qu'il est devenu courant d'utiliser de manière interchangeable les termes "conteneuriser" et "Dockeriser" une application. C'est donc cette implémentation que nous allons étudier et utiliser dans ce cours.
+Comme pour les environnements virtuels, il existe différentes implémentations de la technologie des conteneurs. En pratique, l'implémentation offerte par `Docker` est devenue largement prédominante, au point qu'il est devenu courant d'utiliser de manière interchangeable les termes _"conteneuriser"_ et _"Dockeriser"_ une application. C'est donc cette implémentation que nous allons étudier et utiliser dans ce cours.
 
 ## Docker
 
 ### Installation
 
 Les instructions à suivre pour installer `Docker` selon son système d'exploiration sont détaillées dans la [documentation officielle](https://docs.docker.com/get-docker/).
+Il existe également des environnements bacs à sable en ligne comme
+[Play with Docker](https://labs.play-with-docker.com).
+
 
 ### Principes
 
 Un conteneur Docker est mis à disposition sous la forme d'une **image**, c'est à dire d'un fichier binaire qui contient l'environnement nécessaire à l'exécution de l'application. Pour construire (*build*) l'image, on utilise un `Dockerfile`, un fichier texte qui contient la recette — sous forme de commandes Linux — de construction de l'environnement. L'image va être uploadée (*push*) sur un dépôt (*registry*), public (DockerHub) ou privé, depuis lequel les utilisateurs vont pouvoir télécharger l'image (*pull*). Le moteur Docker permet ensuite de lancer (*run*) un **conteneur**, c'est à dire une instance vivante de l'image.
+
+Parfois, cette instance peut être accessible (_expose_) sur
+un _localhost_ accessible, par exemple, depuis un navigateur _web_. Les calculs
+effectués sont reportés sur le serveur local et le navigateur sert d'interface
+avec l'utilisateur. Il est ainsi possible de mettre à disposition des
+logiciels dans cet environnement sans les avoir installés sur sa machine 
+personnelle mais uniquement dans le conteneur Docker.
+
+
 
 ### En pratique
 
@@ -344,18 +373,36 @@ EXPOSE 5000
 CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
 ```
 
-- `FROM` : spécifie l'image de base. Une image Docker hérite toujours d'une image de base. Ici, on choisit l'image `Ubuntu` version `20.04`, tout va donc se passer comme si l'on développait sur une machine virtuelle vierge ayant pour système d'exploitation `Ubuntu 20.04` ;
+- `FROM` : spécifie l'image de base. Une image Docker hérite toujours d'une image de base. Ici, on choisit l'image `Ubuntu` version `20.04`, tout va donc se passer comme si l'on développait sur une machine virtuelle vierge ayant pour système d'exploitation `Ubuntu 20.04`[^1] ;
 - `RUN` : lance une commande Linux. Ici, on met d'abord à jour la liste des packages téléchargeables via `apt`, puis on installe `Python` ainsi que des librairies système nécessaires au bon fonctionnement de notre application ;
 - `WORKDIR` : spécifie le répertoire de travail de l'image. Ainsi, toutes les commandes suivantes seront exécutées depuis ce répertoire ;
 - `COPY` : copie un fichier local sur l'image `Docker`. Ici, on copie d'abord le fichier `requirements.txt` du projet, qui spécifie les dépendances `Python` de notre application, puis on les installe avec une commande `RUN`. La seconde instruction `COPY` copie le répertoire du projet sur l'image ;
 - `EXPOSE` : informe `Docker` que le conteneur "écoute" sur le port 5000, qui est le port par défaut sur lequel est diffusé une application `Flask` ;
 - `CMD` : spécifie la commande que doit exécuter le conteneur lors de son lancement. Ici, on utilise une commande `Python` pour lancer l'application `Flask` contenue dans les scripts du projet.
 
+[^1]: Dans l'idéal, on essaie de partir d'une couche la plus petite possible
+pour limiter la taille de l'image finalement obtenue. Il n'est en effet
+pas nécessaire d'utiliser une image disposant de `R` si on n'utilise que
+du `Python`. `Ubuntu` est une image déjà de taille réduite (environ 30 MB
+compressés). Si on veut vraiment être puriste, on va utiliser `Alpine`
+qui ne fait que 5MB. 
+
+
+
 {{% box status="hint" title="Hint: choix des librairies système" icon="fa fa-lightbulb" %}}
 Avec la première commande `RUN` du `Dockerfile`, nous installons `Python` mais aussi des librairies système nécessaires au bon fonctionnement de l'application. Mais comment les avons-nous trouvées ?
 
 Par essai et erreur. Lors de l'étape de [build](#build) que l'on verra juste après, le moteur `Docker` va essayer de construire l'image selon les spécifications du `Dockerfile`, comme s'il partait d'un ordinateur vide contenant simplement `Ubuntu 20.04`. Si des librairies manquent, le processus de *build* devrait renvoyer une erreur, qui s'affichera dans les *logs* de l'application, affichés par défaut dans la console. Quand on a de la chance, les logs décrivent explicitement les librairies système manquantes. Mais souvent, les messages d'erreur ne sont pas très explicites, et il faut alors les copier dans un moteur de recherche bien connu pour trouver la réponse, souvent sur [Stackoverflow](https://stackoverflow.com/).
 {{% /box %}}
+
+{{% box status="hint" title="Hint: pourquoi `COPY` ?" icon="fa fa-lightbulb" %}}
+La recette présente dans le `Dockerfile` peut nécessiter l'utilisation de
+fichiers appartenant au dossier de travail. Pour que `Docker` les trouve
+dans son contexte, il est nécessaire d'introduire une
+commande `COPY`. 
+
+{{% /box %}}
+
 
 {{% box status="note" title="Note: les commandes Docker" icon="fa fa-comment" %}}
 Nous n'avons vu que les commandes `Docker` les plus fréquentes, il en existe beaucoup d'autres en pratique. N'hésitez pas à consulter la [documentation officielle](https://docs.docker.com/engine/reference/builder/) pour comprendre leur utilisation.
