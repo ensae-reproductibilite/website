@@ -346,13 +346,13 @@ def hello_world():
     return "<p>Hello, World!</p>"
 ```
 
-Pour faire tourner l'application, il nous faut donc à la fois `Python` et le package `Flask`. L'installation de `Python` se fait dans le `Dockerfile` (cf. section suivante). L'installation de `Flask` se fait via un fichier `requirements.txt`, qui contient juste la ligne suivante :
+Pour faire tourner l'application, il nous faut donc à la fois `Python` et le package `Flask`. Ces installations doivent être spécifiées dans le `Dockerfile` (cf. [section suivante](#dockerfile)). L'installation de `Flask` se fait via un fichier `requirements.txt`, qui contient juste la ligne suivante :
 
 ```bash
 Flask==2.1.1
 ```
 
-#### Le `Dockerfile`
+#### Le `Dockerfile` {#dockerfile}
 
 A là base de chaque image `Docker` se trouve un `Dockerfile`. C'est un fichier texte qui contient une série de commandes qui permettent de construire l'image. Ces fichiers peuvent être plus ou moins complexes selon l'application que l'on cherche à conteneuriser, mais leur structure est assez normalisée. Pour s'en rendre compte, analysons ligne à ligne le `Dockerfile` nécessaire pour construire une image `Docker` de notre application `Flask.`
 
@@ -360,7 +360,7 @@ A là base de chaque image `Docker` se trouve un `Dockerfile`. C'est un fichier 
 FROM ubuntu:20.04
 
 RUN apt-get update -y && \
-    apt-get install -y software-properties-common python3-pip python3-dev
+    apt-get install -y python3-pip python3-dev
     
 WORKDIR /app
 
@@ -369,23 +369,24 @@ RUN pip install -r requirements.txt
 
 COPY . /app
 
+ENV FLASK_APP="hello-world.py"
 EXPOSE 5000
-CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
+
+CMD ["flask", "run", "--host=0.0.0.0"]
 ```
 
-- `FROM` : spécifie l'image de base. Une image Docker hérite toujours d'une image de base. Ici, on choisit l'image `Ubuntu` version `20.04`, tout va donc se passer comme si l'on développait sur une machine virtuelle vierge ayant pour système d'exploitation `Ubuntu 20.04`[^1] ;
+- `FROM` : spécifie l'image de base. Une image Docker hérite toujours d'une image de base. Ici, on choisit l'image `Ubuntu` version `20.04`, tout va donc se passer comme si l'on développait sur une machine virtuelle vierge ayant pour système d'exploitation `Ubuntu 20.04`[^3] ;
 - `RUN` : lance une commande Linux. Ici, on met d'abord à jour la liste des packages téléchargeables via `apt`, puis on installe `Python` ainsi que des librairies système nécessaires au bon fonctionnement de notre application ;
 - `WORKDIR` : spécifie le répertoire de travail de l'image. Ainsi, toutes les commandes suivantes seront exécutées depuis ce répertoire ;
 - `COPY` : copie un fichier local sur l'image `Docker`. Ici, on copie d'abord le fichier `requirements.txt` du projet, qui spécifie les dépendances `Python` de notre application, puis on les installe avec une commande `RUN`. La seconde instruction `COPY` copie le répertoire du projet sur l'image ;
-- `EXPOSE` : informe `Docker` que le conteneur "écoute" sur le port 5000, qui est le port par défaut sur lequel est diffusé une application `Flask` ;
-- `CMD` : spécifie la commande que doit exécuter le conteneur lors de son lancement. Ici, on utilise une commande `Python` pour lancer l'application `Flask` contenue dans les scripts du projet.
+- `ENV` : crée une variable d'environnement qui sera accessible à l'application dans le conteneur. Ici, on définit une variable d'environnement attendue par `Flask`, qui spécifie le nom du script permettant de lancer l'application ;
+- `EXPOSE` : informe `Docker` que le conteneur "écoute" sur le port 5000, qui est le port par défaut utilisé par le serveur web de `Flask` ;
+- `CMD` : spécifie la commande que doit exécuter le conteneur lors de son lancement. Il s'agit d'une liste, qui contient les différentes parties de la commande sous forme de chaînes de caractères. Ici, on lance `Flask`, qui sait automatiquement quelle application lancer du fait de la commande `ENV` spécifiée précédemment.
 
-[^1]: Dans l'idéal, on essaie de partir d'une couche la plus petite possible
+[^3]: Dans l'idéal, on essaie de partir d'une couche la plus petite possible
 pour limiter la taille de l'image finalement obtenue. Il n'est en effet
 pas nécessaire d'utiliser une image disposant de `R` si on n'utilise que
-du `Python`. `Ubuntu` est une image déjà de taille réduite (environ 30 MB
-compressés). Si on veut vraiment être puriste, on va utiliser `Alpine`
-qui ne fait que 5MB. 
+du `Python`. En général, les différents langages proposent des images de petite taille dans lequel un interpréteur est déjà installé et proprement configuré. Dans cette application, on aurait par exemple pu utiliser l'image [python:3.9-slim-buster](https://hub.docker.com/layers/python/library/python/3.9-slim-buster/images/sha256-e07b35c0c81c21995a43cefd64730ac0e57a5164cc440b6a5c94c118cfacd0ca?context=explore).
 
 
 
@@ -411,13 +412,13 @@ Nous n'avons vu que les commandes `Docker` les plus fréquentes, il en existe be
 #### Construction d'une image Docker {#build}
 
 Pour construire une image à partir d'un `Dockerfile`, il suffit d'utiliser la commande `docker build`. Il faut ensuite spécifier deux éléments importnats :
-- le *build context*. Il faut indiquer à `Docker` le chemin de notre projet, qui doit contenir le `Dockerfile`. En pratique, il est plus simple de se mettre dans le dossier du projet via la commande `cd`, puis de passer `.` comme *build context* pour indiquer à `Docker` de *build* "ici" ;
+- le *build context*. Il faut indiquer à `Docker` le chemin de notre projet, qui doit contenir le `Dockerfile`. En pratique, il est plus simple de se mettre dans le dossier du projet via la commande `cd`, puis de passer `.` comme *build context* pour indiquer à `Docker` de *build* "d'ici" ;
 - le *tag*, c'est à dire le nom de l'image. Tant que l'on utilisee `Docker` en local, le *tag* importe peu. On verra par la suite que la structure du *tag* a de l'importance lorsque l'on souhaite [exporter ou importer une image `Docker`](#imp-exp-docker) à partir d'un dépôt distant.
 
 Regardons ce qui se passe en pratique lorsque l'on essaie de construire notre image.
 
 ```bash
-$ docker build -t myflaskapp .
+$ docker build . -t myflaskapp
 Sending build context to Docker daemon     47MB
 Step 1/8 : FROM ubuntu:20.04
  ---> 825d55fb6340
@@ -437,7 +438,13 @@ Successfully built 125bd8da70ff
 Successfully tagged myflaskapp:latest
 ```
 
-Le moteur `Docker` essaie de construire notre image séquentiellement à partir des commandes spécifiées dans le `Dockerfile`. 
+Le moteur `Docker` essaie de construire notre image séquentiellement à partir des commandes spécifiées dans le `Dockerfile`. S'il rencontre une erreur, la procédure s'arrête, et il faut alors trouver la source du problème dans les *logs* et adapter le `Dockerfile` en conséquence. Si tout se passe bien, `Docker` nous indique que le *build* a réussi et l'image est prête à être utilisée.
+
+{{% box status="hint" title="Hint: utiliser le cache" icon="fa fa-lightbulb" %}}
+Intéressons nous un peu plus en détail aux *logs* ci-dessus. Entre les étapes, `Docker` affiche des suites de lettres et de chiffres un peu ésotériques, et nous parle de conteneurs intermédiaires. En fait, il faut voir une image `Docker` comme un empilement de couches (*layers*), qui sont elles-mêmes des images `Docker`. Quand on hérite d'une image avec l'instruction `FROM`, on spécifie donc à Docker la couche initiale, sur laquelle il va construire le reste de notre environnement. A chaque étape sa nouvelle couche, et à chaque couche son *hash*, un identifiant unique fait de lettres et de chiffres.
+
+Cela peut ressembler à des détails techniques, mais c'est en fait extrêmement utile en pratique car cela permet à `Docker` de faire du *caching*. Lorsque l'on développe un Dockerfile, il est fréquent de devoir modifier ce dernier de nombreuses fois avant de trouver la bonne recette, et on aimerait bien ne pas avoir à *rebuild* l'environnement complet à chaque fois. Docker gère cela très bien : il *cache* chacune des couches intermédiaires. Par exemple, si l'on modifie la 5ème commande du Dockerfile, Docker va utiliser le cache pour ne pas avoir à recalculer les étapes précédentes, qui n'ont pas changé. Cela s'appelle l'"invalidation du cache" : dès lors qu'une étape du Dockerfile est modifiée, Docker va recalculer toutes les étapes suivantes, mais seulement celles-ci. Conséquence directe de cette observation : il faut toujours ordonner les étapes d'un Dockerfile de sorte à ce qui est le plus susceptible d'être souvent modifié soit à la fin du fichier, et inversement.
+{{% /box %}}
 
 #### Exécuter une image Docker
 
