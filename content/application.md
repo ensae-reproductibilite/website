@@ -199,7 +199,7 @@ ensae-reproductibilite-projet
 Il est normal d'avoir des dossiers `__pycache__` qui traînent : ils se créent automatiquement à l'exécution d'un script en Python. On verra comment les supprimer définitivement à l'étape 8.
 {{% /box %}}
 
-## Etape 6 : fixer l'environnement d'exécution
+## Etape 6 : fixer l'environnement d'exécution {#conda-export}
 
 Afin de favoriser la portabilité du projet, il est d'usage de "fixer l'environnement", c'est à dire d'indiquer dans un fichier toutes les dépendances utilisées ainsi que leurs version. Il est conventionnellement localisé à la racine du projet.
 
@@ -216,7 +216,7 @@ Vous devriez à présent avoir un fichier `environement.yml` à la racine de vot
 En réalité, on aun peu triché : on a exporté l'environnement de base du VSCode SSP Cloud, qui contient beaucoup plus de packages que ceux utilisés par notre projet. On verra dans la [Partie 2](#partie2) de l'application comment fixer proprement les dépendances de notre projet.
 {{% /box %}}
 
-## Etape 7 : stocker les données de manière externe
+## Etape 7 : stocker les données de manière externe {#stockageS3}
 
 {{% box status="warning" title="Warning" icon="fa fa-exclamation-triangle" %}}
 Cette étape n'est pas facile. Vous devrez suivre la [documentation du SSP Cloud](https://docs.sspcloud.fr/onyxia-guide/stockage-de-donnees) pour la réaliser. Une aide-mémoire est également disponible dans le cours
@@ -264,36 +264,53 @@ Faire une *pull request* via la branche `master` d’un *fork* est très mal vu.
 
 # Partie 2 : construction d'un projet portable et reproductible {#partie2}
 
-Dans la partie précédente, on a appliqué de manière incrémentale de nombreuses bonnes pratiques vues tout au long du cours. Ce faisant, on s'est déjà considérablement rapprochés d'une possible mise en production : le code est lisible, la structure du projet est normalisée et évolutive, et le code est proprement versionné sur un dépôt `GitHub`.
+Dans la partie précédente,
+on a appliqué de manière incrémentale de nombreuses bonnes pratiques vues tout au long du cours.
+Ce faisant, on s'est déjà considérablement rapprochés d'une
+possible mise en production : le code est lisible,
+la structure du projet est normalisée et évolutive,
+et le code est proprement versionné sur un
+dépôt `GitHub` <i class="fab fa-github"></i>.
 
 Les étapes précédentes peuvent être terriblement longues si on n'a pas adopté
-les bons gestes dès le début du projet. En adoptant quelques réflexes de bonnes
-pratiques, on économise ainsi énormément de temps, ce qui permet de se concentrer
+les bons gestes dès le début du projet. En ayant quelques réflexes de bonnes
+pratiques évoqués dans la
+[partie code et architecture](/code-architecture/#1-qualité-du-code)
+, on économise ainsi énormément de temps, ce qui permet de se concentrer
 sur la valorisation du projet. 
 
-On a donc à présent une version du projet qui est largement partageable.
+A présent, nous avons une version du projet qui est largement partageable.
 Du moins en théorie, car la pratique est souvent plus compliquée : il y a fort à parier que si vous essayez d'exécuter votre projet sur un autre environnement (typiquement, votre ordinateur personnel),
 les choses ne se passent pas du tout comme attendu. Cela signifie qu'**en l'état, le projet n'est pas portable : il n'est pas possible, sans modifications coûteuses, de l'exécuter dans un environnement différent de celui dans lequel il a été développé**.
 
-Dans cette seconde partie, on va voir comment **normaliser l'environnement d'exécution afin de produire un projet portable**. On sera alors tout proche de pouvoir mettre le projet en production. Précisément, on se servira des outils suivants : 
-- **environnements virtuels**
-- **images et conteneurs `Docker`**
+Dans cette seconde partie, on va voir comment **normaliser l'environnement d'exécution afin de produire un projet portable**. On sera alors tout proche de pouvoir mettre le projet en production.
+On progressera dans l'échelle de la reproductibilité 
+de la manière suivante: 
+- :one: [**Gérer des variables d'environnement hors du code**](#configyaml) ;
+- :two: [**Environnements virtuels**](#anaconda) ;
+- :three: [**Images et conteneurs `Docker`**](#docker).
 
-Le plan de la partie est le suivant :
 
-## Etape 1: créer un répertoire de variables servant d'input
+## Etape 1: créer un répertoire de variables servant d'input {#configyaml}
 
-Lors de l'étape 7, nous avons amélioré la qualité du script en 
+### Enjeu
+
+Lors de l'[étape 7](#stockageS3), nous avons amélioré la qualité du script en 
 séparant stockage et code. Cependant, peut-être avez-vous remarqué
 que nous avons introduit un nom de _bucket_ personnel dans le script
-(voir [le fichier main.py](https://github.com/linogaliana/ensae-reproductibilite-projet-1/blob/19d3973b5fd849256b88e4ecd91495c41ab7e277/main.py#L9)).
+(voir [le fichier `main.py`](https://github.com/linogaliana/ensae-reproductibilite-projet-1/blob/v7/main.py#L9)).
 Il s'agit typiquement du genre de petit vice caché d'un script qui peut 
 générer une erreur: vous n'avez pas accès au bucket en question donc
 si vous essayez de faire tourner ce script en l'état, vous allez rencontrer
 une erreur.
 
 Une bonne pratique pour gérer ce type de configuration est d'utiliser un 
-fichier `yaml` qui stocke de manière hiérarchisée les variables globales. 
+fichier `YAML` qui stocke de manière hiérarchisée les variables globales
+[^3].
+
+[^3]: Le format `YAML` est un format de fichier où les informations sont 
+hiérarchisées. Avec le _package_ `YAML` on peut très facilement le transformer
+en `dict`, ce qui est très pratique pour accéder à une information.
 
 En l'occurrence, nous n'avons besoin que de deux éléments pour pouvoir
 dé-personnaliser ce script :
@@ -301,8 +318,11 @@ dé-personnaliser ce script :
 - le nom du bucket
 - l'emplacement dans le bucket
 
-Dans VSCode, créer un fichier `config.yaml` et le localiser à la racine
-de votre dépôt. Par exemple,
+### Application
+
+Dans `VSCode`, créer un fichier nommé `config.yaml` et le localiser à la racine
+de votre dépôt. Voici, une proposition de hiérarchisation de l'information
+que vous devez adapter à votre nom d'utilisateur :
 
 ```yaml
 input:
@@ -310,36 +330,45 @@ input:
   path: "ensae-reproductibilite"
 ```
 
-Et remplacer les lignes par l'import adéquat du yaml
+Dans `main.py`, importer ce fichier et remplacer la ligne précédemment
+évoquée par les valeurs du fichier. Tester en faisant tourner `main.py`
 <!-----
 https://github.com/linogaliana/ensae-reproductibilite-projet-1/commit/4a9d935223b6af366d4cf2a2a208d98a25407fc6
 ----->
 
-## Etape 2 :  créer un environnement conda à partir du fichier `environment.yml`
+## Etape 2 :  créer un environnement conda à partir du fichier `environment.yml` {#anaconda}
 
-L'environnement `conda` créé avec `conda export` contient énormément
+L'environnement `conda` créé avec `conda env export` ([étape 6](#conda-export))
+contient énormément
 de dépendances, dont de nombreuses qui ne nous sont pas nécessaires (il 
 en serait de même avec `pip freeze`). 
-Nous n'avons en effet besoin que des _packages_ présents dans les `import` 
-de nos scripts et de leurs dépendances.
+Nous n'avons en effet besoin que des _packages_ présents dans la
+section `import` de nos scripts et les dépendances nécessaires
+pour que ces _packages_ soient fonctionnels.
 
 
-Vous avez obtenu un `environment.yml` beaucoup plus parcimonieux
-que celui généré par un `conda export` précédemment
+Vous allez chercher à obtenir
+un `environment.yml` beaucoup plus parcimonieux
+que celui généré par `conda env export`
 
 {{< panelset class="simplification" >}}
 
 {{% panel name="Approche générale :koala: " %}}
 
-* Créer un environnement vide avec `Python 3.10` 
+Le tableau récapitulatif présent dans
+la [partie portabilité](/portability/#aide-mémoire)
+peut être utile dans cette partie. L'idée est 
+de partir _from scratch_ et figer l'environnement qui
+permet d'avoir une appli fonctionnelle. 
 
-```
+* Créer un environnement vide avec `Python 3.10`
+<!---
 conda create -n monenv python=3.10.0
-```
+---->
 
-* Activer cet environnment
+* Activer cet environnement
 
-* Installer en ligne de commande avec pip les packages nécessaires
+* Installer en ligne de commande avec `pip` les packages nécessaires
 pour faire tourner votre code
 
 <!---
@@ -358,41 +387,45 @@ et changer la section `name` en `monenv`
 
 {{% panel name="Approche fainéante :sloth:" %}}
 
-Nous allons générer une version plus minimaliste grâce à l'utilitaire
-[`pipreqs`](https://github.com/bndr/pipreqs)
+Nous allons générer une version plus minimaliste grâce à
+l'utilitaire [`pipreqs`](https://github.com/bndr/pipreqs)
 
 * Installer `pipreqs` en `pip install`
 * En ligne de commande, depuis la racine du projet, faire `pipreqs`
 * Ouvrir le `requirements.txt` automatiquement généré. Il est beaucoup plus
-minimal que l'`environment.yml`. 
+minimal que celui que vous obtiendriez avec `pip freeze` ou
+l'`environment.yml` obtenu à [l'étape 6](#conda-export). 
 * Remplacer toute la section `dependencies` du `environment.yml`
 par le contenu du `requirements.txt`
-(ne pas oublier l'indentation et le tiret en début de ligne)
-* Modifier le tiret à `scikit learn`. Il ne faut pas un _underscore_ mais
+(:warning: ne pas oublier l'indentation et le tiret en début de ligne)
+* :warning: Modifier le tiret à `scikit learn`. Il ne faut pas un _underscore_ mais
 un tiret
-* Ajouter la version de python `python=3.10.0` au début de la section `dependencies`
+* Ajouter la version de python (par exemple `python=3.10.0`)
+au début de la section `dependencies`
+* Retirer la section `prefix` du fichier `environment.yml` (si elle est présente)
+et changer le contenu de la section `name` en `monenv`
+* Créer l'environnement
+([voir le tableau récapitulatif dans la partie portabilité](/portability/#aide-mémoire))
 
-
-* Retirer la section `prefix` (si elle est présente)
-et changer la section `name` en `monenv`
-* Créer l'environnement 
-
-
-```shell
+<!----
 conda env create -f environment.yml
-```
+------>
 
-* Activer l'environnement
 
 {{% /panel %}}
 
 {{% /panelset %}}
 
+
+Maintenant, il reste à tester si tout fonctionne bien dans notre 
+environnement plus minimaliste:
+
+* Activer l'environnement
 * Tester votre script en ligne de commande
-* `Commit` quand vous êtes contents
+* Faire un `commit` quand vous êtes contents
 
 
-## Etape 3: conteneuriser avec Docker :elephant:
+## Etape 3: conteneuriser avec Docker <i class="fab fa-docker"></i> {#docker}
 
 ## Préliminaire
 
