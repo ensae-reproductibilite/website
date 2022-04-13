@@ -249,6 +249,19 @@ $
 
 Pour supprimer l'environnement `dev`, on utilise la commande `conda env remove -n dev`.
 
+### Aide-mémoire
+
+| Commande | Principe |
+|----------|----------|
+| `conda create -n <env_name> python=<python_version>` | Création d'un environnement nommé `<env_name>` dont la version de Python est `<python_version>` |
+| `conda info --envs` | Lister les environnements |
+| `conda activate <env_name>` | Utiliser l'environnement `<env_name>` pour la session du terminal |
+| `conda list` | Lister les _packages_ dans l'environnement actif |
+| `conda install <pkg>` | Installer le _package_ `<pkg>` dans l'environnement actif |
+| `conda env export > environment.yml` | Exporter les spécifications de l’environnement dans un fichier `environment.yml` |
+
+
+
 ## Limites
 
 Développer dans des environnements virtuels est une bonne pratique, car cela accroît la portabilité d'une application. Néanmoins, il y a plusieurs limites à leur utilisation :
