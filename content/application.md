@@ -394,4 +394,155 @@ conda env create -f environment.yml
 
 ## Etape 3: conteneuriser avec Docker :elephant:
 
+## Préliminaire
+
+- Se rendre sur le bac à sable XXXX
+- Cloner votre dépôt Git
+- Créer via la ligne de commande un fichier `Dockerfile`, par exemple
+
+```shell
+echo "#Dockerfile pour reproduire mon super travail" > Dockerfile
+```
+
+- Ouvrir ce fichier via l'éditeur
+
+
+## Création d'un premier Dockerfile
+
+- Comme couche de départ, partir d'une image légère comme `ubuntu:20.04`
+- Dans une deuxième couche, faire un `apt get -y update` et
+installer `wget` qui va être nécessaire pour télécharger depuis la ligne
+de commande `Miniconda`
+- Troisième couche:
+    + Télécharger la dernière version de `Miniconda` avec `wget` depuis
+l'url https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    + Installer `Miniconda` dans le chemin `/home/coder/local/bin/conda`
+    + Effacer
+- En quatrième couche, on va installer `mamba` pour accélérer l'installation
+des packages dans notre environnement. 
+- Cinquième couche: création de l'environnement:
+    + Utiliser `COPY` pour récupérer le fichier `environment.yml` (sinon Docker
+ne saura pas le créer)
+    + Créer l'environnement vide (uniquement python 3.10)
+    + Mettre à jour l'environnement en utilisant `environment.yml` avec `mamba`
+- Ajouter l'environnement `monenv` au `PATH` et utiliser le _fix_ suivant
+
+```python
+RUN echo "export PATH=$PATH" >> /home/coder/.bashrc  # Temporary fix while PATH gets overwritten by code-server
+```
+
+- Sixième étape: exposer sur le port 5000
+- Dernière étape: utiliser `CMD` pour reproduire le comportement de `python main.py`
+
+{{< panelset class="nommage" >}}
+
+{{% panel name="Indications supplémentaires" %}}
+
+Cliquer sur les onglets ci-dessus pour bénéficier
+d'indications supplémentaires, pour vous aider. Cependant, essayez
+de ne pas les consulter immédiatement. 
+
+
+{{% /panel %}}
+
+{{% panel name="Installation de Miniconda" %}}
+
+```shell
+# INSTALL MINICONDA -------------------------------
+ARG CONDA_DIR=/home/coder/local/bin/conda
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+RUN bash Miniconda3-latest-Linux-x86_64.sh -b -p $CONDA_DIR
+RUN rm -f Miniconda3-latest-Linux-x86_64.sh
+```
+
+{{% /panel %}}
+
+{{% panel name="Installation de mamba" %}}
+
+```shell
+ENV PATH="/home/coder/local/bin/conda/bin:${PATH}"
+RUN conda install mamba -n base -c conda-forge
+```
+
+{{% /panel %}}
+
+
+{{% panel name="Création de l'environnement" %}}
+
+```shell
+COPY environment.yml .
+RUN conda create -n monenv python=3.10
+RUN mamba env update -n monenv -f environment.yml
+```
+
+{{% /panel %}}
+
+
+{{< /panelset >}}
+
+### Construire l'image
+
+
+```shell
+docker build . -t my-python-app
+```
+
+```shell
+docker images
+```
+
+```
+REPOSITORY      TAG       IMAGE ID       CREATED         SIZE
+my-python-app   latest    c0dfa42d8520   6 minutes ago   2.23GB
+ubuntu          20.04     825d55fb6340   6 days ago      72.8MB
+```
+
+### Tester l'image: découverte du cache
+
+```shell
+docker run -it my-python-app
+```
+
+Problème: Docker ne sait pas trouver le fichier `main.py`. D'ailleurs,
+il ne connait pas d'autres fichiers de notre application qui sont nécessaires
+pour faire tourner le code: `config.yaml` et le dossier `src`
+
+- Avant l'étape `EXPOSE` utiliser plusieurs `ADD` et/ou `COPY` pour que l'application
+dispose de tous les éléments minimaux pour être en mesure de fonctionner
+
+- Refaire tourner 
+
+```shell
+docker run -it my-python-app
+```
+
+{{% box status="tip" title="Note" icon="fa fa-hint" %}}
+Ici, le cache permet d'économiser beaucoup de temps. Par besoin de 
+refaire tourner toutes les étapes, `docker` agit de manière intelligente
+en faisant tourner uniquement les étapes nouvelles
+{{% /box %}}
+
+### Corriger une faille de reproductibilité
+
+```shell
+docker run -it my-python-app
+```
+
+
+Vous devriez rencontrer une erreur liée à la variable d'environnement
+`AWS_ENDPOINT_URL`. C'est normal, elle est inconnue de cet environnement
+minimaliste. De plus, cet environnement ne sait pas
+comment accéder aux fichiers présents dans votre `minio` 
+
+
+- Ouvrir au public le fichier et récupérer les liens d'upload
+- Les mettre dans config et modifier la fonction d'import
+
+<!---
+cf. 
+https://github.com/linogaliana/ensae-reproductibilite-projet-1/commit/56946b4c5cb860d50b908d98a87fb549624314a6
+----->
+
+- build et run: cela devrait maintenant fonctionner
+
 # Partie 3 : mise en production
