@@ -442,13 +442,55 @@ Successfully tagged myflaskapp:latest
 
 Le moteur `Docker` essaie de construire notre image séquentiellement à partir des commandes spécifiées dans le `Dockerfile`. S'il rencontre une erreur, la procédure s'arrête, et il faut alors trouver la source du problème dans les *logs* et adapter le `Dockerfile` en conséquence. Si tout se passe bien, `Docker` nous indique que le *build* a réussi et l'image est prête à être utilisée.
 
-{{% box status="hint" title="Hint: utiliser le cache" icon="fa fa-lightbulb" %}}
 Intéressons nous un peu plus en détail aux *logs* ci-dessus. Entre les étapes, `Docker` affiche des suites de lettres et de chiffres un peu ésotériques, et nous parle de conteneurs intermédiaires. En fait, il faut voir une image `Docker` comme un empilement de couches (*layers*), qui sont elles-mêmes des images `Docker`. Quand on hérite d'une image avec l'instruction `FROM`, on spécifie donc à Docker la couche initiale, sur laquelle il va construire le reste de notre environnement. A chaque étape sa nouvelle couche, et à chaque couche son *hash*, un identifiant unique fait de lettres et de chiffres.
 
 Cela peut ressembler à des détails techniques, mais c'est en fait extrêmement utile en pratique car cela permet à `Docker` de faire du *caching*. Lorsque l'on développe un Dockerfile, il est fréquent de devoir modifier ce dernier de nombreuses fois avant de trouver la bonne recette, et on aimerait bien ne pas avoir à *rebuild* l'environnement complet à chaque fois. Docker gère cela très bien : il *cache* chacune des couches intermédiaires. Par exemple, si l'on modifie la 5ème commande du Dockerfile, Docker va utiliser le cache pour ne pas avoir à recalculer les étapes précédentes, qui n'ont pas changé. Cela s'appelle l'"invalidation du cache" : dès lors qu'une étape du Dockerfile est modifiée, Docker va recalculer toutes les étapes suivantes, mais seulement celles-ci. Conséquence directe de cette observation : il faut toujours ordonner les étapes d'un Dockerfile de sorte à ce qui est le plus susceptible d'être souvent modifié soit à la fin du fichier, et inversement.
-{{% /box %}}
+
+Pour illustrer cela, regardons ce qui se passe si l'on modifie le nom du script qui lance l'application, et donc la valeur de la variable d'environnement `FLASK_APP` dans le Dockerfile.
+
+```bash
+$ docker build . -t myflaskapp
+Sending build context to Docker daemon  4.096kB
+Step 1/10 : FROM ubuntu:20.04
+ ---> 825d55fb6340
+Step 2/10 : ENV DEBIAN_FRONTEND=noninteractive
+ ---> Using cache
+ ---> ea1c7c083ac9
+Step 3/10 : RUN apt-get update -y &&     apt-get install -y python3-pip python3-dev
+ ---> Using cache
+ ---> 078b8ac0e1cb
+Step 4/10 : WORKDIR /app
+ ---> Using cache
+ ---> cd19632825b3
+Step 5/10 : COPY requirements.txt /app/requirements.txt
+ ---> Using cache
+ ---> 271cd1686899
+Step 6/10 : RUN pip install -r requirements.txt
+ ---> Using cache
+ ---> 3ea406fdf383
+Step 7/10 : COPY . /app
+ ---> 3ce5bd3a9572
+Step 8/10 : ENV FLASK_APP="new.py"
+ ---> Running in b378d16bb605
+Removing intermediate container b378d16bb605
+ ---> e1f50490287b
+Step 9/10 : EXPOSE 5000
+ ---> Running in ab53c461d3de
+Removing intermediate container ab53c461d3de
+ ---> 0b86eca40a80
+Step 10/10 : CMD ["flask", "run", "--host=0.0.0.0"]
+ ---> Running in 340eec151a51
+Removing intermediate container 340eec151a51
+ ---> 16d7a5b8db28
+Successfully built 16d7a5b8db28
+Successfully tagged myflaskapp:latest
+```
+
+L'étape de *build* a pris quelques secondes au lieu de plusieurs minutes, et les *logs* montrent bien l'utilisation du cache faite par `Docker` : les étapes précédant le changement réutilisent les couches cachées, mais celle d'après sont recalculées.
 
 #### Exécuter une image Docker
+
+
 
 #### Exporter/importer une image Docker {#imp-exp-docker}
 
