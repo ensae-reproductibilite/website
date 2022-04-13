@@ -436,10 +436,12 @@ RUN echo "export PATH=$PATH" >> /home/coder/.bashrc  # Temporary fix while PATH 
 
 {{< panelset class="nommage" >}}
 
-Ci-dessous des indications supplémentaires, pour vous aider, essayez
-de ne pas les consulter immédiatement
+{{% panel name="Indications supplémentaires" %}}
 
-{{% panel name="" %}}
+Cliquer sur les onglets ci-dessus pour bénéficier
+d'indications supplémentaires, pour vous aider. Cependant, essayez
+de ne pas les consulter immédiatement. 
+
 
 {{% /panel %}}
 
