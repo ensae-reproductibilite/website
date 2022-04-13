@@ -311,15 +311,6 @@ Il existe également des environnements bacs à sable en ligne comme
 
 Un conteneur Docker est mis à disposition sous la forme d'une **image**, c'est à dire d'un fichier binaire qui contient l'environnement nécessaire à l'exécution de l'application. Pour construire (*build*) l'image, on utilise un `Dockerfile`, un fichier texte qui contient la recette — sous forme de commandes Linux — de construction de l'environnement. L'image va être uploadée (*push*) sur un dépôt (*registry*), public (DockerHub) ou privé, depuis lequel les utilisateurs vont pouvoir télécharger l'image (*pull*). Le moteur Docker permet ensuite de lancer (*run*) un **conteneur**, c'est à dire une instance vivante de l'image.
 
-Parfois, cette instance peut être accessible (_expose_) sur
-un _localhost_ accessible, par exemple, depuis un navigateur _web_. Les calculs
-effectués sont reportés sur le serveur local et le navigateur sert d'interface
-avec l'utilisateur. Il est ainsi possible de mettre à disposition des
-logiciels dans cet environnement sans les avoir installés sur sa machine 
-personnelle mais uniquement dans le conteneur Docker.
-
-
-
 ### En pratique
 
 #### Application
@@ -440,9 +431,15 @@ Successfully built 125bd8da70ff
 Successfully tagged myflaskapp:latest
 ```
 
-Le moteur `Docker` essaie de construire notre image séquentiellement à partir des commandes spécifiées dans le `Dockerfile`. S'il rencontre une erreur, la procédure s'arrête, et il faut alors trouver la source du problème dans les *logs* et adapter le `Dockerfile` en conséquence. Si tout se passe bien, `Docker` nous indique que le *build* a réussi et l'image est prête à être utilisée.
+Le moteur `Docker` essaie de construire notre image séquentiellement à partir des commandes spécifiées dans le `Dockerfile`. S'il rencontre une erreur, la procédure s'arrête, et il faut alors trouver la source du problème dans les *logs* et adapter le `Dockerfile` en conséquence. Si tout se passe bien, `Docker` nous indique que le *build* a réussi et l'image est prête à être utilisée. On peut vérifier que l'image est bien disponible à l'aide de la commande `docker images`.
 
-Intéressons nous un peu plus en détail aux *logs* ci-dessus. Entre les étapes, `Docker` affiche des suites de lettres et de chiffres un peu ésotériques, et nous parle de conteneurs intermédiaires. En fait, il faut voir une image `Docker` comme un empilement de couches (*layers*), qui sont elles-mêmes des images `Docker`. Quand on hérite d'une image avec l'instruction `FROM`, on spécifie donc à Docker la couche initiale, sur laquelle il va construire le reste de notre environnement. A chaque étape sa nouvelle couche, et à chaque couche son *hash*, un identifiant unique fait de lettres et de chiffres.
+```bash
+$ docker images
+REPOSITORY                               TAG       IMAGE ID       CREATED          SIZE
+myflaskapp                               latest    57d2f410a631   2 hours ago      433MB
+```
+
+Intéressons nous un peu plus en détail aux *logs* de l'étape de *build*. Entre les étapes, `Docker` affiche des suites de lettres et de chiffres un peu ésotériques, et nous parle de conteneurs intermédiaires. En fait, il faut voir une image `Docker` comme un empilement de couches (*layers*), qui sont elles-mêmes des images `Docker`. Quand on hérite d'une image avec l'instruction `FROM`, on spécifie donc à Docker la couche initiale, sur laquelle il va construire le reste de notre environnement. A chaque étape sa nouvelle couche, et à chaque couche son *hash*, un identifiant unique fait de lettres et de chiffres.
 
 Cela peut ressembler à des détails techniques, mais c'est en fait extrêmement utile en pratique car cela permet à `Docker` de faire du *caching*. Lorsque l'on développe un Dockerfile, il est fréquent de devoir modifier ce dernier de nombreuses fois avant de trouver la bonne recette, et on aimerait bien ne pas avoir à *rebuild* l'environnement complet à chaque fois. Docker gère cela très bien : il *cache* chacune des couches intermédiaires. Par exemple, si l'on modifie la 5ème commande du Dockerfile, Docker va utiliser le cache pour ne pas avoir à recalculer les étapes précédentes, qui n'ont pas changé. Cela s'appelle l'"invalidation du cache" : dès lors qu'une étape du Dockerfile est modifiée, Docker va recalculer toutes les étapes suivantes, mais seulement celles-ci. Conséquence directe de cette observation : il faut toujours ordonner les étapes d'un Dockerfile de sorte à ce qui est le plus susceptible d'être souvent modifié soit à la fin du fichier, et inversement.
 
@@ -490,7 +487,41 @@ L'étape de *build* a pris quelques secondes au lieu de plusieurs minutes, et le
 
 #### Exécuter une image Docker
 
+L'étape de *build* a permis de créer une *image* `Docker`. Une image doit être vue comme un *template* : elle permet d'exécuter l'application sur n'importe quel environnement d'exécution sur lequel un moteur `Docker` est installé. En l'état, on a donc juste *construit*, mais rien *lancé* : notre application ne tourne pas encore. Pour cela, il faut créer un *conteneur*, i.e. une instance vivante de l'image qui permet d'accéder à l'application. Cela se fait via la commande `docker run`.
 
+```bash
+$ docker run -d -p 80:5000 myflaskapp:latest
+6a2ab0d82d051a3829b182ede7b9152f7b692117d63fa013e7dfe6232f1b9e81
+```
+
+Détaillons la syntaxe de cette commande :
+- `docker run tag` : lance l'image dont on fournit le *tag*. Le *tag* est de la forme `repository/projet:version`. Ici, il n'y a pas de *repository* puisque tout est fait en local ;
+- `-d` : "détache" le conteneur du terminal qui le lance ;
+- `-p` : effectue un *mapping* entre un port de la machine qui exécute le conteneur, et le conteneur lui-même. Notre conteneur écoute sur le port 5000, et l'on veut que notre application soit exposée sur le port HTTP classique (80).
+
+Lorsque l'on exécute `docker run`, `Docker` nous répond simplement un *hash* qui identifie le conteneur que l'on a lancé. On peut vérifier qu'il tourne bien avec la commande `docker ps`, qui renvoie toutes les informations associées au conteneur.
+
+```bash
+$ docker ps
+CONTAINER ID   IMAGE        COMMAND                  CREATED         STATUS         PORTS                                   NAMES
+6a2ab0d82d05   myflaskapp   "flask run --host=0.…"   7 seconds ago   Up 6 seconds   0.0.0.0:80->5000/tcp, :::80->5000/tcp   vigorous_kalam
+```
+
+Les conteneurs peuvent être utilisés pour réaliser des tâches très différentes. Grossièrement, on peut distinguer deux situations :
+- le conteneur effectue une tâche "one-shot", c'est à dire une opération qui a vocation à s'effectuer en un certain temps, suite à quoi le conteneur peut s'arrêter ;
+- le conteneur exécute une application. Dans ce cas, on souhaite que le conteneur reste en vie aussi longtemps que l'on souhaite utiliser l'application en question.
+
+Dans notre cas d'application, on se situe dans la seconde configuration puisque l'on veut exécuter une application web. Lorsque l'application tourne, elle expose sur le *localhost*, accessible depuis un navigateur web. Les calculs sont effectués sur un serveur local, et le navigateur sert d'interface avec l'utilisateur — comme lorsque vous utilisez un notebook `Jupyter` par exemple. 
+
+Finalement, on a pu développer et exécuter une application complète sur notre environnement local, sans avoir eu à installer quoi que ce soit sur notre machine personnelle, à part `Docker.`
+
+<!--Parfois, cette instance peut être accessible (_expose_) sur
+un _localhost_ accessible, par exemple, depuis un navigateur _web_. Les calculs
+effectués sont reportés sur le serveur local et le navigateur sert d'interface
+avec l'utilisateur. Il est ainsi possible de mettre à disposition des
+logiciels dans cet environnement sans les avoir installés sur sa machine 
+personnelle mais uniquement dans le conteneur Docker.
+-->
 
 #### Exporter/importer une image Docker {#imp-exp-docker}
 
