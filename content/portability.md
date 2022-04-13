@@ -293,11 +293,39 @@ Un conteneur Docker est mis à disposition sous la forme d'une **image**, c'est 
 
 ### En pratique
 
+#### Application
 
+Afin de présenter l'utilisation de `Docker` en pratique, nous allons présenter les différentes étapes permettant de "dockeriser" une application web minimaliste construite avec le framework `Python` [Flask](https://flask.palletsprojects.com/en/2.1.x/). La structure de notre projet est la suivante.
+
+```bash
+├── myflaskapp
+│   ├── Dockerfile
+│   ├── hello-world.py
+│   └── requirements.txt
+```
+
+Le script `hello-world.py` contient le code d'une application minimaliste, qui affiche simplement "Hello, World!" sur une page web.
+
+```bash
+from flask import Flask
+
+app = Flask(__name__)
+
+
+@app.route("/")
+def hello_world():
+    return "<p>Hello, World!</p>"
+```
+
+Pour faire tourner l'application, il nous faut donc à la fois `Python` et le package `Flask`. L'installation de `Python` se fait dans le `Dockerfile` (cf. section suivante). L'installation de `Flask` se fait via un fichier `requirements.txt`, qui contient juste la ligne suivante :
+
+```bash
+Flask==2.1.1
+```
 
 #### Le `Dockerfile`
 
-A là base de chaque image `Docker` se trouve un `Dockerfile`. C'est un fichier texte qui contient une série de commandes qui permettent de construire l'image. Ces fichiers peuvent être plus ou moins complexes selon l'application que l'on cherche à conteneuriser, mais leur structure est assez normalisée. Pour s'en rendre compte, analysons ligne à ligne le `Dockerfile` permettant de "dockeriser" une application interactive construite avec le framework `Python` [Flask](https://flask.palletsprojects.com/en/2.1.x/). Cela nous permettra d'introduire les principales commandes `Docker` qui interviennent dans un `Dockerfile`.
+A là base de chaque image `Docker` se trouve un `Dockerfile`. C'est un fichier texte qui contient une série de commandes qui permettent de construire l'image. Ces fichiers peuvent être plus ou moins complexes selon l'application que l'on cherche à conteneuriser, mais leur structure est assez normalisée. Pour s'en rendre compte, analysons ligne à ligne le `Dockerfile` nécessaire pour construire une image `Docker` de notre application `Flask.`
 
 ```bash
 FROM ubuntu:20.04
