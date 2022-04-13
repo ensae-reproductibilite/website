@@ -371,7 +371,9 @@ Par essai et erreur. Lors de l'étape de [build](#build) que l'on verra juste ap
 La recette présente dans le `Dockerfile` peut nécessiter l'utilisation de
 fichiers appartenant au dossier de travail. Pour que `Docker` les trouve
 dans son contexte, il est nécessaire d'introduire une
-commande `COPY`. 
+commande `COPY`. C'est un petit peu comme pour la cuisine: pour utiliser
+un produit dans une recette, il faut le sortir du frigo (fichier local)
+et le mettre sur la table. 
 
 {{% /box %}}
 
