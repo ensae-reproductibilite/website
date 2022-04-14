@@ -597,20 +597,20 @@ un `Dockerfile`:
 |----------|----------|
 | `FROM <image>:<tag>` | Utiliser comme point de départ l'image `<image>` ayant le tag `<tag>` |
 | `RUN <instructions>` | Utiliser la suite d'instructions `<instructions>` dans un terminal `Linux`. Pour passer plusieurs commandes dans un `RUN`, utiliser `&&`. Cette suite de commande peut avoir plusieurs lignes, dans ce cas, mettre `\` en fin de ligne |
-| `COPY` | |
-| `ADD` |  |
-| `ENV` |  |
-| `WORKDIR` |  |
-| `USER` |  |
-| `EXPOSE` |  |
-| `CMD` |  |
+| `COPY <source> <dest>` | Récupérer le fichier présent dans le système de fichier local à l'emplacement `<source>` pour que les instructions ultérieures puissent le trouver à l'emplacement `<source>`   |
+| `ADD <source> <dest>` | Globalement, même rôle que `COPY` |
+| `ENV MY_NAME="John Doe"` | Création d'une variable d'environnement (qui devient disponible sous l'alias `$MY_NAME`)   |
+| `WORKDIR <path>` | Définir le _working directory_ du conteuneur Docker dans le dossier `<path>`  |
+| `USER <username>` | Création d'un utilisateur non _root_ nommé `<username>`  |
+| `EXPOSE <PORT_ID>` | Lorsqu'elle tournera, l'application sera disponible depuis le port `<PORT_ID>`
+| `CMD ["executable","param1","param2"]` | Au lancement de l'instance Docker la commande `executable` (par exemple `python3`) sera lancée avec les paramètres additionnels fournis  |
 
 Une seconde aide-mémoire pour les principales commandes `Linux` est disponible ci-dessous:
 
 | Commande | Principe |
 |----------|----------|
-| `docker build` | Utiliser comme point de départ l'image `<image>` ayant le tag `<tag>` |
-| `docker images` | Utiliser la suite d'instructions `<instructions>` dans un terminal `Linux`. Pour passer plusieurs commandes dans un `RUN`, utiliser `&&`. Cette suite de commande peut avoir plusieurs lignes, dans ce cas, mettre `\` en fin de ligne |
-| `docker run` | |
-| `docker rm` |  |
+| `docker build . -t <tag>` | Construire l'image `Docker` à partir des fichiers dans le répertoire courant (`.`) en l'identifiant avec le tag `<tag>`  |
+| `docker run -it <tag>` | Lancer l'instance docker identifiée par `<tag>`  |
+| `docker images` | Lister les images disponibles sur la machine et quelques unes de leurs propriétés (tags, volume, etc.) |
+| `docker system prune` | Faire un peu de ménage dans ses images `Docker` (bien réfléchir avant de faire tourner cette commande) |
 
