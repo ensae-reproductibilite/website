@@ -587,3 +587,30 @@ docker.io/avouacr/myflaskapp:1.0.0
 ```
 
 `Docker` télécharge et extrait chacune des couches qui constituent l'image (ce qui peut parfois être long). L'utilisateur peut alors créer un conteneur à partir de l'image, en utilisant `docker run` comme illustré précédemment.
+
+### Aide-mémoire
+
+Voici une première aide-mémoire sur les principales commandes à intégrer dans 
+un `Dockerfile`:
+
+| Commande | Principe |
+|----------|----------|
+| `FROM <image>:<tag>` | Utiliser comme point de départ l'image `<image>` ayant le tag `<tag>` |
+| `RUN <instructions>` | Utiliser la suite d'instructions `<instructions>` dans un terminal `Linux`. Pour passer plusieurs commandes dans un `RUN`, utiliser `&&`. Cette suite de commande peut avoir plusieurs lignes, dans ce cas, mettre `\` en fin de ligne |
+| `COPY` | |
+| `ADD` |  |
+| `ENV` |  |
+| `WORKDIR` |  |
+| `USER` |  |
+| `EXPOSE` |  |
+| `CMD` |  |
+
+Une seconde aide-mémoire pour les principales commandes `Linux` est disponible ci-dessous:
+
+| Commande | Principe |
+|----------|----------|
+| `docker build` | Utiliser comme point de départ l'image `<image>` ayant le tag `<tag>` |
+| `docker images` | Utiliser la suite d'instructions `<instructions>` dans un terminal `Linux`. Pour passer plusieurs commandes dans un `RUN`, utiliser `&&`. Cette suite de commande peut avoir plusieurs lignes, dans ce cas, mettre `\` en fin de ligne |
+| `docker run` | |
+| `docker rm` |  |
+
