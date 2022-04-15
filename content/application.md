@@ -734,6 +734,43 @@ https://pylint.pycqa.org/en/latest/user_guide/pre-commit-integration.html
 Maintenant, nous allons automatiser la mise à disposition de notre
 sur `DockerHub`. Cela facilitera sa réutilisation. 
 Là encore, nous allons utiliser une série d'actions pré-configurées.
+Pour que `Github` puisse s'authentifier auprès de `DockerHub`, il va 
+falloir interfacer les deux plateformes. Pour cela, nous allons utiliser
+un jeton (_token_) `DockerHub` que nous allons mettre dans un espace
+sécurisé associé à votre dépôt `Github`
+
+- Se rendre sur
+https://hub.docker.com/ et créer un compte.
+- Aller dans les paramètres (https://hub.docker.com/settings/general)
+et cliquer, à gauche, sur `Security`
+- Créer un jeton personnel d'accès[^1], ne fermez pas l'onglet en question,
+vous ne pouvez voir sa valeur qu'une fois. 
+- Dans votre dépôt `Github`, cliquer sur l'onglet `Settings` et cliquer,
+à gauche, sur `Actions`. Sur la page qui s'affiche, cliquer sur `New repository secret`
+- Donner le nom `DOCKERHUB_TOKEN` à ce jeton et copier la valeur. Valider
+- Créer un deuxième secret nommé `DOCKERHUB_USERNAME` ayant comme valeur le nom d'utilisateur
+que vous avez créé sur `dockerhub`
+
+A ce stade, nous avons donné les moyens à `Github` de s'authentifier avec
+notre identité sur `dockerhub`. Il nous reste à mettre en oeuvre l'action
+en s'inspirant de https://github.com/docker/build-push-action/.
+On ne va modifier que deux éléments dans ce fichier:
+
+- Ajouter `dockerisation` à la liste des branches sur lesquelles tourne
+le pipeline
+- Changer le tag à la fin pour mettre `<username>/ensae-repro-docker:latest`
+
+Maintenant, il nous reste à tester notre application dans l'espace bac à sable
+
+```yaml
+FROM linogaliana/ensae-repro-docker
+
+EXPOSE 5000
+CMD ["python", "main.py"]
+```
+
+https://github.com/docker/build-push-action/
+https://docs.docker.com/ci-cd/github-actions/
 
 
 ## Automatisation avec `Github Actions`
