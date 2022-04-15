@@ -611,3 +611,129 @@ https://github.com/linogaliana/ensae-reproductibilite-projet-1/commit/56946b4c5c
 votre première application reproductible !
 
 # Partie 3 : mise en production
+
+Une image `Docker` est un livrable qui n'est pas forcément intéressant
+pour tous les publics. Certains préféreront avoir un plat bien préparé
+qu'une recette. Nous allons donc proposer d'aller plus loin en proposant
+plusieurs types de livrables. Cela va nous amener à découvrir les outils
+du CI/CD (_Continuous Integration / Continuous Deployment_)
+qui sont au coeur de l'approche `dev ops`. Notre approche appliquée
+au _machine learning_ va nous entraîner plutôt du côté du MLops qui devient
+une approche de plus en plus fréquente dans l'industrie de la 
+_data science_.
+
+Nous allons améliorer notre approche de deux manières:
+
+- Production d'un site _web_ automatisé permettant de documenter et
+valoriser le modèle de machine learning
+- Mise à disposition du modèle entraîné par le biais d'une API pour
+ne pas le ré-entraîner à chaque fois et faciliter sa réutilisation ;
+
+A chaque fois, nous allons d'abord tester en local notre travail puis
+essayer d'automatiser cela avec les outils de `Github`.
+
+## Etape 1: mise en place de l'intégration continue
+
+On va ici utiliser l'intégration continue pour deux objectifs distincts:
+
+- la mise à disposition de l'image `Docker` ;
+- la mise en place de tests automatisés de la qualité du code
+sur le modèle de notre `linter` précédent 
+
+Nous allons utiliser `Github Actions` pour cela. 
+
+### Tests automatiques
+
+__Methode la plus simple: utilisation d'un _template_ Github__
+
+- Si vous cliquez sur l'onglet `Actions` de votre dépôt, `Github` vous propose des _workflows_ standardisés reliés à `Python`. Choisir l'option `Python Package using Anaconda`.
+- Nous n'allons modifier que deux éléments de ce fichier.
+    + La dernière étape ne nous est pas nécessaire car nous n'avons pas de tests unitaires. Nous allons donc remplacer celle-ci par l'utilisation de `pylint` pour avoir une note de qualité du package. Utiliser `pylint` à cette étape pour noter les scripts ;
+    + Mettre entre guillements la version de `Python` pour que celle-ci soit reconnue.
+- En cliquant sur le bouton `Start Commit`, choisir la méthode `Create a new branch for this commit and start a pull request` en nommant la branche `dockerisation`
+ 
+__Méthode manuelle__
+
+Commençons par l'élément le plus léger: les tests automatisés. On va éditer
+depuis `VisualStudio` nos fichiers.
+
+- Créer un dossier `.github/workflows` via la ligne de commande ou l'explorateur de fichier 
+<!---mkdir .github/workflows -p ---->
+- Créer un fichier `.github/workflows/quality.yml`. 
+- Nous allons construire, par étape, une version simplifiée du `Dockerfile` présent
+dans [ce post](https://medium.com/swlh/enhancing-code-quality-with-github-actions-67561c6f7063) et
+dans [celui-ci](https://autobencoder.com/2020-08-24-conda-actions/)
+
+D'abord, définissons des paramètres pour indiquer à `github` quand faire tourner notre script:
+
+- Commencez par nommer votre _workflow_ par exemple `Python Linting`
+- Nous allons faire tourner ce _workflow_ dans la branche `master` et dans la branche actuelle (`dockerisation` par exemple). Ici, nous laissons de côté les autres éléments (par exemple le fait de faire tourner à chaque _pull request_)
+
+D'abord, défnissons le contexte d'exécution de notre script dans
+les potions de la partie `build`:
+
+- Utilisons une machine `ubuntu-latest`. Nous verrons ensuite comment améliorer cela. 
+    
+Nous allons ensuite mélanger des étapes pré-définies (des actions du _marketplace_) et des instructions que nous faisons :
+
+- Le _runner_ Github doit récupérer le contenu de notre dépôt, pour cela utiliser l'action `checkout`. Par rapport à l'exemple, il convient d'ajouter, pour le moment, un paramètre `ref` avec le nom de la branche (par exemple `dockerisation`)
+- ~~On installe ensuite `Python` avec l'action `setup-python`~~
+- Pour installer `Python` et l'environnement `conda`, on va plutôt utiliser l'astuce de [ce blog](https://autobencoder.com/2020-08-24-conda-actions/)
+- On utilise ensuite `flake8` et `pylint` pour effectuer des diagnostics de qualité
+
+Il ne reste plus qu'à faire un `commit` et espérer que cela fonctionne
+
+```yaml
+name: Python Linting
+on:
+  push:
+    branches: [master, dockerisation]
+jobs:
+  build:
+    runs-on: ubuntu-latest    
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: "dockerisation"
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: monenv
+          environment-file: environment.yml
+          python-version: '3.10'
+          auto-activate-base: false
+      - shell: bash -l {0}
+        run: |
+          conda info
+          conda list
+      - name: Lint with flake8
+        run: |
+          pip install flake8
+          flake8 src --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 src --count --max-complexity=10 --max-line-length=79 --statistics
+      - name: Lint with Pylint
+        run: |
+          pip install pylint
+          pylint src
+``` 
+
+Maintenant, nous pouvons observer que l'onglet `Actions`
+s'est enrichi. Chaque commit va entraîner une action pour
+tester nos scripts. Si la note est mauvaise, nous aurons
+une croix rouge, ce qui doit être le cas à cet état du 
+projet (voir [ici](https://github.com/linogaliana/ensae-reproductibilite-projet-1/runs/6038469527?check_suite_focus=true
+))
+
+
+
+Note: manière d'être plus puriste: un hook
+https://pylint.pycqa.org/en/latest/user_guide/pre-commit-integration.html
+
+
+## Image `Docker`
+
+Maintenant, nous allons automatiser la mise à disposition de notre
+sur `DockerHub`. Cela facilitera sa réutilisation. 
+Là encore, nous allons utiliser une série d'actions pré-configurées.
+
+
+## Automatisation avec `Github Actions`
