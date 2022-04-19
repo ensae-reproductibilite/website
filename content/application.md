@@ -760,17 +760,27 @@ On ne va modifier que deux éléments dans ce fichier:
 le pipeline
 - Changer le tag à la fin pour mettre `<username>/ensae-repro-docker:latest`
 
-Maintenant, il nous reste à tester notre application dans l'espace bac à sable
+Maintenant, il nous reste à tester notre application dans l'espace bac à sabl:
+
+- Créer un fichier `Dockerfile2` ne contenant que l'import et le déploiement
+de l'appli:
 
 ```yaml
-FROM linogaliana/ensae-repro-docker
+FROM <username>/ensae-repro-docker:latest
 
 EXPOSE 5000
 CMD ["python", "main.py"]
 ```
 
-https://github.com/docker/build-push-action/
-https://docs.docker.com/ci-cd/github-actions/
+- Build avec l'argument `-f Dockerfile2` et `run`
+
+## Création d'un rapport automatique
+
+Maintenant, nous allons créer et déployer un site web pour valoriser notre
+travail. Cela va impliquer trois étapes:
+
+- enrichir l'image docker avec le logiciel `quarto`
+- créer un rapport minimal qui sera compilé par `quarto` sur les serveurs de Github. Celui-ci va s'inspirer du notebook initial
+- déployer ce rapport minimal
 
 
-## Automatisation avec `Github Actions`
