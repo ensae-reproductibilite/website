@@ -784,3 +784,79 @@ travail. Cela va impliquer trois étapes:
 - déployer ce rapport minimal
 
 
+### Rapport minimal en local
+
+
+### Image docker enrichie
+
+### Automatisation avec `Github Actions`
+
+Si les dépendances et l'image ont bien été enrichis, cette étape est quasi direct
+
+<!---
+https://github.com/linogaliana/ensae-reproductibilite-projet-1/commit/585f0cb4b9ff9e29f0dcde14b5085813746eadfc
+---->
+
+
+### Déploiement
+
+- Aller sur https://www.netlify.com/ et faire `Sign up` (utiliser son compte `Github`)
+- Dans la page d'accueil de votre profil, vous pouvez cliquer sur `Add new site > Import an existing project`
+- Cliquer sur Github. S'il y a des autorisations à donner, les accorder. Rechercher votre projet dans la liste de vos projets github
+- Cliquer sur le nom du projet et laisser les paramètres par défaut (nous allons modifier par la suite)
+- Cliquer sur `Deploy site`
+
+A ce stade, votre déploiement devrait échouer. C'est normal, vous essayez de déployer depuis `master` qui ne comporte pas de html.
+Cependant, aucune branche ne comporte le rapport: celui-ci est généré dans votre pipeline mais n'est jamais présent dans le
+dépôt car il s'agit d'un _output_. On va désactiver le déploiement automatique 
+pour privilégier un déploiement depuis Github Actions:
+
+- Cliquer sur `Build and Deploy`
+- Dans la section `Build settings`, cliquer sur `Stop builds` et valider
+
+On vient de désactiver le déploiement automatique par défaut. On va faire
+communiquer notre dépôt Github et netlify par le biais de l'intégration
+continue. Pour cela, il faut créer un jeton netlify pour que les serveurs
+de Github, lorsqu'ils disposent d'un rapport, puissent l'envoyer à netlify
+pour la mise sur le _web_. Il va être nécessaire de créer deux variables
+d'environnement pour connecter `github` et `netlify`: l'identifiant du site
+et le _token_
+
+- Pour le token : 
+    + Créer un jeton en cliquant, en haut à droite, sur l'icone de votre profil. Aller
+dans `User settings`. A gauche, cliquer sur `Applications` et créer un jeton personnel d'accès
+avec un nom signifiant (par exemple `PAT_ENSAE_reproductibilite`)
+    + Mettre de côté (conseil : garder l'onglet ouvert)
+- Pour l'identifiant du site:
+    + cliquer sur `site settings` dans les onglets en haut
+    + Garder l'onglet ouvert pour copier la valeur quand nécessaire
+    
+
+Il est maintenant nécessaire d'aller dans le dépôt Github et de créer 
+les secrets (`Settings > Secrets > Actions`):
+    + Créer le secret `NETLIFY_AUTH_TOKEN` en collant la valeur du jeton d'authentification netlify
+    + Créer le secret `NETLIFY_SITE_ID` en collant l'id du site
+
+
+Ajouter 2 étapes:
+
+- une installation de `npm`
+- une étape de déploiement via la CLI de netlify
+
+```yaml
+- name: Install npm
+  uses: actions/setup-node@v2
+  with:
+    node-version: '14'
+- name: Deploy to Netlify
+  # NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID added in the repo's secrets
+  env:
+    NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+    NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+  run: |
+    mkdir -p public
+    mv report.html public/index.html
+    npm install --unsafe-perm=true netlify-cli -g
+    netlify init
+    netlify deploy --prod --dir="public" --message "Deploy master"
+```
