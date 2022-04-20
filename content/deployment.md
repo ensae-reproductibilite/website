@@ -98,8 +98,85 @@ on retrouve quelques _buzz-words_ dont voici les définitions :
 
 ## Pipelines de données
 
-- DAG
+Une chaine de production implique plusieurs étapes qui peuvent éventuellement 
+nécessiter plusieurs langages. Ces étapes peuvent être vues comme des 
+transformations à la chaine d'un ou plusieurs inputs afin de produire
+un ou plusieurs output.
+
+La représentation de ces étapes peut être faite à l'aide des diagrammes
+acycliques dirigés (DAG):
+
+![](https://miro.medium.com/max/1400/1*grWvT-3jUcrnbTrsVtRHAg.png)
+
+Un _workflow_ complet sera ainsi reproductible si on peut, en ayant accès
+aux _inputs_ et à l'ensemble des règles de transformation reproduire
+exactement les outputs. 
+Si les inputs ou le code change, on peut être en mesure de mettre à jour
+les outputs, si possible sans faire retourner les parties du projet non
+concernés. 
+
+Une première manière de développer est l'approche manuelle, qui est une tâche
+digne de Sisyphe:
+
+1. Ecriture du code
+2. Exécution du code jusqu'à sa fin
+3. Découverte d'une erreur ou mise à jour du code ou des données
+4. Relance le code dans son ensemble
+
+Pour éviter ce cycle interminable, on est tenté d'écrire des bases
+intermédiaires et de ne faire tourner qu'une partie du code. 
+Cette approche, si elle a l'avantage de faire gagner du temps, est 
+néanmoins dangereuse car on peut facilement oublier de mettre à jour
+une base intermédiaire qui a changé ou au contraire refaire tourner
+une partie du code qui n'a pas été mise à jour. 
+
+Il existe des méthodes plus fiables pour éviter ces gestes manuels. 
+Celles-ci sont inspirées de [GNU Make](https://www.gnu.org/software/make/)
+et consistent à créer le chemin de dépendance de la chaine de production 
+(lister l'environnement, les inputs et les outputs à produire), à déterminer
+les chemins affectés par un changement de code ou de données pour
+ne faire tourner à nouveau que les étapes nécessaires. 
+
+Les implémentations en `Python` et `R` sont nombreuses. Parmi celles-ci, on
+peut mettre en valeur
+
+- [`snakemake`](https://snakemake.readthedocs.io/en/stable/) pour `Python`
+- [`targets`](https://books.ropensci.org/targets/) pour `R`
+
 
 ## Orchestration
 
-## CI/CD
+Certains outils vont plus loin:
+
+- argo
+- mlflow
+- airflow
+
+# CI/CD
+
+## Définition
+
+> L’intégration continue est un ensemble de pratiques utilisées en génie logiciel consistant à vérifier à chaque modification de code source que le résultat des modifications ne produit pas de régression dans l’application développée. […] Elle permet d’automatiser l’exécution des suites de tests et de voir l’évolution du développement du logiciel.
+
+> La livraison continue est une approche d’ingénierie logicielle dans laquelle les équipes produisent des logiciels dans des cycles courts, ce qui permet de le mettre à disposition à n’importe quel moment. Le but est de construire, tester et diffuser un logiciel plus rapidement.
+
+![](cicd_exemple.png)
+
+## Avantages
+
+L'approche CI/CD garantit une automatisation et une surveillance continues
+tout au long du cycle de vie d'un projet. 
+
+Cela présente de nombreux avantages:
+
+- on peut anticiper les contraintes de la mise en production grâce à des environnements
+normalisés partant d'image docker standardisées
+- on peut tester les changements apportés à un livrable par un nouveau prototype 
+- on peut déterminer très rapidement l'introduction de bugs dans un projet
+
+## Mise en oeuvre
+
+L'idée de l'approche CI/CD est ainsi d'associer chaque changement de 
+code (`commit`) à l'exécution de scripts automatisés
+
+# Valoriser son projet avec un site web automatisé
