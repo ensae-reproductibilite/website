@@ -860,3 +860,8 @@ Ajouter 2 étapes:
     netlify init
     netlify deploy --prod --dir="public" --message "Deploy master"
 ```
+
+Aller sur l'URL temporaire netlify
+
+
+
