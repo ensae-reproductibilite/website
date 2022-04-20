@@ -160,7 +160,7 @@ Certains outils vont plus loin:
 
 > La livraison continue est une approche d’ingénierie logicielle dans laquelle les équipes produisent des logiciels dans des cycles courts, ce qui permet de le mettre à disposition à n’importe quel moment. Le but est de construire, tester et diffuser un logiciel plus rapidement.
 
-![](cicd_exemple.png)
+![](/cicd_exemple.png)
 
 ## Avantages
 
@@ -182,3 +182,126 @@ Bien que mis en oeuvre de manière différente, `Gitlab` et `Github`
 proposent tous les deux ce type de fonctionalités. 
 
 # Valoriser son projet avec un site web automatisé
+
+
+Un code ou une API intéressent des publics très ciblés. D'autres
+publics seront intéressés par une autre valorisation
+d'un projet: les chercheurs apprécieront un papier académique, 
+d'autres personnes préfèreront un site web ergonomique...
+
+## Qu'est-ce qu'un site _web_ ?
+
+Pour simplifier,
+on peut voir un site _web_ comme la combinaison de trois éléments:
+
+- une arborescence de fichiers `HTML` qui présentent le contenu du site
+dans un balisage lourd
+- des fichiers `CSS` qui gèrent la mise en forme[^1]
+- des fonctions `javascript`
+
+[^1]: Cette séparation entre le fond et la forme renvoie au paradigme du
+_What you see is what you mean_ (WYSIWYM) dont l'un des
+logiciels les plus connus est `LaTeX` et s'oppose au principe
+du _What you see is what you get_ (WYSIWYG) des éditeurs de texte.
+
+Il existe énormément d'outils aujourd'hui qui permettent, sans connaissance
+en HTML, CSS ou JS, de créer un site _web_. Dans le domaine de la
+_data-science_, le format `Markdown` (fichiers `.md`) s'est imposé. 
+
+`Markdown` est un système d’édition doté d’une syntaxe simplifiée souvent
+utilisé pour faire de la documentation de projet.
+Le format est utilisé sur de nombreux sites internet,
+notamment `Gitlab` et `Stackoverflow`.
+L’extension de ce type de fichier est `.md`.
+`Markdown` présente plusieurs avantages: 
+
+- il est facile d’inclure des blocs de code informatique et des équations mathématiques dans un document Markdown ; 
+- le formatage de blocs de texte ou de code est simple et très bien fait (et beaucoup plus léger qu’en LaTeX par exemple) ;
+- il existe des outils de conversion de `Markdown` en `HTML` très bien faits.
+
+Plus d'éléments sur la logique de `Markdown` et ses intérêts
+sont disponibles dans le
+chapitre [R Markdown de la documentation  `utilitR`](https://www.book.utilitr.org/rmarkdown.html)
+
+## Comment faire un site _web_ ? 
+
+Il existe historiquement plusieurs approches dans l'écosystème de la
+_data-science_, selon le langage utilisé et l'output désiré. 
+
+Si on part de fichiers qui présentent des blocs de
+code qui ne nécessitent pas d'être exécutés, l'écosystème le plus riche
+est [Hugo](https://gohugo.io/content-management/formats/). Celui-ci permet
+de générer des sites web à l'architecture complexe à partir d'une
+arborescence de `.md`. C'est l'approche adoptée 
+pour ce site _web_ 
+
+Cependant, il est souvent nécessaire d'exécuter des bouts de code pour tester
+les exemples présentés, ou générer des tableaux ou sorties graphiques.
+Pour cela, historiquement, il existe deux paradigmes: 
+
+- [`JupyterBook`](https://jupyterbook.org/intro.html) qui vise à générer des
+sites web et des notebooks à partir de fichiers `markdown`. Le notebook n'est
+donc pas le produit de départ (cf. XXXX) mais un livrable. 
+- [`R Markdown`](https://rmarkdown.rstudio.com/): l'écosystème le plus riche
+avec de nombreux modèles de documents customisables (documents HTML ou articles PDF, sites web de documentation
+avec `bookdown`, blogs avec `blogdown`,  _dashboards_, etc.) Le principe de `R Markdown`
+est d'offrir une surcouche à `Markdown` pour que les blocs de code soient exécutés afin de créer
+un _output_ reproductible.
+
+`R Markdown` est un système d'une grande richesse. Initialement pensé pour les
+utilisateurs de `R`, ce paradigme permet maintenant de créer des documents
+executant d'autres langages, notamment
+du `Python` ([le cours de python de 2e année](https://pythonds.linogaliana.fr/)
+de l'ENSAE est testé et construit grâce à `R Markdown`).
+
+`Quarto` est le petit nouveau dans cet écosystème, amené à devenir un 
+outil standard des _data-scientists_ comme peuvent l'être, aujourd'hui,
+les Notebooks `Jupyter`.
+Successeur de `R Markdown`,
+il vise à améliorer l'aspect universel des documents produits en n'obligeant
+plus à utiliser `R` pour compiler le document qui ne le nécessitent pas. 
+C'est un outil particulièrement adapté aux utilisateurs de `Python`
+
+![](/quarto.png)
+
+Un document `quarto` hérite des principes de base d'un document `R Markdown`, notamment
+la structure. Il comporte ainsi deux parties principales :
+
+- L’en-tête (`YAML` header) qui gère les éléments de style et les paramètres globaux;
+- Le contenu qui gère le fond et permet d’alterner librement texte et code :
+    + Les __blocs de texte brut__ mis en forme selon la syntaxe markdown 
+    + Les __blocs de code__ sont présentés dans des _chunks_ identifiés par un
+langage (ici `python`) qui seront exécutés de manière linéaire et produiront
+l'output désiré (ici une figure `matplotlib`).  
+
+## Comment mettre à disposition un site _web_ ?
+
+Mettre à jour manuellement un site _web_ après l'avoir compilé
+est une tâche pénible et source d'erreur dans un projet actif de
+_data-science_.
+L'automatisation issue de l'approche CI/CD permet un gain de confort 
+aussi dans ce domaine.
+
+Supposons qu'on ait mis en oeuvre une routine pour automatiser la construction
+d'un site _web_ à partir de fichiers _Markdown_. Comment les mettre à
+disposition ?
+
+Il existe plusieurs manières de déployer automatiquement un site web : 
+
+- [Gitlab pages](https://docs.gitlab.com/ee/user/project/pages/) ;
+- [Github pages](https://pages.github.com/) ;
+- [Netlify](https://www.netlify.com/).
+
+Ces trois services sont gratuits. Ils consistent à mettre 
+à disposition un DNS sur lequel des fichiers HTML peuvent être mis à
+disposition automatiquement pour assurer que chaque `commit` 
+
+L'[exercice d'application](../application) supposant l'utilisation
+de `Github`, il présentera `Netlify` qui est
+plus pratique que `Github Pages`[^2].
+
+[^2]: `Gitlab Pages` permet une mise en lien plus directe entre les
+output de l'intégration continue et le déploiement. Cependant, avec
+les scripts présentés dans l'exercice d'application on peut
+avoir une intégration très flexible de `Netlify` dans un pipeline
+plus riche. 
