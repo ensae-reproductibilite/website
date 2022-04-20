@@ -616,23 +616,23 @@ Une image `Docker` est un livrable qui n'est pas forcément intéressant
 pour tous les publics. Certains préféreront avoir un plat bien préparé
 qu'une recette. Nous allons donc proposer d'aller plus loin en proposant
 plusieurs types de livrables. Cela va nous amener à découvrir les outils
-du CI/CD (_Continuous Integration / Continuous Deployment_)
-qui sont au coeur de l'approche `dev ops`. Notre approche appliquée
-au _machine learning_ va nous entraîner plutôt du côté du MLops qui devient
+du CI/CD (_Continuous Integration / Continuous Delivery_)
+qui sont au coeur de l'approche `DevOps`. Notre approche appliquée
+au _machine learning_ va nous entraîner plutôt du côté du `MLOps` qui devient
 une approche de plus en plus fréquente dans l'industrie de la 
 _data science_.
 
-Nous allons améliorer notre approche de deux manières:
+Nous allons améliorer notre approche de trois manières:
 
+- Automatisation de la création de l'image `Docker` et tests
+automatisés de la qualité du code ;
 - Production d'un site _web_ automatisé permettant de documenter et
-valoriser le modèle de machine learning
+valoriser le modèle de _Machine Learning_ ;
 - Mise à disposition du modèle entraîné par le biais d'une API pour
 ne pas le ré-entraîner à chaque fois et faciliter sa réutilisation ;
 
 A chaque fois, nous allons d'abord tester en local notre travail puis
 essayer d'automatiser cela avec les outils de `Github`.
-
-## Etape 1: mise en place de l'intégration continue
 
 On va ici utiliser l'intégration continue pour deux objectifs distincts:
 
@@ -642,52 +642,94 @@ sur le modèle de notre `linter` précédent
 
 Nous allons utiliser `Github Actions` pour cela. 
 
-### Tests automatiques
+## Etape préliminaire
+
+Pour ne pas risquer de tout casser sur notre branche `master`, nous allons 
+nous placer sur une branche nommée `dev`:
+
+- si dans l'étape suivante vous appliquez la méthode la plus simple, vous
+allez pouvoir la créer depuis l'interface de `Github` ;
+- si vous utilisez l'autre méthode, vous allez devoir la créer en local (
+via la commande `git checkout -b dev`)
+
+## Etape 1: mise en place de tests automatisés
+
+Avant d'essayer de mettre en oeuvre la création de notre image
+`Docker` de manière automatisée, nous allons présenter la logique
+de l'intégration continue en généralisant les évaluations de
+qualité du code avec le `linter`
+
+{{< panelset class="nommage" >}}
+{{% panel name="Utilisation d'un _template_ `Github` :cat:" %}}
 
 __Methode la plus simple: utilisation d'un _template_ Github__
 
-- Si vous cliquez sur l'onglet `Actions` de votre dépôt, `Github` vous propose des _workflows_ standardisés reliés à `Python`. Choisir l'option `Python Package using Anaconda`.
-- Nous n'allons modifier que deux éléments de ce fichier.
-    + La dernière étape ne nous est pas nécessaire car nous n'avons pas de tests unitaires. Nous allons donc remplacer celle-ci par l'utilisation de `pylint` pour avoir une note de qualité du package. Utiliser `pylint` à cette étape pour noter les scripts ;
-    + Mettre entre guillements la version de `Python` pour que celle-ci soit reconnue.
-- En cliquant sur le bouton `Start Commit`, choisir la méthode `Create a new branch for this commit and start a pull request` en nommant la branche `dockerisation`
- 
-__Méthode manuelle__
+Si vous cliquez sur l'onglet `Actions` de votre dépôt, `Github` vous propose des _workflows_ standardisés reliés à `Python`. Choisir l'option `Python Package using Anaconda`.
 
-Commençons par l'élément le plus léger: les tests automatisés. On va éditer
+warning: Nous n'allons modifier que deux éléments de ce fichier.
+
+:one: La dernière étape (`Test with pytest`) ne nous est pas nécessaire car nous n'avons pas de tests unitaires Nous allons donc remplacer celle-ci par l'utilisation de `pylint` pour avoir une note de qualité du package.
+
++ Utiliser `pylint` à cette étape pour noter les scripts ;
++ Vous pouvez fixer un score minimal à 5 (option `--fail-under=5`)
+
+:two: Mettre entre guillements la version de `Python` pour que celle-ci soit reconnue.
+
+:three: Enfin, finaliser la création de ce script:
+
+- En cliquant sur le bouton `Start Commit`, choisir la méthode `Create a new branch for this commit and start a pull request` en nommant la branche `dev`
+- Créer la `Pull Request` en lui donnant un nom signifiant
+
+{{% /panel %}}
+
+{{% panel name="Méthode manuelle" %}}
+
+:warning: On est plutôt sur une méthode de galérien. Il vaut
+mieux privilégier l'autre approche
+
+On va éditer
 depuis `VisualStudio` nos fichiers.
 
+- Créer une branche `dev` en ligne de commande
 - Créer un dossier `.github/workflows` via la ligne de commande ou l'explorateur de fichier 
 <!---mkdir .github/workflows -p ---->
 - Créer un fichier `.github/workflows/quality.yml`. 
-- Nous allons construire, par étape, une version simplifiée du `Dockerfile` présent
+
+
+Nous allons construire, par étape, une version simplifiée du `Dockerfile` présent
 dans [ce post](https://medium.com/swlh/enhancing-code-quality-with-github-actions-67561c6f7063) et
 dans [celui-ci](https://autobencoder.com/2020-08-24-conda-actions/)
 
-D'abord, définissons des paramètres pour indiquer à `github` quand faire tourner notre script:
+:one: D'abord, définissons des paramètres pour indiquer à `Github`
+quand faire tourner notre script:
 
-- Commencez par nommer votre _workflow_ par exemple `Python Linting`
-- Nous allons faire tourner ce _workflow_ dans la branche `master` et dans la branche actuelle (`dockerisation` par exemple). Ici, nous laissons de côté les autres éléments (par exemple le fait de faire tourner à chaque _pull request_)
+- Commencez par nommer votre _workflow_ par exemple `Python Linting` avec la clé `name`
+- Nous allons faire tourner ce _workflow_ dans la branche `master` et dans la branche actuelle (`dev`). Ici, nous laissons de côté les autres éléments (par exemple le fait de faire tourner à chaque _pull request_). La clé `on` est dédiée à cet usage
 
-D'abord, défnissons le contexte d'exécution de notre script dans
-les potions de la partie `build`:
+:two: Ensuite, défnissons le contexte d'exécution des tâches (`jobs`)
+de notre script dans
+les options de la partie `build`:
 
-- Utilisons une machine `ubuntu-latest`. Nous verrons ensuite comment améliorer cela. 
+- Utilisons une machine `ubuntu-latest`. Nous verrons plus tard
+comment améliorer cela. 
     
-Nous allons ensuite mélanger des étapes pré-définies (des actions du _marketplace_) et des instructions que nous faisons :
+:three: Nous allons ensuite mélanger des étapes pré-définies (des actions du _marketplace_) et des instructions que nous faisons :
 
-- Le _runner_ Github doit récupérer le contenu de notre dépôt, pour cela utiliser l'action `checkout`. Par rapport à l'exemple, il convient d'ajouter, pour le moment, un paramètre `ref` avec le nom de la branche (par exemple `dockerisation`)
-- ~~On installe ensuite `Python` avec l'action `setup-python`~~
-- Pour installer `Python` et l'environnement `conda`, on va plutôt utiliser l'astuce de [ce blog](https://autobencoder.com/2020-08-24-conda-actions/)
-- On utilise ensuite `flake8` et `pylint` pour effectuer des diagnostics de qualité
+- Le _runner_ `Github` doit récupérer le contenu de notre dépôt, pour cela utiliser l'action `checkout`. Par rapport à l'exemple, il convient d'ajouter, pour le moment, un paramètre `ref` avec le nom de la branche (par exemple `dev`)
+- ~~On installe ensuite `Python` avec l'action `setup-python`~~ Pas besoin d'installer `Python`, on va utiliser l'option `conda-incubator/setup-miniconda@v2`
+- Pour installer `Python` et l'environnement `conda`, on va plutôt utiliser l'astuce de [ce blog](https://autobencoder.com/2020-08-24-conda-actions/) avec l'option `conda-incubator/setup-miniconda@v2`
+- On utilise ensuite `flake8` et `pylint` (option `--fail-under=5`)
+pour effectuer des diagnostics de qualité
 
-Il ne reste plus qu'à faire un `commit` et espérer que cela fonctionne
+Il ne reste plus qu'à faire un `commit` et espérer que cela fonctionne.
+Cela devrait donner le fichier suivant : 
+
 
 ```yaml
 name: Python Linting
 on:
   push:
-    branches: [master, dockerisation]
+    branches: [master, dev]
 jobs:
   build:
     runs-on: ubuntu-latest    
@@ -716,12 +758,19 @@ jobs:
           pylint src
 ``` 
 
+
+{{% /panel %}}
+
+
+{{< /panelset >}}
+
+ 
 Maintenant, nous pouvons observer que l'onglet `Actions`
-s'est enrichi. Chaque commit va entraîner une action pour
-tester nos scripts. Si la note est mauvaise, nous aurons
-une croix rouge, ce qui doit être le cas à cet état du 
-projet (voir [ici](https://github.com/linogaliana/ensae-reproductibilite-projet-1/runs/6038469527?check_suite_focus=true
-))
+s'est enrichi. Chaque `commit` va entraîner une action pour
+tester nos scripts.
+
+Si la note est mauvaise, nous aurons
+une croix rouge (et nous recevrons un mail)
 
 
 
