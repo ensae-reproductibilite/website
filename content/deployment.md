@@ -177,6 +177,8 @@ normalisés partant d'image docker standardisées
 ## Mise en oeuvre
 
 L'idée de l'approche CI/CD est ainsi d'associer chaque changement de 
-code (`commit`) à l'exécution de scripts automatisés
+code (`commit`) à l'exécution de scripts automatisés.
+Bien que mis en oeuvre de manière différente, `Gitlab` et `Github`
+proposent tous les deux ce type de fonctionalités. 
 
 # Valoriser son projet avec un site web automatisé
