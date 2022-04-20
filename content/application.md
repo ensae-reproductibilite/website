@@ -677,7 +677,9 @@ warning: Nous n'allons modifier que deux éléments de ce fichier.
 
 :three: Enfin, finaliser la création de ce script:
 
-- En cliquant sur le bouton `Start Commit`, choisir la méthode `Create a new branch for this commit and start a pull request` en nommant la branche `dev`
+- En cliquant sur le bouton `Start Commit`, choisir la méthode
+`Create a new branch for this commit and start a pull request`
+en nommant la branche `dev`
 - Créer la `Pull Request` en lui donnant un nom signifiant
 
 {{% /panel %}}
