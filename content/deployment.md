@@ -299,6 +299,9 @@ disposition automatiquement pour assurer que chaque `commit`
 L'[exercice d'application](../application) supposant l'utilisation
 de `Github`, il présentera `Netlify` qui est
 plus pratique que `Github Pages`[^2].
+Le résultat de cette chaine de production d'un site
+web reproductible est accessible à l'url
+https://spiffy-florentine-c913b9.netlify.app/
 
 [^2]: `Gitlab Pages` permet une mise en lien plus directe entre les
 output de l'intégration continue et le déploiement. Cependant, avec
