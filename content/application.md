@@ -862,7 +862,7 @@ CMD ["python", "main.py"]
 :tada: La matrice de confusion doit s'afficher ! Vous avez grandement
 facilité la réutilisation de votre image. 
 
-## Etape 4: création d'un rapport automatique
+## Etape 3: création d'un rapport automatique
 
 Maintenant, nous allons créer et déployer un site web pour valoriser notre
 travail. Cela va impliquer trois étapes:
@@ -1218,28 +1218,36 @@ On va améliorer cela en déployant automatiquement un site _web_ présentant
 en page d'accueil notre rapport et permettant le téléchargement du notebook. 
 
 
-### 4. Déploiement
+## Etape 4: Déploiement de ce rapport automatique sur le web
+
+:one: Dans un premier temps, nous allons connecter notre dépôt `Github` au
+service tiers `Netlify`
 
 - Aller sur https://www.netlify.com/ et faire `Sign up` (utiliser son compte `Github`)
 - Dans la page d'accueil de votre profil, vous pouvez cliquer sur `Add new site > Import an existing project`
-- Cliquer sur Github. S'il y a des autorisations à donner, les accorder. Rechercher votre projet dans la liste de vos projets github
+- Cliquer sur `Github`. S'il y a des autorisations à donner, les accorder. Rechercher votre projet dans la liste de vos projets `Github`
 - Cliquer sur le nom du projet et laisser les paramètres par défaut (nous allons modifier par la suite)
 - Cliquer sur `Deploy site`
 
-A ce stade, votre déploiement devrait échouer. C'est normal, vous essayez de déployer depuis `master` qui ne comporte pas de html.
-Cependant, aucune branche ne comporte le rapport: celui-ci est généré dans votre pipeline mais n'est jamais présent dans le
+:two: A ce stade, votre déploiement devrait échouer.
+C'est normal, vous essayez de déployer depuis `master` qui ne comporte pas de html.
+Mais le rapport n'est pas non plus présent dans la branche `dev`.
+En fait, aucune branche ne comporte le rapport:
+celui-ci est généré dans votre _pipeline_ mais n'est jamais présent dans le
 dépôt car il s'agit d'un _output_. On va désactiver le déploiement automatique 
-pour privilégier un déploiement depuis Github Actions:
+pour privilégier un déploiement depuis `Github Actions`:
 
-- Cliquer sur `Build and Deploy`
+- Aller dans `Site Settings` puis, à gauche, cliquer sur `Build and Deploy`
 - Dans la section `Build settings`, cliquer sur `Stop builds` et valider
 
 On vient de désactiver le déploiement automatique par défaut. On va faire
-communiquer notre dépôt Github et netlify par le biais de l'intégration
-continue. Pour cela, il faut créer un jeton netlify pour que les serveurs
-de Github, lorsqu'ils disposent d'un rapport, puissent l'envoyer à netlify
+communiquer notre dépôt `Github` et `Netlify` par le biais de l'intégration
+continue.
+
+:three: Pour cela, il faut créer un jeton `Netlify` pour que les serveurs
+de `Github`, lorsqu'ils disposent d'un rapport, puissent l'envoyer à `Netlify`
 pour la mise sur le _web_. Il va être nécessaire de créer deux variables
-d'environnement pour connecter `github` et `netlify`: l'identifiant du site
+d'environnement pour connecter `Github` et `Netlify`: l'identifiant du site
 et le _token_
 
 - Pour le token : 
@@ -1248,17 +1256,25 @@ dans `User settings`. A gauche, cliquer sur `Applications` et créer un jeton pe
 avec un nom signifiant (par exemple `PAT_ENSAE_reproductibilite`)
     + Mettre de côté (conseil : garder l'onglet ouvert)
 - Pour l'identifiant du site:
-    + cliquer sur `site settings` dans les onglets en haut
+    + cliquer sur `Site Settings` dans les onglets en haut
     + Garder l'onglet ouvert pour copier la valeur quand nécessaire
     
 
-Il est maintenant nécessaire d'aller dans le dépôt Github et de créer 
+- Il est maintenant nécessaire d'aller dans le dépôt `Github` et de créer 
 les secrets (`Settings > Secrets > Actions`):
-    + Créer le secret `NETLIFY_AUTH_TOKEN` en collant la valeur du jeton d'authentification netlify
-    + Créer le secret `NETLIFY_SITE_ID` en collant l'id du site
+    + Créer le secret `NETLIFY_AUTH_TOKEN` en collant la valeur du jeton d'authentification `Netlify`
+    + Créer le secret `NETLIFY_SITE_ID` en collant l'identifiant du site
 
 
-Ajouter 2 étapes:
+:four: Nous avons effectué toutes les configurations nécessaires. On va
+maintenant mettre à jour l'intégration continue afin de mettre à disposition
+sur le _web_ notre rapport. On va utiliser l'interface en ligne de commande
+(CLI) de `Netlify`. Celle-ci attend que le site _web_ se trouve dans un
+dossier `public` et que la page d'accueil soit nommée `index.html`:
+
+{{< panelset class="simplification" >}}
+
+{{% panel name="Vision d'ensemble " %}}
 
 - une installation de `npm`
 - une étape de déploiement via la CLI de netlify
@@ -1276,12 +1292,105 @@ Ajouter 2 étapes:
   run: |
     mkdir -p public
     mv report.html public/index.html
+    mv report.ipynb public/report.ipynb
     npm install --unsafe-perm=true netlify-cli -g
     netlify init
     netlify deploy --prod --dir="public" --message "Deploy master"
 ```
 
-Aller sur l'URL temporaire netlify
+{{% /panel %}}
 
+{{% panel name="Détails npm " %}}
+
+{{< highlight yaml "hl_lines=1-4" >}}
+- name: Install npm
+  uses: actions/setup-node@v2
+  with:
+    node-version: '14'
+{{< / highlight >}}
+
+`npm` est le gestionnaire de paquet de JS. Il est nécessaire de le configurer,
+ce qui est fait automatiquement grâce à l'action `actions/setup-node@v2`
+
+{{% /panel %}}
+
+{{% panel name="Détails `Netlify CLI`" %}}
+
+- On rappelle à `Github Actions` nos paramètres d'authentification
+sous forme de variables d'environnement. Cela permet de les garder
+secrètes
+
+{{< highlight yaml "hl_lines=3-5" >}}
+- name: Deploy to Netlify
+  # NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID added in the repo's secrets
+  env:
+    NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+    NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+  run: |
+    mkdir -p public
+    mv report.html public/index.html
+    mv report.ipynb public/report.ipynb
+    npm install --unsafe-perm=true netlify-cli -g
+    netlify init
+    netlify deploy --prod --dir="public" --message "Deploy master"
+{{< / highlight >}}
+
+- On déplace les rapports de la racine vers le dossier `public`
+
+{{< highlight yaml "hl_lines=7-9" >}}
+- name: Deploy to Netlify
+  # NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID added in the repo's secrets
+  env:
+    NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+    NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+  run: |
+    mkdir -p public
+    mv report.html public/index.html
+    mv report.ipynb public/report.ipynb
+    npm install --unsafe-perm=true netlify-cli -g
+    netlify init
+    netlify deploy --prod --dir="public" --message "Deploy master"
+{{< / highlight >}}
+
+- On installe et initialise `Netlify`
+
+{{< highlight yaml "hl_lines=10-11" >}}
+- name: Deploy to Netlify
+  # NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID added in the repo's secrets
+  env:
+    NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+    NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+  run: |
+    mkdir -p public
+    mv report.html public/index.html
+    mv report.ipynb public/report.ipynb
+    npm install --unsafe-perm=true netlify-cli -g
+    netlify init
+    netlify deploy --prod --dir="public" --message "Deploy master"
+{{< / highlight >}}
+
+- On déploie sur l'url par défaut (`-- prod`) depuis le dossier `public`
+
+{{< highlight yaml "hl_lines=10-12" >}}
+- name: Deploy to Netlify
+  # NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID added in the repo's secrets
+  env:
+    NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+    NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+  run: |
+    mkdir -p public
+    mv report.html public/index.html
+    mv report.ipynb public/report.ipynb
+    npm install --unsafe-perm=true netlify-cli -g
+    netlify init
+    netlify deploy --prod --dir="public" --message "Deploy master"
+{{< / highlight >}}
+{{% /panel %}}
+
+{{< /panelset >}}
+
+
+Au bout de quelques minutes, le rapport est disponible en ligne sur
+l'URL `Netlify` (par exemple https://spiffy-florentine-c913b9.netlify.app)
 
 
