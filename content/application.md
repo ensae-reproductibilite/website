@@ -894,7 +894,7 @@ sudo apt install "./quarto-${QUARTO_VERSION}-linux-amd64.deb"
 - S'assurer qu'on travaille bien depuis l'environnement `conda` `monenv`. Sinon
 l'activer
 
-- Il va être nécessaire d'enrichir l'environnement `conda`.
+:two: Il va être nécessaire d'enrichir l'environnement `conda`.
 Certaines dépendances sont nécessaires pour que `quarto` fonctionne bien avec
 `Python` (`jupyter`, `nbclient`...)
 alors que d'autres ne sont nécessaires que parce qu'ils sont utilisés dans
@@ -919,14 +919,15 @@ dependencies:
 ```
 
 
-- Créer un fichier nommé `report.qmd`
+:three: Créer un fichier nommé `report.qmd`
 
 ~~~markdown
 ---
 title: "Comprendre les facteurs de survie sur le Titanic"
 subtitle: "Un rapport innovant"
 format:
-  html: default
+  html:
+    self-contained: true
   ipynb: default
 jupyter: python3
 ---
@@ -1018,6 +1019,8 @@ pd.DataFrame(conf_matrix, columns=['Predicted','Observed'], index = ['Predicted'
 ```
 ~~~
 
+:four: On va tenter de compiler ce document
+
 - Le compiler en local avec la commande `quarto render report.qmd`
 
 - Vous devriez rencontrer l'erreur suivante:
@@ -1040,19 +1043,181 @@ AttributeError: module 'main' has no attribute 'X_train'
 du print de la matrice de confusion ne soient plus dans la section `__main__`
 afin qu'ils soient systématiquement exécutés. 
 
+- Tenter à nouveau `quarto render report.qmd`
 
-### Image docker enrichie
+- Deux fichiers ont été générés: 
+    + un `Notebook` que vous pouvez ouvrir et dont vous pouvez exécuter
+des cellules
+    + un fichier `HTML` que vous pouvez télécharger et ouvrir
 
-### Automatisation avec `Github Actions`
+:five: On a déjà un résultat assez esthétique en ce qui concerne la page `HTML`.
+Cependant, on peut se dire que certains paramètres par défaut, comme l'affichage
+des blocs de code, ne conviennent pas au public ciblé. De même, certains
+paramètres de style, comme l'affichage des tableaux peuvent ne pas convenir
+à notre charte graphique. On va remédier à cela en deux étapes:
 
-Si les dépendances et l'image ont bien été enrichis, cette étape est quasi direct
+- enrichir le _header_ d'options globales contrôlant le comportement de `quarto`
+- créer un fichier `CSS` pour avoir de beaux tableaux
 
-<!---
-https://github.com/linogaliana/ensae-reproductibilite-projet-1/commit/585f0cb4b9ff9e29f0dcde14b5085813746eadfc
----->
+:six: Changer la section `format` du _header_ avec les options suivantes:
+
+```yaml
+format:
+  html:
+    echo: false
+    code-fold: true
+    self-contained: true
+    code-summary: "Show the code"
+    warning: false
+    message: false
+    theme:
+      - cosmo
+      - css/custom.scss
+  ipynb: default
+```
+
+:seven: Créer le fichier `css/custom.scss` avec le contenu suivant:
+
+```css
+/*-- scss:rules --*/
+
+table {
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);  
+}
+
+thead tr {
+    background-color: #516db0;
+    color: #ffffff;
+    text-align: center;
+}
+
+th, td {
+    padding: 12px 15px;
+}
+
+tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+tbody tr:last-of-type {
+    border-bottom: 2px solid #516db0;
+}
+
+tbody tr.active-row {
+    font-weight: bold;
+    color: #009879;
+}
+```
+
+:eight: Compiler à nouveau et observer le changement d'esthétique du `HTML`
+
+:nine: Commit des nouveaux fichier `report.qmd`, `custom.scss` et des fichiers
+déjà existants.
+
+{{% box status="hint" title="Un `linter` sous forme de _hook_ pre-commit" icon="fa fa-lightbulb" %}}
+
+On ne `commit` pas les _output_, ici le notebook et le fichier html.
+Les mettre sur le dépôt `Github` n'est pas la bonne manière de les mettre
+à disposition. On va le voir, on va utiliser l'approche CI/CD pour cela.
+
+Idéalement, on ajoute au `.gitignore` les fichiers concernés, ici `report.ipynb`
+et `report.html`
+
+{{% /box %}}
+
+### 3. Enrichir l'image `Docker`
+
+On va vouloir mettre à jour notre image pour automatiser, à terme, la production
+de nos livrables (le notebook et la page web). 
+
+Pour cela, il est nécessaire que notre image intègre le logiciel `quarto`.
+
+:one: A partir du script précédent d'installation de `quarto`, enrichir l'image
+`Docker`[^1]
+
+<!----
+ENV QUARTO_VERSION="0.9.287"
+RUN wget "https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.deb"
+RUN apt install "./quarto-${QUARTO_VERSION}-linux-amd64.deb"
+----->
+
+[^1]: Le `sudo` n'est pas nécessaire puisque vous êtes déjà en `root`
 
 
-### Déploiement
+### 4. Automatisation avec `Github Actions`
+
+:one: Créer un nouveau fichier `.github/workflows.report.yml`
+
+
+Si les dépendances et l'image ont bien été enrichis, cette étape est quasi directe
+avec 
+
+{{< panelset class="simplification" >}}
+
+{{% panel name="Version autonome :car: " %}}
+
+- Donner comme nom `Deploy as website`
+- Effectuer cette action à chaque `push` sur les branches `main`, `master` et `dev`
+- Le job doit tourner sur une machine `ubuntu`
+- Cependant, il convient d'utiliser comme `container` votre image Docker 
+- Les `steps`:
+    + Récupérer le contenu du dossier avec `checkout`
+    + Faire un `quarto render`
+    + Récupérer le notebook sous forme d'artefact
+
+{{% /panel %}}
+
+{{% panel name="Version guidée :map: " %}}
+
+```yaml
+name: Deploy as website
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: linogaliana/ensae-repro-docker:latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Render site
+        run: quarto render report.qmd
+      - uses: actions/upload-artifact@v1
+        with:
+          name: Report
+          path: report.ipynb
+```
+
+{{% /panel %}}
+
+
+
+{{< /panelset >}}
+
+Cette étape nous a permis d'automatiser la construction de nos livrables.
+Mais la mise à disposition de ce livrable est encore assez manuelle: il 
+faut aller chercher à la main la dernière version du notebook pour
+la partager. 
+
+On va améliorer cela en déployant automatiquement un site _web_ présentant
+en page d'accueil notre rapport et permettant le téléchargement du notebook. 
+
+
+### 4. Déploiement
 
 - Aller sur https://www.netlify.com/ et faire `Sign up` (utiliser son compte `Github`)
 - Dans la page d'accueil de votre profil, vous pouvez cliquer sur `Add new site > Import an existing project`
