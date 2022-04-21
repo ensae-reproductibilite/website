@@ -1204,9 +1204,10 @@ jobs:
 
 {{% /panel %}}
 
-
-
 {{< /panelset >}}
+
+Si vous êtes fier de vous, vous pouvez ajouter le badge de ce workflow
+sur le `README` :sunglasses:
 
 Cette étape nous a permis d'automatiser la construction de nos livrables.
 Mais la mise à disposition de ce livrable est encore assez manuelle: il 
