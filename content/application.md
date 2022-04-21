@@ -736,9 +736,9 @@ jobs:
   build:
     runs-on: ubuntu-latest    
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
-          ref: "dockerisation"
+          ref: "dev"
       - uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: monenv
@@ -772,48 +772,81 @@ s'est enrichi. Chaque `commit` va entraîner une action pour
 tester nos scripts.
 
 Si la note est mauvaise, nous aurons
-une croix rouge (et nous recevrons un mail)
+une croix rouge (et nous recevrons un mail). On pourra ainsi détecter,
+en développant son projet, les moments où on dégrade la qualité du script 
+afin de la rétablir immédiatemment. 
 
 
+{{% box status="hint" title="Un `linter` sous forme de _hook_ pre-commit" icon="fa fa-lightbulb" %}}
 
-Note: manière d'être plus puriste: un hook
-https://pylint.pycqa.org/en/latest/user_guide/pre-commit-integration.html
+`Git` offre une fonctionalité intéressante lorsqu'on est puriste: les 
+_hooks_. Il s'agit de règles qui doivent être satisfaites pour que le 
+fichier puisse être committé. Cela assurera que chaque `commit` remplisse
+des critères de qualité afin d'éviter le problème de la procrastination.
+
+La [documentation de pylint](https://pylint.pycqa.org/en/latest/user_guide/pre-commit-integration.html)
+offre des explications supplémentaires. 
+
+{{% /box %}}
 
 
-## Image `Docker`
+## Etape 2: Automatisation de la livraison de l'image `Docker`
 
-Maintenant, nous allons automatiser la mise à disposition de notre
-sur `DockerHub`. Cela facilitera sa réutilisation. 
+Maintenant, nous allons automatiser la mise à disposition de notre image
+sur `DockerHub`. Cela facilitera sa réutilisation mais aussi des
+valorisations ultérieures.
+
 Là encore, nous allons utiliser une série d'actions pré-configurées.
-Pour que `Github` puisse s'authentifier auprès de `DockerHub`, il va 
-falloir interfacer les deux plateformes. Pour cela, nous allons utiliser
+
+:one: Pour que `Github` puisse s'authentifier auprès de `DockerHub`, il va 
+falloir d'abord interfacer les deux plateformes. Pour cela, nous allons utiliser
 un jeton (_token_) `DockerHub` que nous allons mettre dans un espace
-sécurisé associé à votre dépôt `Github`
+sécurisé associé à votre dépôt `Github`. Cette démarche sera là même
+ultérieurement lorsque nous connecterons notre dépôt à un autre
+service tiers, à savoir `Netlify`:
 
 - Se rendre sur
 https://hub.docker.com/ et créer un compte.
 - Aller dans les paramètres (https://hub.docker.com/settings/general)
 et cliquer, à gauche, sur `Security`
-- Créer un jeton personnel d'accès[^1], ne fermez pas l'onglet en question,
+- Créer un jeton personnel d'accès, ne fermez pas l'onglet en question,
 vous ne pouvez voir sa valeur qu'une fois. 
 - Dans votre dépôt `Github`, cliquer sur l'onglet `Settings` et cliquer,
 à gauche, sur `Actions`. Sur la page qui s'affiche, cliquer sur `New repository secret`
 - Donner le nom `DOCKERHUB_TOKEN` à ce jeton et copier la valeur. Valider
 - Créer un deuxième secret nommé `DOCKERHUB_USERNAME` ayant comme valeur le nom d'utilisateur
-que vous avez créé sur `dockerhub`
+que vous avez créé sur `Dockerhub`
 
-A ce stade, nous avons donné les moyens à `Github` de s'authentifier avec
-notre identité sur `dockerhub`. Il nous reste à mettre en oeuvre l'action
-en s'inspirant de https://github.com/docker/build-push-action/.
-On ne va modifier que deux éléments dans ce fichier:
+:two: A ce stade, nous avons donné les moyens à `Github` de s'authentifier avec
+notre identité sur `Dockerhub`. Il nous reste à mettre en oeuvre l'action
+en s'inspirant de https://github.com/docker/build-push-action/#usage.
+On ne va modifier que trois éléments dans ce fichier. Effectuer les 
+actions suivantes:
 
-- Ajouter `dockerisation` à la liste des branches sur lesquelles tourne
-le pipeline
+- Créer depuis `VSCode` un fichier
+`.github/workflows/docker.yml` et coller le
+contenu du _template_ dedans ; 
+- Changer le nom en un titre plus signifiant (par exemple _"Production de l'image Docker"_)
+- Ajouter `master` et `dev` à la liste des branches sur lesquelles tourne
+le pipeline ;
 - Changer le tag à la fin pour mettre `<username>/ensae-repro-docker:latest`
+où `username` est le nom d'utilisateur sur `DockerHub`;
+- Faire un `commit` et un `push` de ces fichiers
 
-Maintenant, il nous reste à tester notre application dans l'espace bac à sabl:
+:four: Comme on est fier de notre travail, on va afficher ça avec un badge sur le 
+`README`. Pour cela, on se rend dans l'onglet `Actions` et on clique sur
+un des scripts en train de tourner. 
 
-- Créer un fichier `Dockerfile2` ne contenant que l'import et le déploiement
+- En haut à droite, on clique sur `...`
+- Sélectionner `Create status badge`
+- Récupérer le code `Markdown` proposé
+- Copier dans le `README` depuis `VSCode`
+- Faire de même pour l'autre _workflow_
+
+:five: Maintenant, il nous reste à tester notre application dans l'espace bac à sable:
+
+- Se rendre sur l'environnement bac à sable
+- Créer un fichier `Dockerfile` ne contenant que l'import et le déploiement
 de l'appli:
 
 ```yaml
@@ -823,19 +856,189 @@ EXPOSE 5000
 CMD ["python", "main.py"]
 ```
 
-- Build avec l'argument `-f Dockerfile2` et `run`
+- Comme précédemment, faire un _build_
+- Tester l'image avec `run`
 
-## Création d'un rapport automatique
+:tada: La matrice de confusion doit s'afficher ! Vous avez grandement
+facilité la réutilisation de votre image. 
+
+## Etape 4: création d'un rapport automatique
 
 Maintenant, nous allons créer et déployer un site web pour valoriser notre
 travail. Cela va impliquer trois étapes:
 
-- enrichir l'image docker avec le logiciel `quarto`
-- créer un rapport minimal qui sera compilé par `quarto` sur les serveurs de Github. Celui-ci va s'inspirer du notebook initial
-- déployer ce rapport minimal
+- Tester en local le logiciel `quarto` et créer un rapport minimal qui sera compilé par `quarto` ;
+- Enrichir l'image docker avec le logiciel `quarto` ;
+- Compiler le document en utilisant cette image sur les serveurs de `Github` ;
+- Déployer ce rapport minimal pour le rendre disponible à tous sur le _web_.
+
+Le but est de proposer un rapport minimal qui illustre la performance
+du modèle est la _feature importance_. Pour ce dernier élément, le
+rapport qui sera proposé utilise `shap` qui est une librairie dédiée
+à l'interprétabilité des modèles de _machine learning_
+
+### 1. Rapport minimal en local
+
+:one: La première étape consiste à installer
+`quarto` sur notre machine `Linux` sur laquelle
+tourne `VSCode`:
+
+- Dans un terminal, installer `quarto` avec les commandes suivantes:
+
+```shell
+QUARTO_VERSION="0.9.287"
+wget "https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.deb"
+sudo apt install "./quarto-${QUARTO_VERSION}-linux-amd64.deb"
+```
+
+- S'assurer qu'on travaille bien depuis l'environnement `conda` `monenv`. Sinon
+l'activer
+
+- Il va être nécessaire d'enrichir l'environnement `conda`.
+Certaines dépendances sont nécessaires pour que `quarto` fonctionne bien avec
+`Python` (`jupyter`, `nbclient`...)
+alors que d'autres ne sont nécessaires que parce qu'ils sont utilisés dans
+le document (`seaborn`, `shap`...). Changer la section `dependencies` avec
+la liste suivante:
+
+```yaml
+dependencies:
+  - python=3.10.0
+  - ipykernel==6.13.0
+  - jupyter==1.0.0
+  - matplotlib==3.5.1
+  - nbconvert==6.5.0
+  - nbclient==0.6.0
+  - nbformat==5.3.0
+  - pandas==1.4.1
+  - PyYAML==6.0
+  - s3fs==2022.2.0
+  - scikit-learn==1.0.2
+  - seaborn==0.11.2
+  - shap==0.40.0
+```
 
 
-### Rapport minimal en local
+- Créer un fichier nommé `report.qmd`
+
+~~~markdown
+---
+title: "Comprendre les facteurs de survie sur le Titanic"
+subtitle: "Un rapport innovant"
+format:
+  html: default
+  ipynb: default
+jupyter: python3
+---
+
+Voici un rapport présentant quelques intuitions issues d'un modèle 
+_random forest_ sur le jeu de données `Titanic` entraîné et 
+déployé de manière automatique. 
+
+Il est possible de télécharger cette page sous format `Jupyter Notebook` <a href="report.ipynb" download>ici</a>
+
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.ensemble import RandomForestClassifier
+import main
+X_train = main.X_train
+y_train = main.y_train
+training_data = main.training_data
+rdmf = RandomForestClassifier(n_estimators=20)
+rdmf.fit(X_train, y_train)
+```
+
+# Feature importance
+
+La @fig-feature-importance représente l'importance des variables :
+
+```{python}
+feature_imp = pd.Series(rdmf.feature_importances_, index=training_data.iloc[:,1:].columns).sort_values(ascending=False)
+```
+
+```{python}
+#| label: fig-feature-importance
+#| fig-cap: "Feature importance"
+plt.figure(figsize=(10,6))
+sns.barplot(x=feature_imp, y=feature_imp.index)
+# Add labels to your graph
+plt.xlabel('Feature Importance Score')
+plt.ylabel('Features')
+plt.title("Visualizing Important Features")
+plt.tight_layout()
+plt.show()
+```
+
+Celle-ci peut également être obtenue grâce à la librairie
+`shap`:
+
+```{python}
+#| echo : true
+import shap
+shap_values = shap.TreeExplainer(rdmf).shap_values(X_train)
+shap.summary_plot(shap_values, X_train, plot_type="bar", feature_names = training_data.iloc[:,1:].columns)
+```
+
+On peut également utiliser cette librairie pour
+interpréter la prédiction de notre modèle:
+
+```{python}
+# explain all the predictions in the test set
+explainer = shap.TreeExplainer(rdmf)
+# Calculate Shap values
+choosen_instance = main.X_test[15]
+shap_values = explainer.shap_values(choosen_instance)
+shap.initjs()
+shap.force_plot(explainer.expected_value[1], shap_values[1], choosen_instance, feature_names = training_data.iloc[:,1:].columns)
+```
+
+# Qualité prédictive du modèle
+
+La matrice de confusion est présentée sur la
+@fig-confusion
+
+```{python}
+#| label: fig-confusion
+#| fig-cap: "Matrice de confusion"
+from sklearn.metrics import confusion_matrix
+conf_matrix = confusion_matrix(main.y_test, rdmf.predict(main.X_test))
+plt.figure(figsize=(8,5))
+sns.heatmap(conf_matrix, annot=True)
+plt.title('Confusion Matrix')
+plt.tight_layout()
+```
+
+Ou, sous forme de tableau:
+
+```{python}
+pd.DataFrame(conf_matrix, columns=['Predicted','Observed'], index = ['Predicted','Observed']).to_html()
+```
+~~~
+
+- Le compiler en local avec la commande `quarto render report.qmd`
+
+- Vous devriez rencontrer l'erreur suivante:
+
+```python
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+Input In [1], in <cell line: 6>()
+      4 from sklearn.ensemble import RandomForestClassifier
+      5 import main
+----> 6 X_train = main.X_train
+      7 y_train = main.y_train
+      8 training_data = main.training_data
+
+AttributeError: module 'main' has no attribute 'X_train'
+AttributeError: module 'main' has no attribute 'X_train'
+```
+
+- Refactoriser `main.py` pour que toutes les opérations, à l'exception
+du print de la matrice de confusion ne soient plus dans la section `__main__`
+afin qu'ils soient systématiquement exécutés. 
 
 
 ### Image docker enrichie
