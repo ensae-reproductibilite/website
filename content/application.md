@@ -272,18 +272,11 @@ la structure du projet est normalisée et évolutive,
 et le code est proprement versionné sur un
 dépôt `GitHub` <i class="fab fa-github"></i>.
 
-Les étapes précédentes peuvent être terriblement longues si on n'a pas adopté
-les bons gestes dès le début du projet. En ayant quelques réflexes de bonnes
-pratiques évoqués dans la
-[partie code et architecture](/code-architecture/#1-qualité-du-code)
-, on économise ainsi énormément de temps, ce qui permet de se concentrer
-sur la valorisation du projet. 
-
 A présent, nous avons une version du projet qui est largement partageable.
 Du moins en théorie, car la pratique est souvent plus compliquée : il y a fort à parier que si vous essayez d'exécuter votre projet sur un autre environnement (typiquement, votre ordinateur personnel),
 les choses ne se passent pas du tout comme attendu. Cela signifie qu'**en l'état, le projet n'est pas portable : il n'est pas possible, sans modifications coûteuses, de l'exécuter dans un environnement différent de celui dans lequel il a été développé**.
 
-Dans cette seconde partie, on va voir comment **normaliser l'environnement d'exécution afin de produire un projet portable**. On sera alors tout proche de pouvoir mettre le projet en production.
+Dans cette seconde partie, nous allons voir comment **normaliser l'environnement d'exécution afin de produire un projet portable**. On sera alors tout proche de pouvoir mettre le projet en production.
 On progressera dans l'échelle de la reproductibilité 
 de la manière suivante: 
 - :one: [**Gérer des variables d'environnement hors du code**](#configyaml) ;
