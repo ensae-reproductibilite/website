@@ -604,3 +604,786 @@ https://github.com/linogaliana/ensae-reproductibilite-projet-1/commit/56946b4c5c
 votre première application reproductible !
 
 # Partie 3 : mise en production
+
+Une image `Docker` est un livrable qui n'est pas forcément intéressant
+pour tous les publics. Certains préféreront avoir un plat bien préparé
+qu'une recette. Nous allons donc proposer d'aller plus loin en proposant
+plusieurs types de livrables. Cela va nous amener à découvrir les outils
+du CI/CD (_Continuous Integration / Continuous Delivery_)
+qui sont au coeur de l'approche `DevOps`. Notre approche appliquée
+au _machine learning_ va nous entraîner plutôt du côté du `MLOps` qui devient
+une approche de plus en plus fréquente dans l'industrie de la 
+_data science_.
+
+Nous allons améliorer notre approche de trois manières:
+
+- Automatisation de la création de l'image `Docker` et tests
+automatisés de la qualité du code ;
+- Production d'un site _web_ automatisé permettant de documenter et
+valoriser le modèle de _Machine Learning_ ;
+- Mise à disposition du modèle entraîné par le biais d'une API pour
+ne pas le ré-entraîner à chaque fois et faciliter sa réutilisation ;
+
+A chaque fois, nous allons d'abord tester en local notre travail puis
+essayer d'automatiser cela avec les outils de `Github`.
+
+On va ici utiliser l'intégration continue pour deux objectifs distincts:
+
+- la mise à disposition de l'image `Docker` ;
+- la mise en place de tests automatisés de la qualité du code
+sur le modèle de notre `linter` précédent 
+
+Nous allons utiliser `Github Actions` pour cela. 
+
+## Etape préliminaire
+
+Pour ne pas risquer de tout casser sur notre branche `master`, nous allons 
+nous placer sur une branche nommée `dev`:
+
+- si dans l'étape suivante vous appliquez la méthode la plus simple, vous
+allez pouvoir la créer depuis l'interface de `Github` ;
+- si vous utilisez l'autre méthode, vous allez devoir la créer en local (
+via la commande `git checkout -b dev`)
+
+## Etape 1: mise en place de tests automatisés
+
+Avant d'essayer de mettre en oeuvre la création de notre image
+`Docker` de manière automatisée, nous allons présenter la logique
+de l'intégration continue en généralisant les évaluations de
+qualité du code avec le `linter`
+
+{{< panelset class="nommage" >}}
+{{% panel name="Utilisation d'un _template_ `Github` :cat:" %}}
+
+__Methode la plus simple: utilisation d'un _template_ Github__
+
+Si vous cliquez sur l'onglet `Actions` de votre dépôt, `Github` vous propose des _workflows_ standardisés reliés à `Python`. Choisir l'option `Python Package using Anaconda`.
+
+warning: Nous n'allons modifier que deux éléments de ce fichier.
+
+:one: La dernière étape (`Test with pytest`) ne nous est pas nécessaire car nous n'avons pas de tests unitaires Nous allons donc remplacer celle-ci par l'utilisation de `pylint` pour avoir une note de qualité du package.
+
++ Utiliser `pylint` à cette étape pour noter les scripts ;
++ Vous pouvez fixer un score minimal à 5 (option `--fail-under=5`)
+
+:two: Mettre entre guillements la version de `Python` pour que celle-ci soit reconnue.
+
+:three: Enfin, finaliser la création de ce script:
+
+- En cliquant sur le bouton `Start Commit`, choisir la méthode
+`Create a new branch for this commit and start a pull request`
+en nommant la branche `dev`
+- Créer la `Pull Request` en lui donnant un nom signifiant
+
+{{% /panel %}}
+
+{{% panel name="Méthode manuelle" %}}
+
+:warning: On est plutôt sur une méthode de galérien. Il vaut
+mieux privilégier l'autre approche
+
+On va éditer
+depuis `VisualStudio` nos fichiers.
+
+- Créer une branche `dev` en ligne de commande
+- Créer un dossier `.github/workflows` via la ligne de commande ou l'explorateur de fichier 
+<!---mkdir .github/workflows -p ---->
+- Créer un fichier `.github/workflows/quality.yml`. 
+
+
+Nous allons construire, par étape, une version simplifiée du `Dockerfile` présent
+dans [ce post](https://medium.com/swlh/enhancing-code-quality-with-github-actions-67561c6f7063) et
+dans [celui-ci](https://autobencoder.com/2020-08-24-conda-actions/)
+
+:one: D'abord, définissons des paramètres pour indiquer à `Github`
+quand faire tourner notre script:
+
+- Commencez par nommer votre _workflow_ par exemple `Python Linting` avec la clé `name`
+- Nous allons faire tourner ce _workflow_ dans la branche `master` et dans la branche actuelle (`dev`). Ici, nous laissons de côté les autres éléments (par exemple le fait de faire tourner à chaque _pull request_). La clé `on` est dédiée à cet usage
+
+:two: Ensuite, défnissons le contexte d'exécution des tâches (`jobs`)
+de notre script dans
+les options de la partie `build`:
+
+- Utilisons une machine `ubuntu-latest`. Nous verrons plus tard
+comment améliorer cela. 
+    
+:three: Nous allons ensuite mélanger des étapes pré-définies (des actions du _marketplace_) et des instructions que nous faisons :
+
+- Le _runner_ `Github` doit récupérer le contenu de notre dépôt, pour cela utiliser l'action `checkout`. Par rapport à l'exemple, il convient d'ajouter, pour le moment, un paramètre `ref` avec le nom de la branche (par exemple `dev`)
+- ~~On installe ensuite `Python` avec l'action `setup-python`~~ Pas besoin d'installer `Python`, on va utiliser l'option `conda-incubator/setup-miniconda@v2`
+- Pour installer `Python` et l'environnement `conda`, on va plutôt utiliser l'astuce de [ce blog](https://autobencoder.com/2020-08-24-conda-actions/) avec l'option `conda-incubator/setup-miniconda@v2`
+- On utilise ensuite `flake8` et `pylint` (option `--fail-under=5`)
+pour effectuer des diagnostics de qualité
+
+Il ne reste plus qu'à faire un `commit` et espérer que cela fonctionne.
+Cela devrait donner le fichier suivant : 
+
+
+```yaml
+name: Python Linting
+on:
+  push:
+    branches: [master, dev]
+jobs:
+  build:
+    runs-on: ubuntu-latest    
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: "dev"
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: monenv
+          environment-file: environment.yml
+          python-version: '3.10'
+          auto-activate-base: false
+      - shell: bash -l {0}
+        run: |
+          conda info
+          conda list
+      - name: Lint with flake8
+        run: |
+          pip install flake8
+          flake8 src --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 src --count --max-complexity=10 --max-line-length=79 --statistics
+      - name: Lint with Pylint
+        run: |
+          pip install pylint
+          pylint src
+``` 
+
+
+{{% /panel %}}
+
+
+{{< /panelset >}}
+
+ 
+Maintenant, nous pouvons observer que l'onglet `Actions`
+s'est enrichi. Chaque `commit` va entraîner une action pour
+tester nos scripts.
+
+Si la note est mauvaise, nous aurons
+une croix rouge (et nous recevrons un mail). On pourra ainsi détecter,
+en développant son projet, les moments où on dégrade la qualité du script 
+afin de la rétablir immédiatemment. 
+
+
+{{% box status="hint" title="Un `linter` sous forme de _hook_ pre-commit" icon="fa fa-lightbulb" %}}
+
+`Git` offre une fonctionalité intéressante lorsqu'on est puriste: les 
+_hooks_. Il s'agit de règles qui doivent être satisfaites pour que le 
+fichier puisse être committé. Cela assurera que chaque `commit` remplisse
+des critères de qualité afin d'éviter le problème de la procrastination.
+
+La [documentation de pylint](https://pylint.pycqa.org/en/latest/user_guide/pre-commit-integration.html)
+offre des explications supplémentaires. 
+
+{{% /box %}}
+
+
+## Etape 2: Automatisation de la livraison de l'image `Docker`
+
+Maintenant, nous allons automatiser la mise à disposition de notre image
+sur `DockerHub`. Cela facilitera sa réutilisation mais aussi des
+valorisations ultérieures.
+
+Là encore, nous allons utiliser une série d'actions pré-configurées.
+
+:one: Pour que `Github` puisse s'authentifier auprès de `DockerHub`, il va 
+falloir d'abord interfacer les deux plateformes. Pour cela, nous allons utiliser
+un jeton (_token_) `DockerHub` que nous allons mettre dans un espace
+sécurisé associé à votre dépôt `Github`. Cette démarche sera là même
+ultérieurement lorsque nous connecterons notre dépôt à un autre
+service tiers, à savoir `Netlify`:
+
+- Se rendre sur
+https://hub.docker.com/ et créer un compte.
+- Aller dans les paramètres (https://hub.docker.com/settings/general)
+et cliquer, à gauche, sur `Security`
+- Créer un jeton personnel d'accès, ne fermez pas l'onglet en question,
+vous ne pouvez voir sa valeur qu'une fois. 
+- Dans votre dépôt `Github`, cliquer sur l'onglet `Settings` et cliquer,
+à gauche, sur `Actions`. Sur la page qui s'affiche, cliquer sur `New repository secret`
+- Donner le nom `DOCKERHUB_TOKEN` à ce jeton et copier la valeur. Valider
+- Créer un deuxième secret nommé `DOCKERHUB_USERNAME` ayant comme valeur le nom d'utilisateur
+que vous avez créé sur `Dockerhub`
+
+:two: A ce stade, nous avons donné les moyens à `Github` de s'authentifier avec
+notre identité sur `Dockerhub`. Il nous reste à mettre en oeuvre l'action
+en s'inspirant de https://github.com/docker/build-push-action/#usage.
+On ne va modifier que trois éléments dans ce fichier. Effectuer les 
+actions suivantes:
+
+- Créer depuis `VSCode` un fichier
+`.github/workflows/docker.yml` et coller le
+contenu du _template_ dedans ; 
+- Changer le nom en un titre plus signifiant (par exemple _"Production de l'image Docker"_)
+- Ajouter `master` et `dev` à la liste des branches sur lesquelles tourne
+le pipeline ;
+- Changer le tag à la fin pour mettre `<username>/ensae-repro-docker:latest`
+où `username` est le nom d'utilisateur sur `DockerHub`;
+- Faire un `commit` et un `push` de ces fichiers
+
+:four: Comme on est fier de notre travail, on va afficher ça avec un badge sur le 
+`README`. Pour cela, on se rend dans l'onglet `Actions` et on clique sur
+un des scripts en train de tourner. 
+
+- En haut à droite, on clique sur `...`
+- Sélectionner `Create status badge`
+- Récupérer le code `Markdown` proposé
+- Copier dans le `README` depuis `VSCode`
+- Faire de même pour l'autre _workflow_
+
+:five: Maintenant, il nous reste à tester notre application dans l'espace bac à sable:
+
+- Se rendre sur l'environnement bac à sable
+- Créer un fichier `Dockerfile` ne contenant que l'import et le déploiement
+de l'appli:
+
+```yaml
+FROM <username>/ensae-repro-docker:latest
+
+EXPOSE 5000
+CMD ["python", "main.py"]
+```
+
+- Comme précédemment, faire un _build_
+- Tester l'image avec `run`
+
+:tada: La matrice de confusion doit s'afficher ! Vous avez grandement
+facilité la réutilisation de votre image. 
+
+## Etape 3: création d'un rapport automatique
+
+Maintenant, nous allons créer et déployer un site web pour valoriser notre
+travail. Cela va impliquer trois étapes:
+
+- Tester en local le logiciel `quarto` et créer un rapport minimal qui sera compilé par `quarto` ;
+- Enrichir l'image docker avec le logiciel `quarto` ;
+- Compiler le document en utilisant cette image sur les serveurs de `Github` ;
+- Déployer ce rapport minimal pour le rendre disponible à tous sur le _web_.
+
+Le but est de proposer un rapport minimal qui illustre la performance
+du modèle est la _feature importance_. Pour ce dernier élément, le
+rapport qui sera proposé utilise `shap` qui est une librairie dédiée
+à l'interprétabilité des modèles de _machine learning_
+
+### 1. Rapport minimal en local
+
+:one: La première étape consiste à installer
+`quarto` sur notre machine `Linux` sur laquelle
+tourne `VSCode`:
+
+- Dans un terminal, installer `quarto` avec les commandes suivantes:
+
+```shell
+QUARTO_VERSION="0.9.287"
+wget "https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.deb"
+sudo apt install "./quarto-${QUARTO_VERSION}-linux-amd64.deb"
+```
+
+- S'assurer qu'on travaille bien depuis l'environnement `conda` `monenv`. Sinon
+l'activer
+
+:two: Il va être nécessaire d'enrichir l'environnement `conda`.
+Certaines dépendances sont nécessaires pour que `quarto` fonctionne bien avec
+`Python` (`jupyter`, `nbclient`...)
+alors que d'autres ne sont nécessaires que parce qu'ils sont utilisés dans
+le document (`seaborn`, `shap`...). Changer la section `dependencies` avec
+la liste suivante:
+
+```yaml
+dependencies:
+  - python=3.10.0
+  - ipykernel==6.13.0
+  - jupyter==1.0.0
+  - matplotlib==3.5.1
+  - nbconvert==6.5.0
+  - nbclient==0.6.0
+  - nbformat==5.3.0
+  - pandas==1.4.1
+  - PyYAML==6.0
+  - s3fs==2022.2.0
+  - scikit-learn==1.0.2
+  - seaborn==0.11.2
+  - shap==0.40.0
+```
+
+
+:three: Créer un fichier nommé `report.qmd`
+
+~~~markdown
+---
+title: "Comprendre les facteurs de survie sur le Titanic"
+subtitle: "Un rapport innovant"
+format:
+  html:
+    self-contained: true
+  ipynb: default
+jupyter: python3
+---
+
+Voici un rapport présentant quelques intuitions issues d'un modèle 
+_random forest_ sur le jeu de données `Titanic` entraîné et 
+déployé de manière automatique. 
+
+Il est possible de télécharger cette page sous format `Jupyter Notebook` <a href="report.ipynb" download>ici</a>
+
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.ensemble import RandomForestClassifier
+import main
+X_train = main.X_train
+y_train = main.y_train
+training_data = main.training_data
+rdmf = RandomForestClassifier(n_estimators=20)
+rdmf.fit(X_train, y_train)
+```
+
+# Feature importance
+
+La @fig-feature-importance représente l'importance des variables :
+
+```{python}
+feature_imp = pd.Series(rdmf.feature_importances_, index=training_data.iloc[:,1:].columns).sort_values(ascending=False)
+```
+
+```{python}
+#| label: fig-feature-importance
+#| fig-cap: "Feature importance"
+plt.figure(figsize=(10,6))
+sns.barplot(x=feature_imp, y=feature_imp.index)
+# Add labels to your graph
+plt.xlabel('Feature Importance Score')
+plt.ylabel('Features')
+plt.title("Visualizing Important Features")
+plt.tight_layout()
+plt.show()
+```
+
+Celle-ci peut également être obtenue grâce à la librairie
+`shap`:
+
+```{python}
+#| echo : true
+import shap
+shap_values = shap.TreeExplainer(rdmf).shap_values(X_train)
+shap.summary_plot(shap_values, X_train, plot_type="bar", feature_names = training_data.iloc[:,1:].columns)
+```
+
+On peut également utiliser cette librairie pour
+interpréter la prédiction de notre modèle:
+
+```{python}
+# explain all the predictions in the test set
+explainer = shap.TreeExplainer(rdmf)
+# Calculate Shap values
+choosen_instance = main.X_test[15]
+shap_values = explainer.shap_values(choosen_instance)
+shap.initjs()
+shap.force_plot(explainer.expected_value[1], shap_values[1], choosen_instance, feature_names = training_data.iloc[:,1:].columns)
+```
+
+# Qualité prédictive du modèle
+
+La matrice de confusion est présentée sur la
+@fig-confusion
+
+```{python}
+#| label: fig-confusion
+#| fig-cap: "Matrice de confusion"
+from sklearn.metrics import confusion_matrix
+conf_matrix = confusion_matrix(main.y_test, rdmf.predict(main.X_test))
+plt.figure(figsize=(8,5))
+sns.heatmap(conf_matrix, annot=True)
+plt.title('Confusion Matrix')
+plt.tight_layout()
+```
+
+Ou, sous forme de tableau:
+
+```{python}
+pd.DataFrame(conf_matrix, columns=['Predicted','Observed'], index = ['Predicted','Observed']).to_html()
+```
+~~~
+
+:four: On va tenter de compiler ce document
+
+- Le compiler en local avec la commande `quarto render report.qmd`
+
+- Vous devriez rencontrer l'erreur suivante:
+
+```python
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+Input In [1], in <cell line: 6>()
+      4 from sklearn.ensemble import RandomForestClassifier
+      5 import main
+----> 6 X_train = main.X_train
+      7 y_train = main.y_train
+      8 training_data = main.training_data
+
+AttributeError: module 'main' has no attribute 'X_train'
+AttributeError: module 'main' has no attribute 'X_train'
+```
+
+- Refactoriser `main.py` pour que toutes les opérations, à l'exception
+du print de la matrice de confusion ne soient plus dans la section `__main__`
+afin qu'ils soient systématiquement exécutés. 
+
+- Tenter à nouveau `quarto render report.qmd`
+
+- Deux fichiers ont été générés: 
+    + un `Notebook` que vous pouvez ouvrir et dont vous pouvez exécuter
+des cellules
+    + un fichier `HTML` que vous pouvez télécharger et ouvrir
+
+:five: On a déjà un résultat assez esthétique en ce qui concerne la page `HTML`.
+Cependant, on peut se dire que certains paramètres par défaut, comme l'affichage
+des blocs de code, ne conviennent pas au public ciblé. De même, certains
+paramètres de style, comme l'affichage des tableaux peuvent ne pas convenir
+à notre charte graphique. On va remédier à cela en deux étapes:
+
+- enrichir le _header_ d'options globales contrôlant le comportement de `quarto`
+- créer un fichier `CSS` pour avoir de beaux tableaux
+
+:six: Changer la section `format` du _header_ avec les options suivantes:
+
+```yaml
+format:
+  html:
+    echo: false
+    code-fold: true
+    self-contained: true
+    code-summary: "Show the code"
+    warning: false
+    message: false
+    theme:
+      - cosmo
+      - css/custom.scss
+  ipynb: default
+```
+
+:seven: Créer le fichier `css/custom.scss` avec le contenu suivant:
+
+```css
+/*-- scss:rules --*/
+
+table {
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 400px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);  
+}
+
+thead tr {
+    background-color: #516db0;
+    color: #ffffff;
+    text-align: center;
+}
+
+th, td {
+    padding: 12px 15px;
+}
+
+tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+tbody tr:last-of-type {
+    border-bottom: 2px solid #516db0;
+}
+
+tbody tr.active-row {
+    font-weight: bold;
+    color: #009879;
+}
+```
+
+:eight: Compiler à nouveau et observer le changement d'esthétique du `HTML`
+
+:nine: Commit des nouveaux fichier `report.qmd`, `custom.scss` et des fichiers
+déjà existants.
+
+{{% box status="hint" title="Un `linter` sous forme de _hook_ pre-commit" icon="fa fa-lightbulb" %}}
+
+On ne `commit` pas les _output_, ici le notebook et le fichier html.
+Les mettre sur le dépôt `Github` n'est pas la bonne manière de les mettre
+à disposition. On va le voir, on va utiliser l'approche CI/CD pour cela.
+
+Idéalement, on ajoute au `.gitignore` les fichiers concernés, ici `report.ipynb`
+et `report.html`
+
+{{% /box %}}
+
+### 3. Enrichir l'image `Docker`
+
+On va vouloir mettre à jour notre image pour automatiser, à terme, la production
+de nos livrables (le notebook et la page web). 
+
+Pour cela, il est nécessaire que notre image intègre le logiciel `quarto`.
+
+:one: A partir du script précédent d'installation de `quarto`, enrichir l'image
+`Docker`[^1]
+
+<!----
+ENV QUARTO_VERSION="0.9.287"
+RUN wget "https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.deb"
+RUN apt install "./quarto-${QUARTO_VERSION}-linux-amd64.deb"
+----->
+
+[^1]: Le `sudo` n'est pas nécessaire puisque vous êtes déjà en `root`
+
+
+### 4. Automatisation avec `Github Actions`
+
+:one: Créer un nouveau fichier `.github/workflows.report.yml`
+
+
+Si les dépendances et l'image ont bien été enrichis, cette étape est quasi directe
+avec 
+
+{{< panelset class="simplification" >}}
+
+{{% panel name="Version autonome :car: " %}}
+
+- Donner comme nom `Deploy as website`
+- Effectuer cette action à chaque `push` sur les branches `main`, `master` et `dev`
+- Le job doit tourner sur une machine `ubuntu`
+- Cependant, il convient d'utiliser comme `container` votre image Docker 
+- Les `steps`:
+    + Récupérer le contenu du dossier avec `checkout`
+    + Faire un `quarto render`
+    + Récupérer le notebook sous forme d'artefact
+
+{{% /panel %}}
+
+{{% panel name="Version guidée :map: " %}}
+
+```yaml
+name: Deploy as website
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: linogaliana/ensae-repro-docker:latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Render site
+        run: quarto render report.qmd
+      - uses: actions/upload-artifact@v1
+        with:
+          name: Report
+          path: report.ipynb
+```
+
+{{% /panel %}}
+
+{{< /panelset >}}
+
+Si vous êtes fier de vous, vous pouvez ajouter le badge de ce workflow
+sur le `README` :sunglasses:
+
+Cette étape nous a permis d'automatiser la construction de nos livrables.
+Mais la mise à disposition de ce livrable est encore assez manuelle: il 
+faut aller chercher à la main la dernière version du notebook pour
+la partager. 
+
+On va améliorer cela en déployant automatiquement un site _web_ présentant
+en page d'accueil notre rapport et permettant le téléchargement du notebook. 
+
+
+## Etape 4: Déploiement de ce rapport automatique sur le web
+
+:one: Dans un premier temps, nous allons connecter notre dépôt `Github` au
+service tiers `Netlify`
+
+- Aller sur https://www.netlify.com/ et faire `Sign up` (utiliser son compte `Github`)
+- Dans la page d'accueil de votre profil, vous pouvez cliquer sur `Add new site > Import an existing project`
+- Cliquer sur `Github`. S'il y a des autorisations à donner, les accorder. Rechercher votre projet dans la liste de vos projets `Github`
+- Cliquer sur le nom du projet et laisser les paramètres par défaut (nous allons modifier par la suite)
+- Cliquer sur `Deploy site`
+
+:two: A ce stade, votre déploiement devrait échouer.
+C'est normal, vous essayez de déployer depuis `master` qui ne comporte pas de html.
+Mais le rapport n'est pas non plus présent dans la branche `dev`.
+En fait, aucune branche ne comporte le rapport:
+celui-ci est généré dans votre _pipeline_ mais n'est jamais présent dans le
+dépôt car il s'agit d'un _output_. On va désactiver le déploiement automatique 
+pour privilégier un déploiement depuis `Github Actions`:
+
+- Aller dans `Site Settings` puis, à gauche, cliquer sur `Build and Deploy`
+- Dans la section `Build settings`, cliquer sur `Stop builds` et valider
+
+On vient de désactiver le déploiement automatique par défaut. On va faire
+communiquer notre dépôt `Github` et `Netlify` par le biais de l'intégration
+continue.
+
+:three: Pour cela, il faut créer un jeton `Netlify` pour que les serveurs
+de `Github`, lorsqu'ils disposent d'un rapport, puissent l'envoyer à `Netlify`
+pour la mise sur le _web_. Il va être nécessaire de créer deux variables
+d'environnement pour connecter `Github` et `Netlify`: l'identifiant du site
+et le _token_
+
+- Pour le token : 
+    + Créer un jeton en cliquant, en haut à droite, sur l'icone de votre profil. Aller
+dans `User settings`. A gauche, cliquer sur `Applications` et créer un jeton personnel d'accès
+avec un nom signifiant (par exemple `PAT_ENSAE_reproductibilite`)
+    + Mettre de côté (conseil : garder l'onglet ouvert)
+- Pour l'identifiant du site:
+    + cliquer sur `Site Settings` dans les onglets en haut
+    + Garder l'onglet ouvert pour copier la valeur quand nécessaire
+    
+
+- Il est maintenant nécessaire d'aller dans le dépôt `Github` et de créer 
+les secrets (`Settings > Secrets > Actions`):
+    + Créer le secret `NETLIFY_AUTH_TOKEN` en collant la valeur du jeton d'authentification `Netlify`
+    + Créer le secret `NETLIFY_SITE_ID` en collant l'identifiant du site
+
+
+:four: Nous avons effectué toutes les configurations nécessaires. On va
+maintenant mettre à jour l'intégration continue afin de mettre à disposition
+sur le _web_ notre rapport. On va utiliser l'interface en ligne de commande
+(CLI) de `Netlify`. Celle-ci attend que le site _web_ se trouve dans un
+dossier `public` et que la page d'accueil soit nommée `index.html`:
+
+{{< panelset class="simplification" >}}
+
+{{% panel name="Vision d'ensemble " %}}
+
+- une installation de `npm`
+- une étape de déploiement via la CLI de netlify
+
+```yaml
+- name: Install npm
+  uses: actions/setup-node@v2
+  with:
+    node-version: '14'
+- name: Deploy to Netlify
+  # NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID added in the repo's secrets
+  env:
+    NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+    NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+  run: |
+    mkdir -p public
+    mv report.html public/index.html
+    mv report.ipynb public/report.ipynb
+    npm install --unsafe-perm=true netlify-cli -g
+    netlify init
+    netlify deploy --prod --dir="public" --message "Deploy master"
+```
+
+{{% /panel %}}
+
+{{% panel name="Détails npm " %}}
+
+{{< highlight yaml "hl_lines=1-4" >}}
+- name: Install npm
+  uses: actions/setup-node@v2
+  with:
+    node-version: '14'
+{{< / highlight >}}
+
+`npm` est le gestionnaire de paquet de JS. Il est nécessaire de le configurer,
+ce qui est fait automatiquement grâce à l'action `actions/setup-node@v2`
+
+{{% /panel %}}
+
+{{% panel name="Détails `Netlify CLI`" %}}
+
+- On rappelle à `Github Actions` nos paramètres d'authentification
+sous forme de variables d'environnement. Cela permet de les garder
+secrètes
+
+{{< highlight yaml "hl_lines=3-5" >}}
+- name: Deploy to Netlify
+  # NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID added in the repo's secrets
+  env:
+    NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+    NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+  run: |
+    mkdir -p public
+    mv report.html public/index.html
+    mv report.ipynb public/report.ipynb
+    npm install --unsafe-perm=true netlify-cli -g
+    netlify init
+    netlify deploy --prod --dir="public" --message "Deploy master"
+{{< / highlight >}}
+
+- On déplace les rapports de la racine vers le dossier `public`
+
+{{< highlight yaml "hl_lines=7-9" >}}
+- name: Deploy to Netlify
+  # NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID added in the repo's secrets
+  env:
+    NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+    NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+  run: |
+    mkdir -p public
+    mv report.html public/index.html
+    mv report.ipynb public/report.ipynb
+    npm install --unsafe-perm=true netlify-cli -g
+    netlify init
+    netlify deploy --prod --dir="public" --message "Deploy master"
+{{< / highlight >}}
+
+- On installe et initialise `Netlify`
+
+{{< highlight yaml "hl_lines=10-11" >}}
+- name: Deploy to Netlify
+  # NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID added in the repo's secrets
+  env:
+    NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+    NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+  run: |
+    mkdir -p public
+    mv report.html public/index.html
+    mv report.ipynb public/report.ipynb
+    npm install --unsafe-perm=true netlify-cli -g
+    netlify init
+    netlify deploy --prod --dir="public" --message "Deploy master"
+{{< / highlight >}}
+
+- On déploie sur l'url par défaut (`-- prod`) depuis le dossier `public`
+
+{{< highlight yaml "hl_lines=10-12" >}}
+- name: Deploy to Netlify
+  # NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID added in the repo's secrets
+  env:
+    NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+    NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+  run: |
+    mkdir -p public
+    mv report.html public/index.html
+    mv report.ipynb public/report.ipynb
+    npm install --unsafe-perm=true netlify-cli -g
+    netlify init
+    netlify deploy --prod --dir="public" --message "Deploy master"
+{{< / highlight >}}
+{{% /panel %}}
+
+{{< /panelset >}}
+
+
+Au bout de quelques minutes, le rapport est disponible en ligne sur
+l'URL `Netlify` (par exemple https://spiffy-florentine-c913b9.netlify.app)
+
+
