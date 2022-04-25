@@ -92,7 +92,7 @@ Les éléments exposés dans ce chapitre ne sont pas exhaustifs. Ils visent à p
 
 Dans la lignée de la vision des bonnes pratiques comme continuum proposée en [introduction]({{< ref "/content/introduction.md" >}}), il n'est pas nécessairement souhaitable d'appliquer toutes les recommendations présentées dans ce chapitre à chaque projet. Nous recommandons de les voir plutôt comme des bonnes habitudes à acquérir en opérant un va-et-vient régulier entre la pratique et la théorie. Par exemple, à la lecture de ce chapitre, vous allez certainement retenir en particulier certaines règles qui tranchent avec vos pratiques actuelles. Vous pouvez alors essayer d'appliquer ces nouvelles règles pendant un certain temps puis, lorsque celles-ci seront devenues naturelles, revenir à ce guide et appliquer le processus à nouveau. En procédant ainsi de manière incrémentale, vous améliorerez progressivement la qualité de vos projets sans avoir l'impression de passer trop de temps sur des micro-détails, au détriment des objectifs globaux du projet.
 
-# 1. Qualité du code
+# Qualité du code
 
 ## Principes généraux
 
