@@ -22,7 +22,7 @@ La principale raison est qu'un code ne vit pas dans une bulle isolée, il contie
 nécessitent la librairie système `GDAL`),
 qui ne seront pas les mêmes selon le système d'exploitation utilisé.
 
-Si le premier problème peut être géré relativement facilement en adoptant une [structure de package]({{< ref "/content/code-architecture.md" >}}) et en spécifiant bien les différentes dépendances utilisées, les deux autres nécessitent en général des outils plus avancés.
+Si le premier problème peut être géré relativement facilement en adoptant une [structure de projet]({{< ref "/content/projects-architecture.md" >}}) et en spécifiant bien les différentes dépendances utilisées, les deux autres nécessitent en général des outils plus avancés.
 
 Ces outils vont nous permettre de **normaliser l'environnement afin de produire un projet portable**, i.e. exécutable sur une large variété d'environnements d'exécution. Cette étape est primordiale lorsque l'on se préoccupe de la mise en production d'un projet, car elle assure une transition relativement indolore entre l'environnement de développement et celui de production.
 
@@ -366,7 +366,7 @@ def hello_world():
 ```
 
 Pour faire tourner l'application, il nous faut donc à la fois `Python` et le package `Flask`. Ces installations doivent être spécifiées dans le `Dockerfile` (cf. [section suivante](#dockerfile)). L'installation de `Flask`
-se fait via un fichier `requirements.txt` (voir le [chapitre précédent](#code-architecture)), qui contient juste la ligne suivante :
+se fait via un fichier `requirements.txt`, qui contient juste la ligne suivante :
 
 ```bash
 Flask==2.1.1

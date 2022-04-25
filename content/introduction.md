@@ -52,7 +52,7 @@ Aussi, il fait sens pour le *data scientist* moderne de s'intéresser aux bonnes
 
 ### Voir le code comme un outil de communication
         
-La première bonne pratique à adopter est de considérer le code comme un outil de communication, et non simplement de manière fonctionnelle. Un code ne sert pas seulement à réaliser une tâche donnée, il a vocation à être diffusé, réutilisé, maintenu, que ce soit dans le contexte d'une équipe dans une organisation ou bien en *open-source*. Pour favoriser cette communication du code, des conventions ont été developpées en matière de qualité du code et de structuration des projets, qu'il est utile d'appliquer dans ses projets. Nous présentons ces conventions dans le chapitre [Structuration et Qualité du Code]({{< ref "/content/code-architecture.md" >}}).
+La première bonne pratique à adopter est de considérer le code comme un outil de communication, et non simplement de manière fonctionnelle. Un code ne sert pas seulement à réaliser une tâche donnée, il a vocation à être diffusé, réutilisé, maintenu, que ce soit dans le contexte d'une équipe dans une organisation ou bien en *open-source*. Pour favoriser cette communication du code, des conventions ont été developpées en matière de qualité du code et de structuration des projets, qu'il est utile d'appliquer dans ses projets. Nous présentons ces conventions dans les chapitres [Qualité du Code]({{< ref "/content/code-quality.md" >}}) et [Architecture des Projets]({{< ref "/content/projects-architecture.md" >}}).
 
 Il est pour les mêmes raisons indispensable d'appliquer les principes du contrôle de version, qui permettent une documentation en continu des projets, ce qui accroît fortement leur réutilisabilité et leur maintenabilité dans le temps. Nous présentons pour cela l'utilisation du logiciel Git dans le chapitre [Versionner son code et travailler collaborativement avec Git]({{< ref "/content/git.md" >}}).
 
@@ -100,8 +100,8 @@ Il n'est donc pas question pour nous de suggérer que tout projet de *data scien
 ### Un socle minimal pour les projets de data science ?
 
 Cela étant dit, nous sommes convaincus qu'il est important pour tout *data scientist* de réfléchir à ces questions pour améliorer ces pratiques au fil du temps. En particulier, nous pensons qu'il est possible de définir un socle, i.e. un **ensemble minimal de bonnes pratiques** qui apportent plus d'avantages qu'elles ne coûtent à implémenter. Notre suggestion pour un tel socle est la suivante :
-- contrôler la qualité de son code en utilisant des outils dédiés (cf. chapitre [Structuration et Qualité du Code]({{< ref "/content/code-architecture.md" >}})) ;
-- adopter une structure de projet standardisée en utilisant des *templates* prêts à l'emploi (cf. chapitre [Structuration et Qualité du Code]({{< ref "/content/code-architecture.md" >}})) ;
+- contrôler la qualité de son code en utilisant des outils dédiés (cf. chapitre [Qualité du Code]({{< ref "/content/code-quality.md" >}})) ;
+- adopter une structure de projet standardisée en utilisant des *templates* prêts à l'emploi (cf. chapitre [Architecture des Projets]({{< ref "/content/projects-architecture.md" >}})) ;
 - utiliser Git pour versionner le code de ses projets, qu'ils soient individuels ou collectifs (cf. chapitre [Versionner son code et travailler collaborativement avec Git]({{< ref "/content/git.md" >}})) ;
 - contrôler les dépendances de son projet en développant dans des environnements virtuels (cf. chapitre [Portabilité]({{< ref "/content/portability.md" >}})).
 
