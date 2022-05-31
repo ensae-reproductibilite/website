@@ -880,3 +880,4 @@ permettront d'améliorer la qualité de vos codes.
 - [Project Oriented Workflow](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/)
 - [Un post très complet sur les extensions VisualStudio](https://realpython.com/advanced-visual-studio-code-python/)
 - ["Coding style, coding etiquette"](https://blog.r-hub.io/2022/03/21/code-style/)
+- [Une présentation très bien faite sur la gestion de code et de projets  `R`](https://mitmat.github.io/slides/2022-05-26-egu/code-data-open-science.html#1)
