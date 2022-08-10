@@ -50,7 +50,7 @@ Pour éviter la lourdeur des images et permettre de copier/coller facilement les
 
 ```bash
 $ echo "une petite illustration"
-echo "une petite illustration"
+une petite illustration
 ```
 
 ## Notions de *filesystem*
