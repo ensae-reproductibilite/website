@@ -10,7 +10,7 @@ layout: single
 
 
 # Le terminal Linux
-  
+
 ## Pourquoi s'intéresser au terminal Linux ?
 
 Le terminal (ou ligne de commande) est une console interactive qui permet de lancer des commandes. Il existe dans la plupart des systèmes d'exploitation. Mais comme il a la réputation d'être austère et complexe, on utilise plutôt des interfaces graphiques pour effectuer nos opérations informatiques quotidiennes.
@@ -29,7 +29,7 @@ Dans le cadre de ce cours, on s'intéressera donc particulièrement au terminal 
 
 Différents environnements de travail peuvent être utilisés pour apprendre à se servir d'un terminal Linux :
 
-- le [SSP Cloud](https://datalab.sspcloud.fr). Dans la mesure où les exemples de mise en production du cours seront illustrées sur cet environnement, nous recommendons de l'utiliser dès à présent pour se familiariser. Le terminal est accessible à partir de différents services (RStudio, Jupyter, etc.), mais nous recommandons d'utiliser le terminal d'un service VSCode, dans la mesure où se servir d'un [IDE](https://fr.wikipedia.org/wiki/Environnement_de_d%C3%A9veloppement) pour organiser notre code est en soi déjà une bonne pratique ;
+- le [SSP Cloud](https://datalab.sspcloud.fr). Dans la mesure où les exemples de mise en production du cours seront illustrées sur cet environnement, nous recommandons de l'utiliser dès à présent pour se familiariser. Le terminal est accessible à partir de différents services (RStudio, Jupyter, etc.), mais nous recommandons d'utiliser le terminal d'un service VSCode, dans la mesure où se servir d'un [IDE](https://fr.wikipedia.org/wiki/Environnement_de_d%C3%A9veloppement) pour organiser notre code est en soi déjà une bonne pratique ;
 
 - [Katacoda](https://katacoda.com/scenario-examples/courses/environment-usages/ubuntu-2004), un bac à sable dans un système Ubuntu, la distribution Linux la plus populaire ;
 
@@ -46,7 +46,7 @@ Décrivons d'abord les différentes inscriptions qui arrivent à l'initialisatio
 - `coder@vscode-824991-64744dd6d8-zbgv5` : le nom de l'utilisateur (ici `coder`) et le nom de la machine (ici, un conteneur, notion que l'on verra là encore dans le chapitre sur la [portabilité]({{< ref "/content/portability.md" >}}))
 - `~/work` : le chemin du répertoire courant, i.e. à partir duquel va être lancée toute commande. On comprendra mieux la signification de ce chemin dans la section suivante.
 
-Pour éviter la lourdeur des images et permettre de copier/coller facilement les commandes, on représentera dans la suite du tutoriel (et du cours) le terminal du servvice VSCode par des bandes de texte sur fond noir, comme dans l'exemple suivant. Les lignes commençant par un `$` sont celles avec lesquelles une commande est lancée, et les lignes sans `$` représentent le résultat d'une commande. Attention à ne pas inclure le `$` lorsque vous lancez les commandes, il sert simplement à différencier celles-ci des résultats.
+Pour éviter la lourdeur des images et permettre de copier/coller facilement les commandes, on représentera dans la suite du tutoriel (et du cours) le terminal du service VSCode par des bandes de texte sur fond noir, comme dans l'exemple suivant. Les lignes commençant par un `$` sont celles avec lesquelles une commande est lancée, et les lignes sans `$` représentent le résultat d'une commande. Attention à ne pas inclure le `$` lorsque vous lancez les commandes, il sert simplement à différencier celles-ci des résultats.
 
 ```bash
 $ echo "une petite illustration"
@@ -88,7 +88,7 @@ Le rôle d'un terminal est de lancer des commandes. Ces commandes peuvent être 
 
 ### Navigation au sein du *filesystem*
 
-Lorsqu'on lance un programme à partir du terminal, celui-ci a pour référence le répertoire courant dans lequel on se trouve au moment du lancement. Par exemple, si l'on exécute un script Python en se trouvant dans un certain répertoire, tous les chemins des fichiers utilisés dans le script seront relatifs au répertoire courant d'exécution — à moins d'utiliser uniquement des chemins absolus, ce qui n'est pas une bonne pratique en termes de reproductibilité puisque cela lie votre projet à la structure de votre *filesystem* particulier.
+Lorsque l'on lance un programme à partir du terminal, celui-ci a pour référence le répertoire courant dans lequel on se trouve au moment du lancement. Par exemple, si l'on exécute un script Python en se trouvant dans un certain répertoire, tous les chemins des fichiers utilisés dans le script seront relatifs au répertoire courant d'exécution — à moins d'utiliser uniquement des chemins absolus, ce qui n'est pas une bonne pratique en termes de reproductibilité puisque cela lie votre projet à la structure de votre *filesystem* particulier.
 
 Ainsi, la très grande majorité des opérations que l'on est amené à réaliser dans un terminal consiste simplement à se déplacer au sein du *filesystem*. Les commandes principales pour naviguer et se repérer dans le *filesystem* sont présentées dans la table suivante.
 
@@ -127,7 +127,7 @@ Les commandes suivantes permettent de manipuler le *filesystem*. Il en existe be
 Dans la mesure où il est généralement possible de réaliser toutes ces opérations à l'aide d'interfaces graphiques (notamment, l'explorateur de fichiers), celles-ci sont moins essentielles que celles permettant de se déplacer dans le *filesystem*. Nous vous recommandons malgré tout de les pratiquer également, et ce pour plusieurs raisons :
 - effectuer un maximum d'opérations via le terminal permet de bien comprendre son fonctionnement et donc de gagner en autonomie ;
 - en devenant efficient sur ces commandes, vous vous rendrez compte que manipuler le *filesystem* via le terminal est en fait plus rapide que via une interface graphique ;
-- lorsqu'on est amené à manipuler un terminal pour interagir avec un serveur, il n'y a souvent pas la moindre interface graphique, auquel cas il n'y a pas d'autre choix que d'opérer uniquement à partir du terminal.
+- lorsque l'on est amené à manipuler un terminal pour interagir avec un serveur, il n'y a souvent pas la moindre interface graphique, auquel cas il n'y a pas d'autre choix que d'opérer uniquement à partir du terminal.
 
 ### Lancement de programmes {#lancement}
 
@@ -172,14 +172,14 @@ Cette liste illustre la variété des utilisations des variables d'environnement
 - la variable `LANG` spécifie la *locale*, un concept qui permet de définir la langue et l'encodage utilisés par défaut par Linux ;
 - la variable `CONDA_PYTHON_EXE` existe uniquement parce que l'on a installé `conda` comme système de gestion de packages `Python`. C'est l'existance de cette variable qui fait que la commande `python mon_script.py` va utiliser comme binaire la version de `Python` qui nous intéresse.
 
-Une variable d'environnement essentielle, et que l'on est fréquemment ammené à modifier dans les applications de data science, est la variable `$PATH`. Elle consiste en une concaténation de chemins absolus, séparés par `:`, qui spécifie les dossiers dans lesquels Linux va chercher les exécutables lorsqu'on lance une commande, ainsi que l'ordre de la recherche. Regardons la valeur du `$PATH` sur le terminal du service VSCode.
+Une variable d'environnement essentielle, et que l'on est fréquemment amené à modifier dans les applications de data science, est la variable `$PATH`. Elle consiste en une concaténation de chemins absolus, séparés par `:`, qui spécifie les dossiers dans lesquels Linux va chercher les exécutables lorsque l'on lance une commande, ainsi que l'ordre de la recherche. Regardons la valeur du `$PATH` sur le terminal du service VSCode.
 
 ```bash
 $ echo $PATH
 /home/coder/local/bin/conda/bin:/home/coder/local/bin/conda/condabin:/home/coder/local/bin/conda/envs/basesspcloud/bin:/home/coder/local/bin/conda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ```
 
-L'ordre de recherche est de gauche à droite. C'est donc parce que le dossier `/home/coder/local/bin/conda/bin` est situé en premier que l'interpréteur `Python` qui sera choisi lorsqu'on lance un script `Python` est celui issu de `Conda`, et non celui contenu par défaut dans `/usr/bin` par exemple.
+L'ordre de recherche est de gauche à droite. C'est donc parce que le dossier `/home/coder/local/bin/conda/bin` est situé en premier que l'interpréteur `Python` qui sera choisi lorsque l'on lance un script `Python` est celui issu de `Conda`, et non celui contenu par défaut dans `/usr/bin` par exemple.
 
 L'existence et la configuration adéquate des variables d'environnement est essentielle pour le bon fonctionnement de nombreux outils très utilisés en data science, comme `Git` ou encore `Spark` par exemple. Il est donc nécessaire de comprendre leur fonctionnement pour pouvoir lire des documentations techniques et adapter la configuration d'un serveur en cas de bug lié à une variable d'environnement manquante ou mal configurée.
 
@@ -221,7 +221,7 @@ $ ./test.sh # Exécuter le script test.sh
 
 ## Les scripts shell
 
-Maintenant que nous avons vu les variables et les permissions, revenons sur les scripts `shell` précédemment évoqués. A l'instar d'un script `Python`, un script `shell` permet d'automatiser une série de commandes lancées dans un terminal. Le but de ce tutoriel n'est pas de savoir écrire des scripts `shell` complexes, travail généralement dévolu aux les *data engineers* ou les *sysadmin* (administrateurs système), mais de comprendre leur structure, leur fonctionnement, et de savoir lancer des scripts simples. Ces compétences sont essentielles lorsqu'on se préoccupe de mise en production. A titre d'exemple, comme nous le verrons dans le chapitre sur la [portabilité]({{< ref "/content/portability.md" >}}), il est fréquent d'utiliser un script `shell` comme *entrypoint* d'une image `docker`, afin de spécifier les commandes que doit lancer le conteneur lors de son initialisation.
+Maintenant que nous avons vu les variables et les permissions, revenons sur les scripts `shell` précédemment évoqués. A l'instar d'un script `Python`, un script `shell` permet d'automatiser une série de commandes lancées dans un terminal. Le but de ce tutoriel n'est pas de savoir écrire des scripts `shell` complexes, travail généralement dévolu aux les *data engineers* ou les *sysadmin* (administrateurs système), mais de comprendre leur structure, leur fonctionnement, et de savoir lancer des scripts simples. Ces compétences sont essentielles lorsque l'on se préoccupe de mise en production. A titre d'exemple, comme nous le verrons dans le chapitre sur la [portabilité]({{< ref "/content/portability.md" >}}), il est fréquent d'utiliser un script `shell` comme *entrypoint* d'une image `docker`, afin de spécifier les commandes que doit lancer le conteneur lors de son initialisation.
 
 Illustrons leur structure ainsi que leur fonctionnement à l'aide d'un script simple. Considérons les commandes suivantes, que l'on met dans un fichier `monscript.sh` dans le répertoire courant.
 
@@ -303,4 +303,4 @@ On l'a dit et redit : devenir à l'aise avec le terminal Linux est essentiel et 
 
 La première est l'**autocomplétion**. Dès lors que vous écrivez une commande contenant un nom d'exécutable, un chemin sur le *filesystem*, ou autre, n'hésitez pas à utiliser la touche `TAB` (touche au-dessus de celle qui verrouille la majuscule) de votre clavier. Dans la majorité des cas, cela va vous faire gagner un temps précieux.
 
-Une seconde astuce, qui n'en est pas vraiment une, est de lire la **documentation** d'une commande lorsqu'on n'est pas sûr de sa syntaxe ou des paramètres admissibles. Via le terminal, la documentation d'une commande peut être affichée en exécutant `man` suivie de la commande en question, par exemple : `man cp`. Comme il n'est pas toujours très pratique de lire de longs textes dans un petit terminal, on peut également chercher la documentation d'une commande sur le site [man7](https://man7.org/linux/man-pages/index.html).
+Une seconde astuce, qui n'en est pas vraiment une, est de lire la **documentation** d'une commande lorsque l'on n'est pas sûr de sa syntaxe ou des paramètres admissibles. Via le terminal, la documentation d'une commande peut être affichée en exécutant `man` suivie de la commande en question, par exemple : `man cp`. Comme il n'est pas toujours très pratique de lire de longs textes dans un petit terminal, on peut également chercher la documentation d'une commande sur le site [man7](https://man7.org/linux/man-pages/index.html).
