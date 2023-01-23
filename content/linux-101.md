@@ -252,6 +252,8 @@ text.txt
 
 Opération réussie : le dossier a bien été créé et contient un fichier `test.txt`.
 
+Pour en savoir plus, une [Cheat Sheet](https://devhints.io/bash) sur `bash` très bien réalisée.
+
 ## Gestionnaire de paquets
 
 Une différence fondamentale entre Linux et Windows tient à la manière dont on installe un logiciel. Sur Windows, on va chercher un installateur (un fichier exécutable en `.exe`) sur le site du logiciel, et on l'exécute. En Linux, on passe généralement par un gestionnaire de packages qui va chercher les logiciels sur un répertoire centralisé, à la manière de `pip` en `Python` par exemple.
