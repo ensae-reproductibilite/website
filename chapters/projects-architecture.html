@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Romain Avouac et Lino Galiana">
+
+<title>Mise en production de projets data science - Améliorer l’architecture de ses projets</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Mise en production de projets data science</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/introduction.html">
+ <span class="menu-text">Introduction</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../chapters/projects-architecture.html" aria-current="page">
+ <span class="menu-text">Architecture des projets</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/portability.html">
+ <span class="menu-text">Portabilité</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/portability.html">
+ <span class="menu-text">Linux 101</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/git.html">
+ <span class="menu-text">Git</span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#structure" id="toc-structure" class="nav-link active" data-scroll-target="#structure">Structure des projets</a>
+  <ul class="collapse">
+  <li><a href="#modularité" id="toc-modularité" class="nav-link" data-scroll-target="#modularité">Modularité</a></li>
+  <li><a href="#principes-darchitecture" id="toc-principes-darchitecture" class="nav-link" data-scroll-target="#principes-darchitecture">Principes d’architecture</a>
+  <ul class="collapse">
+  <li><a href="#séparation-donnéescodeconfigenvironnement-dexécution" id="toc-séparation-donnéescodeconfigenvironnement-dexécution" class="nav-link" data-scroll-target="#séparation-donnéescodeconfigenvironnement-dexécution">Séparation données/code/config/environnement d’exécution</a></li>
+  <li><a href="#modèles" id="toc-modèles" class="nav-link" data-scroll-target="#modèles">Modèles</a></li>
+  <li><a href="#templates" id="toc-templates" class="nav-link" data-scroll-target="#templates">Templates</a></li>
+  </ul></li>
+  <li><a href="#packages" id="toc-packages" class="nav-link" data-scroll-target="#packages">Packages</a>
+  <ul class="collapse">
+  <li><a href="#gestion-des-dépendances" id="toc-gestion-des-dépendances" class="nav-link" data-scroll-target="#gestion-des-dépendances">Gestion des dépendances</a></li>
+  <li><a href="#documentation" id="toc-documentation" class="nav-link" data-scroll-target="#documentation">Documentation</a></li>
+  <li><a href="#logging" id="toc-logging" class="nav-link" data-scroll-target="#logging">Logging</a></li>
+  <li><a href="#tests-unitaires" id="toc-tests-unitaires" class="nav-link" data-scroll-target="#tests-unitaires">Tests unitaires</a></li>
+  <li><a href="#publication" id="toc-publication" class="nav-link" data-scroll-target="#publication">Publication</a></li>
+  <li><a href="#maintenance" id="toc-maintenance" class="nav-link" data-scroll-target="#maintenance">Maintenance</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#références" id="toc-références" class="nav-link" data-scroll-target="#références">Références</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Améliorer l’architecture de ses projets</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Romain Avouac et Lino Galiana </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="structure" class="level1">
+<h1>Structure des projets</h1>
+<section id="modularité" class="level2">
+<h2 class="anchored" data-anchor-id="modularité">Modularité</h2>
+<ul>
+<li>fonctions</li>
+<li>modules</li>
+</ul>
+</section>
+<section id="principes-darchitecture" class="level2">
+<h2 class="anchored" data-anchor-id="principes-darchitecture">Principes d’architecture</h2>
+<p>Comme <code>Git</code> est un pré-requis, tout projet présente un fichier <code>.gitignore</code> (il est très important, surtout quand on manipule des données qui ne devraient pas se retrouver sur <code>Github</code> ou <code>Gitlab</code>).</p>
+<p>Les <em>output</em> sont stockés dans un dossier séparé, de même que les <em>inputs</em> (idéalement ils ne sont même pas stockés avec le code, nous reviendrons sur la distinction code-stockage-exécution plus tard). Ne pas oublier d’ajouter les dossiers ou extensions qui vont bien dans le <code>.gitignore</code> pour ne pas les committer.</p>
+<p>Idéalement, un projet utilise de l’intégration continue (voir partie XXX) :</p>
+<ul>
+<li>si vous utilisez <code>Gitlab</code>, les instructions sont stockées dans le fichier <code>gitlab-ci.yml</code></li>
+<li>si vous utilisez <code>Github</code>, cela se passe dans le dossier <code>.github/workflows</code></li>
+</ul>
+<pre><code>project
+│   .gitignore    
+│   .gitlab-ci.yml    
+│   main.R   
+│   README.md
+│
+└───input
+│   │   source.csv
+│
+└───R
+│   │   utils.R
+│   │   figures.R
+|   |   statsdesc.R
+|   |   ...
+│   
+└───output
+    │   superfigure.png
+    │   agregat.csv
+    |   ...
+</code></pre>
+<section id="séparation-donnéescodeconfigenvironnement-dexécution" class="level3">
+<h3 class="anchored" data-anchor-id="séparation-donnéescodeconfigenvironnement-dexécution">Séparation données/code/config/environnement d’exécution</h3>
+</section>
+<section id="modèles" class="level3">
+<h3 class="anchored" data-anchor-id="modèles">Modèles</h3>
+<ul>
+<li>input / traitement / output</li>
+<li>domain-driven design (data, domain, application, presentation)</li>
+</ul>
+</section>
+<section id="templates" class="level3">
+<h3 class="anchored" data-anchor-id="templates">Templates</h3>
+<ul>
+<li>Python : cookiescutter</li>
+</ul>
+</section>
+</section>
+<section id="packages" class="level2">
+<h2 class="anchored" data-anchor-id="packages">Packages</h2>
+<p>La meilleure façon d’assurer la reproductibilité d’un projet est d’intégrer ses scripts dans une structure de <em>package</em>. Un gros projet de <em>data-science</em> va ainsi dépendre d’un ou plusieurs <em>packages</em>, ce qui</p>
+<ul>
+<li>assure une gestion cohérente des dépendances</li>
+<li>offre une certaine structure pour la documentation</li>
+<li>facilitera sa réutilisation (les utilisateurs peuvent n’être intéressés que par une partie du projet)</li>
+<li>permettra des économies d’échelle (on peut réutiliser l’un des packages pour un autre projet)</li>
+<li>facilite le debuggage (il est plus facile d’identifier une erreur quand elle est dans un package)</li>
+<li>…</li>
+</ul>
+<section id="gestion-des-dépendances" class="level3">
+<h3 class="anchored" data-anchor-id="gestion-des-dépendances">Gestion des dépendances</h3>
+<p>TO DO</p>
+</section>
+<section id="documentation" class="level3">
+<h3 class="anchored" data-anchor-id="documentation">Documentation</h3>
+</section>
+<section id="logging" class="level3">
+<h3 class="anchored" data-anchor-id="logging">Logging</h3>
+</section>
+<section id="tests-unitaires" class="level3">
+<h3 class="anchored" data-anchor-id="tests-unitaires">Tests unitaires</h3>
+<p>TO DO</p>
+</section>
+<section id="publication" class="level3">
+<h3 class="anchored" data-anchor-id="publication">Publication</h3>
+<p>Quand on débute, on est souvent timide et on désire ne rendre public son code que lorsque celui-ci est propre. C’est une erreur classique:</p>
+<p></p>
+<p>Comme pour nettoyer un appartement, les petits gestes en continu sont beaucoup plus efficace qu’un grand ménage de printemps. Prendre l’habitude de mettre son code immédiatement sur <code>Github</code> vous amènera à adopter de bons gestes.</p>
+</section>
+<section id="maintenance" class="level3">
+<h3 class="anchored" data-anchor-id="maintenance">Maintenance</h3>
+<p>L’objectif des conseils de ce cours est de réduire le coût de la maintenance à long terme en adoptant les structures les plus légères, automatisées et réutilisables.</p>
+<p>Les notebooks Jupyter sont très pratiques pour tâtonner et expérimenter. Cependant, ils présentent un certain nombre d’inconvénients à long terme qui peuvent rendre impossible à maintenir le code écrit avec dans un notebook:</p>
+<ul>
+<li>tous les objets (fonctions, classes et données) sont définis et disponibles dans le même fichier. Le moindre changement à une fonction nécessite de retrouver l’emplacement dans le code, écrire et faire tourner à nouveau une ou plusieurs cellules.</li>
+<li>quand on tâtonne, on écrit du code dans des cellules. Dans un cahier, on utiliserait la marge mais cela n’existe pas avec un notebook. On créé donc de nouvelles cellules, pas nécessairement dans l’ordre. Quand il est nécessaire de faire tourner à nouveau le notebook, cela provoque des erreurs difficile à debugger (il est nécessaire de retrouver l’ordre logique du code, ce qui n’est pas évident).</li>
+<li>les notebooks incitent à faire des copier-coller de cellules et modifier marginalement le code plutôt qu’à utiliser des fonctions.</li>
+<li>il est quasi-impossible d’avoir un versioning avec Git des notebooks qui fonctionne. Les notebooks étant, en arrière plan, de gros fichiers JSON, ils ressemblent plus à des données que des codes sources. Git ne parvient pas à identifier les blocs de code qui ont changé</li>
+<li>passage en production des notebooks coûteux alors qu’un script bien fait est beaucoup plus facile à passer en prod (voir suite cours)</li>
+<li>Jupyter manque d’extensions pour mettre en oeuvre les bonnes pratiques (linters, etc.). VSCode au contraire est très bien</li>
+<li>Risques de révélation de données confidentielles puisque les outputs des blocs de code, par exemple les <code>head</code>, sont écrits en dur dans le code source.</li>
+</ul>
+<p>Globalement, les notebooks sont un bon outil pour tâtonner ou pour faire communiquer. Mais pour maintenir un projet à long terme, il vaut mieux privilégier les scripts. Les recommandations de ce cours visent à rendre le plus léger possible la maintenance à long terme de projets <em>data-science</em> en favorisant la reprise par d’autres (ou par soi dans le futur).</p>
+</section>
+</section>
+</section>
+<section id="références" class="level1">
+<h1>Références</h1>
+<ul>
+<li><a href="https://docs.python-guide.org/#writing-great-python-code">The Hitchhiker’s Guide to Python</a></li>
+<li><a href="https://style.tidyverse.org/googl"><em>tidyverse style guide</em></a></li>
+<li><a href="https://google.github.io/styleguide/Rguide.html"><em>google style guide</em></a></li>
+<li><a href="https://perso.liris.cnrs.fr/pierre-antoine.champin/enseignement/algo/cours/algo/bonnes_pratiques.html">Cours de Pierre-Antoine Champin</a></li>
+<li><a href="https://r-pkgs.org/index.html">R Packages</a> par Hadley Wickham and Jenny Bryan</li>
+<li><a href="https://www.book.utilitr.org">La documentation collaborative <code>utilitR</code></a></li>
+<li><a href="https://www.tidyverse.org/blog/2017/12/workflow-vs-script/">Project Oriented Workflow</a></li>
+<li><a href="https://realpython.com/advanced-visual-studio-code-python/">Un post très complet sur les extensions VisualStudio</a></li>
+<li><a href="https://blog.r-hub.io/2022/03/21/code-style/">“Coding style, coding etiquette”</a></li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

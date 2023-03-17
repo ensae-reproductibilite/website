@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Romain Avouac et Lino Galiana">
+
+<title>Mise en production de projets data science - Versionner son code et travailler collaborativement avec Git</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Mise en production de projets data science</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/introduction.html">
+ <span class="menu-text">Introduction</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/projects-architecture.html">
+ <span class="menu-text">Architecture des projets</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/portability.html">
+ <span class="menu-text">Portabilité</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/portability.html">
+ <span class="menu-text">Linux 101</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../chapters/git.html" aria-current="page">
+ <span class="menu-text">Git</span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#le-contrôle-de-version" id="toc-le-contrôle-de-version" class="nav-link active" data-scroll-target="#le-contrôle-de-version">Le contrôle de version</a>
+  <ul class="collapse">
+  <li><a href="#pourquoi-faire" id="toc-pourquoi-faire" class="nav-link" data-scroll-target="#pourquoi-faire">Pourquoi faire ?</a></li>
+  <li><a href="#pourquoi-git" id="toc-pourquoi-git" class="nav-link" data-scroll-target="#pourquoi-git">Pourquoi <code>Git</code> <i class="fab fa-git-alt"></i> ?</a></li>
+  <li><a href="#pourquoi-github" id="toc-pourquoi-github" class="nav-link" data-scroll-target="#pourquoi-github">Pourquoi <code>GitHub</code> <i class="fab fa-github"></i> ?</a></li>
+  </ul></li>
+  <li><a href="#des-bases-de-git" id="toc-des-bases-de-git" class="nav-link" data-scroll-target="#des-bases-de-git">Des bases de <code>Git</code> <i class="fab fa-git-alt"></i></a>
+  <ul class="collapse">
+  <li><a href="#principes-et-commandes-usuelles" id="toc-principes-et-commandes-usuelles" class="nav-link" data-scroll-target="#principes-et-commandes-usuelles">Principes et commandes usuelles</a></li>
+  <li><a href="#implémentations" id="toc-implémentations" class="nav-link" data-scroll-target="#implémentations">Implémentations</a></li>
+  <li><a href="#bonnes-pratiques" id="toc-bonnes-pratiques" class="nav-link" data-scroll-target="#bonnes-pratiques">Bonnes pratiques</a>
+  <ul class="collapse">
+  <li><a href="#que-versionne-t-on" id="toc-que-versionne-t-on" class="nav-link" data-scroll-target="#que-versionne-t-on">Que versionne-t-on ?</a></li>
+  <li><a href="#messages-des-commits" id="toc-messages-des-commits" class="nav-link" data-scroll-target="#messages-des-commits">Messages des commits</a></li>
+  <li><a href="#freq" id="toc-freq" class="nav-link" data-scroll-target="#freq">Fréquence des commits</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#git-avancé" id="toc-git-avancé" class="nav-link" data-scroll-target="#git-avancé"><code>Git</code> <i class="fab fa-git-alt"></i> avancé</a>
+  <ul class="collapse">
+  <li><a href="#branches" id="toc-branches" class="nav-link" data-scroll-target="#branches">Branches</a>
+  <ul class="collapse">
+  <li><a href="#concept" id="toc-concept" class="nav-link" data-scroll-target="#concept">Concept</a></li>
+  <li><a href="#branches-locales" id="toc-branches-locales" class="nav-link" data-scroll-target="#branches-locales">Branches locales</a></li>
+  <li><a href="#branches-remote" id="toc-branches-remote" class="nav-link" data-scroll-target="#branches-remote">Branches <em>remote</em></a></li>
+  </ul></li>
+  <li><a href="#workflow-collaboratif" id="toc-workflow-collaboratif" class="nav-link" data-scroll-target="#workflow-collaboratif">Workflow collaboratif</a>
+  <ul class="collapse">
+  <li><a href="#définition-des-rôles-des-contributeurs" id="toc-définition-des-rôles-des-contributeurs" class="nav-link" data-scroll-target="#définition-des-rôles-des-contributeurs">Définition des rôles des contributeurs</a></li>
+  <li><a href="#développement-sur-des-branches-de-court-terme" id="toc-développement-sur-des-branches-de-court-terme" class="nav-link" data-scroll-target="#développement-sur-des-branches-de-court-terme">Développement sur des branches de court-terme</a></li>
+  <li><a href="#pull-request" id="toc-pull-request" class="nav-link" data-scroll-target="#pull-request">Pull Request</a></li>
+  <li><a href="#processus-de-review" id="toc-processus-de-review" class="nav-link" data-scroll-target="#processus-de-review">Processus de <em>review</em></a></li>
+  <li><a href="#résolution-des-éventuels-conflits" id="toc-résolution-des-éventuels-conflits" class="nav-link" data-scroll-target="#résolution-des-éventuels-conflits">Résolution des éventuels conflits</a></li>
+  <li><a href="#fusion-de-la-branche" id="toc-fusion-de-la-branche" class="nav-link" data-scroll-target="#fusion-de-la-branche">Fusion de la branche</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#contribuer-à-un-projet-open-source" id="toc-contribuer-à-un-projet-open-source" class="nav-link" data-scroll-target="#contribuer-à-un-projet-open-source">Contribuer à un projet open-source</a>
+  <ul class="collapse">
+  <li><a href="#utiliser-les-issues" id="toc-utiliser-les-issues" class="nav-link" data-scroll-target="#utiliser-les-issues">Utiliser les <em>issues</em></a></li>
+  <li><a href="#proposer-une-pull-request" id="toc-proposer-une-pull-request" class="nav-link" data-scroll-target="#proposer-une-pull-request">Proposer une <em>pull request</em></a></li>
+  <li><a href="#respecter-les-règles-de-contribution" id="toc-respecter-les-règles-de-contribution" class="nav-link" data-scroll-target="#respecter-les-règles-de-contribution">Respecter les règles de contribution</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Versionner son code et travailler collaborativement avec Git</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Romain Avouac et Lino Galiana </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="le-contrôle-de-version" class="level1">
+<h1>Le contrôle de version</h1>
+<section id="pourquoi-faire" class="level2">
+<h2 class="anchored" data-anchor-id="pourquoi-faire">Pourquoi faire ?</h2>
+<p>Le développement rapide de la <em>data science</em> au cours de ces dernières années s’est accompagnée d’une complexification substantielle des projets. Par ailleurs, les projets sont de plus en plus collaboratifs, que ce soit dans le cadre d’équipes dans un contexte professionnel ou bien pour des contributions à des projets open-source. Naturellement, ces évolutions doivent nous amener à modifier nos manières de travailler pour gérer cette complexité croissante et continuer à produire de la valeur à partir des projets de <em>data science</em>.</p>
+<p>Pourtant, tout <em>data scientist</em> s’est parfois demandé :</p>
+<ul>
+<li>quelle était la bonne version d’un programme</li>
+<li>qui était l’auteur d’un bout de code en particulier</li>
+<li>si un changement était important ou juste un essai</li>
+<li>comment fusionner des programmes</li>
+<li>etc.</li>
+</ul>
+<p>Et il n’est pas rare de perdre le fil des versions de son projet lorsque l’on garde trace de celles-ci de façon manuelle.</p>
+<p><strong>Exemple de contrôle de version fait “à la main”</strong></p>
+<p><img src="../fichiers_multiples.png" class="img-fluid"></p>
+<p>Pourtant, il existe un outil informatique puissant afin de répondre à tous ces besoins : la gestion de version (<em>version control system</em> (VCS) en anglais). Ses avantages sont incontestables et permettent de facilement :</p>
+<ul>
+<li>enregistrer l’historique des modifications d’un ensemble de fichiers</li>
+<li>revenir à des versions précédentes d’un ou plusieurs fichiers</li>
+<li>rechercher les modifications qui ont pu créer des erreurs</li>
+<li>travailler simultanément sur un même fichier sans risque de perte</li>
+<li>partager ses modifications et récupérer celles des autres</li>
+<li>proposer des modifications, les discuter, sans pour autant modifier la dernière version existante</li>
+<li>identifier les auteurs et la date des modifications</li>
+</ul>
+<p>En outre, ces outils fonctionnent avec tous les langages informatiques car ils reposent sur la comparaison des lignes et des caractères des programmes, indépendamment du langage. En bref, c’est la bonne manière pour partager des codes et travailler à plusieurs sur un projet de <em>data science</em>. En réalité, il ne serait pas exagéré de dire que <strong>l’utilisation du contrôle de version est la bonne pratique la plus fondamentale de tout projet faisant intervenir du code</strong>, et qu’elle conditionne largement toutes les autres.</p>
+</section>
+<section id="pourquoi-git" class="level2">
+<h2 class="anchored" data-anchor-id="pourquoi-git">Pourquoi <code>Git</code> <i class="fab fa-git-alt"></i> ?</h2>
+<p>Plusieurs logiciels de contrôle de version existent sur le marché. En principe, le logiciel Git, développé initialement pour fournir une solution décentralisée et <em>open-source</em> dans le cadre du développement du noyau Linux, est devenu largement hégémonique. Aussi, <strong>toutes les application de ce cours s’effectueront à l’aide du logiciel Git</strong>.</p>
+</section>
+<section id="pourquoi-github" class="level2">
+<h2 class="anchored" data-anchor-id="pourquoi-github">Pourquoi <code>GitHub</code> <i class="fab fa-github"></i> ?</h2>
+<p>Travailler de manière collaborative avec Git implique de synchroniser son répertoire local avec une copie distante, située sur un serveur hébergeant des projets Git. Ce serveur peut être un serveur interne à une organisation, ou bien être fourni par un hébergeur externe. Les deux alternatives les plus populaires en la matière sont GitHub et GitLab. Dans ce cours, <strong>nous utiliserons GitHub, qui est devenu au fil des années la référence pour l’hébergement des projets open-source</strong>. En pratique, les deux services sont relativement semblables, et tous les concepts présentés se retrouvent sous une forme similaire sur les deux plateformes.</p>
+</section>
+</section>
+<section id="des-bases-de-git" class="level1">
+<h1>Des bases de <code>Git</code> <i class="fab fa-git-alt"></i></h1>
+<p>Ce cours part du principe que les lecteurs sont déjà familiers avec l’utilisation de Git, au travers de projets individuels ou collectifs. Aussi, nous rappelons dans cette section les notions essentielles de Git, mais nous ne présenterons pas leur implémentation pratique. Le lecteur souhaitant un rappel plus complet peut par exemple se référer à la <a href="https://collaboratif-git-formation-insee.netlify.app/index.html">formation au travail collaboratif avec Git et RStudio</a> donnée à l’Insee, dont sont issues de nombreuses ressources utilisées dans ce chapitre.</p>
+<section id="principes-et-commandes-usuelles" class="level2">
+<h2 class="anchored" data-anchor-id="principes-et-commandes-usuelles">Principes et commandes usuelles</h2>
+<p>Le graphique suivant illustre les principes fondamentaux de Git.</p>
+<p><strong>Git tout-en-un</strong> (<a href="http://fabacademy.org/2021/labs/bhubaneswar/students/deepak-chaudhry/ia_PPFP.html">Source</a>) <img src="../gitallinone.png" class="img-fluid"></p>
+<p>Lorsqu’on utilise Git, il est important de <strong>bien distinguer ce qui se passe en local</strong> (sur son poste, sur le serveur sur lequel on travaille…) <strong>de ce qui se passe en <em>remote</em></strong>, i.e.&nbsp;en intéragissant avec un serveur distant. Comme le montre le graphique, l’essentiel du contrôle de version se passe en réalité en local.</p>
+<p>En théorie, sur un projet individuel, il est même possible de réaliser l’ensemble du contrôle de version en mode hors-ligne. Pour cela, il suffit d’indiquer à Git le projet (dossier) que l’on souhaite versionner en utilisant la commande <code>git init</code>. Cette commande a pour effet de créer un dossier <code>.git</code> à la racine du projet, dans lequel Git va stocker tout l’historique du projet (commits, branches, etc.) et permettre de naviguer entre les versions. A cause du <code>.</code> qui préfixe son nom, ce dossier est généralement caché par défaut, ce qui n’est pas problématique dans la mesure où il n’y a jamais besoin de le parcourir ou de le modifier à la main en pratique. Retenez simplement que <strong>c’est la présence de ce dossier <code>.git</code> qui fait qu’un dossier est considéré comme un projet Git</strong>, et donc que vous pouvez utilisez les commandes usuelles de Git dans ce dossier à l’aide d’un terminal : - <code>git status</code> : affiche les modifications du projet par rapport à la version précédente ; - <code>git add chemin_du_fichier</code> : ajoute un fichier nouveau ou modifié à la zone de <em>staging</em> de Git en vue d’un commit ; - <code>git add -A</code> : ajoute tous les fichiers nouveaux ou modifiés à la zone de <em>staging</em> ; - <code>git commit -m "message de commit"</code> : crée un commit, i.e.&nbsp;une photographie des modifications (ajouts, modifications, suppressions) apportées au projet depuis la dernière version, et lui assigne un message décrivant ces changements. Les commits sont l’unité de base de l’historique du projet construit par Git.</p>
+<p>En pratique, travailler uniquement en local n’est pas très intéressant. Pour pouvoir travailler de manière collaborative, on va vouloir <strong>synchroniser les différentes copies locales du projet à un répertoire centralisé</strong>, qui maintient de fait la “source de vérité” (<em>single source of truth</em>). Même sur un projet individuel, il fait sens de synchroniser son répertoire local à une copie distante pour assurer l’intégrité du code de son projet en cas de problème matériel.</p>
+<p>En général, on va donc initialiser le projet dans l’autre sens : - créer un nouveau projet sur GitHub - générer un <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token">jeton d’accès</a> (<em>personal access token</em>) - cloner le projet en local via la méthode HTTPS : <code>git clone https://github.com/&lt;username&gt;/&lt;project_name&gt;.git</code></p>
+<p>Le projet cloné est un projet Git — il contient le dossier <code>.git</code> — synchronisé par défaut avec le répertoire distant. On peut le vérifier avec la commande <code>remote</code> de Git :</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git remote <span class="at">-v</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">origin</span>  https://github.com/linogaliana/ensae-reproductibilite-website.git <span class="er">(</span><span class="ex">fetch</span><span class="kw">)</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">origin</span>  https://github.com/linogaliana/ensae-reproductibilite-website.git <span class="er">(</span><span class="ex">push</span><span class="kw">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Le projet local est bien lié au répertoire distant sur GitHub, auquel Git donne par défaut le nom <code>origin</code>. Ce lien permet d’utiliser les commandes de synchronisation usuelles : - <code>git pull</code> : récupérer les changements (<em>fetch</em>) sur le <em>remote</em> et les appliquer au projet local - <code>git push</code> : envoyer les changements locaux sur le <em>remote</em></p>
+</section>
+<section id="implémentations" class="level2">
+<h2 class="anchored" data-anchor-id="implémentations">Implémentations</h2>
+<p>Git est un logiciel, qui peut être téléchargé sur le <a href="https://git-scm.com/downloads">site officiel</a> pour différents systèmes d’exploitation. Il existe cependant différentes manières d’utiliser Git : - le <strong>client en ligne de commande</strong> : c’est l’implémentation standard, et donc la plus complète. C’est celle qu’on utilisera dans ce cours. Le client Git est installé par défaut sur les différents services du SSP Cloud (VSCode, RStudio, Jupyter, etc.) et peut donc être utilisé via n’importe quel terminal. La <a href="https://docs.sspcloud.fr/onyxia-guide/controle-de-version">documentation</a> du SSP Cloud détaille la procédure ; - des <strong>interfaces graphiques</strong> : elles facilitent la prise en main de Git via des guides visuels, mais ne permettent pas de réaliser toutes les opérations permises par Git - l’interface native de <code>RStudio</code> pour les utilisateurs de <code>R</code> : très complète et stable. La <a href="https://collaboratif-git-formation-insee.netlify.app/index.html">formation au travail collaboratif avec Git et RStudio</a> présente son utilisation de manière détaillée ; - le plugin <code>Jupyter-git</code> pour les utilisateurs de <code>Python</code> : elle implémente les principales <em>features</em> de Git, mais s’avère assez instable à l’usage.</p>
+</section>
+<section id="bonnes-pratiques" class="level2">
+<h2 class="anchored" data-anchor-id="bonnes-pratiques">Bonnes pratiques</h2>
+<p>Le contrôle de version est une bonne pratique de développement en soi… mais son utilisation admet elle même des bonnes pratiques qui, lorsqu’elles sont appliquées, permettent d’en tirer le plus grand profit.</p>
+<section id="que-versionne-t-on" class="level3">
+<h3 class="anchored" data-anchor-id="que-versionne-t-on">Que versionne-t-on ?</h3>
+<section id="uniquement-des-fichiers-texte" class="level4">
+<h4 class="anchored" data-anchor-id="uniquement-des-fichiers-texte">Uniquement des fichiers texte</h4>
+<p>A chaque commit, Git calcule les <em>différences</em> entre les versions successives du projet, afin de ne pas avoir à stocker une image complète de ce dernier à chaque fois. C’est ce qui permet aux projets Git de rester très légers par défaut, et donc aux différentes opérations impliquant le <em>remote</em> (<code>clone</code>, <code>push</code>, <code>pull</code>..) d’être très rapides.</p>
+<p>La contrepartie de cette légèreté est une contrainte sur les types d’objets que l’on doit versionner. Les différences sont calculables uniquement sur des fichiers de type texte : codes source, fichiers texte, fichiers de configuration non-sensibles… Voici donc une liste non-exhaustive des extensions de fichier que l’on retrouve fréquemment dans un dépôt Git d’un projet <code>R</code> ou <code>Python</code> : <code>.py</code>, <code>.R</code>, <code>.Rmd</code>, <code>.txt</code>, <code>.json</code>, <code>.xml</code>, <code>.yaml</code>, <code>.toml</code>, et bien d’autres.</p>
+<p>En revanche tous les fichiers binaires — pour faire simple, tous les fichiers qui ne peuvent pas être ouverts dans un éditeur de texte basique sans produire une suite inintelligible de caractères — n’ont généralement pas destination à se retrouver sur un dépôt Git. Du fait de leur formatage (binaire), Git ne peut pas calculer les différences entre versions pour ces fichiers et c’est donc le fichier entier qui est sauvegardé dans l’historique à chaque changement, ce qui peut très rapidement faire croître la taille du dépôt. Pour éviter de versionner ces fichiers par erreur, on va les ajouter au fichier <code>.gitignore</code> (cf.&nbsp;<a href="#gitignore">supra</a>).</p>
+</section>
+<section id="pas-de-données" class="level4">
+<h4 class="anchored" data-anchor-id="pas-de-données">Pas de données</h4>
+<p>Comme expliqué en introduction, le fil rouge de ce cours sur les bonnes pratiques est l’importance de bien séparer code, données et environnement d’exécution afin de favoriser la reproductibilité des projets de <em>data science</em>. Ce principe doit s’appliquer également à l’usage du contrôle de version, et ce pour différentes raisons.</p>
+<p>A priori, inclure ces données dans un dépôt Git peut sembler une bonne idée en termes de reproductibilité. En <em>machine learning</em> par exemple, on est souvent amené à réaliser de nombreuses expérimentations à partir d’un même modèle appliqué à différentes transformations des données initiales, transformations que l’on pourrait versionner. En pratique, il est généralement préférable de versionner le code qui permet de générer ces transformations et donc les expérimentations associées, dans la mesure où le suivi des versions des <em>datasets</em> peut s’avérer rapidement complexe. Pour de plus gros projets, des alternatives spécifiques existent : c’est le champ du <em>MLOps</em>, domaine en constante expansion qui vise à rendre les <em>pipelines</em> de <em>machine learning</em> plus reproductibles.</p>
+<p>Enfin, la structure même de Git n’est techniquement pas faite pour le stockage de données. Si des petits <em>datasets</em> dans un format texte ne poseront pas de problème, des données volumineuses (à partir de plusieurs Mo) vont faire croître la taille du dépôt et donc ralentir significativement les opérations de synchronisation avec le <em>remote</em>.</p>
+</section>
+<section id="pas-dinformations-locales" class="level4">
+<h4 class="anchored" data-anchor-id="pas-dinformations-locales">Pas d’informations locales</h4>
+<p>Là encore en vertu du principe de séparation données / code/ environnement, les données locales, i.e.&nbsp;spécifiques à l’environnement de travail sur lequel le code a été exécuté, n’ont pas vocation à être versionnées. Par exemple, des fichiers de configuration spécifiques à un poste de travail, des chemins d’accès spécifiques à un ordinateur donné, etc. Cela demande une plus grande rigueur lors de la construction du projet, mais garantit par là même une meilleure reproductiblité pour les futurs utilisateurs du projet.</p>
+</section>
+<section id="pas-doutputs" class="level4">
+<h4 class="anchored" data-anchor-id="pas-doutputs">Pas d’<em>outputs</em></h4>
+<p>Les <em>outputs</em> d’un projet (graphiques, publications, modèle entraîné…) n’ont pas vocation à être versionné, en vertu des différents arguments présentés ci-dessus : - il ne s’agit généralement pas de fichiers de type texte ; - le code source du projet doit dans tous les cas permettre des les regénérer à l’identique.</p>
+</section>
+<section id="gitignore" class="level4">
+<h4 class="anchored" data-anchor-id="gitignore">Utiliser un <code>.gitignore</code></h4>
+<p>On a listé précédemment un large éventail de fichiers qui n’ont, par nature, pas vocation à être versionné. Bien entendu, faire attention à ne pas ajouter ces différents fichiers au moment de chaque <code>git add</code> serait assez pénible. Git simplifie largement cette procédure en nous donnant la possibilité de remplir un fichier <code>.gitignore</code>, situé à la racine du projet, qui spécifie l’ensemble des fichiers et types de fichiers que l’on ne souhaite pas versionner dans le cadre du projet courant.</p>
+<p>De manière générale, il y a pour chaque langage des fichiers que l’on ne souhaitera jamais versionner. Pour en tenir compte, une première bonne pratique est de choisir le <code>.gitignore</code> associé au langage du projet lors de la création du dépôt sur GitHub. Ce faisant, le projet est initialité avec un <code>gitignore</code> déjà existant et pré-rempli de chemins et de types de fichiers qui ne sont pas à versionner. Regardons un extrait du <code>gitignore Python</code> pour comprendre sa structure et son fonctionnement.</p>
+<pre><code>pip-log.txt
+__pycache__/
+*.log</code></pre>
+<p>Chaque ligne du <code>gitignore</code> spécifie un élément à ignorer du contrôle de version, élément qui peut être un ficher/dossier ou bien une règle concernant un ensemble de fichiers/dossiers. Sauf si spécifié explicitement, les chemins sont relatifs à la racine du projet. L’extrait du <code>gitignore Python</code> illustre les différentes possibilités :</p>
+<ul>
+<li>ligne 1 : ignore le fichier <code>pip-log.txt</code> ;</li>
+<li>ligne 2 : ignore le dossier <code>__pycache__/</code> ;</li>
+<li>ligne 3 : ignore tous les fichiers dont l’extension est <code>.log</code>.</li>
+</ul>
+<p>De nombreuses autres possiblités existent, et sont détaillées par exemple dans la <a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository#_ignoring">documentation de Git</a>.</p>
+</section>
+</section>
+<section id="messages-des-commits" class="level3">
+<h3 class="anchored" data-anchor-id="messages-des-commits">Messages des commits</h3>
+<p>Le commit est l’unité de temps de Git, et donc fondamentalement ce qui permet de remonter dans l’historique d’un projet. Afin de pouvoir bénéficier à plein de cet avantage de Git, il est capital d’accompagner ses commits de messages pertinents, en se plaçant dans la perspective que l’on peut être amené plusieurs semaines ou mois plus tard à vouloir retrouver du code dans l’historique de son projet. Les quelques secondes prises à chaque commit pour réfléchir à une description pertinente du bloc de modifications que l’on apporte au projet peuvent donc faire gagner un temps précieux à la longue.</p>
+<p>De nombreuses conventions existent pour rédiger des messages de commit pertinents. Nous rappelons ici les plus importantes :</p>
+<ul>
+<li>contenu : le message doit détailler <strong>le pourquoi plutôt que le comment</strong> des modifications. Par exemple, plutôt que “Ajoute le fichier test.py”, on préférera écrire “Ajout d’une série de tests unitaires” ;</li>
+<li>style : le message doit être à l’impératif et former une phrase (sans point à la fin) ;</li>
+<li>longueur : le message du commit doit être court (&lt; 72 caractères). S’il n’est pas possible de trouver un message de cette taille qui résume le commit, c’est généralement un signe que le commit regroupe trop de changements (cf.&nbsp;<a href="#freq">point suivant</a>). Le fait de devoir mettre des <code>+</code> ou des <code>&amp;</code> / <code>et</code> dans un message de commit pour séparer les changements est également un bon indicateur d’un commit trop gros.</li>
+</ul>
+</section>
+<section id="freq" class="level3">
+<h3 class="anchored" data-anchor-id="freq">Fréquence des commits</h3>
+<p>De manière générale, il est conseillé de réaliser des commits réguliers lorsque l’on travaille sur un projet. Une règle simple que l’on peut par exemple appliquer est la suivante : dès lors qu’un ensemble de modifications forment un tout cohérent et peuvent être résumées par un message simple, il est temps d’en faire un commit. Cette approche a de nombreux avantages :</p>
+<ul>
+<li>si l’on fait suivre chaque commit d’un <code>push</code> — ce qui est conseillé en pratique — on s’assure de disposer régulièreemnt d’une copie de ses travaux, ce qui limite le risque de perte ;</li>
+<li>il est plus facile de revenir en arrière en cas d’erreur si les commits portent sur des changements ciblés et cohérents ;</li>
+<li>le processus de <em>review</em> d’une <em>pull request</em> est facilité, car les différents blocs de modification sont plus clairement séparés ;</li>
+<li>dans une approche d’intégration continue — concept que l’on verra en détail dans le chapitre sur la [mise en production]() — faire des commits et des PR régulièrement permet de déployer de manière continue les changements en production, et donc d’obtenir les <em>feedbacks</em> des utilisateurs et d’adapter plus rapidement si besoin.</li>
+</ul>
+</section>
+</section>
+</section>
+<section id="git-avancé" class="level1">
+<h1><code>Git</code> <i class="fab fa-git-alt"></i> avancé</h1>
+<p>Dans la section précédente, on a présenté une manière de travailler assez basique : dès lors que l’on a réalisé un ensemble de modifications cohérent sur le projet, on produit un commit, ce qui permet de construire progressivement l’historique du projet. Si cette méthode peut tout à fait convenir à des petits projets, elle montre rapidement ses limites dès lors que les projets gagnent en maturité ou deviennent collaboratifs : - on va généralement vouloir garder une version “propre” du projet (ex : une application fonctionnelle), et expérimenter par ailleurs pour développer de nouvelles fonctionnalités ; - on peut être amené à travailler à plusieurs sur les mêmes fichiers et ce de façon simultanée, ce qui peut générer des conflits complexes à gérer</p>
+<p>On le voit bien : <strong>dès lors qu’un projet gagne de l’ampleur, il est impératif de s’interroger en amont sur l’organisation du travail et de trouver des manières de collaborer efficacement</strong>. On va pour cela s’inspirer de modèles d’organisation (<strong><em>workflows</em></strong>) qui ont fait leurs preuves, ce qui va nous amener à nous intéresser à une des fonctionnalités majeures de Git : les <strong>branches</strong>. On verra également que les services tels que GitHub ou GitLab fournissent des fonctionnalités additionnelles (<strong><em>issues</em></strong>, <strong><em>pull requests</em></strong> et <strong><em>forks</em></strong>) qui permettent de grandement faciliter le travail collaboratif avec Git.</p>
+<section id="branches" class="level2">
+<h2 class="anchored" data-anchor-id="branches">Branches</h2>
+<section id="concept" class="level3">
+<h3 class="anchored" data-anchor-id="concept">Concept</h3>
+<p>La possibilité de créer des branches est l’une des fonctionnalités majeures de Git. La création d’une branche au sein d’un projet permet de diverger de la ligne principale de développement (généralement appelée <code>master</code>, terme tendant à disparaître au profit de celui de <code>main</code>) sans impacter cette ligne. Cela permet de séparer le nouveau développement et de <strong>faire cohabiter plusieurs versions, pouvant évoluer séparément et pouvant être facilement rassemblées si nécessaire</strong>.</p>
+<p>Pour comprendre comment fonctionnent les branches, il nous faut revenir un peu plus en détail sur la manière dont Git stocke l’historique du projet. Comme nous l’avons vu, l’unité temporelle de Git est le commit, qui correspond à une photographie à un instant donné de l’état du projet (<em>snapshot</em>). Chaque commit est uniquement identifié par un <em>hash</em>, une longue suite de caractères. La commande <code>git log</code>, qui liste les différents commits d’un projet, permet d’afficher ce <em>hash</em> ainsi que diverses métadonnées (auteur, date, message) associées au commit.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git log</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">commit</span> e58b004d3b68bdf28093fe6ad6036b5d13216e55 <span class="er">(</span><span class="ex">HEAD</span> <span class="at">-</span><span class="op">&gt;</span> master, origin/master, origin/HEAD<span class="kw">)</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Author:</span> Lino Galiana <span class="op">&lt;</span>xxx@xxx.fr<span class="op">&gt;</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Date:</span>   Tue Mar 22 14:34:04 2022 +0100</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="ex">ajoute</span> code équivalent python</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Une branche est simplement un pointeur vers un commit. Dans l’exemple précédent, on a imprimé les informations du dernier commit en date. La branche principale (<code>master</code>) pointe vers ce commit. Si l’on faisait un nouveau commit, le pointeur se décalerait et la branche <code>master</code> pointerait à présent sur le nouveau commit.</p>
+</section>
+<section id="branches-locales" class="level3">
+<h3 class="anchored" data-anchor-id="branches-locales">Branches locales</h3>
+<p>Dans ce contexte, créer une nouvelle branche (en local) revient simplement à créer un nouveau pointeur vers un commit donné. Supposons que l’on crée une branche <code>testing</code> à partir du dernier commit.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git branch testing  <span class="co"># Crée une nouvelle branche</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git branch  <span class="co"># Liste les branches existantes</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">*</span> master  <span class="co"># La branche sur laquelle on se situe</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="ex">testing</span>  <span class="co"># La nouvelle branche créée</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>La figure suivante illustre l’effet de cette création sur l’historique Git.</p>
+<p><img src="../newbranch.png" class="img-fluid"></p>
+<p>Désormais, deux branches (<code>master</code> et <code>testing</code>) pointent vers le même commit. Si l’on effectue à présent des commits sur la branche <code>testing</code>, on va diverger de la branche principale, ce qui permet de développer une nouvelle fonctionnalité sans risquer d’impacter <code>master</code>.</p>
+<p>Pour savoir sur quelle branche on se situe à instant donné — et donc sur quelle branche on va commiter — Git utilise un pointeur spécial, appelé <code>HEAD</code>, qui pointe vers la branche courante. On comprend à présent mieux la signification de <code>HEAD -&gt; master</code> dans l’output de la commande <code>git log</code> vu précédemment. Cet élément spécifie la situation <em>locale</em> actuelle et signifie : on se situe actuellement sur la branche <code>master</code>, qui pointe sur le commit <code>e58b004</code>. Pour changer de branche, i.e.&nbsp;déplacer le <code>HEAD</code>, on utilise la commande <code>git checkout</code>. Par exemple, pour passer de la branche <code>master</code> sur laquelle on est par défaut à la branche <code>testing</code> :</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git checkout testing  <span class="co"># Changement de branche</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Switched</span> to branch <span class="st">'testing'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>On se situe désormais sur la branche <code>testing</code>, sur laquelle on peut laisser libre cours à sa créativité sans risquer d’impacer la branche principale du projet. Mais que se passe-t-il si, pendant que l’on développe sur <code>testing</code>, un autre membre du projet commit sur <code>master</code> ? On dit que les historiques ont divergé. La figure suivante illustre à quoi ressemble à présent l’historique du projet (et suppose que l’on est repassé sur <code>master</code>).</p>
+<p><img src="../divergence.png" class="img-fluid"></p>
+<p>Cette divergence n’est pas problématique en soi : il est normal que les différentes parties et expérimentations d’un projet avancent à différents rythmes. La difficulté est de savoir comment réconcillier les différents changements si l’on décide que la branche <code>testing</code> doit être intégrée dans <code>master</code>. Deux situations peuvent survenir : - les modifications opérées en parallèle sur les deux branches ne concernent pas les mêmes fichiers ou les mêmes parties des fichiers. Dans ce cas, Git est capable de fusionner (<em>merge</em>) les changements automatiquement et tout se passe sans encombre ; - dans le cas contraire, survient un <em>merge conflict</em> : les branches ont divergé de telle sorte qu’il n’est pas possible pour Git de fusionner les changements automatiquement. Il faut alors résoudre les conflits manuellement.</p>
+<p>La résolution des conflits est une étape souvent douloureuse lors de l’apprentissage de Git. Aussi, nous conseillons dans la mesure du possible de ne pas fusionner des branches manuellement en local avec Git — c’est d’ailleurs pour cette raison que nous n’avons pas détaillé les commandes pour le faire. Dans les sections suivantes, nous verrons comment une bonne organisation préalable du travail en équipe, combinée aux outils collaboratifs fournis par GitHub, permet de rendre le processus de fusion des branches largement indolore.</p>
+</section>
+<section id="branches-remote" class="level3">
+<h3 class="anchored" data-anchor-id="branches-remote">Branches <em>remote</em></h3>
+<p>Rappellons que toutes les opérations que nous avons effectuées sur les branches dans cette section se sont passés en local, le répertoire distant est resté totalement inchangé. Pour pouvoir collaborer sur une branche ou bien en faire une <em>pull request</em> (cf.&nbsp;supra), il faut pousser la branche sur le répertoire distant. La commande est simple : <code>git push origin &lt;branche&gt;</code>.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git push origin testing</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Counting</span> objects: 24, done.</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Delta</span> compression using up to 8 threads.</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Compressing</span> objects: 100% <span class="er">(</span><span class="ex">15/15</span><span class="kw">)</span><span class="ex">,</span> done.</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Writing</span> objects: 100% <span class="er">(</span><span class="ex">24/24</span><span class="kw">)</span><span class="ex">,</span> 1.91 KiB <span class="kw">|</span> <span class="ex">0</span> bytes/s, done.</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">Total</span> 24 <span class="er">(</span><span class="ex">delta</span> 2<span class="kw">)</span><span class="ex">,</span> reused 0 <span class="er">(</span><span class="ex">delta</span> 0<span class="kw">)</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="ex">To</span> https://github.com/linogaliana/ensae-reproductibilite-website</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a> <span class="ex">*</span> [new branch]      testing <span class="at">-</span><span class="op">&gt;</span> testing</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="workflow-collaboratif" class="level2">
+<h2 class="anchored" data-anchor-id="workflow-collaboratif">Workflow collaboratif</h2>
+<p>Comme on l’a vu précédemment, si le modèle des branches de Git semble idéal pour gérer le travail collaboratif et asynchrone, il peut également s’avérer rapidement complexe à manipuler en l’absence d’une bonne organisation du travail en équipe. De nombreux modèles (“<em>workflows</em>”) existent en la matière, avec des complexités plus ou moins grandes selon la nature du projet. Nous conseillons d’adopter dans la plupart des cas un modèle très simple : le <a href="https://docs.github.com/en/get-started/quickstart/github-flow">GitHub Flow</a>.</p>
+<p>Le <em>GitHub Flow</em> est une méthode d’organisation minimaliste du travail collaboratif, qui est progressivement devenue la norme dans les projets open-source. Elle est résumée par la figure suivante, dont nous détaillons par la suite les différentes étapes.</p>
+<p><img src="../ghflow.png" class="img-fluid"></p>
+<section id="définition-des-rôles-des-contributeurs" class="level3">
+<h3 class="anchored" data-anchor-id="définition-des-rôles-des-contributeurs">Définition des rôles des contributeurs</h3>
+<p>Dans tout projet collaboratif, une première étape essentielle est de bien délimiter les rôles des différents contributeurs. Les différents participants au projet ont en effet généralement des rôles différents dans l’organisation, des niveaux différents de pratique de Git, etc. Il est important de refléter ces différents rôles dans l’organisation du travail collaboratif.</p>
+<p>Sur les différents hébergeurs de projets Git, cela prend la forme de rôles que l’on attribue aux différents membres du porjet. Les <em>mainteneurs</em> sont les seuls à pouvoir écrire directement sur <code>master</code>. Les <em>contributeurs</em> sont quant à eux tenus de développer sur des branches. Cela permet de protéger la branche principale, qui doit rester une version propre et jamais compromise du projet.</p>
+<p>Notons que la possibilité de donner des rôles sur les projets GitHub n’est possible que dans le cadre d’organisations (payantes), donc dans un contexte professionnel ou de projets open-source d’une certaine ampleur. Pour des petits projets, il est nécessaire de s’astreindre à une certaine rigueur individuelle pour respecter cette organisation.</p>
+</section>
+<section id="développement-sur-des-branches-de-court-terme" class="level3">
+<h3 class="anchored" data-anchor-id="développement-sur-des-branches-de-court-terme">Développement sur des branches de court-terme</h3>
+<p>Les contributeurs développent uniquement sur des branches. Il est d’usage de créer une branche par fonctionnalité, en lui donnant un nom reflétant la fonctionnalité en cours de développement (ex : <code>ajout-tests-unitaires</code>). Les différents contributeurs à la fonctionnalité en cours de développement font des commits sur la branche, en prenant bien soin de <code>pull</code> régulièrement les éventuels changements pour ne pas risquer de conflits de version. Pour la même raison, il est préférable de faire des branches dites de court-terme, c’est à dire propres à une petite fonctionnalité, quite à diviser une fonctionnalité en séries d’implémentations. Cela permet de limiter les éventuels conflits à gérer lors de la fusion finale de la branche avec <code>master</code>.</p>
+</section>
+<section id="pull-request" class="level3">
+<h3 class="anchored" data-anchor-id="pull-request">Pull Request</h3>
+<p>Une fois la série de modifications terminée, vient le temps de rassembler les différents travaux, par l’intermédiaire de la fusion entre la branche et <code>master</code>. Il faut alors “demander” de fusionner (<em>pull request</em>) sur GitHub. Cela ouvre une page liée à la <em>pull request</em>, qui rappelle les différents changements apportés et leurs auteurs, et permet d’entamer une discussion à propos de ces changements.</p>
+</section>
+<section id="processus-de-review" class="level3">
+<h3 class="anchored" data-anchor-id="processus-de-review">Processus de <em>review</em></h3>
+<p>Les différents membres du projet peuvent donc analyser et commenter les changements, poser des questions, suggérer des modifications, apporter d’autres contributions, etc. Il est par exemple possible de mentionner un membre de l’équipe par l’intermédiaire de <code>@personne</code>. Il est également possible de procéder à une <em>code review</em>, par exemple par un développeur plus expérimenté.</p>
+</section>
+<section id="résolution-des-éventuels-conflits" class="level3">
+<h3 class="anchored" data-anchor-id="résolution-des-éventuels-conflits">Résolution des éventuels conflits</h3>
+<p>En adoptant cette manière de travailler, <code>master</code> ne sera modifiée que via des <em>pull requests</em>. Il ne devrait donc jamais y avoir le moindre conflit à régler sur <code>master</code>, les seuls conflits possibles se passent sur les branches. Par exemple, dans le cas où une autre <em>pull request</em> aurait été fusionnée sur <code>master</code> depuis l’ouverture de la <em>pull request</em> en question.</p>
+<p>Dans le cas d’un conflit à gérer, le conflit doit être résolu dans la branche et pas dans <code>master</code>. Voici la marche à suivre :</p>
+<ul>
+<li>appliquez le conseil de survie : faites une copie de sauvegarde de votre clone</li>
+<li>dans votre clone, placez vous sur la branche en question : <code>git checkout nom-de-la-branche</code></li>
+<li>fusionnez <code>master</code> dans la branche : <code>git merge master</code></li>
+<li>résolvez les éventuels conflits dans les fichiers concernés</li>
+<li>finalisez le commit de merge et poussez-le sur la branche <em>remote</em>, ce qui le fera apparaître dans la <em>pull request</em></li>
+</ul>
+</section>
+<section id="fusion-de-la-branche" class="level3">
+<h3 class="anchored" data-anchor-id="fusion-de-la-branche">Fusion de la branche</h3>
+<p>Si tout est en ordre, la branche peut être fusionnée. Seuls les <em>mainteneurs</em>, qui ont les droits sur <code>master</code>, peuvent fusionner la <em>pull request</em>. En termes d’historique du projet, deux choix sont possibles : - “<em>Create a merge commit</em>” : tous les commits réalisés sur la branche apparaîtront dans l’historique du projet ; - “<em>Squash and merge</em>” : les différents commits réalisés sur la branche seront rassemblés en un commit unique. Cette option est généralement préférable lorsqu’on utilise des branches de court-terme : elles permettent de garder l’historique plus lisible.</p>
+</section>
+</section>
+</section>
+<section id="contribuer-à-un-projet-open-source" class="level1">
+<h1>Contribuer à un projet open-source</h1>
+<p>Il peut arriver que l’on veuille contribuer à un projet sur lequel on n’est pas enregistré comme collaborateur. C’est par exemple le cas dès lors que l’on souhaite contribuer à un projet open-source. Il existe différentes manières de proposer une contribution, et les possibilités de contribution sont généralement formalisées.</p>
+<section id="utiliser-les-issues" class="level2">
+<h2 class="anchored" data-anchor-id="utiliser-les-issues">Utiliser les <em>issues</em></h2>
+<p>La manière la plus simple de contribuer à un projet open-source est d’ouvrir une <em>issue</em>. Sur GitHub, cela se fait sur la page du projet, sous l’onglet <em>Issue</em> (cf.&nbsp;<a href="https://docs.github.com/en/issues/tracking-your-work-with-issues/quickstart">documentation officielle</a>). Les <em>issues</em> peuvent avoir différentes nature : - suggestion d’amélioration (sans code) - notification de bug - rapports d’expérience - etc.</p>
+<p>Les <em>issues</em> sont une manière très peu couteuse de contributer à un projet, mais leur importance est capitale, dans la mesure où il est impossible pour les développeurs d’un projet de penser en amont à toutes les utilisations possibles et donc tous les bugs possibles d’une application.</p>
+</section>
+<section id="proposer-une-pull-request" class="level2">
+<h2 class="anchored" data-anchor-id="proposer-une-pull-request">Proposer une <em>pull request</em></h2>
+<p>Une autre manière, plus ambitieuse, de contribuer à l’open source est de proposer des <em>pull requests</em>. Concrètement, l’idée est de proposer une amélioration ou bien de résoudre un bug sous forme de code, que les mainteneurs du projet peuvent ensuite décider d’intégrer au code existant.</p>
+<p>La procédure pour proposer une <em>pull request</em> à un projet sur lequel on n’a aucun droit est très similaire à celle décrite ci-dessus dans le cas normal. La principale différence est que, du fait de l’absence de droits, il est impossible de pousser une branche locale sur le répertoire du projet. On va donc devoir créer au préalable un <em>fork</em>, i.e.&nbsp;une copie du projet que l’on crée dans son espace personnel sur GitHub. C’est sur cette copie que l’on va appliquer la procédure décrite précédemment, en prenant bien soin de travailler sur une branche et non sur <code>master</code>. Une fois les modifications pertinentes effectuées sur la branche du <em>fork</em>, GitHub propose de créer une <em>pull request</em> sur le dépôt original. Cette <em>pull request</em> sera alors visible des mainteneurs du projet, qui pourront l’évaluer et décider d’adopter (ou non) les changements proposés.</p>
+</section>
+<section id="respecter-les-règles-de-contribution" class="level2">
+<h2 class="anchored" data-anchor-id="respecter-les-règles-de-contribution">Respecter les règles de contribution</h2>
+<p>Vouloir contribuer à un projet open-source est très louable, mais ne peut pas pour autant se faire n’importe comment. Un projet est constitué de personnes, qui ont développé ensemble une manière de travailler, des standards de bonnes pratiques, etc. Pour s’assurer que sa contribution ne reste pas lettre morte, il est indispensable de s’imprégner un minimum de la culture du projet.</p>
+<p>Pour faciliter les contributions, les projets open-source spécifient bien souvent la manière dont les utilisateurs peuvent contribuer ainsi que le format attendu. En général, ces règles de contribution sont spécifiées dans un fichier <code>CONTRIBUTING.md</code> situé à la racine du projet GitHub, ou a défaut dans le <code>README</code> du projet. Il est essentiel de bien lire ce document s’il existe afin de s’assurer de proposer des contributions pertinentes.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

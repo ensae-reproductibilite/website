@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Romain Avouac et Lino Galiana">
+<meta name="dcterms.date" content="2022-03-03">
+
+<title>Mise en production de projets data science - Rendre son projet de data science portable et reproductible</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Mise en production de projets data science</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/introduction.html">
+ <span class="menu-text">Introduction</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/projects-architecture.html">
+ <span class="menu-text">Architecture des projets</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../chapters/portability.html" aria-current="page">
+ <span class="menu-text">Portabilité</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/portability.html">
+ <span class="menu-text">Linux 101</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/git.html">
+ <span class="menu-text">Git</span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#la-notion-de-portabilité" id="toc-la-notion-de-portabilité" class="nav-link active" data-scroll-target="#la-notion-de-portabilité">La notion de portabilité</a></li>
+  <li><a href="#les-environnements-virtuels-snake" id="toc-les-environnements-virtuels-snake" class="nav-link" data-scroll-target="#les-environnements-virtuels-snake">Les environnements virtuels :snake:</a>
+  <ul class="collapse">
+  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#fonctionnement" id="toc-fonctionnement" class="nav-link" data-scroll-target="#fonctionnement">Fonctionnement</a></li>
+  <li><a href="#implémentations" id="toc-implémentations" class="nav-link" data-scroll-target="#implémentations">Implémentations</a></li>
+  <li><a href="#conda" id="toc-conda" class="nav-link" data-scroll-target="#conda">Conda</a>
+  <ul class="collapse">
+  <li><a href="#installation" id="toc-installation" class="nav-link" data-scroll-target="#installation">Installation</a></li>
+  <li><a href="#en-pratique" id="toc-en-pratique" class="nav-link" data-scroll-target="#en-pratique">En pratique</a></li>
+  <li><a href="#aide-mémoire" id="toc-aide-mémoire" class="nav-link" data-scroll-target="#aide-mémoire">Aide-mémoire</a></li>
+  </ul></li>
+  <li><a href="#limites" id="toc-limites" class="nav-link" data-scroll-target="#limites">Limites</a></li>
+  </ul></li>
+  <li><a href="#les-conteneurs" id="toc-les-conteneurs" class="nav-link" data-scroll-target="#les-conteneurs">Les conteneurs</a>
+  <ul class="collapse">
+  <li><a href="#introduction-1" id="toc-introduction-1" class="nav-link" data-scroll-target="#introduction-1">Introduction</a></li>
+  <li><a href="#fonctionnement-1" id="toc-fonctionnement-1" class="nav-link" data-scroll-target="#fonctionnement-1">Fonctionnement</a></li>
+  <li><a href="#implémentations-1" id="toc-implémentations-1" class="nav-link" data-scroll-target="#implémentations-1">Implémentations</a></li>
+  <li><a href="#docker" id="toc-docker" class="nav-link" data-scroll-target="#docker">Docker <i class="fab fa-docker"></i></a>
+  <ul class="collapse">
+  <li><a href="#installation-1" id="toc-installation-1" class="nav-link" data-scroll-target="#installation-1">Installation</a></li>
+  <li><a href="#principes" id="toc-principes" class="nav-link" data-scroll-target="#principes">Principes</a></li>
+  <li><a href="#en-pratique-1" id="toc-en-pratique-1" class="nav-link" data-scroll-target="#en-pratique-1">En pratique</a></li>
+  <li><a href="#aide-mémoire-1" id="toc-aide-mémoire-1" class="nav-link" data-scroll-target="#aide-mémoire-1">Aide-mémoire</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Rendre son projet de data science portable et reproductible</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Romain Avouac et Lino Galiana </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 3, 2022</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="la-notion-de-portabilité" class="level1">
+<h1>La notion de portabilité</h1>
+<p>Dans les chapitres précédents, nous avons vu un ensemble de bonnes pratiques qui permettent de considérablement améliorer la qualité d’un projet : rendre le code plus lisible, adopter une structure du projet normalisée et évolutive, et versionner proprement son code sur un dépôt <code>GitHub</code>.</p>
+<p>Une fois ces bonnes pratiques appliquées à notre projet, ce dernier apparaît largement partageable. Du moins en théorie, car la pratique est souvent plus compliquée : il y a fort à parier que si vous essayez d’exécuter votre projet sur un autre environnement d’exécution (un autre ordinateur, un serveur, etc.), les choses ne se passent pas du tout comme attendu. Cela signifique qu’<strong>en l’état, le projet n’est pas portable : il n’est pas possible, sans modifications coûteuses, de l’exécuter dans un environnement différent de celui dans lequel il a été développé</strong>.</p>
+<p>La principale raison est qu’un code ne vit pas dans une bulle isolée, il contient en général de nombreuses adhérences, plus ou moins visibles, au langage et à l’environnement dans lesquels il a été développé :</p>
+<ul>
+<li>des dépendances dans le langage du projet ;</li>
+<li>des dépendances dans d’autres langages (ex : <code>NumPy</code> est écrit en <code>C</code> et nécessite donc un compilateur <code>C</code>) ;</li>
+<li>des librairies systèmes nécessaires pour installer certains <em>packages</em> (par exemple, : les librairies de cartographie dynamique comme <code>Leaflet</code> ou <code>Folium</code> nécessitent la librairie système <code>GDAL</code>), qui ne seront pas les mêmes selon le système d’exploitation utilisé.</li>
+</ul>
+<p>Si le premier problème peut être géré relativement facilement en adoptant une <a href="XXXXXX">structure de projet</a> et en spécifiant bien les différentes dépendances utilisées, les deux autres nécessitent en général des outils plus avancés.</p>
+<p>Ces outils vont nous permettre de <strong>normaliser l’environnement afin de produire un projet portable</strong>, i.e.&nbsp;exécutable sur une large variété d’environnements d’exécution. Cette étape est primordiale lorsque l’on se préoccupe de la mise en production d’un projet, car elle assure une transition relativement indolore entre l’environnement de développement et celui de production.</p>
+<p><img src="https://img.devrant.com/devrant/rant/r_174386_yx6zV.jpg" class="img-fluid"></p>
+<p>Image empruntée à https://devrant.com/rants/174386/when-i-say-but-it-works-on-my-machine</p>
+</section>
+<section id="les-environnements-virtuels-snake" class="level1">
+<h1>Les environnements virtuels :snake:</h1>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>Pour illustrer l’importance de travailler avec des environnements virtuels, mettons-nous à la place d’un.e aspirant <em>data scientist</em> qui commencerait ses premiers projets. Selon toute vraisemblance, il va commencer par installer une distribution de <code>Python</code> — souvent, via <code>Anaconda</code> — sur son poste et commencer à développer, projet après projet. Dans cette approche, les différents <em>packages</em> qu’il va être amené à utiliser vont être installés au même endroit. Cela pose plusieurs problèmes : - <strong>conflits de version</strong> : une application A peut dépendre de la version 1 d’un package là où une application B peut dépendre de la version 2 de ce même package. Une seule application peut donc fonctionner dans cette configuration ; - <strong>version de <code>Python</code> fixe</strong> — on ne peut avoir qu’une seule installation par système — là où on voudrait pouvoir avoir des versions différentes selon le projet ; - <strong>reproductiblité limitée</strong> : difficile de dire quel projet repose sur tel package, dans la mesure où ceux-ci s’accumulent en un même endroit au fil des projets ; - <strong>portabilité limitée</strong> : conséquence du point précédent, il est difficile de fixer dans un fichier les dépendances spécifiques à un projet.</p>
+<p>Les environnements virtuels constituent une solution à ces différents problèmes.</p>
+</section>
+<section id="fonctionnement" class="level2">
+<h2 class="anchored" data-anchor-id="fonctionnement">Fonctionnement</h2>
+<p>Le concept d’environnement virtuel est techniquement très simple. On peut lui donner la définition suivante pour <code>Python</code> :</p>
+<blockquote class="blockquote">
+<p><em>“dossier auto-suffisant qui contient une installation de <code>Python</code> pour une version particulière de <code>Python</code> ainsi que des <em>packages</em> additionnels et qui est isolé des autres environnements existants.”</em></p>
+</blockquote>
+<p>On peut donc simplement voir les environnements virtuels comme un moyen de faire cohabiter sur un même système différentes installations de <code>Python</code> avec chacune leur propre liste de packages installés et leurs versions. Développer dans des environnements virtuels vierges à chaque début de projet est une très bonne pratique pour accroître la reproductibilité des analyses.</p>
+</section>
+<section id="implémentations" class="level2">
+<h2 class="anchored" data-anchor-id="implémentations">Implémentations</h2>
+<p>Il existe différentes implémentations des environnements virtuels en <code>Python</code>, dont chacune ont leurs spécificités et leur communauté d’utilisateurs :</p>
+<ul>
+<li>L’implémentation standard en <code>Python</code> est <code>venv</code>.</li>
+<li>Dans le domaine de la <em>data science</em>, l’implémentation la plus courante est sans doute <code>conda</code>.</li>
+</ul>
+<p>En pratique, ces implémentations sont relativement proches. La différence majeure est que <code>conda</code> est à la fois un <em>package manager</em> (comme <code>pip</code>) et un gestionnaire d’environnements virtuels (comme <code>venv</code>).</p>
+<p>Pendant longtemps, <code>conda</code> en tant que <em>package manager</em> s’est avéré très pratique en <em>data science</em>, dans la mesure où il gérait non seulement les dépendances <code>Python</code> mais aussi dans d’autres langages — comme des dépendances <code>C</code>. Par ailleurs, la <em>distribution</em> <code>Anaconda</code>, qui contient à la fois <code>Python</code>, <code>conda</code> et beaucoup de <em>packages</em> utiles pour la <em>data science</em>, explique également cette popularité auprès des <em>data scientists</em>.</p>
+<p>Pour toutes ces raisons, nous allons présenter l’utilisation de <code>conda</code> comme gestionnaire d’environnements virtuels. Les principes présentés restent néanmoins valides pour les autres implémentations</p>
+</section>
+<section id="conda" class="level2">
+<h2 class="anchored" data-anchor-id="conda">Conda</h2>
+<section id="installation" class="level3">
+<h3 class="anchored" data-anchor-id="installation">Installation</h3>
+<p>Les instructions à suivre pour installer <code>conda</code> sont détaillées dans la <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html">documentation officielle</a>. <code>conda</code> seul étant peu utile en pratique, il est généralement installé dans le cadre de distributions. Les deux plus populaires sont : - <code>Miniconda</code> : une distribution minimaliste contenant <code>conda</code>, <code>Python</code> ainsi qu’un petit nombre de packages techniques très utiles ; - <code>Anaconda</code> : une distribution assez volumineuse contenant <code>conda</code>, <code>Python</code>, d’autres logiciels (<code>R</code>, <code>Spyder</code>, etc.) ainsi qu’un ensemble de packages utiles pour la <em>data science</em> (<code>SciPy</code>, <code>NumPy</code>, etc.).</p>
+<p>Le choix de la distribution importe assez peu en pratique, dans la mesure où nous allons de toute manière utiliser des environnements virtuels vierges pour développer nos projets.</p>
+<p><strong>L’écosystème Conda</strong></p>
+<p><img src="../conda-eco.png" class="img-fluid"></p>
+</section>
+<section id="en-pratique" class="level3">
+<h3 class="anchored" data-anchor-id="en-pratique">En pratique</h3>
+<section id="créer-un-environnement" class="level4">
+<h4 class="anchored" data-anchor-id="créer-un-environnement">Créer un environnement</h4>
+<p>Pour commencer à utiliser <code>conda</code>, commençons par créer un environnement vierge, nommé <code>dev</code>, en spécifiant la version de Python que l’on souhaite installer pour notre projet.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> conda create <span class="at">-n</span> dev python=3.9.7</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Collecting</span> package metadata <span class="er">(</span><span class="ex">current_repodata.json</span><span class="kw">)</span><span class="bu">:</span> done</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Solving</span> environment: done</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">## Package Plan ##</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">environment</span> location: /home/coder/local/bin/conda/envs/dev</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="ex">added</span> / updated specs:</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="ex">-</span> python=3.9.7</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> following packages will be downloaded:</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> following NEW packages will be INSTALLED:</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="ex">Proceed</span> <span class="er">(</span><span class="ex">[y]/n</span><span class="kw">)</span><span class="ex">?</span> y</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="ex">Downloading</span> and Extracting Packages</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Comme indiqué dans les logs, Conda a créé notre environnement et nous indique son emplacement sur le <em>filesystem</em>. En réalité, l’environnement n’est jamais vraiment vierge : Conda nous demande — et il faut répondre oui en tapant “y” — d’installer un certain nombre de packages, qui sont ceux qui viennent avec la distribution Miniconda.</p>
+<p>On peut vérifier que l’environnement a bien été créé en listant les environnements installés sur le système.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> info <span class="at">--envs</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># conda environments:</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">base</span>                    <span class="pp">*</span> /home/coder/local/bin/conda</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">basesspcloud</span>              /home/coder/local/bin/conda/envs/basesspcloud</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ex">dev</span>                       /home/coder/local/bin/conda/envs/dev</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="activer-un-environnement" class="level4">
+<h4 class="anchored" data-anchor-id="activer-un-environnement">Activer un environnement</h4>
+<p>Comme plusieurs environnements peuvent coexister sur un même système, il faut spécifier à <code>Conda</code> que l’on souhaite utiliser cet environnement pour la session courante du terminal.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> conda activate dev</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>Conda</code> nous indique que l’on travaille à partir de maintenant dans l’environnement <code>dev</code> en indiquant son nom entre parenthèses au début de la ligne de commandes. Autrement dit, <code>dev</code> devient pour un temps notre environnement par défaut. Pour s’en assurer, vérifions avec la commande <code>which</code> l’emplacement de l’interpréteur Python qui sera utilisé si on lance une commande du type <code>python mon-script.py</code>.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> which python </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">/home/coder/local/bin/conda/envs/dev/bin/python</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>On travaille bien dans l’environnement attendu : l’interpréteur qui se lance n’est pas celui du système global, mais bien celui spécifique à notre environnement virtuel.</p>
+</section>
+<section id="lister-les-packages-installés" class="level4">
+<h4 class="anchored" data-anchor-id="lister-les-packages-installés">Lister les packages installés</h4>
+<p>Une fois l’environnement activé, on peut lister les packages installés et leur version. Cela confirme qu’un certain nombre de packages sont installés par défaut lors de la création d’un environnement virtuel.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> conda list</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># packages in environment at /home/coder/local/bin/conda/envs/dev:</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Name                    Version                   Build  Channel</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">_libgcc_mutex</span>             0.1                        main  </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="ex">_openmp_mutex</span>             4.5                       1_gnu  </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="ex">ca-certificates</span>           2022.3.29            h06a4308_0  </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="installer-un-package" class="level4">
+<h4 class="anchored" data-anchor-id="installer-un-package">Installer un package</h4>
+<p>La syntaxe pour installer un package avec Conda est très similaire à celle de <code>pip</code> :</p>
+<pre class="shell"><code>conda install nom_du_package</code></pre>
+<p>La différence est que là où <code>pip install</code> va installer un package à partir du répertoire <a href="https://pypi.org/">PyPI</a>, <code>conda install</code> va chercher le package sur les répertoires maintenus par les développeurs de Conda<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. Installons par exemple le package phare de <em>machine learning</em> <code>scikit-learn</code>.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> conda install scikit-learn</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Collecting</span> package metadata <span class="er">(</span><span class="ex">current_repodata.json</span><span class="kw">)</span><span class="bu">:</span> done</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Solving</span> environment: done</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">## Package Plan ##</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="ex">environment</span> location: /home/coder/local/bin/conda/envs/dev</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="ex">added</span> / updated specs:</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="ex">-</span> scikit-learn</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Là encore, Conda nous demande d’installer d’autres packages, qui sont des dépendances de <code>scikit-learn</code>. Par exemple, la librairie de calcul scientifique <code>NumPy</code>.</p>
+<p>L’autre différence majeure avec <code>pip</code> est que Conda utilise une méthode plus avancée — et donc également plus coûteuse en temps — de résolution des dépendances. En effet, différents packages peuvent spécifier différentes versions d’un même package dont ils dépendent tous les deux, ce qui provoque un conflit de version. Conda va par défaut appliquer un algorithme qui vise à gérer au mieux ces conflits, là où <code>pip</code> va choisir une approche plus minimaliste<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
+<p>Il arrive que des packages disponibles sur le répertoire <code>PyPI</code> ne soient pas disponible sur les canaux gérés par Conda. Dans ce cas, il est possible d’installer un package dans l’environnement via la commande <code>pip install</code>. Il est néanmonins toujours préférable de privilégier une installation via Conda si disponible.</p>
+</section>
+<section id="exporter-les-spécifications-de-lenvironnement" class="level4">
+<h4 class="anchored" data-anchor-id="exporter-les-spécifications-de-lenvironnement">Exporter les spécifications de l’environnement</h4>
+<p>Développer à partir d’un environnement vierge est une bonne pratique de reproductibilité : en partant d’une base minimale, on s’assure que seuls les packages effectivement nécessaires au bon fonctionnement de notre application ont été installés au fur et à mesure du projet.</p>
+<p>Cela rend également notre projet plus portable : on peut exporter les spécifications de l’environnement (version de Python, canaux de téléchargement des packages, packages installés et leurs versions) dans un fichier, appelé par convention <code>environment.yml</code>.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> conda env export <span class="op">&gt;</span> environment.yml</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Ce fichier est mis par convention à la racine du dépôt <code>Git</code> du projet. Ainsi, les personnes souhaitant tester l’application peuvent recréer le même environnement Conda que celui qui a servi au développement via la commande suivante.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> conda env create <span class="at">-f</span> environment.yml</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="changer-denvironnement" class="level4">
+<h4 class="anchored" data-anchor-id="changer-denvironnement">Changer d’environnement</h4>
+<p>Pour changer d’environnement, il suffit d’en activer un autre.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> conda base</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">base</span><span class="kw">)</span> <span class="ex">$</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Pour sortir de tout environnement Conda, on utilise la commande <code>conda deactivate</code> :</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">base</span><span class="kw">)</span> <span class="ex">$</span> conda deactivate</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="supprimer-un-environnement" class="level4">
+<h4 class="anchored" data-anchor-id="supprimer-un-environnement">Supprimer un environnement</h4>
+<p>Pour supprimer l’environnement <code>dev</code>, on utilise la commande <code>conda env remove -n dev</code>.</p>
+</section>
+</section>
+<section id="aide-mémoire" class="level3">
+<h3 class="anchored" data-anchor-id="aide-mémoire">Aide-mémoire</h3>
+<table class="table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Commande</th>
+<th>Principe</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>conda create -n &lt;env_name&gt; python=&lt;python_version&gt;</code></td>
+<td>Création d’un environnement nommé <code>&lt;env_name&gt;</code> dont la version de Python est <code>&lt;python_version&gt;</code></td>
+</tr>
+<tr class="even">
+<td><code>conda info --envs</code></td>
+<td>Lister les environnements</td>
+</tr>
+<tr class="odd">
+<td><code>conda activate &lt;env_name&gt;</code></td>
+<td>Utiliser l’environnement <code>&lt;env_name&gt;</code> pour la session du terminal</td>
+</tr>
+<tr class="even">
+<td><code>conda list</code></td>
+<td>Lister les <em>packages</em> dans l’environnement actif</td>
+</tr>
+<tr class="odd">
+<td><code>conda install &lt;pkg&gt;</code></td>
+<td>Installer le <em>package</em> <code>&lt;pkg&gt;</code> dans l’environnement actif</td>
+</tr>
+<tr class="even">
+<td><code>conda env export &gt; environment.yml</code></td>
+<td>Exporter les spécifications de l’environnement dans un fichier <code>environment.yml</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="limites" class="level2">
+<h2 class="anchored" data-anchor-id="limites">Limites</h2>
+<p>Développer dans des environnements virtuels est une bonne pratique, car cela accroît la portabilité d’une application. Néanmoins, il y a plusieurs limites à leur utilisation : - les librairies système nécessaires à l’installation des packages ne sont pas gérées ; - les environnements virtuels ne permettent pas toujours de gérer des projets faisant intervenir différents langages de programmation ; - devoir installer <code>conda</code>, <code>Python</code>, et les packages nécessaires à chaque changement d’environnement peut être assez long et pénible en pratique ; - dans un environnement de production, gérer des environnements virtuels différents pour chaque projet peut s’avérer rapidement complexe pour les administrateurs système.</p>
+<p>La technologie des conteneurs permet de répondre à ces différents problèmes.</p>
+</section>
+</section>
+<section id="les-conteneurs" class="level1">
+<h1>Les conteneurs</h1>
+<section id="introduction-1" class="level2">
+<h2 class="anchored" data-anchor-id="introduction-1">Introduction</h2>
+<p>Avec les environnements virtuels, l’idée était de permettre à chaque utilisateur potentiel de notre projet d’installer sur son environnement d’exécution les packages nécessaires à la bonne exécution du projet. Néanmoins, comme on l’a vu, cette approche ne garantit pas une reproductibilité parfaite et a l’inconvénient de nécessiter beaucoup de gestion manuelle.</p>
+<p>Changeons de perspective : au lieu de distribuer une recette permettant à l’utilisateur de recréer l’environnement nécessaire sur sa machine, ne pourrait-on pas directement distribuer à l’utilisateur une machine contenant l’environnement pré-configuré ? Bien entendu, on ve pas configurer et envoyer des ordinateurs portables à tous les utilisateurs potentiels d’un projet. Une autre solution serait de distribuer des machines virtuelles, qui tournent sur un serveur et simulent un véritable ordinateur. Ces machines ont cependant l’inconvénient d’être assez lourdes, et complexes à répliquer et distribuer. Pour pallier ces différentes limites, on va utiliser la technologie des conteneurs.</p>
+<p><img src="https://external-preview.redd.it/aR6WdUcsrEgld5xUlglgKX_0sC_NlryCPTXIHk5qdu8.jpg?auto=webp&amp;s=5fe64dd318eec71711d87805d43def2765dd83cd" class="img-fluid"></p>
+<p>Image trouvée sur <a href="https://www.reddit.com/r/ProgrammerHumor/comments/cw58z7/it_works_on_my_machine/">reddit</a></p>
+</section>
+<section id="fonctionnement-1" class="level2">
+<h2 class="anchored" data-anchor-id="fonctionnement-1">Fonctionnement</h2>
+<p>Comme les machines virtuelles, les conteneurs permettent d’empaqueter complètement l’environnement (librairies systèmes, application, configuration) qui permet de faire tourner l’application. Mais à l’inverse d’une machine virtuelle, le conteneur n’inclut pas de système d’exploitation propre, il utilise celui de la machine hôte qui l’exécute. La technologie des conteneurs permet ainsi de garantir une très forte reproductibilité tout en restant suffisamment légère pour permettre une distribution et un déploiement simple aux utilisateurs.</p>
+<p><strong>Différences entre l’approche conteneurs (gauche) et l’approche machines virtuelles (droite)</strong></p>
+<p><img src="../docker-vm.png" class="img-fluid"></p>
+<p>Source : <a href="https://www.docker.com/resources/what-container/">docker.com</a></p>
+</section>
+<section id="implémentations-1" class="level2">
+<h2 class="anchored" data-anchor-id="implémentations-1">Implémentations</h2>
+<p>Comme pour les environnements virtuels, il existe différentes implémentations de la technologie des conteneurs. En pratique, l’implémentation offerte par <code>Docker</code> est devenue largement prédominante, au point qu’il est devenu courant d’utiliser de manière interchangeable les termes <em>“conteneuriser”</em> et <em>“Dockeriser”</em> une application. C’est donc cette implémentation que nous allons étudier et utiliser dans ce cours.</p>
+</section>
+<section id="docker" class="level2">
+<h2 class="anchored" data-anchor-id="docker">Docker <i class="fab fa-docker"></i></h2>
+<section id="installation-1" class="level3">
+<h3 class="anchored" data-anchor-id="installation-1">Installation</h3>
+<p>Les instructions à suivre pour installer <code>Docker</code> <i class="fab fa-docker"></i> selon son système d’exploiration sont détaillées dans la <a href="https://docs.docker.com/get-docker/">documentation officielle</a>. Il existe également des environnements bacs à sable en ligne comme <a href="https://labs.play-with-docker.com">Play with Docker</a>.</p>
+</section>
+<section id="principes" class="level3">
+<h3 class="anchored" data-anchor-id="principes">Principes</h3>
+<p>Un conteneur Docker est mis à disposition sous la forme d’une <strong>image</strong>, c’est à dire d’un fichier binaire qui contient l’environnement nécessaire à l’exécution de l’application.</p>
+<p>Pour construire (<em>build</em>) l’image, on utilise un <code>Dockerfile</code>, un fichier texte qui contient la recette — sous forme de commandes Linux — de construction de l’environnement. L’image va être uploadée (<em>push</em>) sur un dépôt (<em>registry</em>), public ou privé, depuis lequel les utilisateurs vont pouvoir télécharger l’image (<em>pull</em>). Le moteur Docker permet ensuite de lancer (<em>run</em>) un <strong>conteneur</strong>, c’est à dire une instance vivante de l’image.</p>
+<p>{{% box status=“note” title=“Note: les commandes Docker” icon=“fa fa-comment” %}} Le répertoire d’images publiques le plus connu est <a href="https://hub.docker.com/"><code>DockerHub</code></a>. Il s’agit d’un répertoire où n’importe qui peut proposer une image <code>Docker</code>, associée ou non à un projet disponible sur <code>Github</code> <i class="fab fa-github"></i> ou <code>Gitlab</code> <i class="fab fa-gitlab"></i>. Il est possible de mettre à disposition de manière manuelle des images mais, comme nous le montrerons, il est beaucoup plus pratique d’utiliser des fonctionalités d’interaction automatique entre <code>DockerHub</code> et un dépôt <code>Git</code>. {{% /box %}}</p>
+</section>
+<section id="en-pratique-1" class="level3">
+<h3 class="anchored" data-anchor-id="en-pratique-1">En pratique</h3>
+<section id="application" class="level4">
+<h4 class="anchored" data-anchor-id="application">Application</h4>
+<p>Afin de présenter l’utilisation de <code>Docker</code> en pratique, nous allons présenter les différentes étapes permettant de <em>“dockeriser”</em> une application web minimaliste construite avec le <em>framework</em> <code>Python</code> <a href="https://flask.palletsprojects.com/en/2.1.x/"><code>Flask</code></a><a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>.</p>
+<p>La structure de notre projet est la suivante.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">├──</span> myflaskapp</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span>   ├── Dockerfile</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span>   ├── hello-world.py</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span>   └── requirements.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Le script <code>hello-world.py</code> contient le code d’une application minimaliste, qui affiche simplement <em>“Hello, World!”</em> sur une page web.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> flask <span class="im">import</span> Flask</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>app <span class="op">=</span> Flask(<span class="va">__name__</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="at">@app.route</span>(<span class="st">"/"</span>)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> hello_world():</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="st">"&lt;p&gt;Hello, World!&lt;/p&gt;"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Pour faire tourner l’application, il nous faut donc à la fois <code>Python</code> et le package <code>Flask</code>. Ces installations doivent être spécifiées dans le <code>Dockerfile</code> (cf.&nbsp;<a href="#dockerfile">section suivante</a>). L’installation de <code>Flask</code> se fait via un fichier <code>requirements.txt</code>, qui contient juste la ligne suivante :</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="va">Flask</span><span class="op">=</span>=2.1.1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="dockerfile" class="level4">
+<h4 class="anchored" data-anchor-id="dockerfile">Le <code>Dockerfile</code></h4>
+<p>A là base de chaque image <code>Docker</code> se trouve un <code>Dockerfile</code>. C’est un fichier texte qui contient une série de commandes qui permettent de construire l’image. Ces fichiers peuvent être plus ou moins complexes selon l’application que l’on cherche à conteneuriser, mais leur structure est assez normalisée. Pour s’en rendre compte, analysons ligne à ligne le <code>Dockerfile</code> nécessaire pour construire une image <code>Docker</code> de notre application <code>Flask.</code></p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">FROM</span> ubuntu:20.04</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="ex">RUN</span> apt-get update <span class="at">-y</span> <span class="kw">&amp;&amp;</span> <span class="dt">\</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">apt-get</span> install <span class="at">-y</span> python3-pip python3-dev</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="ex">WORKDIR</span> /app</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="ex">COPY</span> requirements.txt /app/requirements.txt</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="ex">RUN</span> pip install <span class="at">-r</span> requirements.txt</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a><span class="ex">COPY</span> . /app</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="ex">ENV</span> FLASK_APP=<span class="st">"hello-world.py"</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="ex">EXPOSE</span> 5000</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="ex">CMD</span> [<span class="st">"flask"</span>, <span class="st">"run"</span>, <span class="st">"--host=0.0.0.0"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li><code>FROM</code> : spécifie l’image de base. Une image Docker hérite toujours d’une image de base. Ici, on choisit l’image <code>Ubuntu</code> version <code>20.04</code>, tout va donc se passer comme si l’on développait sur une machine virtuelle vierge ayant pour système d’exploitation <code>Ubuntu 20.04</code><a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> ;</li>
+<li><code>RUN</code> : lance une commande Linux. Ici, on met d’abord à jour la liste des packages téléchargeables via <code>apt</code>, puis on installe <code>Python</code> ainsi que des librairies système nécessaires au bon fonctionnement de notre application ;</li>
+<li><code>WORKDIR</code> : spécifie le répertoire de travail de l’image. Ainsi, toutes les commandes suivantes seront exécutées depuis ce répertoire ;</li>
+<li><code>COPY</code> : copie un fichier local sur l’image <code>Docker</code>. Ici, on copie d’abord le fichier <code>requirements.txt</code> du projet, qui spécifie les dépendances <code>Python</code> de notre application, puis on les installe avec une commande <code>RUN</code>. La seconde instruction <code>COPY</code> copie le répertoire du projet sur l’image ;</li>
+<li><code>ENV</code> : crée une variable d’environnement qui sera accessible à l’application dans le conteneur. Ici, on définit une variable d’environnement attendue par <code>Flask</code>, qui spécifie le nom du script permettant de lancer l’application ;</li>
+<li><code>EXPOSE</code> : informe <code>Docker</code> que le conteneur “écoute” sur le port 5000, qui est le port par défaut utilisé par le serveur web de <code>Flask</code> ;</li>
+<li><code>CMD</code> : spécifie la commande que doit exécuter le conteneur lors de son lancement. Il s’agit d’une liste, qui contient les différentes parties de la commande sous forme de chaînes de caractères. Ici, on lance <code>Flask</code>, qui sait automatiquement quelle application lancer du fait de la commande <code>ENV</code> spécifiée précédemment.</li>
+</ul>
+<p>{{% box status=“hint” title=“Hint: choix des librairies système” icon=“fa fa-lightbulb” %}} Avec la première commande <code>RUN</code> du <code>Dockerfile</code>, nous installons <code>Python</code> mais aussi des librairies système nécessaires au bon fonctionnement de l’application. Mais comment les avons-nous trouvées ?</p>
+<p>Par essai et erreur. Lors de l’étape de <a href="#build">build</a> que l’on verra juste après, le moteur <code>Docker</code> va essayer de construire l’image selon les spécifications du <code>Dockerfile</code>, comme s’il partait d’un ordinateur vide contenant simplement <code>Ubuntu 20.04</code>. Si des librairies manquent, le processus de <em>build</em> devrait renvoyer une erreur, qui s’affichera dans les <em>logs</em> de l’application, affichés par défaut dans la console. Quand on a de la chance, les logs décrivent explicitement les librairies système manquantes. Mais souvent, les messages d’erreur ne sont pas très explicites, et il faut alors les copier dans un moteur de recherche bien connu pour trouver la réponse, souvent sur <a href="https://stackoverflow.com/">Stackoverflow</a>. {{% /box %}}</p>
+<p>{{% box status=“hint” title=“Hint: pourquoi <code>COPY</code> ?” icon=“fa fa-lightbulb” %}} La recette présente dans le <code>Dockerfile</code> peut nécessiter l’utilisation de fichiers appartenant au dossier de travail. Pour que <code>Docker</code> les trouve dans son contexte, il est nécessaire d’introduire une commande <code>COPY</code>. C’est un petit peu comme pour la cuisine: pour utiliser un produit dans une recette, il faut le sortir du frigo (fichier local) et le mettre sur la table.</p>
+<p>{{% /box %}}</p>
+<p>{{% box status=“note” title=“Note: les commandes Docker” icon=“fa fa-comment” %}} Nous n’avons vu que les commandes <code>Docker</code> les plus fréquentes, il en existe beaucoup d’autres en pratique. N’hésitez pas à consulter la <a href="https://docs.docker.com/engine/reference/builder/">documentation officielle</a> pour comprendre leur utilisation. {{% /box %}}</p>
+</section>
+<section id="build" class="level4">
+<h4 class="anchored" data-anchor-id="build">Construction d’une image Docker</h4>
+<p>Pour construire une image à partir d’un <code>Dockerfile</code>, il suffit d’utiliser la commande <code>docker build</code>. Il faut ensuite spécifier deux éléments importnats : - le <em>build context</em>. Il faut indiquer à <code>Docker</code> le chemin de notre projet, qui doit contenir le <code>Dockerfile</code>. En pratique, il est plus simple de se mettre dans le dossier du projet via la commande <code>cd</code>, puis de passer <code>.</code> comme <em>build context</em> pour indiquer à <code>Docker</code> de <em>build</em> “d’ici” ; - le <em>tag</em>, c’est à dire le nom de l’image. Tant que l’on utilisee <code>Docker</code> en local, le <em>tag</em> importe peu. On verra par la suite que la structure du <em>tag</em> a de l’importance lorsque l’on souhaite <a href="#imp-exp-docker">exporter ou importer une image <code>Docker</code></a> à partir d’un dépôt distant.</p>
+<p>Regardons ce qui se passe en pratique lorsque l’on essaie de construire notre image.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker build <span class="at">-t</span> myflaskapp .</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Sending</span> build context to Docker daemon     47MB</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Step</span> 1/8 : FROM ubuntu:20.04</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a> <span class="ex">---</span><span class="op">&gt;</span> 825d55fb6340</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Step</span> 2/8 : RUN apt-get update <span class="kw">&amp;&amp;</span> <span class="ex">apt-get</span> install <span class="at">-y</span> python3-pip python3-dev</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a> <span class="ex">---</span><span class="op">&gt;</span> Running in 92b42d579cfa</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="ex">done.</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="ex">Removing</span> intermediate container 92b42d579cfa</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a> <span class="ex">---</span><span class="op">&gt;</span> 8826d53e3c01</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="ex">Step</span> 3/8 : WORKDIR /app</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a> <span class="ex">---</span><span class="op">&gt;</span> Running in 153b32893c23</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="ex">Removing</span> intermediate container 153b32893c23</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a> <span class="ex">---</span><span class="op">&gt;</span> 7b4d22021986</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a><span class="ex">Step</span> 4/8 : COPY requirements.txt /app/requirements.txt</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a><span class="ex">Successfully</span> built 125bd8da70ff</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a><span class="ex">Successfully</span> tagged myflaskapp:latest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Le moteur <code>Docker</code> essaie de construire notre image séquentiellement à partir des commandes spécifiées dans le <code>Dockerfile</code>. S’il rencontre une erreur, la procédure s’arrête, et il faut alors trouver la source du problème dans les <em>logs</em> et adapter le <code>Dockerfile</code> en conséquence. Si tout se passe bien, <code>Docker</code> nous indique que le <em>build</em> a réussi et l’image est prête à être utilisée. On peut vérifier que l’image est bien disponible à l’aide de la commande <code>docker images</code>.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker images</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="ex">REPOSITORY</span>                               TAG       IMAGE ID       CREATED          SIZE</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="ex">myflaskapp</span>                               latest    57d2f410a631   2 hours ago      433MB</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Intéressons nous un peu plus en détail aux <em>logs</em> de l’étape de <em>build</em>. Entre les étapes, <code>Docker</code> affiche des suites de lettres et de chiffres un peu ésotériques, et nous parle de conteneurs intermédiaires. En fait, il faut voir une image <code>Docker</code> comme un empilement de couches (<em>layers</em>), qui sont elles-mêmes des images <code>Docker</code>. Quand on hérite d’une image avec l’instruction <code>FROM</code>, on spécifie donc à <code>Docker</code> la couche initiale, sur laquelle il va construire le reste de notre environnement. A chaque étape sa nouvelle couche, et à chaque couche son <em>hash</em>, un identifiant unique fait de lettres et de chiffres.</p>
+<p>Cela peut ressembler à des détails techniques, mais c’est en fait extrêmement utile en pratique car cela permet à <code>Docker</code> de faire du <em>caching</em>. Lorsque l’on développe un <code>Dockerfile</code>, il est fréquent de devoir modifier ce dernier de nombreuses fois avant de trouver la bonne recette, et on aimerait bien ne pas avoir à <em>rebuild</em> l’environnement complet à chaque fois. <code>Docker</code> gère cela très bien : il <em>cache</em> chacune des couches intermédiaires. Par exemple, si l’on modifie la 5ème commande du <code>Dockerfile</code>, <code>Docker</code> va utiliser le cache pour ne pas avoir à recalculer les étapes précédentes, qui n’ont pas changé. Cela s’appelle l’<em>“invalidation du cache”</em> : dès lors qu’une étape du <code>Dockerfile</code> est modifiée, <code>Docker</code> va recalculer toutes les étapes suivantes, mais seulement celles-ci. Conséquence directe de cette observation : il faut toujours ordonner les étapes d’un <code>Dockerfile</code> de sorte à ce qui est le plus susceptible d’être souvent modifié soit à la fin du fichier, et inversement.</p>
+<p>Pour illustrer cela, regardons ce qui se passe si l’on modifie le nom du script qui lance l’application, et donc la valeur de la variable d’environnement <code>FLASK_APP</code> dans le <code>Dockerfile</code>.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker build . <span class="at">-t</span> myflaskapp</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Sending</span> build context to Docker daemon  4.096kB</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Step</span> 1/10 : FROM ubuntu:20.04</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a> <span class="ex">---</span><span class="op">&gt;</span> 825d55fb6340</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Step</span> 2/10 : ENV DEBIAN_FRONTEND=noninteractive</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a> <span class="ex">---</span><span class="op">&gt;</span> Using cache</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a> <span class="ex">---</span><span class="op">&gt;</span> ea1c7c083ac9</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="ex">Step</span> 3/10 : RUN apt-get update <span class="at">-y</span> <span class="kw">&amp;&amp;</span>     <span class="ex">apt-get</span> install <span class="at">-y</span> python3-pip python3-dev</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a> <span class="ex">---</span><span class="op">&gt;</span> Using cache</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a> <span class="ex">---</span><span class="op">&gt;</span> 078b8ac0e1cb</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="ex">Step</span> 4/10 : WORKDIR /app</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a> <span class="ex">---</span><span class="op">&gt;</span> Using cache</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a> <span class="ex">---</span><span class="op">&gt;</span> cd19632825b3</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="ex">Step</span> 5/10 : COPY requirements.txt /app/requirements.txt</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a> <span class="ex">---</span><span class="op">&gt;</span> Using cache</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a> <span class="ex">---</span><span class="op">&gt;</span> 271cd1686899</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a><span class="ex">Step</span> 6/10 : RUN pip install <span class="at">-r</span> requirements.txt</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a> <span class="ex">---</span><span class="op">&gt;</span> Using cache</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a> <span class="ex">---</span><span class="op">&gt;</span> 3ea406fdf383</span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a><span class="ex">Step</span> 7/10 : COPY . /app</span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a> <span class="ex">---</span><span class="op">&gt;</span> 3ce5bd3a9572</span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a><span class="ex">Step</span> 8/10 : ENV FLASK_APP=<span class="st">"new.py"</span></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a> <span class="ex">---</span><span class="op">&gt;</span> Running in b378d16bb605</span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a><span class="ex">Removing</span> intermediate container b378d16bb605</span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a> <span class="ex">---</span><span class="op">&gt;</span> e1f50490287b</span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a><span class="ex">Step</span> 9/10 : EXPOSE 5000</span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a> <span class="ex">---</span><span class="op">&gt;</span> Running in ab53c461d3de</span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a><span class="ex">Removing</span> intermediate container ab53c461d3de</span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a> <span class="ex">---</span><span class="op">&gt;</span> 0b86eca40a80</span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a><span class="ex">Step</span> 10/10 : CMD [<span class="st">"flask"</span>, <span class="st">"run"</span>, <span class="st">"--host=0.0.0.0"</span>]</span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a> <span class="ex">---</span><span class="op">&gt;</span> Running in 340eec151a51</span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a><span class="ex">Removing</span> intermediate container 340eec151a51</span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a> <span class="ex">---</span><span class="op">&gt;</span> 16d7a5b8db28</span>
+<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a><span class="ex">Successfully</span> built 16d7a5b8db28</span>
+<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a><span class="ex">Successfully</span> tagged myflaskapp:latest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>L’étape de <em>build</em> a pris quelques secondes au lieu de plusieurs minutes, et les <em>logs</em> montrent bien l’utilisation du cache faite par <code>Docker</code> : les étapes précédant le changement réutilisent les couches cachées, mais celle d’après sont recalculées.</p>
+</section>
+<section id="execution" class="level4">
+<h4 class="anchored" data-anchor-id="execution">Exécuter une image <code>Docker</code></h4>
+<p>L’étape de <em>build</em> a permis de créer une <em>image</em> <code>Docker</code>. Une image doit être vue comme un <em>template</em> : elle permet d’exécuter l’application sur n’importe quel environnement d’exécution sur lequel un moteur <code>Docker</code> est installé. En l’état, on a donc juste <em>construit</em>, mais rien <em>lancé</em> : notre application ne tourne pas encore. Pour cela, il faut créer un <em>conteneur</em>, i.e.&nbsp;une instance vivante de l’image qui permet d’accéder à l’application. Cela se fait via la commande <code>docker run</code>.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker run <span class="at">-d</span> <span class="at">-p</span> 8000:5000 myflaskapp:latest</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="ex">6a2ab0d82d051a3829b182ede7b9152f7b692117d63fa013e7dfe6232f1b9e81</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Détaillons la syntaxe de cette commande : - <code>docker run tag</code> : lance l’image dont on fournit le <em>tag</em>. Le <em>tag</em> est de la forme <code>repository/projet:version</code>. Ici, il n’y a pas de <em>repository</em> puisque tout est fait en local ; - <code>-d</code> : “détache” le conteneur du terminal qui le lance ; - <code>-p</code> : effectue un <em>mapping</em> entre un port de la machine qui exécute le conteneur, et le conteneur lui-même. Notre conteneur écoute sur le port 5000, et l’on veut que notre application soit exposée sur le port 8000 de notre machine.</p>
+<p>Lorsque l’on exécute <code>docker run</code>, <code>Docker</code> nous répond simplement un <em>hash</em> qui identifie le conteneur que l’on a lancé. On peut vérifier qu’il tourne bien avec la commande <code>docker ps</code>, qui renvoie toutes les informations associées au conteneur.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker ps</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="ex">CONTAINER</span> ID   IMAGE        COMMAND                  CREATED         STATUS         PORTS                                   NAMES</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="ex">6a2ab0d82d05</span>   myflaskapp   <span class="st">"flask run --host=0.…"</span>   7 seconds ago   Up 6 seconds   0.0.0.0:8000-<span class="op">&gt;</span>5000/tcp, :::8000-<span class="op">&gt;</span>5000/tcp   vigorous_kalam</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Les conteneurs peuvent être utilisés pour réaliser des tâches très différentes. Grossièrement, on peut distinguer deux situations : - le conteneur effectue une tâche “one-shot”, c’est à dire une opération qui a vocation à s’effectuer en un certain temps, suite à quoi le conteneur peut s’arrêter ; - le conteneur exécute une application. Dans ce cas, on souhaite que le conteneur reste en vie aussi longtemps que l’on souhaite utiliser l’application en question.</p>
+<p>Dans notre cas d’application, on se situe dans la seconde configuration puisque l’on veut exécuter une application web. Lorsque l’application tourne, elle expose sur le <em>localhost</em>, accessible depuis un navigateur web — en l’occurence, à l’adresse <a href="localhost:8000/">localhost:8000/</a>. Les calculs sont effectués sur un serveur local, et le navigateur sert d’interface avec l’utilisateur — comme lorsque vous utilisez un notebook <code>Jupyter</code> par exemple.</p>
+<p>Finalement, on a pu développer et exécuter une application complète sur notre environnement local, sans avoir eu à installer quoi que ce soit sur notre machine personnelle, à part <code>Docker.</code></p>
+</section>
+<section id="imp-exp-docker" class="level4">
+<h4 class="anchored" data-anchor-id="imp-exp-docker">Exporter une image <code>Docker</code></h4>
+<p>Jusqu’à maintenant, toutes les commandes <code>Docker</code> que nous avons exécutées se sont passées en local. Ce mode de fonctionnement peut être intéressant pour la phase de développement. Mais comme on l’a vu, un des gros avantages de <code>Docker</code> est la facilité de redistribution des images construites, qui peuvent ensuite être utilisées par de nombreux utilisateurs pour faire tourner notre application. Pour cela, il nous faut uploader notre image sur un dépôt distant, à partir duquel les utilisateurs pourront la télécharger.</p>
+<p>Plusieurs possibilités existent selon le contexte de travail : une entreprise peut avoir un dépôt interne par exemple. Si le projet est open-source, on peut utiliser le <a href="https://hub.docker.com/">DockerHub</a>. Le <em>workflow</em> pour uploader une image est le suivant : - créer un compte sur le DockerHub ; - créer un projet (public) sur le DockerHub, qui va héberger les images <code>Docker</code> du projet ; - sur un terminal, utiliser <code>docker login</code> pour s’authentifier au <code>DockerHub</code> ; - on va modifier le <em>tag</em> que l’on fournit lors du <em>build</em> pour spécifier le chemin attendu. Dans notre cas : <code>docker build -t compte/projet:version .</code> ; - uploader l’image avec <code>docker push compte/projet:version</code></p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker push avouacr/myflaskapp:1.0.0</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> push refers to repository [docker.io/avouacr/myflaskapp]</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="ex">71db96687fe6:</span> Pushed </span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="ex">624877ac887b:</span> Pushed </span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="ex">ea4ab6b86e70:</span> Pushed </span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="ex">b5120a5bc48d:</span> Pushed </span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="ex">5fa484a3c9d8:</span> Pushed </span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="ex">c5ec52c98b31:</span> Pushed </span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="ex">1.0.0:</span> digest: sha256:b75fe53fd1990c3092ec41ab0966a9fbbb762f3047957d99327cc16e27c68cc9 size: 1574</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="imp-exp-docker" class="level4">
+<h4 class="anchored" data-anchor-id="imp-exp-docker">Importer une image <code>Docker</code></h4>
+<p>En supposant que le dépôt utilisé pour uploader l’image est public, la procédure que doit suivre un utilisateur pour la télécharger se résume à utiliser la commande <code>docker pull compte/projet:version</code></p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker pull avouacr/myflaskapp:1.0.0</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="ex">1.0.0:</span> Pulling from avouacr/myflaskapp</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="ex">e0b25ef51634:</span> Pull complete </span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="ex">c0445e4b247e:</span> Pull complete </span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="ex">48ba4e71d1c2:</span> Pull complete </span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="ex">ffd728caa80a:</span> Pull complete </span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="ex">906a95f00510:</span> Pull complete </span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="ex">d7d49b6e17ab:</span> Pull complete </span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="ex">Digest:</span> sha256:b75fe53fd1990c3092ec41ab0966a9fbbb762f3047957d99327cc16e27c68cc9</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="ex">Status:</span> Downloaded newer image for avouacr/myflaskapp:1.0.0</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="ex">docker.io/avouacr/myflaskapp:1.0.0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><code>Docker</code> télécharge et extrait chacune des couches qui constituent l’image (ce qui peut parfois être long). L’utilisateur peut alors créer un conteneur à partir de l’image, en utilisant <code>docker run</code> comme illustré précédemment.</p>
+</section>
+</section>
+<section id="aide-mémoire-1" class="level3">
+<h3 class="anchored" data-anchor-id="aide-mémoire-1">Aide-mémoire</h3>
+<p>Voici une première aide-mémoire sur les principales commandes à intégrer dans un <code>Dockerfile</code>:</p>
+<table class="table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Commande</th>
+<th>Principe</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>FROM &lt;image&gt;:&lt;tag&gt;</code></td>
+<td>Utiliser comme point de départ l’image <code>&lt;image&gt;</code> ayant le tag <code>&lt;tag&gt;</code></td>
+</tr>
+<tr class="even">
+<td><code>RUN &lt;instructions&gt;</code></td>
+<td>Utiliser la suite d’instructions <code>&lt;instructions&gt;</code> dans un terminal <code>Linux</code>. Pour passer plusieurs commandes dans un <code>RUN</code>, utiliser <code>&amp;&amp;</code>. Cette suite de commande peut avoir plusieurs lignes, dans ce cas, mettre <code>\</code> en fin de ligne</td>
+</tr>
+<tr class="odd">
+<td><code>COPY &lt;source&gt; &lt;dest&gt;</code></td>
+<td>Récupérer le fichier présent dans le système de fichier local à l’emplacement <code>&lt;source&gt;</code> pour que les instructions ultérieures puissent le trouver à l’emplacement <code>&lt;source&gt;</code></td>
+</tr>
+<tr class="even">
+<td><code>ADD &lt;source&gt; &lt;dest&gt;</code></td>
+<td>Globalement, même rôle que <code>COPY</code></td>
+</tr>
+<tr class="odd">
+<td><code>ENV MY_NAME="John Doe"</code></td>
+<td>Création d’une variable d’environnement (qui devient disponible sous l’alias <code>$MY_NAME</code>)</td>
+</tr>
+<tr class="even">
+<td><code>WORKDIR &lt;path&gt;</code></td>
+<td>Définir le <em>working directory</em> du conteuneur Docker dans le dossier <code>&lt;path&gt;</code></td>
+</tr>
+<tr class="odd">
+<td><code>USER &lt;username&gt;</code></td>
+<td>Création d’un utilisateur non <em>root</em> nommé <code>&lt;username&gt;</code></td>
+</tr>
+<tr class="even">
+<td><code>EXPOSE &lt;PORT_ID&gt;</code></td>
+<td>Lorsqu’elle tournera, l’application sera disponible depuis le port <code>&lt;PORT_ID&gt;</code></td>
+</tr>
+<tr class="odd">
+<td><code>CMD ["executable","param1","param2"]</code></td>
+<td>Au lancement de l’instance Docker la commande <code>executable</code> (par exemple <code>python3</code>) sera lancée avec les paramètres additionnels fournis</td>
+</tr>
+</tbody>
+</table>
+<p>Une seconde aide-mémoire pour les principales commandes <code>Linux</code> est disponible ci-dessous:</p>
+<table class="table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Commande</th>
+<th>Principe</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>docker build . -t &lt;tag&gt;</code></td>
+<td>Construire l’image <code>Docker</code> à partir des fichiers dans le répertoire courant (<code>.</code>) en l’identifiant avec le tag <code>&lt;tag&gt;</code></td>
+</tr>
+<tr class="even">
+<td><code>docker run -it &lt;tag&gt;</code></td>
+<td>Lancer l’instance docker identifiée par <code>&lt;tag&gt;</code></td>
+</tr>
+<tr class="odd">
+<td><code>docker images</code></td>
+<td>Lister les images disponibles sur la machine et quelques unes de leurs propriétés (tags, volume, etc.)</td>
+</tr>
+<tr class="even">
+<td><code>docker system prune</code></td>
+<td>Faire un peu de ménage dans ses images <code>Docker</code> (bien réfléchir avant de faire tourner cette commande)</td>
+</tr>
+</tbody>
+</table>
+
+
+</section>
+</section>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Ces répertoires sont, dans le langage <code>conda</code> les <em>canaux</em>. Le canal par défaut est maintenu par les développeurs d<code>Anaconda</code>. Cependant, pour en assurer la stabilité, ce canal a une forte inertie. La <code>conda-forge</code> a émergé pour offrir plus de flexibilité aux développeurs de <em>package</em> qui peuvent ainsi mettre à disposition des versions plus récentes de leurs packages, comme sur <a href="https://pypi.org/">PyPI</a>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p><a href="https://flask.palletsprojects.com/en/2.1.x/"><code>Flask</code></a> est un <em>framework</em> permettant de déployer, de manière légère, des applications reposant sur <code>Python</code>.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p><a href="https://flask.palletsprojects.com/en/2.1.x/"><code>Flask</code></a> est un <em>framework</em> permettant de déployer, de manière légère, des applications reposant sur <code>Python</code>.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Dans l’idéal, on essaie de partir d’une couche la plus petite possible pour limiter la taille de l’image finalement obtenue. Il n’est en effet pas nécessaire d’utiliser une image disposant de <code>R</code> si on n’utilise que du <code>Python</code>. En général, les différents langages proposent des images de petite taille dans lequel un interpréteur est déjà installé et proprement configuré. Dans cette application, on aurait par exemple pu utiliser l’image <a href="https://hub.docker.com/layers/python/library/python/3.9-slim-buster/images/sha256-e07b35c0c81c21995a43cefd64730ac0e57a5164cc440b6a5c94c118cfacd0ca?context=explore">python:3.9-slim-buster</a>.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

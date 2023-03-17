@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Romain Avouac et Lino Galiana">
+
+<title>Mise en production de projets data science - Déployer et valoriser son projet de data science</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Mise en production de projets data science</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/introduction.html">
+ <span class="menu-text">Introduction</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/projects-architecture.html">
+ <span class="menu-text">Architecture des projets</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/portability.html">
+ <span class="menu-text">Portabilité</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/portability.html">
+ <span class="menu-text">Linux 101</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/git.html">
+ <span class="menu-text">Git</span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#quest-ce-que-la-mise-en-production" id="toc-quest-ce-que-la-mise-en-production" class="nav-link active" data-scroll-target="#quest-ce-que-la-mise-en-production">Qu’est-ce que la mise en production ?</a>
+  <ul class="collapse">
+  <li><a href="#importance-des-bonnes-pratiques" id="toc-importance-des-bonnes-pratiques" class="nav-link" data-scroll-target="#importance-des-bonnes-pratiques">Importance des bonnes pratiques</a></li>
+  <li><a href="#environnements-de-production" id="toc-environnements-de-production" class="nav-link" data-scroll-target="#environnements-de-production">Environnements de production</a></li>
+  </ul></li>
+  <li><a href="#différents-types-de-livrable" id="toc-différents-types-de-livrable" class="nav-link" data-scroll-target="#différents-types-de-livrable">Différents types de livrable</a></li>
+  <li><a href="#approches" id="toc-approches" class="nav-link" data-scroll-target="#approches">Approches</a>
+  <ul class="collapse">
+  <li><a href="#pipelines-de-données" id="toc-pipelines-de-données" class="nav-link" data-scroll-target="#pipelines-de-données">Pipelines de données</a></li>
+  <li><a href="#orchestration" id="toc-orchestration" class="nav-link" data-scroll-target="#orchestration">Orchestration</a></li>
+  </ul></li>
+  <li><a href="#cicd" id="toc-cicd" class="nav-link" data-scroll-target="#cicd">CI/CD</a>
+  <ul class="collapse">
+  <li><a href="#définition" id="toc-définition" class="nav-link" data-scroll-target="#définition">Définition</a></li>
+  <li><a href="#avantages" id="toc-avantages" class="nav-link" data-scroll-target="#avantages">Avantages</a></li>
+  <li><a href="#mise-en-oeuvre" id="toc-mise-en-oeuvre" class="nav-link" data-scroll-target="#mise-en-oeuvre">Mise en oeuvre</a></li>
+  </ul></li>
+  <li><a href="#valoriser-son-projet-avec-un-site-web-automatisé" id="toc-valoriser-son-projet-avec-un-site-web-automatisé" class="nav-link" data-scroll-target="#valoriser-son-projet-avec-un-site-web-automatisé">Valoriser son projet avec un site web automatisé</a>
+  <ul class="collapse">
+  <li><a href="#quest-ce-quun-site-web" id="toc-quest-ce-quun-site-web" class="nav-link" data-scroll-target="#quest-ce-quun-site-web">Qu’est-ce qu’un site <em>web</em> ?</a></li>
+  <li><a href="#comment-faire-un-site-web" id="toc-comment-faire-un-site-web" class="nav-link" data-scroll-target="#comment-faire-un-site-web">Comment faire un site <em>web</em> ?</a></li>
+  <li><a href="#comment-mettre-à-disposition-un-site-web" id="toc-comment-mettre-à-disposition-un-site-web" class="nav-link" data-scroll-target="#comment-mettre-à-disposition-un-site-web">Comment mettre à disposition un site <em>web</em> ?</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Déployer et valoriser son projet de data science</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Romain Avouac et Lino Galiana </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="quest-ce-que-la-mise-en-production" class="level1">
+<h1>Qu’est-ce que la mise en production ?</h1>
+<p>Dans les chapitres précédents, nous avons exploré la manière dont une structure de projet et de code adéquate facilite la réutilisation d’un projet. Cependant, le code est rarement, en soi, le produit final mais un moyen. Le code peut servir à mettre en oeuvre une application, à effectuer des traitements sur une base de données pour un papier ou un rapport, etc. La fréquence de ré-utilisation du code peut elle-même être variable: certains projets vont être utilisés quotidiennement alors que d’autres ne le seront qu’à des échéances diverses.</p>
+<p>Comme tout produit, un projet a un cycle de vie. Pour faire simple, on peut séparer celui-ci en trois phases:</p>
+<ul>
+<li>la phase de développement correspond à l’écriture du code et à des exploitations exploratoires ;</li>
+<li>la phase de mise en production correspond à l’adaptation du prototype à des contraintes nécessaires pour qu’un projet produise un <em>output</em> à la demande ;</li>
+<li>la phase de maintenance correspond à la situation où on ne met plus en oeuvre de nouvelles fonctionalités mais où on s’assure qu’un projet informatique continue de produire les <em>output</em> désirés malgré l’évolution du contexte.</li>
+</ul>
+<p>En pratique, la distinction entre ces moments d’un projet peut être floue. Par exemple, grâce à <code>Git</code>, on peut ainsi mettre en oeuvre de nouvelles fonctionalités (protypage correspond à la phase de développement) parallèles à celles déjà existantes (phase de maintenance). Néanmoins, ces différences conceptuelles sont intéressantes pour appréhender les contraintes différentes de ces phases d’un projet.</p>
+<section id="importance-des-bonnes-pratiques" class="level2">
+<h2 class="anchored" data-anchor-id="importance-des-bonnes-pratiques">Importance des bonnes pratiques</h2>
+<p>Les bonnes pratiques mises en oeuvre jusqu’à présent avaient pour objectif de faciliter la compréhension et la réutilisation d’un projet. Elles sont donc particulièrement appropriées pour réduire le coût en temps de la mise en production et de la maintenance d’un projet. Ces coûts pourraient amener un projet, même utile, à être abandonné.</p>
+</section>
+<section id="environnements-de-production" class="level2">
+<h2 class="anchored" data-anchor-id="environnements-de-production">Environnements de production</h2>
+<p>De même, l’emphase du chapitre précédent sur la portabilité vise à faciliter la mise en production. En effet, en créant un environnement normalisé qui créé des conditions simples pour reproduire certains <em>output</em>, on évite un hiatus entre le protypage et la mise en production.</p>
+</section>
+</section>
+<section id="différents-types-de-livrable" class="level1">
+<h1>Différents types de livrable</h1>
+<p>L’écosystème de la <em>data-science</em> est florissant et permet une grande variété d’<em>output</em> qui vont toucher des publics différents. Selon le type de projet, on peut retrouver plusieurs livrables:</p>
+<ul>
+<li>base de données ;</li>
+<li>API pour mettre à disposition un modèle ;</li>
+<li>application ;</li>
+<li>rapport automatisé ;</li>
+<li>site internet ;</li>
+<li>…</li>
+</ul>
+<p>L’objectif du présent chapitre est de proposer des méthodes pour anticiper la mise en production d’un projet en intégrant, dès la phase de prototypage, la production de livrables valorisant un projet de <em>data-science</em>.</p>
+<p>Ces méthodes nous amèneront à explorer plusieurs écosystèmes, pour lesquels on retrouve quelques <em>buzz-words</em> dont voici les définitions :</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Terme</th>
+<th>Définition</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="https://fr.wikipedia.org/wiki/Devops"><code>devops</code></a></td>
+<td>mouvement en ingénierie informatique et une pratique technique visant à l’unification du développement logiciel (dev) et de l’administration des infrastructures informatiques (ops)</td>
+</tr>
+<tr class="even">
+<td><a href="https://fr.wikipedia.org/wiki/MLOps"><code>MLOps</code></a></td>
+<td>ensemble de pratiques qui vise à déployer et maintenir des modèles de machine learning en production de manière fiable et efficace</td>
+</tr>
+<tr class="odd">
+<td><code>CI/CD</code></td>
+<td>combinaison des pratiques d’intégration continue et de livraison continue ou de déploiement continu</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="approches" class="level1">
+<h1>Approches</h1>
+<section id="pipelines-de-données" class="level2">
+<h2 class="anchored" data-anchor-id="pipelines-de-données">Pipelines de données</h2>
+<p>Une chaine de production implique plusieurs étapes qui peuvent éventuellement nécessiter plusieurs langages. Ces étapes peuvent être vues comme des transformations à la chaine d’un ou plusieurs inputs afin de produire un ou plusieurs output.</p>
+<p>La représentation de ces étapes peut être faite à l’aide des diagrammes acycliques dirigés (DAG):</p>
+<p><img src="https://miro.medium.com/max/1400/1*grWvT-3jUcrnbTrsVtRHAg.png" class="img-fluid"></p>
+<p>Un <em>workflow</em> complet sera ainsi reproductible si on peut, en ayant accès aux <em>inputs</em> et à l’ensemble des règles de transformation reproduire exactement les outputs. Si les inputs ou le code change, on peut être en mesure de mettre à jour les outputs, si possible sans faire retourner les parties du projet non concernés.</p>
+<p>Une première manière de développer est l’approche manuelle, qui est une tâche digne de Sisyphe:</p>
+<ol type="1">
+<li>Ecriture du code</li>
+<li>Exécution du code jusqu’à sa fin</li>
+<li>Découverte d’une erreur ou mise à jour du code ou des données</li>
+<li>Relance le code dans son ensemble</li>
+</ol>
+<p>Pour éviter ce cycle interminable, on est tenté d’écrire des bases intermédiaires et de ne faire tourner qu’une partie du code. Cette approche, si elle a l’avantage de faire gagner du temps, est néanmoins dangereuse car on peut facilement oublier de mettre à jour une base intermédiaire qui a changé ou au contraire refaire tourner une partie du code qui n’a pas été mise à jour.</p>
+<p>Il existe des méthodes plus fiables pour éviter ces gestes manuels. Celles-ci sont inspirées de <a href="https://www.gnu.org/software/make/">GNU Make</a> et consistent à créer le chemin de dépendance de la chaine de production (lister l’environnement, les inputs et les outputs à produire), à déterminer les chemins affectés par un changement de code ou de données pour ne faire tourner à nouveau que les étapes nécessaires.</p>
+<p>Les implémentations en <code>Python</code> et <code>R</code> sont nombreuses. Parmi celles-ci, on peut mettre en valeur</p>
+<ul>
+<li><a href="https://snakemake.readthedocs.io/en/stable/"><code>snakemake</code></a> pour <code>Python</code></li>
+<li><a href="https://books.ropensci.org/targets/"><code>targets</code></a> pour <code>R</code></li>
+</ul>
+</section>
+<section id="orchestration" class="level2">
+<h2 class="anchored" data-anchor-id="orchestration">Orchestration</h2>
+<p>Certains outils vont plus loin:</p>
+<ul>
+<li>argo</li>
+<li>mlflow</li>
+<li>airflow</li>
+</ul>
+</section>
+</section>
+<section id="cicd" class="level1">
+<h1>CI/CD</h1>
+<section id="définition" class="level2">
+<h2 class="anchored" data-anchor-id="définition">Définition</h2>
+<blockquote class="blockquote">
+<p>L’intégration continue est un ensemble de pratiques utilisées en génie logiciel consistant à vérifier à chaque modification de code source que le résultat des modifications ne produit pas de régression dans l’application développée. […] Elle permet d’automatiser l’exécution des suites de tests et de voir l’évolution du développement du logiciel.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>La livraison continue est une approche d’ingénierie logicielle dans laquelle les équipes produisent des logiciels dans des cycles courts, ce qui permet de le mettre à disposition à n’importe quel moment. Le but est de construire, tester et diffuser un logiciel plus rapidement.</p>
+</blockquote>
+<p><img src="../cicd_exemple.png" class="img-fluid"></p>
+</section>
+<section id="avantages" class="level2">
+<h2 class="anchored" data-anchor-id="avantages">Avantages</h2>
+<p>L’approche CI/CD garantit une automatisation et une surveillance continues tout au long du cycle de vie d’un projet.</p>
+<p>Cela présente de nombreux avantages:</p>
+<ul>
+<li>on peut anticiper les contraintes de la mise en production grâce à des environnements normalisés partant d’image docker standardisées</li>
+<li>on peut tester les changements apportés à un livrable par un nouveau prototype</li>
+<li>on peut déterminer très rapidement l’introduction de bugs dans un projet</li>
+</ul>
+</section>
+<section id="mise-en-oeuvre" class="level2">
+<h2 class="anchored" data-anchor-id="mise-en-oeuvre">Mise en oeuvre</h2>
+<p>L’idée de l’approche CI/CD est ainsi d’associer chaque changement de code (<code>commit</code>) à l’exécution de scripts automatisés. Bien que mis en oeuvre de manière différente, <code>Gitlab</code> et <code>Github</code> proposent tous les deux ce type de fonctionalités.</p>
+<p>Les actions <code>Github</code> sont un ensemble de règles qui se suivent au format <code>YAML</code>. Cela permet de définir différentes étapes du processus avec, pour chaque étape, des éléments de configuration.</p>
+<p>Voici, par exemple, l’action qui sert de modèle à modifier dans l’exercice d’application</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> Python Package using Conda</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">push</span><span class="kw">]</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">jobs</span><span class="kw">:</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">build-linux</span><span class="kw">:</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">runs-on</span><span class="kw">:</span><span class="at"> ubuntu-latest</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">strategy</span><span class="kw">:</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">max-parallel</span><span class="kw">:</span><span class="at"> </span><span class="dv">5</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/checkout@v3</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Set up Python 3.10</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/setup-python@v3</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">with</span><span class="kw">:</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">python-version</span><span class="kw">:</span><span class="at"> </span><span class="fl">3.10</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Add conda to system path</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">      run</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        # $CONDA is an environment variable pointing to the root of the miniconda directory</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        echo $CONDA/bin &gt;&gt; $GITHUB_PATH</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Install dependencies</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="fu">      run</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>        conda env update --file environment.yml --name base</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Lint with flake8</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="fu">      run</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>        conda install flake8</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>        # stop the build if there are Python syntax errors or undefined names</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Test with pytest</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="fu">      run</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>        conda install pytest</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>        pytest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="valoriser-son-projet-avec-un-site-web-automatisé" class="level1">
+<h1>Valoriser son projet avec un site web automatisé</h1>
+<p>Un code ou une API intéressent des publics très ciblés. D’autres publics seront intéressés par une autre valorisation d’un projet: les chercheurs apprécieront un papier académique, d’autres personnes préfèreront un site web ergonomique…</p>
+<section id="quest-ce-quun-site-web" class="level2">
+<h2 class="anchored" data-anchor-id="quest-ce-quun-site-web">Qu’est-ce qu’un site <em>web</em> ?</h2>
+<p>Pour simplifier, on peut voir un site <em>web</em> comme la combinaison de trois éléments:</p>
+<ul>
+<li>une arborescence de fichiers <code>HTML</code> qui présentent le contenu du site dans un balisage lourd</li>
+<li>des fichiers <code>CSS</code> qui gèrent la mise en forme<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></li>
+<li>des fonctions <code>javascript</code></li>
+</ul>
+<p>Il existe énormément d’outils aujourd’hui qui permettent, sans connaissance en HTML, CSS ou JS, de créer un site <em>web</em>. Dans le domaine de la <em>data-science</em>, le format <code>Markdown</code> (fichiers <code>.md</code>) s’est imposé.</p>
+<p><code>Markdown</code> est un système d’édition doté d’une syntaxe simplifiée souvent utilisé pour faire de la documentation de projet. Le format est utilisé sur de nombreux sites internet, notamment <code>Gitlab</code> et <code>Stackoverflow</code>. L’extension de ce type de fichier est <code>.md</code>. <code>Markdown</code> présente plusieurs avantages:</p>
+<ul>
+<li>il est facile d’inclure des blocs de code informatique et des équations mathématiques dans un document Markdown ;</li>
+<li>le formatage de blocs de texte ou de code est simple et très bien fait (et beaucoup plus léger qu’en LaTeX par exemple) ;</li>
+<li>il existe des outils de conversion de <code>Markdown</code> en <code>HTML</code> très bien faits.</li>
+</ul>
+<p>Plus d’éléments sur la logique de <code>Markdown</code> et ses intérêts sont disponibles dans le chapitre <a href="https://www.book.utilitr.org/rmarkdown.html">R Markdown de la documentation <code>utilitR</code></a></p>
+</section>
+<section id="comment-faire-un-site-web" class="level2">
+<h2 class="anchored" data-anchor-id="comment-faire-un-site-web">Comment faire un site <em>web</em> ?</h2>
+<p>Il existe historiquement plusieurs approches dans l’écosystème de la <em>data-science</em>, selon le langage utilisé et l’output désiré.</p>
+<p>Si on part de fichiers qui présentent des blocs de code qui ne nécessitent pas d’être exécutés, l’écosystème le plus riche est <a href="https://gohugo.io/content-management/formats/">Hugo</a>. Celui-ci permet de générer des sites web à l’architecture complexe à partir d’une arborescence de <code>.md</code>. C’est l’approche adoptée pour ce site <em>web</em></p>
+<p>Cependant, il est souvent nécessaire d’exécuter des bouts de code pour tester les exemples présentés, ou générer des tableaux ou sorties graphiques. Pour cela, historiquement, il existe deux paradigmes:</p>
+<ul>
+<li><a href="https://jupyterbook.org/intro.html"><code>JupyterBook</code></a> qui vise à générer des sites web et des notebooks à partir de fichiers <code>markdown</code>. Le notebook n’est donc pas le produit de départ (cf.&nbsp;XXXX) mais un livrable.</li>
+<li><a href="https://rmarkdown.rstudio.com/"><code>R Markdown</code></a>: l’écosystème le plus riche avec de nombreux modèles de documents customisables (documents HTML ou articles PDF, sites web de documentation avec <code>bookdown</code>, blogs avec <code>blogdown</code>, <em>dashboards</em>, etc.) Le principe de <code>R Markdown</code> est d’offrir une surcouche à <code>Markdown</code> pour que les blocs de code soient exécutés afin de créer un <em>output</em> reproductible.</li>
+</ul>
+<p><code>R Markdown</code> est un système d’une grande richesse. Initialement pensé pour les utilisateurs de <code>R</code>, ce paradigme permet maintenant de créer des documents executant d’autres langages, notamment du <code>Python</code> (<a href="https://pythonds.linogaliana.fr/">le cours de python de 2e année</a> de l’ENSAE est testé et construit grâce à <code>R Markdown</code>).</p>
+<p><code>Quarto</code> est le petit nouveau dans cet écosystème, amené à devenir un outil standard des <em>data-scientists</em> comme peuvent l’être, aujourd’hui, les Notebooks <code>Jupyter</code>. Successeur de <code>R Markdown</code>, il vise à améliorer l’aspect universel des documents produits en n’obligeant plus à utiliser <code>R</code> pour compiler le document qui ne le nécessitent pas. C’est un outil particulièrement adapté aux utilisateurs de <code>Python</code></p>
+<p><img src="../quarto.png" class="img-fluid"></p>
+<p>Un document <code>quarto</code> hérite des principes de base d’un document <code>R Markdown</code>, notamment la structure. Il comporte ainsi deux parties principales :</p>
+<ul>
+<li>L’en-tête (<code>YAML</code> header) qui gère les éléments de style et les paramètres globaux;</li>
+<li>Le contenu qui gère le fond et permet d’alterner librement texte et code :
+<ul>
+<li>Les <strong>blocs de texte brut</strong> mis en forme selon la syntaxe markdown</li>
+<li>Les <strong>blocs de code</strong> sont présentés dans des <em>chunks</em> identifiés par un langage (ici <code>python</code>) qui seront exécutés de manière linéaire et produiront l’output désiré (ici une figure <code>matplotlib</code>).</li>
+</ul></li>
+</ul>
+</section>
+<section id="comment-mettre-à-disposition-un-site-web" class="level2">
+<h2 class="anchored" data-anchor-id="comment-mettre-à-disposition-un-site-web">Comment mettre à disposition un site <em>web</em> ?</h2>
+<p>Mettre à jour manuellement un site <em>web</em> après l’avoir compilé est une tâche pénible et source d’erreur dans un projet actif de <em>data-science</em>. L’automatisation issue de l’approche CI/CD permet un gain de confort aussi dans ce domaine.</p>
+<p>Supposons qu’on ait mis en oeuvre une routine pour automatiser la construction d’un site <em>web</em> à partir de fichiers <em>Markdown</em>. Comment les mettre à disposition ?</p>
+<p>Il existe plusieurs manières de déployer automatiquement un site web :</p>
+<ul>
+<li><a href="https://docs.gitlab.com/ee/user/project/pages/">Gitlab pages</a> ;</li>
+<li><a href="https://pages.github.com/">Github pages</a> ;</li>
+<li><a href="https://www.netlify.com/">Netlify</a>.</li>
+</ul>
+<p>Ces trois services sont gratuits. Ils consistent à mettre à disposition un DNS sur lequel des fichiers HTML peuvent être mis à disposition automatiquement pour assurer que chaque <code>commit</code></p>
+<p>L’<a href="../application">exercice d’application</a> supposant l’utilisation de <code>Github</code>, il présentera <code>Netlify</code> qui est plus pratique que <code>Github Pages</code><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. Le résultat de cette chaine de production d’un site web reproductible est accessible à l’url https://spiffy-florentine-c913b9.netlify.app/</p>
+
+
+</section>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Cette séparation entre le fond et la forme renvoie au paradigme du <em>What you see is what you mean</em> (WYSIWYM) dont l’un des logiciels les plus connus est <code>LaTeX</code> et s’oppose au principe du <em>What you see is what you get</em> (WYSIWYG) des éditeurs de texte.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p><code>Gitlab Pages</code> permet une mise en lien plus directe entre les output de l’intégration continue et le déploiement. Cependant, avec les scripts présentés dans l’exercice d’application on peut avoir une intégration très flexible de <code>Netlify</code> dans un pipeline plus riche.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
