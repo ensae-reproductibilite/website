@@ -1,0 +1,180 @@
+---
+title: "Améliorer l'architecture de ses projets"
+date: 2022-03-03
+author: "Romain Avouac et Lino Galiana"
+draft: false
+# layout options: single, single-sidebar
+layout: single
+---
+
+
+
+# Structure des projets {#structure}
+
+## Modularité
+
+-   fonctions
+-   modules
+
+## Principes d'architecture
+
+Comme `Git` est un pré-requis, tout projet présente un fichier `.gitignore`
+(il est très important, surtout quand on manipule des données qui ne
+devraient pas se retrouver sur `Github` ou `Gitlab`).
+
+Les _output_ sont stockés dans un dossier séparé, de même que les _inputs_
+(idéalement ils ne sont même pas stockés avec le code, nous reviendrons
+sur la distinction code-stockage-exécution plus tard). Ne pas
+oublier d'ajouter les dossiers ou extensions qui vont bien dans
+le `.gitignore` pour ne pas les committer.
+
+Idéalement, un projet utilise de l'intégration continue (voir partie XXX) : 
+
+- si vous utilisez `Gitlab`, les instructions sont stockées dans
+le fichier `gitlab-ci.yml`
+- si vous utilisez `Github`, cela se passe dans le dossier `.github/workflows`
+
+
+```
+project
+│   .gitignore    
+│   .gitlab-ci.yml    
+│   main.R   
+│   README.md
+│
+└───input
+│   │   source.csv
+│
+└───R
+│   │   utils.R
+│   │   figures.R
+|   |   statsdesc.R
+|   |   ...
+│   
+└───output
+    │   superfigure.png
+    │   agregat.csv
+    |   ...
+
+```
+
+
+
+### Séparation données/code/config/environnement d'exécution
+
+### Modèles
+
+-   input / traitement / output
+-   domain-driven design (data, domain, application, presentation)
+
+### Templates
+
+-   Python : cookiescutter
+
+
+## Packages
+
+La meilleure façon d'assurer la reproductibilité d'un projet est
+d'intégrer ses scripts dans une structure de _package_.
+Un gros projet
+de _data-science_ va ainsi dépendre d'un ou plusieurs _packages_, ce qui 
+
+- assure une gestion cohérente des dépendances
+- offre une certaine structure pour la documentation
+- facilitera sa réutilisation (les utilisateurs peuvent n'être intéressés
+que par une partie du projet)
+- permettra des économies d'échelle (on peut réutiliser
+l'un des packages pour un autre projet)
+- facilite le debuggage (il est
+plus facile d'identifier une erreur quand elle est dans un package)
+- ...
+
+
+### Gestion des dépendances
+
+TO DO
+
+
+### Documentation
+
+### Logging
+
+### Tests unitaires
+
+TO DO 
+
+### Publication
+
+Quand on débute, on est souvent timide et on désire ne rendre public
+son code que lorsque celui-ci est propre. C'est une erreur classique:
+
+{{< tweet 589068687669243905 >}}
+
+Comme pour nettoyer un appartement, les petits gestes en continu
+sont beaucoup plus efficace qu'un grand ménage de printemps.
+Prendre l'habitude de mettre son code immédiatement sur `Github`
+vous amènera à adopter de bons gestes. 
+
+### Maintenance
+
+
+L'objectif des conseils de ce cours est
+de réduire le coût de la
+maintenance à long terme en adoptant les structures
+les plus légères, automatisées et 
+réutilisables. 
+
+Les notebooks Jupyter sont très pratiques pour tâtonner
+et expérimenter. Cependant, ils présentent un certain
+nombre d'inconvénients à long terme qui peuvent 
+rendre impossible à maintenir le code écrit
+avec dans un notebook:
+
+- tous les objets (fonctions, classes et données)
+sont définis et disponibles dans le même fichier.
+Le moindre changement à une fonction nécessite de retrouver
+l'emplacement dans le code, écrire et faire tourner à nouveau
+une ou plusieurs cellules. 
+- quand on tâtonne, on écrit du code dans des cellules. 
+Dans un cahier, on utiliserait la marge mais cela n'existe
+pas avec un notebook. On créé donc de nouvelles cellules, 
+pas nécessairement dans l'ordre. Quand il est
+nécessaire de faire tourner à nouveau le notebook, cela
+provoque des erreurs difficile à debugger (il est nécessaire
+de retrouver l'ordre logique du code, ce qui n'est pas
+évident). 
+- les notebooks incitent à faire des copier-coller de cellules
+et modifier marginalement le code plutôt qu'à utiliser
+des fonctions. 
+- il est quasi-impossible d'avoir un versioning avec Git des notebooks
+qui fonctionne. Les notebooks étant, en arrière plan, de gros fichiers
+JSON, ils ressemblent plus à des données que des codes sources. Git ne
+parvient pas à identifier les blocs de code qui ont changé
+- passage en production des notebooks coûteux alors qu'un script bien
+fait est beaucoup plus facile à passer en prod (voir suite cours)
+- Jupyter manque d'extensions pour mettre en oeuvre les bonnes pratiques
+(linters, etc.). VSCode au contraire est très bien 
+- Risques de révélation de données confidentielles puisque les outputs
+des blocs de code, par exemple les `head`, sont écrits en dur dans
+le code source. 
+
+Globalement, les notebooks sont un bon outil pour tâtonner ou pour
+faire communiquer. Mais pour maintenir un projet à long terme, 
+il vaut mieux privilégier les scripts. Les
+recommandations de ce cours visent à rendre le plus léger possible
+la maintenance à long terme de projets _data-science_ en favorisant
+la reprise par d'autres (ou par soi dans le futur).
+
+
+
+# Références
+
+- [The Hitchhiker’s Guide to Python](https://docs.python-guide.org/#writing-great-python-code)
+- [_tidyverse style guide_](https://style.tidyverse.org/googl)
+- [_google style guide_](https://google.github.io/styleguide/Rguide.html)
+- [Cours de Pierre-Antoine Champin](https://perso.liris.cnrs.fr/pierre-antoine.champin/enseignement/algo/cours/algo/bonnes_pratiques.html)
+- [R Packages](https://r-pkgs.org/index.html) par Hadley Wickham and Jenny Bryan
+- [La documentation collaborative `utilitR`](https://www.book.utilitr.org)
+- [Project Oriented Workflow](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/)
+- [Un post très complet sur les extensions VisualStudio](https://realpython.com/advanced-visual-studio-code-python/)
+- ["Coding style, coding etiquette"](https://blog.r-hub.io/2022/03/21/code-style/)
