@@ -1,6 +1,5 @@
 ---
 title: "Appliquer les concepts étudiés à un projet de data science"
-date: 2022-03-03
 author: "Romain Avouac et Lino Galiana"
 draft: false
 # layout options: single, single-sidebar
@@ -932,7 +931,7 @@ déployé de manière automatique.
 Il est possible de télécharger cette page sous format `Jupyter Notebook` <a href="report.ipynb" download>ici</a>
 
 
-```{python}
+```python
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -949,11 +948,11 @@ rdmf.fit(X_train, y_train)
 
 La @fig-feature-importance représente l'importance des variables :
 
-```{python}
+```python
 feature_imp = pd.Series(rdmf.feature_importances_, index=training_data.iloc[:,1:].columns).sort_values(ascending=False)
 ```
 
-```{python}
+```python
 #| label: fig-feature-importance
 #| fig-cap: "Feature importance"
 plt.figure(figsize=(10,6))
@@ -969,7 +968,7 @@ plt.show()
 Celle-ci peut également être obtenue grâce à la librairie
 `shap`:
 
-```{python}
+```python
 #| echo : true
 import shap
 shap_values = shap.TreeExplainer(rdmf).shap_values(X_train)
@@ -979,7 +978,8 @@ shap.summary_plot(shap_values, X_train, plot_type="bar", feature_names = trainin
 On peut également utiliser cette librairie pour
 interpréter la prédiction de notre modèle:
 
-```{python}
+
+```python
 # explain all the predictions in the test set
 explainer = shap.TreeExplainer(rdmf)
 # Calculate Shap values
@@ -994,7 +994,7 @@ shap.force_plot(explainer.expected_value[1], shap_values[1], choosen_instance, f
 La matrice de confusion est présentée sur la
 @fig-confusion
 
-```{python}
+```python
 #| label: fig-confusion
 #| fig-cap: "Matrice de confusion"
 from sklearn.metrics import confusion_matrix
@@ -1007,7 +1007,8 @@ plt.tight_layout()
 
 Ou, sous forme de tableau:
 
-```{python}
+
+```python
 pd.DataFrame(conf_matrix, columns=['Predicted','Observed'], index = ['Predicted','Observed']).to_html()
 ```
 ~~~
