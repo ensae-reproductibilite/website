@@ -518,18 +518,18 @@
     "text": "La structuration d’un projet permet d’immédiatement identifier les éléments de code et les éléments annexes, par exemple les dépendances à gérer, la documentation, etc.\nUn certain nombre d’assistants au développement de projets orientés données ont émergé pour gagner en productivité et faciliter le lancement d’un projet (voir ce post très complet sur les extensions VisualStudio).\nL’idée générale est de privilégier une structure de projet bien plus fiable qu’une suite sans structure de scripts ou un Notebook Jupyter (voir ce post de blog sur ce sujet). L’IDE Jupyter n’est pas le meilleur outil pour le développement de projets Python ; pour des projets intensifs en code il vaut mieux se tourner vers des IDE classiques comme VSCode."
   },
   {
-    "objectID": "chapters/projects-architecture.html#modularité",
-    "href": "chapters/projects-architecture.html#modularité",
+    "objectID": "chapters/projects-architecture.html#adopter-une-structure-de-projet",
+    "href": "chapters/projects-architecture.html#adopter-une-structure-de-projet",
     "title": "Améliorer l’architecture de ses projets",
-    "section": "Modularité",
-    "text": "Modularité\n\nfonctions\nmodules"
+    "section": "Adopter une structure de projet",
+    "text": "Adopter une structure de projet\nLe principe général d’une structure de projet est le suivant :\n\nTous les fichiers nécessaires au projet dans un même dossier ;\nLe dossier à la racine du projet sert de working directory ;\nUtilisation de chemins relatifs plutôt qu’absolus.\n\nLe principe d’une structure de projet est d’adopter une structure arbitraire, mais lisible et cohérente.\n├── data\n│   ├── raw\n│   │   ├── data.csv\n│   │   └── data2.csv\n│   └── derived\n│       └── partial data.csv\n├── src\n|   ├── script.py\n│   ├── script_final.py\n│   └── report.qmd\n└── output\n    ├── fig1.png\n    ├── figure 2 (copy).png\n    ├── figure10.png\n    ├── correlation.png\n    └── report.pdf\nLes output sont stockés dans un dossier séparé, de même que les inputs. Idéalement les inputs ne sont même pas stockés avec le code, nous reviendrons sur la distinction code-stockage-exécution plus tard.\n\n\n\n\n\n\nNote\n\n\n\nComme Git est un pré-requis, tout projet présente un fichier .gitignore (il est très important, surtout quand on manipule des données qui ne devraient pas se retrouver sur Github ou Gitlab).\nUn projet présente aussi un fichier README.md à la racine, nous reviendrons dessus.\nUn projet qui utilise l’intégration continue présentera également :\n\nsi vous utilisez Gitlab, les instructions sont stockées dans le fichier gitlab-ci.yml\nsi vous utilisez Github, cela se passe dans le dossier .github/workflows"
   },
   {
-    "objectID": "chapters/projects-architecture.html#principes-darchitecture",
-    "href": "chapters/projects-architecture.html#principes-darchitecture",
+    "objectID": "chapters/projects-architecture.html#autodocumenter-le-projet-avec-des-noms-pertinents",
+    "href": "chapters/projects-architecture.html#autodocumenter-le-projet-avec-des-noms-pertinents",
     "title": "Améliorer l’architecture de ses projets",
-    "section": "Principes d’architecture",
-    "text": "Principes d’architecture\nComme Git est un pré-requis, tout projet présente un fichier .gitignore (il est très important, surtout quand on manipule des données qui ne devraient pas se retrouver sur Github ou Gitlab).\nLes output sont stockés dans un dossier séparé, de même que les inputs (idéalement ils ne sont même pas stockés avec le code, nous reviendrons sur la distinction code-stockage-exécution plus tard). Ne pas oublier d’ajouter les dossiers ou extensions qui vont bien dans le .gitignore pour ne pas les committer.\nIdéalement, un projet utilise de l’intégration continue (voir partie XXX) :\n\nsi vous utilisez Gitlab, les instructions sont stockées dans le fichier gitlab-ci.yml\nsi vous utilisez Github, cela se passe dans le dossier .github/workflows\n\nproject\n│   .gitignore    \n│   .gitlab-ci.yml    \n│   main.R   \n│   README.md\n│\n└───input\n│   │   source.csv\n│\n└───R\n│   │   utils.R\n│   │   figures.R\n|   |   statsdesc.R\n|   |   ...\n│   \n└───output\n    │   superfigure.png\n    │   agregat.csv\n    |   ...\n\n\nSéparation données/code/config/environnement d’exécution\n\n\nModèles\n\ninput / traitement / output\ndomain-driven design (data, domain, application, presentation)\n\n\n\nTemplates\n\nPython : cookiescutter"
+    "section": "Autodocumenter le projet avec des noms pertinents",
+    "text": "Autodocumenter le projet avec des noms pertinents\n├── data\n│   ├── raw\n│   │   ├── dpe_logement_202103.csv\n│   │   └── dpe_logement_202003.csv\n│   └── derived\n│       └── dpe_logement_merged_preprocessed.csv\n├── src\n|   ├── preprocessing.py\n│   ├── generate_plots.py\n│   └── report.qmd\n└── output\n    ├── histogram_energy_diagnostic.png\n    ├── barplot_consumption_pcs.png\n    ├── correlation_matrix.png\n    └── report.pdf"
   },
   {
     "objectID": "chapters/projects-architecture.html#packages",
