@@ -211,7 +211,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul class="collapse">
   <li><a href="#lisibilite" id="toc-lisibilite" class="nav-link" data-scroll-target="#lisibilite">Lisibilité</a></li>
   <li><a href="#concision" id="toc-concision" class="nav-link" data-scroll-target="#concision">Concision</a></li>
-  <li><a href="#coherence" id="toc-coherence" class="nav-link" data-scroll-target="#coherence">Cohérence interne</a></li>
+  <li><a href="#coherence" id="toc-coherence" class="nav-link" data-scroll-target="#coherence">Cohérence du script</a></li>
   <li><a href="#redondance" id="toc-redondance" class="nav-link" data-scroll-target="#redondance">Limiter la redondance</a></li>
   <li><a href="#documentation" id="toc-documentation" class="nav-link" data-scroll-target="#documentation">(Auto)documentation</a></li>
   <li><a href="#outils-et-méthodes-pour-améliorer-un-code" id="toc-outils-et-méthodes-pour-améliorer-un-code" class="nav-link" data-scroll-target="#outils-et-méthodes-pour-améliorer-un-code">Outils et méthodes pour améliorer un code</a></li>
@@ -404,9 +404,46 @@ Exemple: privilégier les <em>list comprehensions</em>
 </div>
 </div>
 </div>
+<div class="callout-important callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Règle d’or
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Il faut utiliser une <span class="red2"><strong>fonction</strong></span> dès qu’on utilise une même portion de code plus de deux fois (<span class="red2"><strong><em>don’t repeat yourself</em> (DRY)</strong></span>)</p>
+</div>
+</div>
+<p>Les fonctions ont de nombreux avantages par rapport à de longs scripts:</p>
+<ul>
+<li>Limite les risques d’erreurs liés aux copier/coller</li>
+<li>Rend le code plus lisible et plus compact</li>
+<li>Un seul endroit du code à modifier lorsqu’on souhaite modifier le traitement</li>
+<li>Facilite la réutilisation et la documentation du code !</li>
+</ul>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Règles pour écrire des fonctions <strong>pertinentes</strong>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Une tâche = une fonction</li>
+<li>Une tâche complexe = un enchaînement de fonctions réalisant chacune une tâche simple</li>
+<li>Limiter l’utilisation de variables globales.</li>
+</ul>
+</div>
+</div>
 </section>
 <section id="coherence" class="level2">
-<h2 class="anchored" data-anchor-id="coherence">Cohérence interne</h2>
+<h2 class="anchored" data-anchor-id="coherence">Cohérence du script</h2>
 <p>Lister les dépendances est important:</p>
 <ul>
 <li>pour des raisons techniques: le logiciel doit savoir où aller chercher les fonctions utilisées dans un script pour avoir un code fonctionnel ;</li>
@@ -419,7 +456,7 @@ Exemple: privilégier les <em>list comprehensions</em>
 <div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame([<span class="dv">0</span>,<span class="dv">1</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Cela permet de dire à <code>Python</code> d’aller chercher dans le <em>namespace</em> <code>pd</code> (alias pour <code>pandas</code> qui est lui-même un ensemble de scripts enregistrés sur le disque) la fonction <code>DataFrame</code>.</p>
 <div class="callout-tip callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -428,7 +465,7 @@ Quelques conseils complémentaires.
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>En premier lieu, il convient d’adopter les mêmes standards que la communauté pour les noms de package.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># bien</span></span>
@@ -451,7 +488,7 @@ Quelques conseils complémentaires.
 <p></p>
 <p>Ce <a href="https://www.earthdatascience.org/courses/intro-to-earth-data-science/write-efficient-python-code/intro-to-clean-code/dry-modular-code/">post</a> donne quelques bonnes pratiques pour réduire la redondance des codes.</p>
 <div class="callout-tip callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -460,7 +497,7 @@ Un exemple progressif pour comprendre
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>💡 Supposons qu’on dispose d’une table de données qui utilise le code <code>−99</code> pour représenter les valeurs manquantes. On désire remplacer l’ensemble des <code>−99</code> par des <code>NA</code>.</p>
 <p>Voici un code <code>Python</code> qui permet de se placer dans ce cas qui, malheureusement, arrive fréquemment.</p>
