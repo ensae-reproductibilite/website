@@ -214,10 +214,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#coherence" id="toc-coherence" class="nav-link" data-scroll-target="#coherence">Cohérence interne</a></li>
   <li><a href="#redondance" id="toc-redondance" class="nav-link" data-scroll-target="#redondance">Limiter la redondance</a></li>
   <li><a href="#documentation" id="toc-documentation" class="nav-link" data-scroll-target="#documentation">(Auto)documentation</a></li>
-  <li><a href="#outils-et-méthodes-pour-améliorer-un-code" id="toc-outils-et-méthodes-pour-améliorer-un-code" class="nav-link" data-scroll-target="#outils-et-méthodes-pour-améliorer-un-code">Outils et méthodes pour améliorer un code</a>
+  <li><a href="#outils-et-méthodes-pour-améliorer-un-code" id="toc-outils-et-méthodes-pour-améliorer-un-code" class="nav-link" data-scroll-target="#outils-et-méthodes-pour-améliorer-un-code">Outils et méthodes pour améliorer un code</a></li>
+  <li><a href="#linters" id="toc-linters" class="nav-link" data-scroll-target="#linters"><em>Linters</em></a></li>
+  <li><a href="#formaters" id="toc-formaters" class="nav-link" data-scroll-target="#formaters"><em>Formaters</em></a>
   <ul class="collapse">
-  <li><a href="#helpers" id="toc-helpers" class="nav-link" data-scroll-target="#helpers">Helpers</a></li>
-  <li><a href="#analyse-de-code" id="toc-analyse-de-code" class="nav-link" data-scroll-target="#analyse-de-code">Analyse de code</a></li>
   <li><a href="#relecture-par-un-tiers-pair-programming" id="toc-relecture-par-un-tiers-pair-programming" class="nav-link" data-scroll-target="#relecture-par-un-tiers-pair-programming">Relecture par un tiers / pair-programming</a></li>
   </ul></li>
   </ul></li>
@@ -583,17 +583,47 @@ Comment bien documenter un script ?
 </section>
 <section id="outils-et-méthodes-pour-améliorer-un-code" class="level2">
 <h2 class="anchored" data-anchor-id="outils-et-méthodes-pour-améliorer-un-code">Outils et méthodes pour améliorer un code</h2>
-<section id="helpers" class="level3">
-<h3 class="anchored" data-anchor-id="helpers">Helpers</h3>
-<p><code>Python</code> ou <code>R</code> étant l’outil de travail principal de milliers de <em>data-scientists</em>, un certain nombre d’outils ont vu le jour pour réduire le temps nécessaire pour créer un projet ou disposer d’un code fonctionnel. Ces outils permettent un gros gain de productivité, réduisent le temps passé à effectuer des tâches rébarbatives et améliorent la qualité d’un projet en offrant des diagnostics voire des correctifs à des codes perfectibles.</p>
-</section>
-<section id="analyse-de-code" class="level3">
-<h3 class="anchored" data-anchor-id="analyse-de-code">Analyse de code</h3>
+<p>L’apprentissage par coeur de ces règles ou faire des aller-retour en continu entre le code et les manuels de règles serait quelques peu rébarbatif.</p>
+<p>Pour faire le parallèle avec le langage naturel, on n’a pas toujours le bécherelle ou le dictionnaire sous les yeux. Les éditeurs de texte ou les smartphones embarquent des correcteurs orthographiques qui identifient voire corrigent directement le texte écrit.</p>
+<p>Il existe le même type d’outils pour les langages de programmation. <code>Python</code> étant l’outil de travail principal de milliers de <em>data-scientists</em>, un certain nombre d’outils ont vu le jour pour réduire le temps nécessaire pour créer un projet ou disposer d’un code fonctionnel. Ces outils permettent un gros gain de productivité, réduisent le temps passé à effectuer des tâches rébarbatives et améliorent la qualité d’un projet en offrant des diagnostics voire des correctifs à des codes perfectibles.</p>
+<p>Les principaux outils sont les suivants:</p>
+<ol type="1">
+<li><strong><em>linter</em></strong> : programme qui vérifie que le code est <strong>formellement</strong> conforme à un certain <em>guidestyle</em>
 <ul>
-<li>linters</li>
-<li>formatters</li>
+<li>signale problèmes formels, sans corriger</li>
+</ul></li>
+<li><strong><em>formatter</em></strong> : programme qui reformate un code pour le rendre conforme à un certain <em>guidestyle</em>
+<ul>
+<li>modifie directement le code</li>
+</ul></li>
+</ol>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Exemples d’erreurs repérées par un <em>linter</em> :
+<ul>
+<li>lignes de code trop longues ou mal indentées, parenthèses non équilibrées, noms de fonctions mal construits…</li>
+</ul></li>
+<li>Exemples d’erreurs <strong>non</strong> repérées par un <em>linter</em> :
+<ul>
+<li>fonctions mal utilisées, arguments mal spécifiés, structure du code incohérente, code insuffisamment documenté…</li>
+</ul></li>
 </ul>
-<p>Les <em>linters</em> sont des outils qui permettent d’évaluer la qualité du code et son risque de provoquer une erreur (explicite ou silencieuse). Voici quelques exemples de problèmes que peuvent rencontrer les <code>linters</code>:</p>
+</div>
+</div>
+</section>
+<section id="linters" class="level2">
+<h2 class="anchored" data-anchor-id="linters"><em>Linters</em></h2>
+<p>Les <em>linters</em> sont des outils qui permettent d’évaluer la qualité du code et son risque de provoquer une erreur (explicite ou silencieuse).</p>
+<p>Voici quelques exemples de problèmes que peuvent rencontrer les <code>linters</code>:</p>
 <ul>
 <li>les variables sont utilisées mais n’existent pas (erreur)</li>
 <li>les variables inutilisées (inutiles)</li>
@@ -601,8 +631,24 @@ Comment bien documenter un script ?
 <li>le non respect des bonnes pratiques d’écriture de code</li>
 <li>les erreurs de syntaxe (par exemple les coquilles)</li>
 </ul>
-<p>La plupart des logiciels de développement embarquent des fonctionalités de diagnostic (voire de suggestion de correctif). Il faut parfois les paramétrer dans les options (ils sont désactivés pour ne pas effrayer l’utilisateur avec des croix rouges partout)</p>
+<p>La plupart des logiciels de développement embarquent des fonctionalités de diagnostic (voire de suggestion de correctif). Il faut parfois les paramétrer dans les options (ils sont désactivés pour ne pas effrayer l’utilisateur avec des croix rouges partout).</p>
+<p>En <code>Python</code>, les deux principaux <em>linters</em> sont <a href="https://pylint.readthedocs.io/en/latest/"><code>PyLint</code></a> et <a href="https://flake8.pycqa.org/en/latest/"><code>Flake8</code></a>. Dans les exercices, nous proposons d’utiliser <code>PyLint</code> qui est pratique.</p>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>L’un des intérêts d’utiliser <code>PyLint</code> est qu’on obtient une note, ce qui est assez instructif. Nous l’utiliserons dans l’application fil rouge pour comprendre la manière dont chaque étape améliore la qualité du code.</p>
+</div>
+</div>
 </section>
+<section id="formaters" class="level2">
+<h2 class="anchored" data-anchor-id="formaters"><em>Formaters</em></h2>
 <section id="relecture-par-un-tiers-pair-programming" class="level3">
 <h3 class="anchored" data-anchor-id="relecture-par-un-tiers-pair-programming">Relecture par un tiers / pair-programming</h3>
 </section>
