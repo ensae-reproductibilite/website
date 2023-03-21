@@ -169,16 +169,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../chapters/deployment.html">
- <span class="menu-text">Application fil rouge</span></a>
+ <span class="menu-text">Application</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../chapters/application.html">
- <span class="menu-text">Linux 101</span></a>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-suppléments" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Suppléments</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-suppléments">    
+        <li>
+    <a class="dropdown-item" href="../chapters/application.html">
+ <span class="dropdown-text">Linux 101</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../chapters/git.html">
- <span class="menu-text">Git</span></a>
+        <li>
+    <a class="dropdown-item" href="../chapters/git.html">
+ <span class="dropdown-text">Git</span></a>
   </li>  
+    </ul>
+  </li>
 </ul>
               <div id="quarto-search" class="" title="Search"></div>
           </div> <!-- /navcollapse -->
@@ -198,19 +205,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul class="collapse">
   <li><a href="#lenjeu-dun-code-lisible-et-maintenable" id="toc-lenjeu-dun-code-lisible-et-maintenable" class="nav-link" data-scroll-target="#lenjeu-dun-code-lisible-et-maintenable">L’enjeu d’un code lisible et maintenable</a></li>
   <li><a href="#de-limportance-de-suivre-les-conventions" id="toc-de-limportance-de-suivre-les-conventions" class="nav-link" data-scroll-target="#de-limportance-de-suivre-les-conventions">De l’importance de suivre les conventions</a></li>
-  <li><a href="#comment-adopter-ces-bonnes-pratiques" id="toc-comment-adopter-ces-bonnes-pratiques" class="nav-link" data-scroll-target="#comment-adopter-ces-bonnes-pratiques">Comment adopter ces bonnes pratiques ?</a></li>
   </ul></li>
-  <li><a href="#qualité-du-code" id="toc-qualité-du-code" class="nav-link" data-scroll-target="#qualité-du-code">Qualité du code</a>
-  <ul class="collapse">
+  <li><a href="#comment-adopter-ces-bonnes-pratiques" id="toc-comment-adopter-ces-bonnes-pratiques" class="nav-link" data-scroll-target="#comment-adopter-ces-bonnes-pratiques">Comment adopter ces bonnes pratiques ?</a></li>
   <li><a href="#principes-généraux" id="toc-principes-généraux" class="nav-link" data-scroll-target="#principes-généraux">Principes généraux</a>
   <ul class="collapse">
   <li><a href="#lisibilite" id="toc-lisibilite" class="nav-link" data-scroll-target="#lisibilite">Lisibilité</a></li>
   <li><a href="#concision" id="toc-concision" class="nav-link" data-scroll-target="#concision">Concision</a></li>
   <li><a href="#coherence" id="toc-coherence" class="nav-link" data-scroll-target="#coherence">Cohérence interne</a></li>
   <li><a href="#redondance" id="toc-redondance" class="nav-link" data-scroll-target="#redondance">Limiter la redondance</a></li>
-  <li><a href="#documentation" id="toc-documentation" class="nav-link" data-scroll-target="#documentation">Documentation</a></li>
-  </ul></li>
-  <li><a href="#standards-communautaires-de-code" id="toc-standards-communautaires-de-code" class="nav-link" data-scroll-target="#standards-communautaires-de-code">Standards communautaires de code</a></li>
+  <li><a href="#documentation" id="toc-documentation" class="nav-link" data-scroll-target="#documentation">(Auto)documentation</a></li>
   <li><a href="#outils-et-méthodes-pour-améliorer-un-code" id="toc-outils-et-méthodes-pour-améliorer-un-code" class="nav-link" data-scroll-target="#outils-et-méthodes-pour-améliorer-un-code">Outils et méthodes pour améliorer un code</a>
   <ul class="collapse">
   <li><a href="#helpers" id="toc-helpers" class="nav-link" data-scroll-target="#helpers">Helpers</a></li>
@@ -253,32 +256,49 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="lenjeu-dun-code-lisible-et-maintenable" class="level2">
 <h2 class="anchored" data-anchor-id="lenjeu-dun-code-lisible-et-maintenable">L’enjeu d’un code lisible et maintenable</h2>
 <blockquote class="blockquote">
-<p>The code is read much more often than it is written.</p>
-<div title="Guido Van Rossum est le créateur de Python, c'est donc quelqu'un qu'il vaut mieux écouter">
-Guido Van Rossum
-</div>
+<p><em>“The code is read much more often than it is written.”</em></p>
+<p>Guido Van Rossum<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
 </blockquote>
-<p>Lorsque l’on s’initie à la pratique de la <em>data science</em>, il est assez naturel de voir le code d’une manière très fonctionnelle : je veux réaliser une tâche donnée — par exemple un algorithme de classification — et je vais donc assembler dans un <em>notebook</em> des bouts de code, souvent trouvés sur internet, jusqu’à obtenir un projet qui réalise la tâche voulue. La structure du projet importe assez peu, tant qu’elle permet d’importer correctement les données nécessaires à la tâche en question. Si cette approche flexible et minimaliste fonctionne très bien lors de la phase d’apprentissage, il est malgré tout indispensable de s’en détacher à progressivement à mesure que l’on progresse et que l’on peut être amené à réaliser des projets plus professionnels ou bien à intégrer des projets collaboratifs.</p>
-<p>En particulier, il est important de proposer, parmi les multiples manières de résoudre un problème informatique, une solution qui soit intelligible par d’autres personnes parlant le langage. Le code est en effet lu bien plus souvent qu’il n’est écrit, c’est donc avant tout un outil de communication. De même, la maintenance d’un code demande généralement beaucoup plus de moyens que sa phase de développement initial, il est donc important de penser en amont la qualité de son code et la structure de son projet de sorte à le rendre au maximum maintenable dans le temps. Afin de faciliter ces réflexions, des tentatives plus ou moins institutionnalisées de définir des conventions ont émergé. Ces conventions dépendent naturellement du langage utilisé, mais les principes sous-jacents s’appliquent de manière universelle à tout projet basé sur du code.</p>
+<p>Lorsque l’on s’initie à la pratique de la <em>data science</em>, il est assez naturel de voir le code d’une manière très fonctionnelle : je veux réaliser une tâche donnée — par exemple un algorithme de classification — et je vais donc assembler dans un <em>notebook</em> des bouts de code, souvent trouvés sur internet, jusqu’à obtenir un projet qui réalise la tâche voulue. La structure du projet importe assez peu, tant qu’elle permet d’importer correctement les données nécessaires à la tâche en question.</p>
+<p>Si cette approche flexible et minimaliste fonctionne très bien lors de la phase d’apprentissage, il est malgré tout indispensable de s’en détacher progressivement à mesure que l’on progresse et que l’on peut être amené à réaliser des projets plus professionnels ou bien à intégrer des projets collaboratifs.</p>
+<p>En particulier, il est important de proposer, parmi les multiples manières de résoudre un problème informatique, une solution qui soit intelligible par d’autres personnes parlant le langage. Le code est en effet lu bien plus souvent qu’il n’est écrit, c’est donc avant tout un <strong>outil de communication</strong>. De même, la maintenance d’un code demande généralement beaucoup plus de moyens que sa phase de développement initial, il est donc important de penser en amont la qualité de son code et la structure de son projet de sorte à le rendre au maximum maintenable dans le temps.</p>
+<p>Afin de faciliter la communication et réduire la douleur d’avoir à faire évoluer un code obscur, des tentatives plus ou moins institutionnalisées de définir des conventions ont émergé. Ces conventions dépendent naturellement du langage utilisé, mais les principes sous-jacents s’appliquent de manière universelle à tout projet basé sur du code.</p>
 </section>
 <section id="de-limportance-de-suivre-les-conventions" class="level2">
 <h2 class="anchored" data-anchor-id="de-limportance-de-suivre-les-conventions">De l’importance de suivre les conventions</h2>
-<p><code>Python</code> est un langage très lisible. Avec un peu d’effort sur le nom des objets, sur la gestion des dépendances et sur la structure du programme, on peut très bien comprendre un script sans avoir besoin de l’exécuter. C’est l’une des principales forces du langage <code>Python</code> qui permet ainsi une acquisition rapide des bases. <code>R</code>, dans sa version de base, est un langage un peu plus verbeux que <code>Python</code>. Cependant, les packages les plus utiles pour l’analyse de données (notamment <code>dplyr</code> ou <code>data.table</code>) offrent une grammaire un peu plus transparente.</p>
-<p>La communauté <code>Python</code> a abouti à un certain nombre de normes, dites <code>PEP</code> (<em>Python Enhancement Proposal</em>), qui constituent un standard dans l’écosystème Python. Les deux normes les plus connues sont la norme <code>PEP8</code> (code) et la norme <code>PEP257</code> (documentation).</p>
-<p>Dans l’univers <code>R</code>, la formalisation a été moins organisée. Ce langage est plus permissif que <code>Python</code> sur certains aspects<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. Néanmoins, des standards ont émergé, à travers un certain nombre de <em>style guides</em> dont les plus connus sont le <a href="https://style.tidyverse.org/googl"><em>tidyverse style guide</em></a> et le <a href="https://google.github.io/styleguide/Rguide.html"><em>google style guide</em></a><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> (voir <a href="https://blog.r-hub.io/2022/03/21/code-style/">ce post</a> qui pointe vers un certain nombre de ressources sur le sujet).</p>
-<p>Ces conventions ne sont pas immuables: les langages et leurs usages évoluent, ce qui nécessite de mettre à jour les conventions. Cependant, adopter dans la mesure du possible certains des réflexes préconisés par ces conventions devrait améliorer la capacité à être compris par la communauté, augmenter les chances de bénéficier d’apport de celle-ci pour adapter le code mais aussi réduire la difficulté à faire évoluer un code. Il existe beaucoup de philosophies différentes sur le style de codage et, en fait, le plus important est la cohérence : si on choisit une convention, par exemple <em>snake case</em> plutôt que <em>camel case</em>, le mieux est de s’y tenir.</p>
-<p>Les conventions vont au-delà de la syntaxe. Un certain nombre de standards d’organisation d’un projet ont émergé. La structuration d’un projet permet d’immédiatement identifier les éléments de code et les éléments annexes (par exemple les dépendances à gérer, la documentation, etc.). Un certain nombre d’assistants au développement de projets orientés données (des packages d’<em>helpers</em>, des extensions aux environnements de développement comme <code>VisualStudio</code> ou <code>RStudio</code>…) ont émergé pour gagner en productivité et faciliter le lancement d’un projet (voir <a href="https://realpython.com/advanced-visual-studio-code-python/">ce post très complet sur les extensions VisualStudio</a>). L’idée générale est de privilégier une structure de projet bien plus fiable qu’une suite sans structure de scripts ou un notebook jupyter (voir <a href="https://www.tidyverse.org/blog/2017/12/workflow-vs-script/">ce post de blog sur ce sujet</a>).</p>
+<p><code>Python</code> est un langage très lisible. Avec un peu d’effort sur le nom des objets, sur la gestion des dépendances et sur la structure du programme, on peut très bien comprendre un script sans avoir besoin de l’exécuter. C’est l’une des principales forces du langage <code>Python</code> qui permet ainsi une acquisition rapide des bases et facilite l’appropriation d’un script.</p>
+<p>La communauté <code>Python</code> a abouti à un certain nombre de normes, dites <code>PEP</code> (<em>Python Enhancement Proposal</em>), qui constituent un standard dans l’écosystème Python. Les deux normes les plus connues sont :</p>
+<ul>
+<li>la norme <a href="https://peps.python.org/pep-0008/"><code>PEP8</code></a> qui définit un certain nombre de conventions relatives au code</li>
+<li>la norme <a href="https://peps.python.org/pep-0257/"><code>PEP257</code></a> consacrée à la documentation (<em>docstrings</em>).</li>
+</ul>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Dans l’univers <code>R</code>, la formalisation a été moins organisée. Ce langage est plus permissif que <code>Python</code> sur certains aspects<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. Néanmoins, des standards ont émergé, à travers un certain nombre de <em>style guides</em> dont les plus connus sont le <a href="https://style.tidyverse.org/googl"><em>tidyverse style guide</em></a> et le <a href="https://google.github.io/styleguide/Rguide.html"><em>google style guide</em></a><a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> (voir <a href="https://blog.r-hub.io/2022/03/21/code-style/">ce post</a> qui pointe vers un certain nombre de ressources sur le sujet).</p>
+</div>
+</div>
+<p>Ces conventions sont arbitraires, dans une certaine mesure. Il est tout à fait possible de trouver certaines conventions moins esthétiques que d’autres.</p>
+<p>Ces conventions ne sont pas non plus immuables: les langages et leurs usages évoluent, ce qui nécessite de mettre à jour les conventions. Cependant, adopter dans la mesure du possible certains des réflexes préconisés par ces conventions devrait améliorer la capacité à être compris par la communauté, augmenter les chances de bénéficier d’apport de celle-ci pour adapter le code mais aussi réduire la difficulté à faire évoluer un code.</p>
+<p>Il existe beaucoup de philosophies différentes sur le style de codage et, en fait, le plus important est la <strong>cohérence</strong> : si on choisit une convention, par exemple <em>snake case</em> plutôt que <em>camel case</em>, le mieux est de s’y tenir.</p>
+<p>Les conventions vont au-delà de la syntaxe. Un certain nombre de standards d’organisation d’un projet ont émergé, qui seront abordées dans le <a href="../chapters/projects-architecture.html">prochain chapitre</a>.</p>
 </section>
-<section id="comment-adopter-ces-bonnes-pratiques" class="level2">
-<h2 class="anchored" data-anchor-id="comment-adopter-ces-bonnes-pratiques">Comment adopter ces bonnes pratiques ?</h2>
-<p>Les éléments exposés dans ce chapitre ne sont pas exhaustifs. Ils visent à pointer vers quelques problématiques prioritaires tout en proposant des conseils pratiques. Ils sont complémentaires du <a href="https://www.pratiques.utilitr.org">guide des bonnes pratiques <code>utilitR</code></a> qui vise à présenter de manière plus formelle quelques recommendations.</p>
-<p>Dans la lignée de la vision des bonnes pratiques comme continuum proposée en <a href="#introduction">introduction</a>(), il n’est pas nécessairement souhaitable d’appliquer toutes les recommendations présentées dans ce chapitre à chaque projet. Nous recommandons de les voir plutôt comme des bonnes habitudes à acquérir en opérant un va-et-vient régulier entre la pratique et la théorie. Par exemple, à la lecture de ce chapitre, vous allez certainement retenir en particulier certaines règles qui tranchent avec vos pratiques actuelles. Vous pouvez alors essayer d’appliquer ces nouvelles règles pendant un certain temps puis, lorsque celles-ci seront devenues naturelles, revenir à ce guide et appliquer le processus à nouveau. En procédant ainsi de manière incrémentale, vous améliorerez progressivement la qualité de vos projets sans avoir l’impression de passer trop de temps sur des micro-détails, au détriment des objectifs globaux du projet.</p>
 </section>
+<section id="comment-adopter-ces-bonnes-pratiques" class="level1">
+<h1>Comment adopter ces bonnes pratiques ?</h1>
+<p>Les éléments exposés dans ce chapitre ne sont pas exhaustifs. Ils visent à pointer vers quelques problématiques prioritaires tout en proposant des conseils pratiques. L’équivalent <code>R</code> de ce cours est proposé sous la forme de formation à l’Insee et est accessible depuis <a href="https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/">ce lien</a>.</p>
+<p>Dans la lignée de la vision des bonnes pratiques comme continuum proposée en <a href="../chapters/introduction.html">introduction</a>, il n’est pas nécessairement souhaitable d’appliquer toutes les recommendations présentées dans ce chapitre à chaque projet. Nous recommandons de les voir plutôt comme des bonnes habitudes à acquérir en opérant un va-et-vient régulier entre la pratique et la théorie. Les outils que nous allons proposer seront là pour accélérer la mise en oeuvre des bonnes pratiques.</p>
+<p>Il est également assez instructif de regarder le code modifié par les outils pour comprendre et corriger certains problèmes dans sa manière de développer. Par exemple, à la lecture de ce chapitre, vous allez certainement retenir en particulier certaines règles qui tranchent avec vos pratiques actuelles. Vous pouvez alors essayer d’appliquer ces nouvelles règles pendant un certain temps puis, lorsque celles-ci seront devenues naturelles, revenir à ce guide et appliquer le processus à nouveau. En procédant ainsi de manière incrémentale, vous améliorerez progressivement la qualité de vos projets sans avoir l’impression de passer trop de temps sur des micro-détails, au détriment des objectifs globaux du projet.</p>
 </section>
-<section id="qualité-du-code" class="level1">
-<h1>Qualité du code</h1>
-<section id="principes-généraux" class="level2">
-<h2 class="anchored" data-anchor-id="principes-généraux">Principes généraux</h2>
+<section id="principes-généraux" class="level1">
+<h1>Principes généraux</h1>
 <p>Les premières conventions à évoquer ont trait à la syntaxe du code et ont les objectifs suivants, qui seront détaillés par la suite :</p>
 <ul>
 <li><a href="#lisibilite">Améliorer la lisibilité</a> ce qui est indispensable pour rendre la démarche intelligible par d’autres mais aussi pour soi, lorsqu’on reprend un code écrit il y a quelques temps ;</li>
@@ -287,9 +307,9 @@ Guido Van Rossum
 <li><a href="#redondance">Limiter la redondance</a> ce qui permet de simplifier un code (paradigme du <em>don’t repeat yourself</em>) ;</li>
 <li><a href="#documentation">Documenter un code</a> ce qui facilite son acquisition par d’autres (à condition de ne pas aller dans l’excès de documentation).</li>
 </ul>
-<section id="lisibilite" class="level3">
-<h3 class="anchored" data-anchor-id="lisibilite">Lisibilité</h3>
-<p>Un code écrit avec des noms de variables et de fonctions explicites est autant, voire plus, informatif que les commentaires qui l’accompagnent. C’est pourquoi il est essentiel de respecter des conventions pour le choix des noms des objets afin d’assurer la lisibilité des programmes.</p>
+<section id="lisibilite" class="level2">
+<h2 class="anchored" data-anchor-id="lisibilite">Lisibilité</h2>
+<p>Un code écrit avec des noms de variables et de fonctions explicites est autant, voire plus, informatif que les commentaires qui l’accompagnent<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>. C’est pourquoi il est essentiel de respecter des conventions pour le choix des noms des objets afin d’assurer la lisibilité des programmes.</p>
 <p>Un certain nombre de conseils sont présents dans le <a href="https://docs.python-guide.org/writing/style/">Hitchhiker’s Guide to Python</a> qui vise à faire connaître les préceptes du <em>“Zen of Python”</em> (PEP 20). <a href="https://towardsdatascience.com/the-zen-of-python-a-guide-to-pythons-design-principles-93f3f76d088a">Ce post de blog</a> illustre quelques uns de ces principes avec des exemples. Vous pouvez retrouver ces conseils dans <code>Python</code> en tapant le code suivant:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> this</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code>The Zen of Python, by Tim Peters
@@ -313,78 +333,136 @@ Although never is often better than *right* now.
 If the implementation is hard to explain, it's a bad idea.
 If the implementation is easy to explain, it may be a good idea.
 Namespaces are one honking great idea -- let's do more of those!</code></pre>
-<p>Voici quelques conseils complémentaires.</p>
+<p>Il est conseillé de suivre ces deux principes lorsqu’on commence à programmer des fonctions (ce qui, comme cela est évoqué par la suite, est toujours recommandé).</p>
 <ul>
-<li>Adopter les mêmes standards que la communauté pour les noms de package</li>
+<li>Faire attention au type d’objet renvoyé par <code>Python</code>. Ce langage ne propose pas de typage fort, il est donc possible qu’une fonction renvoie des objets de nature différente selon les cas<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>. Cela peut amener à des surprises lorsqu’on utilise une telle fonction dans un code. Il est recommandé d’éviter ce comportement en proposant des fonctions différentes si l’<em>output</em> d’une fonction est de nature différente. Ce principe de précaution (mais aussi d’information) renvoie au paradigme de la <a href="https://en.wikipedia.org/wiki/Defensive_programming">programmation défensive</a>.</li>
 </ul>
-<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># bien</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># trompeur</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> pd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <ul>
-<li>Faire attention aux <em>namespaces</em> pour éviter les conflits entre fonctions. Cela implique de ne pas importer l’ensemble des fonctions d’un package de la manière suivante:</li>
+<li>Privilégier la programmation orientée objet lorsqu’une fonction doit s’adapter au type d’objet en entrée (par exemple aller chercher des éléments différents pour un objet <code>lm</code> ou un objet <code>glm</code>). Cela évite les codes <em>spaghetti</em> 🍝 inutilement complexes qui sont impossibles à débugger.</li>
 </ul>
-<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> numpy <span class="im">import</span> <span class="op">*</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> math <span class="im">import</span> <span class="op">*</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Dans ce cas, on va se retrouver avec des conflits potentiels entre les fonctions du package <code>numpy</code> et du package <code>math</code> qui portent le même nom (<code>floor</code> par exemple).</p>
-<p>En complément de ces premières recommandations, il est conseillé de suivre ces deux principes lorsqu’on commence à programmer des fonctions (ce qui, comme cela est évoqué plus bas, est toujours recommandé).</p>
-<ul>
-<li><p>Faire attention au type d’objet renvoyé par <code>Python</code> ou <code>R</code>. Ces deux langages ne proposent pas de typage fort, il est donc possible qu’une fonction renvoie des objets de nature différente en fonction, par exemple, de conditions <code>if</code> (selon les cas une liste, un vecteur, un dataframe, etc.). Cela peut amener à des surprises lorsqu’on utilise une telle fonction dans un code. Il est recommandé d’éviter ce comportement en proposant des fonctions différentes si l’<em>output</em> d’une fonction est de nature différente. Ce principe de précaution (mais aussi d’information) renvoie au paradigme de la <a href="https://en.wikipedia.org/wiki/Defensive_programming">programmation défensive</a>.</p></li>
-<li><p>Privilégier la programmation orientée objet lorsqu’une fonction doit s’adapter au type d’objet en entrée (par exemple aller chercher des éléments différents pour un objet <code>lm</code> ou un objet <code>glm</code>). Cela évite les codes <em>spaghetti</em> :spaghetti: inutilement complexes qui sont impossibles à débugger.</p></li>
-</ul>
-<p>{{% box status=“hint” title=“Hint” icon=“fa fa-lightbulb” %}}</p>
-<p><code>Python</code> propose une fonctionalité assez plaisante qui est le <em><code>type hinting</code></em> (<a href="https://docs.python.org/3/library/typing.html">doc officielle</a> et <a href="https://realpython.com/lessons/type-hinting/">tutoriel sur realpython.com</a>). Celle-ci permet d’indiquer le type d’argument attendu par une fonction et celui qui sera renvoyé par la fonction. Par exemple, la personne ayant écrit la fonction suivante</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> calcul_moyenne(df: pd.DataFrame, col : <span class="bu">str</span> <span class="op">=</span> <span class="st">"y"</span>) <span class="op">-&gt;</span> pd.DataFrame:</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df[col].mean()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>propose d’utiliser deux types d’inputs (un <code>DataFrame pandas</code> et une chaine de caractère) et indique qu’elle renverra un <code>DataFrame pandas</code>. A noter que c’est indicatif, non contraignant. En effet, le code ci-dessus fonctionnera si on fournit en argument <code>col</code> une liste puisque <code>pandas</code> sait gérer cela à l’étape <code>df[col].mean()</code></p>
-<p>{{% /box %}}</p>
-<p><br></p>
-<p>{{% box status=“note” title=“Note: le code spaghetti :spaghetti:” icon=“fa fa-comment” %}} Le code <code>spaghetti</code> est un style d’écriture qui favorise l’apparition du syndrome du plat de spaghettis : un code impossible à déméler parce qu’il fait un usage excessif de conditions, d’exceptions en tous sens, de gestion des événements complexes. Il devient quasi-impossible de savoir quelles ont été les conditions à l’origine de telle ou telle erreur sans exécuter ligne à ligne (et celles-ci sont excessivement nombreuses du fait de mauvaises pratiques de programmation) le programme.</p>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+<em>Type hinting</em>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>Python</code> propose une fonctionalité assez plaisante qui est le <em><code>type hinting</code></em> (<a href="https://docs.python.org/3/library/typing.html">doc officielle</a> et <a href="https://realpython.com/lessons/type-hinting/">tutoriel sur realpython.com</a>).</p>
+<p>Cette approche permet d’indiquer le type d’argument attendu par une fonction et celui qui sera renvoyé par la fonction. Par exemple, la personne ayant écrit la fonction suivante</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> calcul_moyenne(df: pd.DataFrame, col : <span class="bu">str</span> <span class="op">=</span> <span class="st">"y"</span>) <span class="op">-&gt;</span> pd.DataFrame:</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df[col].mean()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>propose d’utiliser deux types d’inputs (un <code>DataFrame Pandas</code> et une chaine de caractère) et indique qu’elle renverra un <code>DataFrame Pandas</code>. A noter que c’est indicatif, non contraignant. En effet, le code ci-dessus fonctionnera si on fournit en argument <code>col</code> une liste puisque <code>Pandas</code> sait gérer cela à l’étape <code>df[col].mean()</code>.</p>
+<p>Le <em>type hinting</em> est un élément d’autodocumentation puisque grâce à ces <em>hints</em> le code suffit à faire comprendre la volonté de la personne l’ayant écrit.</p>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Le code spaghetti
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Le code <code>spaghetti</code> est un style d’écriture qui favorise l’apparition du syndrome du plat de spaghettis : un code impossible à déméler parce qu’il fait un usage excessif de conditions, d’exceptions en tous sens, de gestion des événements complexes. Il devient quasi-impossible de savoir quelles ont été les conditions à l’origine de telle ou telle erreur sans exécuter ligne à ligne (et celles-ci sont excessivement nombreuses du fait de mauvaises pratiques de programmation) le programme.</p>
 <p>En fait, la programmation spaghetti qualifie tout ce qui ne permet pas de déterminer le qui, le quoi et le comment. Le code est donc plus long à mettre à jour car cela nécessite de remonter un à un le fil des renvois.</p>
-<p>{{% /box %}}</p>
+</div>
+</div>
 </section>
-<section id="concision" class="level3">
-<h3 class="anchored" data-anchor-id="concision">Concision</h3>
-<p>Comme une démonstration mathématique, un code intelligible doit viser la concision et la simplicité. Les codes très longs sont souvent signes de répétitions et sont difficiles à débugger.</p>
-<ul>
-<li>Privilégier les <code>list comprehensions</code> lorsque cela est possible:</li>
-</ul>
-<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>liste_nombres <span class="op">=</span> <span class="bu">range</span>(<span class="dv">10</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># très mauvais</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> []</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> x <span class="kw">in</span> liste_nombres:</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  y.append(x<span class="op">*</span>x)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># mieux</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> [x<span class="op">*</span>x <span class="cf">for</span> x <span class="kw">in</span> liste_nombres]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<ul>
-<li>Privilégier les appels à des fonctions à des blocs copier-coller en changeant un seul détail.</li>
-</ul>
+<section id="concision" class="level2">
+<h2 class="anchored" data-anchor-id="concision">Concision</h2>
+<p>Un code reproductible doit pouvoir s’exécuter de manière linéaire. S’il provoque une erreur, il est important de pouvoir identifier l’instruction responsable pour pouvoir <em>debugger</em>. Comme une démonstration mathématique, un code intelligible doit viser la concision et la simplicité. Les codes très longs sont souvent signes de répétitions et sont difficiles à débugger.</p>
+<p>Les scripts trop longs ne sont pas une bonne pratique. Il est préférable de diviser l’ensemble des scripts exécutant une chaîne de production en <em>“monades”</em>, c’est-à-dire en petites unités cohérentes. Les fonctions sont un outil privilégié pour cela (en plus de limiter la redondance, et d’être un outil privilégié pour documenter un code).</p>
+<div class="callout-caution callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Exemple: privilégier les <em>list comprehensions</em>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>En <code>Python</code>, il est recommandé de privilégier les <em>list comprehensions</em> à l’utilisation de boucles <code>for</code> indentées. Ces dernières sont en général moins efficaces et surtout impliquent un nombre important de ligne de codes là où les compréhensions de listes sont beaucoup plus concises</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>liste_nombres <span class="op">=</span> <span class="bu">range</span>(<span class="dv">10</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># très mauvais</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> []</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> x <span class="kw">in</span> liste_nombres:</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> x <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        y.append(x<span class="op">*</span>x)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># mieux</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> [x<span class="op">*</span>x <span class="cf">for</span> x <span class="kw">in</span> liste_nombres <span class="cf">if</span> x <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
 </section>
-<section id="coherence" class="level3">
-<h3 class="anchored" data-anchor-id="coherence">Cohérence interne</h3>
-<p>Lister les dépendances est important, tant pour des raisons techniques (que le logiciel sache où aller chercher des fonctions nécessaires pour avoir un code fonctionnel) que pour des raisons conventionnelles (que les utilisateurs comprennent les dépendances à s’installer pour être en mesure de réutiliser le code).</p>
-<p>Pour cette raison, il est de bonne pratique de lister les dépendances de deux manières.</p>
-<p>:one: En début de script, l’ensemble des fonctions issues de librairies externes ou les packages à importer doivent être listés ;</p>
+<section id="coherence" class="level2">
+<h2 class="anchored" data-anchor-id="coherence">Cohérence interne</h2>
+<p>Lister les dépendances est important:</p>
+<ul>
+<li>pour des raisons techniques: le logiciel doit savoir où aller chercher les fonctions utilisées dans un script pour avoir un code fonctionnel ;</li>
+<li>pour des raisons conventionnelles: les utilisateurs doivent comprendre les dépendances à installer pour être en mesure de réutiliser le code.</li>
+</ul>
 <p>Les imports se mettent conventionnellement en début de script, qu’il s’agisse d’import de packages dans leur ensemble ou seulement de certaines fonctions:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_val_score</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_val_score</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Dans le premier cas, on fait ensuite référence aux fonctions en les faisant précéder du nom du package :</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame([<span class="dv">0</span>,<span class="dv">1</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>pd.DataFrame([<span class="dv">0</span>,<span class="dv">1</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Cela permet de dire à <code>Python</code> d’aller chercher dans le <em>namespace</em> <code>pd</code> (alias pour <code>pandas</code> qui est lui-même un ensemble de scripts enregistrés sur le disque) la fonction <code>DataFrame</code>.</p>
-<p>:two: Dans un fichier externe (voir la <a href="#structure">partie structure</a> et le chapitre portabilité), les dépendances à installer sont listées.</p>
-<p>Il s’agit du fichier <code>requirements.txt</code></p>
-<p>Un code reproductible doit pouvoir s’exécuter de manière linéaire. S’il provoque une erreur, il est important de pouvoir identifier l’instruction responsable pour pouvoir <em>debugger</em>.</p>
-<p>Les scripts trop longs ne sont pas une bonne pratique. Il est préférable de diviser l’ensemble des scripts exécutant une chaîne de production en “monades”“, c’est-à-dire en petites unités cohérentes. Les fonctions sont un outil privilégié pour cela (en plus de limiter la redondance, et d’être un outil privilégié pour documenter un code).</p>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Quelques conseils complémentaires.
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>En premier lieu, il convient d’adopter les mêmes standards que la communauté pour les noms de package.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># bien</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># trompeur</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> pd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Il faut également faire attention aux <em>namespaces</em> pour éviter les conflits entre fonctions. Cela implique de ne pas importer l’ensemble des fonctions d’un package de la manière suivante:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> numpy <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> math <span class="im">import</span> <span class="op">*</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Dans ce cas, on va se retrouver avec des conflits potentiels entre les fonctions du package <code>numpy</code> et du package <code>math</code> qui portent le même nom (<code>floor</code> par exemple).</p>
+</div>
+</div>
+</div>
+<p>En ce qui concerne l’installation des packages, nous allons voir dans les parties <a href="../chapters/projects-architecture.html">Structure de code</a> et <a href="../chapters/portability.html">Portabilité</a> qu’il ne faut pas gérer ceci dans le script mais dans un élément à part, relatif à l’environnement d’exécution du projet<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>.</p>
 </section>
-<section id="redondance" class="level3">
-<h3 class="anchored" data-anchor-id="redondance">Limiter la redondance</h3>
+<section id="redondance" class="level2">
+<h2 class="anchored" data-anchor-id="redondance">Limiter la redondance</h2>
 <p>Un bon principe à suivre est <em>“don’t repeat yourself !”</em> (DRY). Celui-ci réduit la charge de code à écrire, à comprendre et à tenir à jour.</p>
 <p></p>
 <p>Ce <a href="https://www.earthdatascience.org/courses/intro-to-earth-data-science/write-efficient-python-code/intro-to-clean-code/dry-modular-code/">post</a> donne quelques bonnes pratiques pour réduire la redondance des codes.</p>
-<p>Supposons qu’on dispose d’une table de données qui utilise le code <code>−99</code> pour représenter les valeurs manquantes. On désire remplacer l’ensemble des <code>−99</code> par des <code>NA</code>.</p>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Un exemple progressif pour comprendre
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>💡 Supposons qu’on dispose d’une table de données qui utilise le code <code>−99</code> pour représenter les valeurs manquantes. On désire remplacer l’ensemble des <code>−99</code> par des <code>NA</code>.</p>
+<p>Voici un code <code>Python</code> qui permet de se placer dans ce cas qui, malheureusement, arrive fréquemment.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># On fixe la racine pour être sûr de tous avoir le même dataset</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">1234</span>)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -406,14 +484,24 @@ Namespaces are one honking great idea -- let's do more of those!</code></pre>
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>df2.loc[df2[<span class="st">'d'</span>] <span class="op">==</span> <span class="op">-</span><span class="dv">99</span>,<span class="st">'d'</span>] <span class="op">=</span> np.nan</span>
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>df2.loc[df2[<span class="st">'e'</span>] <span class="op">==</span> <span class="op">-</span><span class="dv">98</span>,<span class="st">'e'</span>] <span class="op">=</span> np.nan</span>
 <span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>df2.loc[df2[<span class="st">'f'</span>] <span class="op">==</span> <span class="op">-</span><span class="dv">99</span>,<span class="st">'e'</span>] <span class="op">=</span> np.nan</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Quelles sont les choses qui vous dérangent dans le code ci-dessus? Indice: regardez précisément le code et le dataframe (indice: surveillez la colonne <code>e</code> et la colonne <code>g</code>).</p>
-<p>On peut noter au moins deux problèmes:</p>
+<p>Quelles sont les choses qui vous dérangent dans le code ci-dessus?</p>
+<details>
+<summary>
+Indice 💡 Regardez précisément le code et le <code>DataFrame</code>, notamment les colonnes <code>e</code> et <code>g</code>.
+</summary>
+<p>Il y a deux erreurs, difficiles à détecter:</p>
+<ul>
+<li><code>df2.loc[df2['e'] == -98,'e'] = np.nan</code>: une erreur de copier-coller sur la valeur de l’erreur ;</li>
+<li><code>df2.loc[df2['f'] == -99,'e'] = np.nan</code>: une erreur de copier-coller sur les colonnes en question</li>
+</ul>
+</details>
+<p>On peut noter au moins deux trois :</p>
 <ul>
 <li>Le code est long et répétitif, ce qui nuit à sa lisibilité;</li>
 <li>Le code est très dépendant de la structure des données (nom et nombre de colonnes) et doit être adapté dès que celle-ci évolue;</li>
-<li>On a introduit une erreur humaine dans le code, difficile à détecter, dans l’instruction concernant la colonne <code>e</code>.</li>
+<li>On a introduit des erreurs humaines dans le code, difficiles à détecter.</li>
 </ul>
-<p>On voit dans la première version de notre code qu’il y a une structure commune à toutes nos lignes de la forme <code>.[. == -99] &lt;- NA</code>. Cette structure va servir de base à notre fonction, en vue de généraliser le traitement que nous voulons faire.</p>
+<p>On voit dans la première version de notre code qu’il y a une structure commune à toutes nos lignes de la forme <code>.[. == -99] = np.nan</code>. Cette structure va servir de base à notre fonction, en vue de généraliser le traitement que nous voulons faire.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fix_missing(x: pd.Series):</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    x[x <span class="op">==</span> <span class="op">-</span><span class="dv">99</span>] <span class="op">=</span> np.nan</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x</span>
@@ -425,13 +513,21 @@ Namespaces are one honking great idea -- let's do more of those!</code></pre>
 <span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>df2[<span class="st">'d'</span>] <span class="op">=</span> fix_missing(df[<span class="st">'d'</span>])</span>
 <span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>df2[<span class="st">'e'</span>] <span class="op">=</span> fix_missing(df[<span class="st">'e'</span>])</span>
 <span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>df2[<span class="st">'f'</span>] <span class="op">=</span> fix_missing(df[<span class="st">'f'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Cette seconde version du code est meilleure que la première version, car on a réglé le problème d’erreur humaine (il n’est plus possible de taper <code>-98</code> au lieu de <code>-99</code>). Mais le code reste long et répétitif, et n’élimine pas encore toute possibilité d’erreur, car il est toujours possible de se tromper dans le nom des variables.</p>
-<p>La prochaine étape est ainsi d’éliminer ce risque d’erreur en combinant deux fonctions (ce qu’on appelle combinaison de fonctions). La première <code>fix_missing()</code> sert à régler le problème sur un vecteur. La seconde généralisera ce procédé à toutes les colonnes. Comme <code>R</code> est un langage vectoriel, c’est une approche fréquente de construire des fonctions sur des vecteurs et les appliquer ensuite à plusieurs colonnes.</p>
+<p>Cette seconde version du code est meilleure que la première version, car on a réglé le problème d’erreur humaine (il n’est plus possible de taper <code>-98</code> au lieu de <code>-99</code>).</p>
+<details>
+<summary>
+Mais voyez-vous le problème qui persiste ?
+</summary>
+Le code reste long et répétitif, et n’élimine pas encore toute possibilité d’erreur, car il est toujours possible de se tromper dans le nom des variables.
+</details>
+<p>La prochaine étape consiste à éliminer ce risque d’erreur en combinant deux fonctions (ce qu’on appelle la combinaison de fonctions).</p>
+<p>La première fonction <code>fix_missing()</code> sert à régler le problème sur un vecteur. La seconde généralisera ce procédé à toutes les colonnes. Comme <code>Pandas</code> permet une approche vectorielle, il est fréquent de construire des fonctions sur des vecteurs et les appliquer ensuite à plusieurs colonnes.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fix_missing(x: pd.Series):</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    x[x <span class="op">==</span> <span class="op">-</span><span class="dv">99</span>] <span class="op">=</span> np.nan</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>df2 <span class="op">=</span> df.copy()</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>df2 <span class="op">=</span> df2.<span class="bu">apply</span>(fix_missing)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>df2 <span class="op">=</span> df.copy()</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>df2 <span class="op">=</span> df2.<span class="bu">apply</span>(fix_missing)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Cette troisième version du code a plusieurs avantages sur les deux autres versions:</p>
 <ol type="1">
 <li>Elle est plus concise et plus lisible;</li>
@@ -439,36 +535,51 @@ Namespaces are one honking great idea -- let's do more of those!</code></pre>
 <li>Elle fonctionne quels que soient le nombre de colonnes et le nom des colonnes;</li>
 <li>On ne peut pas traiter une colonne différemment des autres par erreur.</li>
 </ol>
-<p>De plus, le code est facilement généralisable. Par exemple, à partir de la même structure, écrire le code qui permet de ne traiter que les colonnes <em>a</em>,<em>b</em> et <em>e</em>.</p>
+<p>De plus, le code est facilement généralisable.</p>
+<p>Par exemple, à partir de la même structure, écrire le code qui permet de ne traiter que les colonnes <em>a</em>,<em>b</em> et <em>e</em> ne demande pas beaucoup d’énergie.</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df2 <span class="op">=</span> df.copy()</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>df2[[<span class="st">'a'</span>,<span class="st">'b'</span>,<span class="st">'e'</span>]] <span class="op">=</span> df2[[<span class="st">'a'</span>,<span class="st">'b'</span>,<span class="st">'e'</span>]].<span class="bu">apply</span>(fix_missing)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
 </section>
-<section id="documentation" class="level3">
-<h3 class="anchored" data-anchor-id="documentation">Documentation</h3>
+<section id="documentation" class="level2">
+<h2 class="anchored" data-anchor-id="documentation">(Auto)documentation</h2>
 <p>Un code sans aucun commentaire est très difficile à s’approprier (y compris pour la personne qui l’a rédigé et qui y revient quelques semaines plus tard). Cependant, un code présentant trop de commentaires est également illisible et reflète généralement un défaut de conception du code qui n’est pas assez explicite.</p>
 <p>La documentation vise à présenter la démarche générale, éventuellement à travers des exemples, mais aussi à expliciter certains éléments du code (une opération qui n’est pas évidente, des arguments de fonction, etc.). La documentation se mélange donc aux instructions visant à être exécutées mais s’en distingue. Ces principes sont hérités du paradigme de la <em>“programmation lettrée”</em> (<em>Literate programming</em>) dont l’un des avocats était Donald Knuth.</p>
 <blockquote class="blockquote">
-<p>“Je crois que le temps est venu pour une amélioration significative de la documentation des programmes, et que le meilleur moyen d’y arriver est de considérer les programmes comme des œuvres littéraires. D’où mon titre, « programmation lettrée .</p>
-<p>Nous devons changer notre attitude traditionnelle envers la construction des programmes : au lieu de considérer que notre tâche principale est de dire à un ordinateur ce qu’il doit faire, appliquons-nous plutôt à expliquer à des êtres humains ce que nous voulons que l’ordinateur fasse.</p>
-<p>Celui qui pratique la programmation lettrée peut être vu comme un essayiste, qui s’attache principalement à exposer son sujet dans un style visant à l’excellence. Tel un auteur, il choisit , avec soin, le dictionnaire à la main, les noms de ses variables et en explique la signification pour chacune d’elles. Il cherche donc à obtenir un programme compréhensible parce que ses concepts sont présentés dans le meilleur ordre possible. Pour cela, il utilise un mélange de méthodes formelles et informelles qui se complètent”</p>
+<p><em>“Je crois que le temps est venu pour une amélioration significative de la documentation des programmes, et que le meilleur moyen d’y arriver est de considérer les programmes comme des œuvres littéraires. D’où mon titre, « programmation lettrée« .</em></p>
+<p><em>Nous devons changer notre attitude traditionnelle envers la construction des programmes : au lieu de considérer que notre tâche principale est de dire à un ordinateur ce qu’il doit faire, appliquons-nous plutôt à expliquer à des êtres humains ce que nous voulons que l’ordinateur fasse.</em></p>
+<p><em>Celui qui pratique la programmation lettrée peut être vu comme un essayiste, qui s’attache principalement à exposer son sujet dans un style visant à l’excellence. Tel un auteur, il choisit , avec soin, le dictionnaire à la main, les noms de ses variables et en explique la signification pour chacune d’elles. Il cherche donc à obtenir un programme compréhensible parce que ses concepts sont présentés dans le meilleur ordre possible. Pour cela, il utilise un mélange de méthodes formelles et informelles qui se complètent”</em></p>
 <p>Donald Knuth, <em>Literate Programming</em> (<a href="https://fr.wikipedia.org/wiki/Programmation_lettr%C3%A9e">source</a>)</p>
 </blockquote>
 <p>Cela peut amener à distinguer deux types de documentation:</p>
 <ol type="1">
-<li>Une documentation générale de type <code>Jupyter Notebook</code> ou <code>R Markdown</code> qui présente certes du code exécuté mais dont l’objet principal est de présenter une démarche ou des résultats</li>
-<li>Une documentation de la démarche plus proche du code dont l’un des exemples sont les <em>docstrings</em> <code>Python</code> ou la documentation <code>Roxygen</code></li>
+<li>Une documentation générale de type <code>Jupyter Notebook</code> ou <code>Quarto Markdown</code> qui présente certes du code exécuté mais dont l’objet principal est de présenter une démarche ou des résultats ;</li>
+<li>Une documentation de la démarche plus proche du code dont l’un des exemples sont les <em>docstrings</em> <code>Python</code> (ou son équivalent <code>R</code>, la documentation <code>Roxygen</code>).</li>
 </ol>
+<p>Les deux grands principes de la documentation au sein d’un script sont les suivants:</p>
 <ul>
-<li>PEP 8, PEP 257</li>
+<li>Il est préférable de <strong>documenter le pourquoi plutôt que le comment</strong>. Le <em>“comment”</em> devrait être compréhensible à la lecture du code ;</li>
+<li>Privilégier l’autodocumentation via des <strong>nommages pertinents</strong></li>
 </ul>
-</section>
-</section>
-<section id="standards-communautaires-de-code" class="level2">
-<h2 class="anchored" data-anchor-id="standards-communautaires-de-code">Standards communautaires de code</h2>
-<p>Pour parler le même langage, un certain nombre de conventions ont émergé dans les communautés <code>R</code> et <code>Python</code>. L’objectif ici n’est pas de lister ces conventions (une partie d’entre elles ayant déjà été évoquées) mais pointer rapidement vers les principales conventions. Dans le domaine, <code>Python</code> a crée un système un peu plus formel que <code>R</code> mais globalement, la démarche est la même.</p>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Comment bien documenter un script ?
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <ul>
-<li>PEP 8, PEP 257</li>
+<li><strong>Minimum</strong> 🚦 : commentaire au début du script pour décrire ce qu’il fait</li>
+<li><strong>Bien</strong> 👍 : commenter les parties “délicates” du code</li>
+<li><strong>Idéal</strong> 💪 : documenter ses fonctions avec la syntaxe des <code>docstrings</code>.</li>
 </ul>
+</div>
+</div>
 </section>
 <section id="outils-et-méthodes-pour-améliorer-un-code" class="level2">
 <h2 class="anchored" data-anchor-id="outils-et-méthodes-pour-améliorer-un-code">Outils et méthodes pour améliorer un code</h2>
@@ -519,8 +630,12 @@ Namespaces are one honking great idea -- let's do more of those!</code></pre>
 <div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
 
 <ol>
-<li id="fn1"><p>Par exemple, en <code>R</code>, il est possible d’utiliser <code>&lt;-</code> ou <code>=</code> pour l’assignation, on ne recontre pas d’erreur en cas de mauvaise indentation…<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>Il existe d’autres guides de style notamment le <a href="https://github.com/mlr-org/mlr3/wiki/Style-Guide#theoretical-style-guide">MLR style guide</a> qui est un <em>framework</em> orienté objet de <em>Machine Learning</em> en <code>R</code>.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>Guido Van Rossum est le créateur de <code>Python</code>, c’est donc quelqu’un qu’il est pertinent d’écouter.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Par exemple, en <code>R</code>, il est possible d’utiliser <code>&lt;-</code> ou <code>=</code> pour l’assignation, on ne recontre pas d’erreur en cas de mauvaise indentation…<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Il existe d’autres guides de style notamment le <a href="https://github.com/mlr-org/mlr3/wiki/Style-Guide#theoretical-style-guide">MLR style guide</a> qui est un <em>framework</em> orienté objet de <em>Machine Learning</em> en <code>R</code>.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Nous allons d’ailleurs plutôt recommander l’<strong>autodocumentation</strong> que la multiplication de commentaires dans un document qui ne seront jamais lus ou qui ne seront pas actualisés en même temps que le code qu’ils accompagnent.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>Par exemple, à la suite d’une série de conditions <code>if</code> (selon les cas une liste, un vecteur, un <code>DataFrame</code>, etc.)<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>Nous présenterons les deux approches principales en <code>Python</code>, leurs points commun et les points par lesquels ils diffèrent : les environnements virtuels (gérés par un fichier <code>requirements.txt</code>) et les environnements conda (gérés par un fichier <code>environment.yml</code>)<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
