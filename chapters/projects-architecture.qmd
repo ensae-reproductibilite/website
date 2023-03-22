@@ -172,24 +172,88 @@ Quelques modèles de `README.md` complets, en `R` :
 
 # Modularité
 
--   fonctions
--   modules
+Dans le chapitre précédent, nous avons recommandé l'utilisation
+des fonctions. Le regroupement de plusieurs fonctions dans
+un fichier est appelé un module.
+
+La modularité est un principe fondamental de programmation
+qui consiste à diviser un programme en plusieurs modules ou scripts indépendants,
+chacun ayant une fonctionnalité spécifique.
+Comme indiqué précédemment, la structuration d'un projet sous forme de modules
+permet de rendre le code plus lisible, plus facile à maintenir et plus réutilisable.
+`Python` fournit un système d'importation flexible et puissant, qui permet de contrôler la portée des variables, les conflits de noms et les dépendances entre les modules[^1]. 
+
+[^1]: A cet égard, `Python` est beaucoup plus fiable que `R`.
+        Dans `R`, si deux scripts utilisent des fonctions
+        dont le nom est identique mais issues de packages
+        différents, il y aura un conflit. En `Python`
+        chaque module sera importé comme un _package_
+        en soi.
+
+## Tests unitaires
 
 
 
-# Séparation données/code/config/environnement d'exécution
+Les tests unitaires sont des tests automatisés qui vérifient le bon fonctionnement d'une unité de code,
+comme une fonction ou une méthode.
+L'objectif est de s'assurer que chaque unité de code fonctionne correctement avant d'être intégrée dans le reste du programme.
 
-### Modèles
+Les tests unitaires sont utiles lorsqu'on travaille sur un code de taille conséquente
+ou lorsqu'on partage son code à d'autres personnes,
+car ils permettent de s'assurer que les modifications apportées ne créent pas de nouvelles erreurs.
 
--   input / traitement / output
--   domain-driven design (data, domain, application, presentation)
-
-### Templates
-
--   Python : cookiescutter
+En `Python`, on peut utiliser le package `unittest` pour écrire des tests unitaires.
+Voici un exemple tiré de ce [site](https://gayerie.dev/docs/python/python3/unittest.html) :
 
 
-## Packages
+```python
+# fichier test_str.py
+import unittest
+
+
+class ChaineDeCaractereTest(unittest.TestCase):
+
+    def test_reversed(self):
+        resultat = reversed("abcd")
+        self.assertEqual("dcba", "".join(resultat))
+
+    def test_sorted(self):
+        resultat = sorted("dbca")
+        self.assertEqual(['a', 'b', 'c', 'd'], resultat)
+
+    def test_upper(self):
+        resultat = "hello".upper()
+        self.assertEqual("HELLO", resultat)
+
+    def test_erreur
+
+
+if __name__ == '__main__':
+    unittest.main()
+```
+
+Pour vérifier que les tests fonctionnent, on execute ce
+script depuis la ligne de commande:
+
+```python
+python3 test_str.py
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+OK
+```
+
+
+::: {.callout-warning}
+Si on écrit des tests unitaires, il est important de les maintenir !
+
+Prendre
+du temps pour écrire des tests unitaires qui ne sont pas maintenus et donc
+ne renvoie plus de diagnostics pertinent est du temps perdu. 
+:::
+
+# Packages
 
 La meilleure façon d'assurer la reproductibilité d'un projet est
 d'intégrer ses scripts dans une structure de _package_.
@@ -207,18 +271,28 @@ plus facile d'identifier une erreur quand elle est dans un package)
 - ...
 
 
-### Gestion des dépendances
+# Templates
 
-TO DO
+-   Python : cookiescutter
 
 
-### Documentation
+# Vers la séparation du stockage du code et des données et de l'environnement d'exécution
 
-### Logging
+La séparation du stockage du code et des données ainsi que de l'environnement d'exécution est importante pour plusieurs raisons.
 
-### Tests unitaires
+Tout d'abord, cela permet de garantir la sécurité et l'intégrité des données. En séparant les données du code, il devient plus difficile pour n'importe qui d'accéder aux informations sensibles stockées dans les données. 
 
-TO DO 
+En séparant l'environnement d'exécution, il est possible de s'assurer que le code fonctionne de manière cohérente et sans conflit avec d'autres programmes exécutés sur le même système ou n'est pas altéré par des configurations
+systèmes difficiles à reproduire.
+Cette séparation facilite également la portabilité et l'adaptation de
+l'application à différentes plateformes, en permettant de modifier
+l'environnement d'exécution sans avoir à modifier le code ou les données.
+
+Le prochain chapitre sera consacré à la gestion des dépendances. Il illustrera
+la manière dont environnement d'exécution et code d'un projet peuvent
+être reliés afin de créer de la portabilité. 
+
+
 
 ### Publication
 
@@ -232,7 +306,7 @@ sont beaucoup plus efficace qu'un grand ménage de printemps.
 Prendre l'habitude de mettre son code immédiatement sur `Github`
 vous amènera à adopter de bons gestes. 
 
-### Maintenance
+## Maintenance
 
 
 L'objectif des conseils de ce cours est
@@ -241,7 +315,7 @@ maintenance à long terme en adoptant les structures
 les plus légères, automatisées et 
 réutilisables. 
 
-Les notebooks Jupyter sont très pratiques pour tâtonner
+Les _notebooks_ Jupyter sont très pratiques pour tâtonner
 et expérimenter. Cependant, ils présentent un certain
 nombre d'inconvénients à long terme qui peuvent 
 rendre impossible à maintenir le code écrit
@@ -275,7 +349,7 @@ fait est beaucoup plus facile à passer en prod (voir suite cours)
 des blocs de code, par exemple les `head`, sont écrits en dur dans
 le code source. 
 
-Globalement, les notebooks sont un bon outil pour tâtonner ou pour
+Globalement, les _notebooks_ sont un bon outil pour tâtonner ou pour
 faire communiquer. Mais pour maintenir un projet à long terme, 
 il vaut mieux privilégier les scripts. Les
 recommandations de ce cours visent à rendre le plus léger possible
