@@ -654,6 +654,52 @@ d'ajouter un badge dans le `README`:
 
 :::
 
+# Isoler la configuration du code
+
+L'exécution d'un code peut dépendre d'éléments de configuration
+comme des jetons
+d'authentification ou des mots de passe
+de connexion à des services qui sont personnels. 
+Ces éléments de configuration n'ont pas vocation à être partagés
+par du code et il est recommandé de les exclure du code. 
+La meilleure manière de transformer ces configurations en paramètre
+est de les isoler dans un script séparé, qui n'est pas partagé,
+et utiliser les variables créées à cette occasion dans le reste
+du programme. 
+
+La manière privilégiée de conserver ce type d'information
+est le format `YAML`. Ce format de fichier
+permet de stocker des informations de manière hiérarchisée
+et flexible
+mais de manière plus lisible que le `JSON`. 
+Ce format sera transformé en dictionnaire `Python` ce
+qui permet des recherches facilitées.
+
+
+Prenons le YAML suivant:
+
+```yaml
+# secrets.yaml
+token:
+    api_insee: "toto"
+    api_github: "tokengh"
+pwd:
+    base_pg: "monmotdepasse"
+```
+
+L'import 
+
+```python
+import yaml
+
+with open('secrets.yaml') as f:
+    secrets = yaml.safe_load(f)
+
+jeton_insee = secrets['token']['api_insee']
+# utilisation du secret
+```
+
+
 # Méthodes complémentaires pour favoriser la qualité d'un script
 
 ## L'_opensource_ comme moyen pour améliorer la qualité
