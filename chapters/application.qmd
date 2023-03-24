@@ -65,7 +65,20 @@ Le plan de la partie est le suivant :
 9. :nine: Ouvrir une *pull request* sur le dépôt du projet.
 
 
+Nous allons partir de ce _Notebook_ `Jupyter`,
+que vous pouvez prévisualiser voire tester
+en cliquant sur l'un des liens suivants:
+
+
+
+
+<a href="https://datalab.sspcloud.fr/launcher/ide/jupyter-python?autoLaunch=false&init.personalInit=%C2%ABhttps%3A%2F%2Fraw.githubusercontent.com%2Flinogaliana%2Fensae-reproductibilite-website%2Fmaster%2Fpreview-notebook.sh%C2%BB" target="_blank" rel="noopener"><img src="https://img.shields.io/badge/SSPcloud-Tester%20notebook%20sur%20SSP--cloud-informational&amp;color=yellow?logo=Python" alt="Onyxia"></a>
+<a href="http://colab.research.google.com/github/linogaliana/ensae-reproductibilite-application/blob/main/titanic.ipynb" target="_blank" rel="noopener"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a>
+
+
 ## Etape 0: forker le dépôt d'exemple et créer une branche de travail
+
+
 
 - Ouvrir un service `VSCode` sur le [SSP Cloud](https://datalab.sspcloud.fr/home). Vous pouvez aller
 dans la page `My Services` et cliquer sur `New service`. Sinon, vous
@@ -74,21 +87,22 @@ pouvez lancer le service en cliquant directement [ici](https://datalab.sspcloud.
 - Générer un jeton d'accès (*token*) sur `GitHub` afin de permettre l'authentification en ligne de commande à votre compte.
 La procédure est décrite [ici](https://docs.sspcloud.fr/onyxia-guide/controle-de-version#creer-un-jeton-dacces-token). Garder le jeton généré de côté.
 
-- Forker le dépôt `Github` : https://github.com/avouacr/ensae-reproductibilite-projet
+- Forker le dépôt `Github` : https://github.com/linogaliana/ensae-reproductibilite-application
 
-- Clôner __votre__ dépôt `Github` <i class="fab fa-github"></i> en utilisant le
+- Clôner __votre__ dépôt `Github` en utilisant le
 terminal depuis `Visual Studio` (`Terminal > New Terminal`) :
 
 ```shell
-$ git clone https://<TOKEN>@github.com/avouacr/ensae-reproductibilite-projet.git
+$ git clone https://<TOKEN>@github.com/<USERNAME>/ensae-reproductibilite-application.git
 ```
 
-où `<TOKEN>` est à remplacer par le jeton que vous avez généré précédemment.
+où `<TOKEN>` et `<USERNAME>` sont à remplacer, respectivement, 
+par le jeton que vous avez généré précédemment et votre nom d'utilisateur.
 
 - Se placer avec le terminal dans le dossier en question : 
 
 ```shell
-$ cd ensae-reproductibilite-projet
+$ cd ensae-reproductibilite-application
 ```
 
 - Créez une branche `nettoyage` :
@@ -98,23 +112,126 @@ $ git checkout -b nettoyage
 Switched to a new branch 'nettoyage'
 ```
 
-## Etape 1 : s'assurer que le notebook s'exécute correctement
+## Etape 1 : s'assurer que le script s'exécute correctement
+
+On va partir du fichier `notebook.py` qui reprend le contenu 
+du _notebook_[^jupytext] mais dans un script classique.
+
+[^jupytext]: L'export dans un script `.py` a été fait
+        avec [`Jupytext`](https://jupytext.readthedocs.io/en/latest/index.html). Comme
+        cela n'est pas vraiment l'objet du cours, nous passons cette étape et fournissons
+        directement le script. Mais n'oubliez
+        pas que cette démarche, fréquente quand on a démarré sur un _notebook_ et
+        qu'on désire consolider en faisant la transition vers des 
+        scripts, nécessite d'être attentif pour ne pas risquer de faire une erreur. 
 
 La première étape est simple, mais souvent oubliée : **vérifier que le code fonctionne correctement**. 
 
-- Ouvrir dans VSCode le notebook `titanic.ipynb`, et choisir comme kernel `basesspcloud`
-- Exécuter le notebook en entier pour vérifier s'il fonctionne
-- Corriger l'erreur qui empêche la bonne exécution.
 
-Il est maintenant temps de *commit* les changements effectués avec Git :
+::: {.callout-tip}
+## Application 1: corriger les erreurs
+
+- Ouvrir dans `VSCode` le script `titanic.py` ;
+- Exécuter le script ligne à ligne pour détecter les erreurs ;
+- Corriger les deux erreurs qui empêchent la bonne exécution ;
+- Vérifier le fonctionnement du script en utilisant la ligne de commande
 
 ```shell
-$ git add titanic.ipynb
+python titanic.py
+```
+
+:::
+
+
+Il est maintenant temps de *commit* les changements effectués avec `Git`[^2] :
+
+[^2]: Essayez de *commit* vos changements à chaque étape de l'exercice, c'est une bonne habitude à prendre.
+
+```shell
+$ git add titanic.py
 $ git commit -m "Corrige l'erreur qui empêchait l'exécution"
 $ git push
 ```
 
-Essayez de *commit* vos changements à chaque étape de l'exercice, c'est une bonne habitude à prendre.
+::: {.callout-caution collapse="true"}
+## Checkpoint
+
+[Script _checkpoint_](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application1/titanic.py)
+:::
+
+
+## Etape 2: utiliser un _linter_ puis un _formatter_
+
+On va maintenant améliorer la qualité de notre code en appliquant les standards communautaires.
+Pour cela, on va utiliser le *linter* classique [`PyLint`](https://pylint.readthedocs.io/en/latest/). 
+
+::: {.callout-note}
+N'hésitez pas à taper un code d'erreur sur un moteur de recherche pour obtenir plus d'informations si jamais le message n'est pas clair !
+:::
+
+Pour appliquer le _linter_ à un script `.py`,
+la syntaxe à entrer dans le terminal est la suivante : 
+
+```shell
+$ pylint mon_script.py
+```
+
+::: {.callout-important}
+[`PyLint`](https://pylint.readthedocs.io/en/latest/) et [`Black`](https://black.readthedocs.io/en/stable/)
+sont des _packages_ `Python` qui 
+s'utilisent principalement en ligne de commande.
+
+Si vous avez une erreur qui suggère
+que votre terminal ne connait pas [`PyLint`](https://pylint.readthedocs.io/en/latest/)
+ou [`Black`](https://black.readthedocs.io/en/stable/),
+n'oubliez pas d'exécuter la commande `pip install pylint` ou `pip install black`.
+:::
+
+
+Le _linter_ renvoie alors une série d'irrégularités,
+en précisant à chaque fois la ligne de l'erreur et le message d'erreur associé (ex : mauvaise identation).
+Il renvoie finalement une note sur 10,
+qui estime la qualité du code à l'aune des standards communautaires évoqués
+dans la partie [Qualité du code](/chapters/code-quality.html).
+
+
+::: {.callout-tip}
+## Application 2: rendre lisible le script
+
+- Diagnostiquer et évaluer la qualité de `titanic.py` avec [`PyLint`](https://pylint.readthedocs.io/en/latest/). Regarder la note obtenue.
+- Utiliser `black titanic.py --diff --color` pour observer les changements de forme que va induire l'utilisation du _formatter_ [`Black`](https://black.readthedocs.io/en/stable/)
+- Appliquer le _formatter_ [`Black`](https://black.readthedocs.io/en/stable/)
+- Réutiliser [`PyLint`](https://pylint.readthedocs.io/en/latest/) pour diagnostiquer l'amélioration de la qualité du script et le travail qui reste à faire. 
+- Comme la majorité du travail restant est à consacrer aux imports:
+    - Mettre tous les _imports_ ensemble en début de script
+    - Retirer les _imports_ redondants en s'aidant des diagnostics de votre éditeur
+    - Réordonner les _imports_ si [`PyLint`](https://pylint.readthedocs.io/en/latest/) vous indique de le faire
+    - Corriger les dernières fautes formelles suggérées par [`PyLint`](https://pylint.readthedocs.io/en/latest/)
+- Délimiter des parties dans votre code pour rendre sa structure plus lisible 
+:::
+
+Le code est maintenant lisible, il obtient à ce stade une note formelle proche de 10.
+Mais il n'est pas encore totalement intelligible ou fiable.
+Il y a notamment 
+beaucoup de redondance de code auxquelles nous allons nous attaquer par la suite. 
+Néanmoins, avant cela, occupons-nous de mieux gérer certains paramètres du script: 
+jetons d'API et chemin des fichiers.
+
+
+::: {.callout-caution collapse="true"}
+## Checkpoint
+
+[Script _checkpoint_](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application2/titanic.py)
+:::
+
+## Etape 3: gestion des paramètres
+
+- 1 fichier `secrets.yaml`: jeton d'API
+- 1 fichier `config.yaml`: chemins + un paramètre comme le split train/test
+
+OLD
+
+
 
 ## Etape 2 : Modularisation - mise en fonctions et mise en module
 
@@ -148,21 +265,6 @@ Si tout a correctement fonctionné, la performance du `RandomForest` et la matri
 
 ## Etape 4 : appliquer les standards de qualité de code
 
-On va maintenant améliorer la qualité de notre code en appliquant les standards communautaires. Pour cela, on va utiliser le *linter* classique `PyLint`. 
-
-Pour appliquer le linter à un script `.py`, la syntaxe à entrer dans le terminal est la suivante : 
-```shell
-$ pylint mon_script.py
-```
-Le linter renvoie alors une série d'irrégularités, en précisant à chaque fois la ligne de l'erreur et le message d'erreur associé (ex : mauvaise identation). Il renvoie finalement une note sur 10, qui estime la qualité du code à l'aune des standards communautaires (PEP8 et PEP257).
-
-- appliquer une première fois le linter, respectivement aux scripts `functions.py` et `main.py`. Noter les notes obtenues.
-- à partir des codes d'erreur, modifier le code pour résoudre les différents problèmes un par un
-- viser une note minimale de 9/10 pour `main.py` et 6/10 pour `functions.py`.
-
-{{% box status="tip" title="Note" icon="fa fa-hint" %}}
-N'hésitez pas à taper un code d'erreur sur un moteur de recherche pour obtenir plus d'informations si jamais le message n'est pas clair !
-{{% /box %}}
 
 ## Etape 5 : adopter une architecture standardisée de projet
 
