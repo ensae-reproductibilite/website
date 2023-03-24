@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.335">
+<meta name="generator" content="quarto-1.2.475">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -4037,11 +4037,11 @@ text-align: justify;
  <span class="menu-text">Portabilité</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../chapters/portability.html">
+    <a class="nav-link" href="../chapters/deployment.html">
  <span class="menu-text">Mise en production</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../chapters/deployment.html">
+    <a class="nav-link active" href="../chapters/application.html" aria-current="page">
  <span class="menu-text">Application</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -4148,32 +4148,59 @@ text-align: justify;
 </header>
 
 <p>L’objectif de cette mise en application est d’<strong>illustrer les différentes étapes qui séparent la phase de développement d’un projet de celle de la mise en production</strong>. Elle permettra de mettre en pratique les différents concepts présentés tout au long du cours.</p>
-<p>Nous nous plaçons dans une situation initiale correspondant à la fin de la phase de développement d’un projet de data science. On a un notebook un peu monolithique, qui réalise les étapes classiques d’un <em>pipeline</em> de <em>machine learning</em> : - import de données - statistiques descriptives et visualisations - <em>feature engineering</em> - entraînement d’un modèle - évaluation du modèle</p>
+<p>Nous nous plaçons dans une situation initiale correspondant à la fin de la phase de développement d’un projet de data science. On a un notebook un peu monolithique, qui réalise les étapes classiques d’un <em>pipeline</em> de <em>machine learning</em> :</p>
+<ul>
+<li>Import de données ;</li>
+<li>Statistiques descriptives et visualisations ;</li>
+<li><em>Feature engineering</em> ;</li>
+<li>Entraînement d’un modèle ;</li>
+<li>Evaluation du modèle</li>
+</ul>
 <p><strong>L’objectif est d’améliorer le projet de manière incrémentale jusqu’à pouvoir le mettre en production, en le valorisant sous une forme adaptée.</strong></p>
-<p>{{% box status=“warning” title=“Warning” icon=“fa fa-exclamation-triangle” %}} Il est important de bien lire les consignes et d’y aller progressivement. Certaines étapes peuvent être rapides, d’autres plus fastidieuses ; certaines être assez guidées, d’autres vous laisser plus de liberté. Si vous n’effectuez pas une étape, vous risquez de ne pas pouvoir passer à l’étape suivante qui en dépend.</p>
-<p>Bien que l’exercice soit applicable sur toute configuration bien faite, nous recommandons de privilégier l’utilisation du <a href="https://datalab.sspcloud.fr/home">SSP Cloud</a>, où tous les outils nécessaires sont pré-installés et pré-configurés. {{% /box %}}</p>
+<div class="callout-important callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Il est important de bien lire les consignes et d’y aller progressivement. Certaines étapes peuvent être rapides, d’autres plus fastidieuses ; certaines être assez guidées, d’autres vous laisser plus de liberté. Si vous n’effectuez pas une étape, vous risquez de ne pas pouvoir passer à l’étape suivante qui en dépend.</p>
+<p>Bien que l’exercice soit applicable sur toute configuration bien faite, nous recommandons de privilégier l’utilisation du <a href="https://datalab.sspcloud.fr/home">SSP Cloud</a>, où tous les outils nécessaires sont pré-installés et pré-configurés.</p>
+</div>
+</div>
 <section id="partie-1-application-des-bonnes-pratiques" class="level1">
 <h1>Partie 1 : application des bonnes pratiques</h1>
-<p>Cette première partie vise à <strong>rendre le projet conforme aux bonnes pratiques</strong> présentées dans le cours. Elle fait intervenir les notions suivantes : - utilisation du <strong>terminal</strong> - <strong>qualité du code</strong> - <strong>architecture de projets</strong> - <strong>contrôle de version</strong> avec Git - <strong>travail collaboratif</strong> avec Git et GitHub</p>
+<p>Cette première partie vise à <strong>rendre le projet conforme aux bonnes pratiques</strong> présentées dans le cours.</p>
+<p>Elle fait intervenir les notions suivantes :</p>
+<ul>
+<li>Utilisation du <strong>terminal</strong> (voir <a href="../chapters/linux-101.html">Linux 101</a>) ;</li>
+<li><strong>Qualité du code</strong> (voir <a href="../chapters/code-quality.html">Qualité du code</a>) ;</li>
+<li><strong>Architecture de projets</strong> (voir <a href="../chapters/projects-architecture.html">Architecture des projets</a>) ;</li>
+<li><strong>Contrôle de version</strong> avec <code>Git</code> (voir <a href="../chapters/git.html">Rappels <code>Git</code></a>) ;</li>
+<li><strong>Travail collaboratif</strong> avec <code>Git</code> et <code>GitHub</code> (voir <a href="../chapters/git.html">Rappels <code>Git</code></a>).</li>
+</ul>
 <p>Le plan de la partie est le suivant :</p>
 <ol start="0" type="1">
-<li>:zero: Forker le dépôt et créer une branche de travail</li>
-<li>:one: S’assurer que le notebook s’exécute correctement</li>
-<li>:two: Modularisation : mise en fonctions et mise en module</li>
-<li>:three: Utiliser un <code>main</code> script</li>
-<li>:four: Appliquer les standards de qualité de code</li>
-<li>:five: Adopter une architecture standardisée de projet</li>
-<li>:six: Fixer l’environnement d’exécution</li>
-<li>:seven: Stocker les données de manière externe</li>
-<li>:eight: Nettoyer le projet Git</li>
-<li>:nine: Ouvrir une <em>pull request</em> sur le dépôt du projet.</li>
+<li><span class="emoji" data-emoji="zero">0️⃣</span> <em>Forker</em> le dépôt et créer une branche de travail</li>
+<li><span class="emoji" data-emoji="one">1️⃣</span> S’assurer que le <em>notebook</em> s’exécute correctement</li>
+<li><span class="emoji" data-emoji="two">2️⃣</span> Modularisation : mise en fonctions et mise en module</li>
+<li><span class="emoji" data-emoji="three">3️⃣</span> Utiliser un <code>main</code> script</li>
+<li><span class="emoji" data-emoji="four">4️⃣</span> Appliquer les standards de qualité de code</li>
+<li><span class="emoji" data-emoji="five">5️⃣</span> Adopter une architecture standardisée de projet</li>
+<li><span class="emoji" data-emoji="six">6️⃣</span> Fixer l’environnement d’exécution</li>
+<li><span class="emoji" data-emoji="seven">7️⃣</span> Stocker les données de manière externe</li>
+<li><span class="emoji" data-emoji="eight">8️⃣</span> Nettoyer le projet <code>Git</code></li>
+<li><span class="emoji" data-emoji="nine">9️⃣</span> Ouvrir une <em>pull request</em> sur le dépôt du projet.</li>
 </ol>
 <section id="etape-0-forker-le-dépôt-dexemple-et-créer-une-branche-de-travail" class="level2">
 <h2 class="anchored" data-anchor-id="etape-0-forker-le-dépôt-dexemple-et-créer-une-branche-de-travail">Etape 0: forker le dépôt d’exemple et créer une branche de travail</h2>
 <ul>
-<li><p>Ouvrir un service <code>vscode</code> sur le <a href="https://datalab.sspcloud.fr/home">SSP Cloud</a>. Vous pouvez aller dans la page <code>My Services</code> et cliquer sur <code>New service</code>. Sinon, vous pouvez lancer le service en cliquant directement <a href="https://datalab.sspcloud.fr/launcher/inseefrlab-helm-charts-datascience/vscode?autoLaunch=false">ici</a>.</p></li>
-<li><p>Générer un jeton d’accès (<em>token</em>) sur GitHub afin de permettre l’authentification en ligne de commande à votre compte. La procédure est décrite <a href="https://docs.sspcloud.fr/onyxia-guide/controle-de-version#creer-un-jeton-dacces-token">ici</a>. Garder le jeton généré de côté.</p></li>
-<li><p>Forker le dépôt <code>Github</code> <i class="fab fa-github"></i> https://github.com/avouacr/ensae-reproductibilite-projet</p></li>
+<li><p>Ouvrir un service <code>VSCode</code> sur le <a href="https://datalab.sspcloud.fr/home">SSP Cloud</a>. Vous pouvez aller dans la page <code>My Services</code> et cliquer sur <code>New service</code>. Sinon, vous pouvez lancer le service en cliquant directement <a href="https://datalab.sspcloud.fr/launcher/ide/vscode-python?autoLaunch=false">ici</a>.</p></li>
+<li><p>Générer un jeton d’accès (<em>token</em>) sur <code>GitHub</code> afin de permettre l’authentification en ligne de commande à votre compte. La procédure est décrite <a href="https://docs.sspcloud.fr/onyxia-guide/controle-de-version#creer-un-jeton-dacces-token">ici</a>. Garder le jeton généré de côté.</p></li>
+<li><p>Forker le dépôt <code>Github</code> : https://github.com/avouacr/ensae-reproductibilite-projet</p></li>
 <li><p>Clôner <strong>votre</strong> dépôt <code>Github</code> <i class="fab fa-github"></i> en utilisant le terminal depuis <code>Visual Studio</code> (<code>Terminal &gt; New Terminal</code>) :</p></li>
 </ul>
 <pre class="shell"><code>$ git clone https://&lt;TOKEN&gt;@github.com/avouacr/ensae-reproductibilite-projet.git</code></pre>
@@ -4318,7 +4345,7 @@ mc cp test.csv s3/lgaliana/ensae-reproductibilite/test.csv
 <h1>Partie 2 : construction d’un projet portable et reproductible</h1>
 <p>Dans la partie précédente, on a appliqué de manière incrémentale de nombreuses bonnes pratiques vues tout au long du cours. Ce faisant, on s’est déjà considérablement rapprochés d’une possible mise en production : le code est lisible, la structure du projet est normalisée et évolutive, et le code est proprement versionné sur un dépôt <code>GitHub</code> <i class="fab fa-github"></i>.</p>
 <p>A présent, nous avons une version du projet qui est largement partageable. Du moins en théorie, car la pratique est souvent plus compliquée : il y a fort à parier que si vous essayez d’exécuter votre projet sur un autre environnement (typiquement, votre ordinateur personnel), les choses ne se passent pas du tout comme attendu. Cela signifie qu’<strong>en l’état, le projet n’est pas portable : il n’est pas possible, sans modifications coûteuses, de l’exécuter dans un environnement différent de celui dans lequel il a été développé</strong>.</p>
-<p>Dans cette seconde partie, nous allons voir comment <strong>normaliser l’environnement d’exécution afin de produire un projet portable</strong>. On sera alors tout proche de pouvoir mettre le projet en production. On progressera dans l’échelle de la reproductibilité de la manière suivante: - :one: <a href="#configyaml"><strong>Gérer des variables d’environnement hors du code</strong></a> ; - :two: <a href="#anaconda"><strong>Environnements virtuels</strong></a> ; - :three: <a href="#docker"><strong>Images et conteneurs <code>Docker</code></strong></a>.</p>
+<p>Dans cette seconde partie, nous allons voir comment <strong>normaliser l’environnement d’exécution afin de produire un projet portable</strong>. On sera alors tout proche de pouvoir mettre le projet en production. On progressera dans l’échelle de la reproductibilité de la manière suivante: - <span class="emoji" data-emoji="one">1️⃣</span> <a href="#configyaml"><strong>Gérer des variables d’environnement hors du code</strong></a> ; - <span class="emoji" data-emoji="two">2️⃣</span> <a href="#anaconda"><strong>Environnements virtuels</strong></a> ; - <span class="emoji" data-emoji="three">3️⃣</span> <a href="#docker"><strong>Images et conteneurs <code>Docker</code></strong></a>.</p>
 <section id="configyaml" class="level2">
 <h2 class="anchored" data-anchor-id="configyaml">Etape 1: créer un répertoire de variables servant d’input</h2>
 <section id="enjeu" class="level3">
@@ -4347,7 +4374,7 @@ https://github.com/linogaliana/ensae-reproductibilite-projet-1/commit/4a9d935223
 <p>L’environnement <code>conda</code> créé avec <code>conda env export</code> (<a href="#conda-export">étape 6</a>) contient énormément de dépendances, dont de nombreuses qui ne nous sont pas nécessaires (il en serait de même avec <code>pip freeze</code>). Nous n’avons en effet besoin que des <em>packages</em> présents dans la section <code>import</code> de nos scripts et les dépendances nécessaires pour que ces <em>packages</em> soient fonctionnels.</p>
 <p>Vous allez chercher à obtenir un <code>environment.yml</code> beaucoup plus parcimonieux que celui généré par <code>conda env export</code></p>
 <p></p>
-<p>{{% panel name=“Approche générale :koala:” %}}</p>
+<p>{{% panel name=“Approche générale <span class="emoji" data-emoji="koala">🐨</span>” %}}</p>
 <p>Le tableau récapitulatif présent dans la <a href="../portability/#aide-mémoire">partie portabilité</a> peut être utile dans cette partie. L’idée est de partir <em>from scratch</em> et figer l’environnement qui permet d’avoir une appli fonctionnelle.</p>
 <ul>
 <li><p>Créer un environnement vide avec <code>Python 3.10</code> <!---
@@ -4364,14 +4391,14 @@ pip install pandas PyYAML s3fs scikit-learn
 <li><p>Retirer la section <code>prefix</code> (si elle est présente) et changer la section <code>name</code> en <code>monenv</code></p></li>
 </ul>
 <p>{{% /panel %}}</p>
-<p>{{% panel name=“Approche fainéante :sloth:” %}}</p>
+<p>{{% panel name=“Approche fainéante <span class="emoji" data-emoji="sloth">🦥</span>” %}}</p>
 <p>Nous allons générer une version plus minimaliste grâce à l’utilitaire <a href="https://github.com/bndr/pipreqs"><code>pipreqs</code></a></p>
 <ul>
 <li>Installer <code>pipreqs</code> en <code>pip install</code></li>
 <li>En ligne de commande, depuis la racine du projet, faire <code>pipreqs</code></li>
 <li>Ouvrir le <code>requirements.txt</code> automatiquement généré. Il est beaucoup plus minimal que celui que vous obtiendriez avec <code>pip freeze</code> ou l’<code>environment.yml</code> obtenu à <a href="#conda-export">l’étape 6</a>.</li>
-<li>Remplacer toute la section <code>dependencies</code> du <code>environment.yml</code> par le contenu du <code>requirements.txt</code> (:warning: ne pas oublier l’indentation et le tiret en début de ligne)</li>
-<li>:warning: Modifier le tiret à <code>scikit learn</code>. Il ne faut pas un <em>underscore</em> mais un tiret</li>
+<li>Remplacer toute la section <code>dependencies</code> du <code>environment.yml</code> par le contenu du <code>requirements.txt</code> (<span class="emoji" data-emoji="warning">⚠️</span> ne pas oublier l’indentation et le tiret en début de ligne)</li>
+<li><span class="emoji" data-emoji="warning">⚠️</span> Modifier le tiret à <code>scikit learn</code>. Il ne faut pas un <em>underscore</em> mais un tiret</li>
 <li>Ajouter la version de python (par exemple <code>python=3.10.0</code>) au début de la section <code>dependencies</code></li>
 <li>Retirer la section <code>prefix</code> du fichier <code>environment.yml</code> (si elle est présente) et changer le contenu de la section <code>name</code> en <code>monenv</code></li>
 <li>Créer l’environnement (<a href="../portability/#aide-mémoire">voir le tableau récapitulatif dans la partie portabilité</a>)</li>
@@ -4405,32 +4432,32 @@ conda env create -f environment.yml
 <section id="création-dun-premier-dockerfile" class="level3">
 <h3 class="anchored" data-anchor-id="création-dun-premier-dockerfile">Création d’un premier Dockerfile</h3>
 <ul>
-<li>:one: Comme couche de départ, partir d’une image légère comme <code>ubuntu:20.04</code></li>
-<li>:two: Dans une deuxième couche, faire un <code>apt get -y update</code> et installer <code>wget</code> qui va être nécessaire pour télécharger <code>Miniconda</code> depuis la ligne de commande</li>
-<li>:three: Dans la troisième couche, nous allons installer <code>Miniconda</code> :
+<li><span class="emoji" data-emoji="one">1️⃣</span> Comme couche de départ, partir d’une image légère comme <code>ubuntu:20.04</code></li>
+<li><span class="emoji" data-emoji="two">2️⃣</span> Dans une deuxième couche, faire un <code>apt get -y update</code> et installer <code>wget</code> qui va être nécessaire pour télécharger <code>Miniconda</code> depuis la ligne de commande</li>
+<li><span class="emoji" data-emoji="three">3️⃣</span> Dans la troisième couche, nous allons installer <code>Miniconda</code> :
 <ul>
 <li>Télécharger la dernière version de <code>Miniconda</code> avec <code>wget</code> depuis l’url de téléchargement direct https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh</li>
 <li>Installer <code>Miniconda</code> dans le chemin <code>/home/coder/local/bin/conda</code></li>
 <li>Effacer le fichier d’installation pour libérer de la place sur l’image</li>
 </ul></li>
-<li>:four: En quatrième couche, on va installer <code>mamba</code> pour accélérer l’installation des packages dans notre environnement.</li>
-<li>:five: En cinquième couche, nous allons créer l’environnement <code>conda</code>:
+<li><span class="emoji" data-emoji="four">4️⃣</span> En quatrième couche, on va installer <code>mamba</code> pour accélérer l’installation des packages dans notre environnement.</li>
+<li><span class="emoji" data-emoji="five">5️⃣</span> En cinquième couche, nous allons créer l’environnement <code>conda</code>:
 <ul>
 <li>Utiliser <code>COPY</code> pour que <code>Docker</code> soit en mesure d’utiliser le fichier <code>environment.yml</code> (sinon <code>Docker</code> renverra une erreur)</li>
 <li>Créer l’environnement vide <code>monenv</code> (présentant uniquement <code>Python</code> 3.10) avec la commande <code>conda</code> adéquate</li>
 <li>Mettre à jour l’environnement en utilisant <code>environment.yml</code> avec <code>mamba</code></li>
 </ul></li>
-<li>:six: Utiliser <code>ENV</code> pour ajouter l’environnement <code>monenv</code> au <code>PATH</code> et utiliser le <em>fix</em> suivant:</li>
+<li><span class="emoji" data-emoji="six">6️⃣</span> Utiliser <code>ENV</code> pour ajouter l’environnement <code>monenv</code> au <code>PATH</code> et utiliser le <em>fix</em> suivant:</li>
 </ul>
 <div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>RUN echo <span class="st">&quot;export PATH=$PATH&quot;</span> <span class="op">&gt;&gt;</span> <span class="op">/</span>home<span class="op">/</span>coder<span class="op">/</span>.bashrc  <span class="co"># Temporary fix while PATH gets overwritten by code-server</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <ul>
-<li>:seven: Exposer sur le port <code>5000</code></li>
-<li>:eight: En dernière étape, utiliser <code>CMD</code> pour reproduire le comportement de <code>python main.py</code></li>
+<li><span class="emoji" data-emoji="seven">7️⃣</span> Exposer sur le port <code>5000</code></li>
+<li><span class="emoji" data-emoji="eight">8️⃣</span> En dernière étape, utiliser <code>CMD</code> pour reproduire le comportement de <code>python main.py</code></li>
 </ul>
 <p>{{% box status=“hint” title=“Hint: <code>mamba</code>” icon=“fa fa-lightbulb” %}} <code>mamba</code> est une alternative à <code>conda</code> pour installer des <em>packages</em> dans un environnement <code>Miniconda</code>/<code>Anaconda</code>. <code>mamba</code> n’est pas obligatoire, <code>conda</code> peut suffire. Cependant, <code>mamba</code> est beaucoup plus rapide que <code>conda</code> pour installer des packages à installer ; il s’agit donc d’un utilitaire très pratique. {{% /box %}}</p>
 <p></p>
 <p>{{% panel name=“Indications supplémentaires” %}}</p>
-<p>Cliquer sur les onglets ci-dessus :point_up_2: pour bénéficier d’indications supplémentaires, pour vous aider. Cependant, essayez de ne pas les consulter immédiatement: n’hésitez pas à tâtonner.</p>
+<p>Cliquer sur les onglets ci-dessus <span class="emoji" data-emoji="point_up_2">👆</span> pour bénéficier d’indications supplémentaires, pour vous aider. Cependant, essayez de ne pas les consulter immédiatement: n’hésitez pas à tâtonner.</p>
 <p>{{% /panel %}}</p>
 <p>{{% panel name=“Installation de Miniconda” %}}</p>
 <pre class="shell"><code># INSTALL MINICONDA -------------------------------
@@ -4472,7 +4499,7 @@ ubuntu          20.04     825d55fb6340   6 days ago      72.8MB</code></pre>
 <!----
 docker run -it my-python-app
 ---->
-<p>:warning: :bomb: :fire: <code>Docker</code> ne sait pas où trouver le fichier <code>main.py</code>. D’ailleurs, il ne connait pas d’autres fichiers de notre application qui sont nécessaires pour faire tourner le code: <code>config.yaml</code> et le dossier <code>src</code></p>
+<p><span class="emoji" data-emoji="warning">⚠️</span> <span class="emoji" data-emoji="bomb">💣</span> <span class="emoji" data-emoji="fire">🔥</span> <code>Docker</code> ne sait pas où trouver le fichier <code>main.py</code>. D’ailleurs, il ne connait pas d’autres fichiers de notre application qui sont nécessaires pour faire tourner le code: <code>config.yaml</code> et le dossier <code>src</code></p>
 <ul>
 <li><p>Avant l’étape <code>EXPOSE</code> utiliser plusieurs <code>ADD</code> et/ou <code>COPY</code> pour que l’application dispose de tous les éléments minimaux pour être en mesure de fonctionner</p></li>
 <li><p>Refaire tourner <code>docker run</code> <!---
@@ -4486,18 +4513,18 @@ docker run -it my-python-app
 <p>Vous devriez rencontrer une erreur liée à la variable d’environnement <code>AWS_ENDPOINT_URL</code>. C’est normal, elle est inconnue de cet environnement minimaliste. D’ailleurs, <code>Docker</code> n’a aucune raison de connaître votre espace de stockage sur le <code>S3</code> du <code>SSP-Cloud</code> si vous ne lui dites pas. Donc cet environnement ne sait pas comment accéder aux fichiers présents dans votre <code>minio</code>.</p>
 <p>Vous allez régler ce problème avec les étapes suivantes, :</p>
 <ul>
-<li>:one: Naviguer dans l’<a href="https://datalab.sspcloud.fr/mes-fichiers">interface du SSP-Cloud</a> pour retrouver les liens d’accès direct de vos fichiers</li>
-<li>:two: Dans <code>VSCode</code>, les mettre dans <code>config.yaml</code> (faire de nouvelles clés)</li>
-<li>:three: Dans <code>VSCode</code>, modifier la fonction d’import pour s’adapter à ce changement.</li>
-<li>:four: Faire un <code>commit</code> et pusher les fichiers</li>
-<li>:five: Dans l’environnement bac à sable, faire un <code>pull</code> pour récupérer ces modifications</li>
-<li>:six: Tester à nouveau le <code>build</code> (là encore le <em>cache</em> est bien pratique !)</li>
+<li><span class="emoji" data-emoji="one">1️⃣</span> Naviguer dans l’<a href="https://datalab.sspcloud.fr/mes-fichiers">interface du SSP-Cloud</a> pour retrouver les liens d’accès direct de vos fichiers</li>
+<li><span class="emoji" data-emoji="two">2️⃣</span> Dans <code>VSCode</code>, les mettre dans <code>config.yaml</code> (faire de nouvelles clés)</li>
+<li><span class="emoji" data-emoji="three">3️⃣</span> Dans <code>VSCode</code>, modifier la fonction d’import pour s’adapter à ce changement.</li>
+<li><span class="emoji" data-emoji="four">4️⃣</span> Faire un <code>commit</code> et pusher les fichiers</li>
+<li><span class="emoji" data-emoji="five">5️⃣</span> Dans l’environnement bac à sable, faire un <code>pull</code> pour récupérer ces modifications</li>
+<li><span class="emoji" data-emoji="six">6️⃣</span> Tester à nouveau le <code>build</code> (là encore le <em>cache</em> est bien pratique !)</li>
 </ul>
 <!---
 cf. 
 https://github.com/linogaliana/ensae-reproductibilite-projet-1/commit/56946b4c5cb860d50b908d98a87fb549624314a6
 ----->
-<p>:tada: A ce stade, la matrice de confusion doit fonctionner. Vous avez créé votre première application reproductible !</p>
+<p><span class="emoji" data-emoji="tada">🎉</span> A ce stade, la matrice de confusion doit fonctionner. Vous avez créé votre première application reproductible !</p>
 </section>
 </section>
 </section>
@@ -4529,24 +4556,24 @@ https://github.com/linogaliana/ensae-reproductibilite-projet-1/commit/56946b4c5c
 <h2 class="anchored" data-anchor-id="etape-1-mise-en-place-de-tests-automatisés">Etape 1: mise en place de tests automatisés</h2>
 <p>Avant d’essayer de mettre en oeuvre la création de notre image <code>Docker</code> de manière automatisée, nous allons présenter la logique de l’intégration continue en généralisant les évaluations de qualité du code avec le <code>linter</code></p>
 <p></p>
-<p>{{% panel name=“Utilisation d’un <em>template</em> <code>Github</code> :cat:” %}}</p>
+<p>{{% panel name=“Utilisation d’un <em>template</em> <code>Github</code> <span class="emoji" data-emoji="cat">🐱</span>” %}}</p>
 <p><strong>Methode la plus simple: utilisation d’un <em>template</em> Github</strong></p>
 <p>Si vous cliquez sur l’onglet <code>Actions</code> de votre dépôt, <code>Github</code> vous propose des <em>workflows</em> standardisés reliés à <code>Python</code>. Choisir l’option <code>Python Package using Anaconda</code>.</p>
 <p>warning: Nous n’allons modifier que deux éléments de ce fichier.</p>
-<p>:one: La dernière étape (<code>Test with pytest</code>) ne nous est pas nécessaire car nous n’avons pas de tests unitaires Nous allons donc remplacer celle-ci par l’utilisation de <code>pylint</code> pour avoir une note de qualité du package.</p>
+<p><span class="emoji" data-emoji="one">1️⃣</span> La dernière étape (<code>Test with pytest</code>) ne nous est pas nécessaire car nous n’avons pas de tests unitaires Nous allons donc remplacer celle-ci par l’utilisation de <code>pylint</code> pour avoir une note de qualité du package.</p>
 <ul>
 <li>Utiliser <code>pylint</code> à cette étape pour noter les scripts ;</li>
 <li>Vous pouvez fixer un score minimal à 5 (option <code>--fail-under=5</code>)</li>
 </ul>
-<p>:two: Mettre entre guillements la version de <code>Python</code> pour que celle-ci soit reconnue.</p>
-<p>:three: Enfin, finaliser la création de ce script:</p>
+<p><span class="emoji" data-emoji="two">2️⃣</span> Mettre entre guillements la version de <code>Python</code> pour que celle-ci soit reconnue.</p>
+<p><span class="emoji" data-emoji="three">3️⃣</span> Enfin, finaliser la création de ce script:</p>
 <ul>
 <li>En cliquant sur le bouton <code>Start Commit</code>, choisir la méthode <code>Create a new branch for this commit and start a pull request</code> en nommant la branche <code>dev</code></li>
 <li>Créer la <code>Pull Request</code> en lui donnant un nom signifiant</li>
 </ul>
 <p>{{% /panel %}}</p>
 <p>{{% panel name=“Méthode manuelle” %}}</p>
-<p>:warning: On est plutôt sur une méthode de galérien. Il vaut mieux privilégier l’autre approche</p>
+<p><span class="emoji" data-emoji="warning">⚠️</span> On est plutôt sur une méthode de galérien. Il vaut mieux privilégier l’autre approche</p>
 <p>On va éditer depuis <code>VisualStudio</code> nos fichiers.</p>
 <ul>
 <li>Créer une branche <code>dev</code> en ligne de commande</li>
@@ -4554,16 +4581,16 @@ https://github.com/linogaliana/ensae-reproductibilite-projet-1/commit/56946b4c5c
 <li>Créer un fichier <code>.github/workflows/quality.yml</code>.</li>
 </ul>
 <p>Nous allons construire, par étape, une version simplifiée du <code>Dockerfile</code> présent dans <a href="https://medium.com/swlh/enhancing-code-quality-with-github-actions-67561c6f7063">ce post</a> et dans <a href="https://autobencoder.com/2020-08-24-conda-actions/">celui-ci</a></p>
-<p>:one: D’abord, définissons des paramètres pour indiquer à <code>Github</code> quand faire tourner notre script:</p>
+<p><span class="emoji" data-emoji="one">1️⃣</span> D’abord, définissons des paramètres pour indiquer à <code>Github</code> quand faire tourner notre script:</p>
 <ul>
 <li>Commencez par nommer votre <em>workflow</em> par exemple <code>Python Linting</code> avec la clé <code>name</code></li>
 <li>Nous allons faire tourner ce <em>workflow</em> dans la branche <code>master</code> et dans la branche actuelle (<code>dev</code>). Ici, nous laissons de côté les autres éléments (par exemple le fait de faire tourner à chaque <em>pull request</em>). La clé <code>on</code> est dédiée à cet usage</li>
 </ul>
-<p>:two: Ensuite, défnissons le contexte d’exécution des tâches (<code>jobs</code>) de notre script dans les options de la partie <code>build</code>:</p>
+<p><span class="emoji" data-emoji="two">2️⃣</span> Ensuite, défnissons le contexte d’exécution des tâches (<code>jobs</code>) de notre script dans les options de la partie <code>build</code>:</p>
 <ul>
 <li>Utilisons une machine <code>ubuntu-latest</code>. Nous verrons plus tard comment améliorer cela.</li>
 </ul>
-<p>:three: Nous allons ensuite mélanger des étapes pré-définies (des actions du <em>marketplace</em>) et des instructions que nous faisons :</p>
+<p><span class="emoji" data-emoji="three">3️⃣</span> Nous allons ensuite mélanger des étapes pré-définies (des actions du <em>marketplace</em>) et des instructions que nous faisons :</p>
 <ul>
 <li>Le <em>runner</em> <code>Github</code> doit récupérer le contenu de notre dépôt, pour cela utiliser l’action <code>checkout</code>. Par rapport à l’exemple, il convient d’ajouter, pour le moment, un paramètre <code>ref</code> avec le nom de la branche (par exemple <code>dev</code>)</li>
 <li><del>On installe ensuite <code>Python</code> avec l’action <code>setup-python</code></del> Pas besoin d’installer <code>Python</code>, on va utiliser l’option <code>conda-incubator/setup-miniconda@v2</code></li>
@@ -4614,7 +4641,7 @@ https://github.com/linogaliana/ensae-reproductibilite-projet-1/commit/56946b4c5c
 <h2 class="anchored" data-anchor-id="etape-2-automatisation-de-la-livraison-de-limage-docker">Etape 2: Automatisation de la livraison de l’image <code>Docker</code></h2>
 <p>Maintenant, nous allons automatiser la mise à disposition de notre image sur <code>DockerHub</code>. Cela facilitera sa réutilisation mais aussi des valorisations ultérieures.</p>
 <p>Là encore, nous allons utiliser une série d’actions pré-configurées.</p>
-<p>:one: Pour que <code>Github</code> puisse s’authentifier auprès de <code>DockerHub</code>, il va falloir d’abord interfacer les deux plateformes. Pour cela, nous allons utiliser un jeton (<em>token</em>) <code>DockerHub</code> que nous allons mettre dans un espace sécurisé associé à votre dépôt <code>Github</code>. Cette démarche sera là même ultérieurement lorsque nous connecterons notre dépôt à un autre service tiers, à savoir <code>Netlify</code>:</p>
+<p><span class="emoji" data-emoji="one">1️⃣</span> Pour que <code>Github</code> puisse s’authentifier auprès de <code>DockerHub</code>, il va falloir d’abord interfacer les deux plateformes. Pour cela, nous allons utiliser un jeton (<em>token</em>) <code>DockerHub</code> que nous allons mettre dans un espace sécurisé associé à votre dépôt <code>Github</code>. Cette démarche sera là même ultérieurement lorsque nous connecterons notre dépôt à un autre service tiers, à savoir <code>Netlify</code>:</p>
 <ul>
 <li>Se rendre sur https://hub.docker.com/ et créer un compte.</li>
 <li>Aller dans les paramètres (https://hub.docker.com/settings/general) et cliquer, à gauche, sur <code>Security</code></li>
@@ -4623,7 +4650,7 @@ https://github.com/linogaliana/ensae-reproductibilite-projet-1/commit/56946b4c5c
 <li>Donner le nom <code>DOCKERHUB_TOKEN</code> à ce jeton et copier la valeur. Valider</li>
 <li>Créer un deuxième secret nommé <code>DOCKERHUB_USERNAME</code> ayant comme valeur le nom d’utilisateur que vous avez créé sur <code>Dockerhub</code></li>
 </ul>
-<p>:two: A ce stade, nous avons donné les moyens à <code>Github</code> de s’authentifier avec notre identité sur <code>Dockerhub</code>. Il nous reste à mettre en oeuvre l’action en s’inspirant de https://github.com/docker/build-push-action/#usage. On ne va modifier que trois éléments dans ce fichier. Effectuer les actions suivantes:</p>
+<p><span class="emoji" data-emoji="two">2️⃣</span> A ce stade, nous avons donné les moyens à <code>Github</code> de s’authentifier avec notre identité sur <code>Dockerhub</code>. Il nous reste à mettre en oeuvre l’action en s’inspirant de https://github.com/docker/build-push-action/#usage. On ne va modifier que trois éléments dans ce fichier. Effectuer les actions suivantes:</p>
 <ul>
 <li>Créer depuis <code>VSCode</code> un fichier <code>.github/workflows/docker.yml</code> et coller le contenu du <em>template</em> dedans ;</li>
 <li>Changer le nom en un titre plus signifiant (par exemple <em>“Production de l’image Docker”</em>)</li>
@@ -4631,7 +4658,7 @@ https://github.com/linogaliana/ensae-reproductibilite-projet-1/commit/56946b4c5c
 <li>Changer le tag à la fin pour mettre <code>&lt;username&gt;/ensae-repro-docker:latest</code> où <code>username</code> est le nom d’utilisateur sur <code>DockerHub</code>;</li>
 <li>Faire un <code>commit</code> et un <code>push</code> de ces fichiers</li>
 </ul>
-<p>:four: Comme on est fier de notre travail, on va afficher ça avec un badge sur le <code>README</code>. Pour cela, on se rend dans l’onglet <code>Actions</code> et on clique sur un des scripts en train de tourner.</p>
+<p><span class="emoji" data-emoji="four">4️⃣</span> Comme on est fier de notre travail, on va afficher ça avec un badge sur le <code>README</code>. Pour cela, on se rend dans l’onglet <code>Actions</code> et on clique sur un des scripts en train de tourner.</p>
 <ul>
 <li>En haut à droite, on clique sur <code>...</code></li>
 <li>Sélectionner <code>Create status badge</code></li>
@@ -4639,7 +4666,7 @@ https://github.com/linogaliana/ensae-reproductibilite-projet-1/commit/56946b4c5c
 <li>Copier dans le <code>README</code> depuis <code>VSCode</code></li>
 <li>Faire de même pour l’autre <em>workflow</em></li>
 </ul>
-<p>:five: Maintenant, il nous reste à tester notre application dans l’espace bac à sable:</p>
+<p><span class="emoji" data-emoji="five">5️⃣</span> Maintenant, il nous reste à tester notre application dans l’espace bac à sable:</p>
 <ul>
 <li>Se rendre sur l’environnement bac à sable</li>
 <li>Créer un fichier <code>Dockerfile</code> ne contenant que l’import et le déploiement de l’appli:</li>
@@ -4652,7 +4679,7 @@ https://github.com/linogaliana/ensae-reproductibilite-projet-1/commit/56946b4c5c
 <li>Comme précédemment, faire un <em>build</em></li>
 <li>Tester l’image avec <code>run</code></li>
 </ul>
-<p>:tada: La matrice de confusion doit s’afficher ! Vous avez grandement facilité la réutilisation de votre image.</p>
+<p><span class="emoji" data-emoji="tada">🎉</span> La matrice de confusion doit s’afficher ! Vous avez grandement facilité la réutilisation de votre image.</p>
 </section>
 <section id="etape-3-création-dun-rapport-automatique" class="level2">
 <h2 class="anchored" data-anchor-id="etape-3-création-dun-rapport-automatique">Etape 3: création d’un rapport automatique</h2>
@@ -4666,7 +4693,7 @@ https://github.com/linogaliana/ensae-reproductibilite-projet-1/commit/56946b4c5c
 <p>Le but est de proposer un rapport minimal qui illustre la performance du modèle est la <em>feature importance</em>. Pour ce dernier élément, le rapport qui sera proposé utilise <code>shap</code> qui est une librairie dédiée à l’interprétabilité des modèles de <em>machine learning</em></p>
 <section id="rapport-minimal-en-local" class="level3">
 <h3 class="anchored" data-anchor-id="rapport-minimal-en-local">1. Rapport minimal en local</h3>
-<p>:one: La première étape consiste à installer <code>quarto</code> sur notre machine <code>Linux</code> sur laquelle tourne <code>VSCode</code>:</p>
+<p><span class="emoji" data-emoji="one">1️⃣</span> La première étape consiste à installer <code>quarto</code> sur notre machine <code>Linux</code> sur laquelle tourne <code>VSCode</code>:</p>
 <ul>
 <li>Dans un terminal, installer <code>quarto</code> avec les commandes suivantes:</li>
 </ul>
@@ -4676,7 +4703,7 @@ sudo apt install &quot;./quarto-${QUARTO_VERSION}-linux-amd64.deb&quot;</code></
 <ul>
 <li>S’assurer qu’on travaille bien depuis l’environnement <code>conda</code> <code>monenv</code>. Sinon l’activer</li>
 </ul>
-<p>:two: Il va être nécessaire d’enrichir l’environnement <code>conda</code>. Certaines dépendances sont nécessaires pour que <code>quarto</code> fonctionne bien avec <code>Python</code> (<code>jupyter</code>, <code>nbclient</code>…) alors que d’autres ne sont nécessaires que parce qu’ils sont utilisés dans le document (<code>seaborn</code>, <code>shap</code>…). Changer la section <code>dependencies</code> avec la liste suivante:</p>
+<p><span class="emoji" data-emoji="two">2️⃣</span> Il va être nécessaire d’enrichir l’environnement <code>conda</code>. Certaines dépendances sont nécessaires pour que <code>quarto</code> fonctionne bien avec <code>Python</code> (<code>jupyter</code>, <code>nbclient</code>…) alors que d’autres ne sont nécessaires que parce qu’ils sont utilisés dans le document (<code>seaborn</code>, <code>shap</code>…). Changer la section <code>dependencies</code> avec la liste suivante:</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dependencies</span><span class="kw">:</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> python=3.10.0</span></span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> ipykernel==6.13.0</span></span>
@@ -4691,7 +4718,7 @@ sudo apt install &quot;./quarto-${QUARTO_VERSION}-linux-amd64.deb&quot;</code></
 <span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> scikit-learn==1.0.2</span></span>
 <span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> seaborn==0.11.2</span></span>
 <span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> shap==0.40.0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>:three: Créer un fichier nommé <code>report.qmd</code></p>
+<p><span class="emoji" data-emoji="three">3️⃣</span> Créer un fichier nommé <code>report.qmd</code></p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>---</span>
@@ -4793,7 +4820,7 @@ sudo apt install &quot;./quarto-${QUARTO_VERSION}-linux-amd64.deb&quot;</code></
 <span id="cb21-99"><a href="#cb21-99" aria-hidden="true" tabindex="-1"></a><span class="in">```python</span></span>
 <span id="cb21-100"><a href="#cb21-100" aria-hidden="true" tabindex="-1"></a>pd.DataFrame(conf_matrix, columns<span class="op">=</span>[<span class="st">&#39;Predicted&#39;</span>,<span class="st">&#39;Observed&#39;</span>], index <span class="op">=</span> [<span class="st">&#39;Predicted&#39;</span>,<span class="st">&#39;Observed&#39;</span>]).to_html()</span>
 <span id="cb21-101"><a href="#cb21-101" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>:four: On va tenter de compiler ce document</p>
+<p><span class="emoji" data-emoji="four">4️⃣</span> On va tenter de compiler ce document</p>
 <ul>
 <li><p>Le compiler en local avec la commande <code>quarto render report.qmd</code></p></li>
 <li><p>Vous devriez rencontrer l’erreur suivante:</p></li>
@@ -4818,12 +4845,12 @@ sudo apt install &quot;./quarto-${QUARTO_VERSION}-linux-amd64.deb&quot;</code></
 <li>un fichier <code>HTML</code> que vous pouvez télécharger et ouvrir</li>
 </ul></li>
 </ul>
-<p>:five: On a déjà un résultat assez esthétique en ce qui concerne la page <code>HTML</code>. Cependant, on peut se dire que certains paramètres par défaut, comme l’affichage des blocs de code, ne conviennent pas au public ciblé. De même, certains paramètres de style, comme l’affichage des tableaux peuvent ne pas convenir à notre charte graphique. On va remédier à cela en deux étapes:</p>
+<p><span class="emoji" data-emoji="five">5️⃣</span> On a déjà un résultat assez esthétique en ce qui concerne la page <code>HTML</code>. Cependant, on peut se dire que certains paramètres par défaut, comme l’affichage des blocs de code, ne conviennent pas au public ciblé. De même, certains paramètres de style, comme l’affichage des tableaux peuvent ne pas convenir à notre charte graphique. On va remédier à cela en deux étapes:</p>
 <ul>
 <li>enrichir le <em>header</em> d’options globales contrôlant le comportement de <code>quarto</code></li>
 <li>créer un fichier <code>CSS</code> pour avoir de beaux tableaux</li>
 </ul>
-<p>:six: Changer la section <code>format</code> du <em>header</em> avec les options suivantes:</p>
+<p><span class="emoji" data-emoji="six">6️⃣</span> Changer la section <code>format</code> du <em>header</em> avec les options suivantes:</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">format</span><span class="kw">:</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">html</span><span class="kw">:</span></span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">echo</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
@@ -4836,7 +4863,7 @@ sudo apt install &quot;./quarto-${QUARTO_VERSION}-linux-amd64.deb&quot;</code></
 <span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> cosmo</span></span>
 <span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> css/custom.scss</span></span>
 <span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">ipynb</span><span class="kw">:</span><span class="at"> default</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>:seven: Créer le fichier <code>css/custom.scss</code> avec le contenu suivant:</p>
+<p><span class="emoji" data-emoji="seven">7️⃣</span> Créer le fichier <code>css/custom.scss</code> avec le contenu suivant:</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode css code-with-copy"><code class="sourceCode css"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co">/*-- scss:rules --*/</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>table {</span>
@@ -4874,8 +4901,8 @@ sudo apt install &quot;./quarto-${QUARTO_VERSION}-linux-amd64.deb&quot;</code></
 <span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a>    <span class="kw">font-weight</span>: <span class="dv">bold</span><span class="op">;</span></span>
 <span id="cb24-36"><a href="#cb24-36" aria-hidden="true" tabindex="-1"></a>    <span class="kw">color</span>: <span class="cn">#009879</span><span class="op">;</span></span>
 <span id="cb24-37"><a href="#cb24-37" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>:eight: Compiler à nouveau et observer le changement d’esthétique du <code>HTML</code></p>
-<p>:nine: Commit des nouveaux fichier <code>report.qmd</code>, <code>custom.scss</code> et des fichiers déjà existants.</p>
+<p><span class="emoji" data-emoji="eight">8️⃣</span> Compiler à nouveau et observer le changement d’esthétique du <code>HTML</code></p>
+<p><span class="emoji" data-emoji="nine">9️⃣</span> Commit des nouveaux fichier <code>report.qmd</code>, <code>custom.scss</code> et des fichiers déjà existants.</p>
 <p>{{% box status=“hint” title=“Un <code>linter</code> sous forme de <em>hook</em> pre-commit” icon=“fa fa-lightbulb” %}}</p>
 <p>On ne <code>commit</code> pas les <em>output</em>, ici le notebook et le fichier html. Les mettre sur le dépôt <code>Github</code> n’est pas la bonne manière de les mettre à disposition. On va le voir, on va utiliser l’approche CI/CD pour cela.</p>
 <p>Idéalement, on ajoute au <code>.gitignore</code> les fichiers concernés, ici <code>report.ipynb</code> et <code>report.html</code></p>
@@ -4885,7 +4912,7 @@ sudo apt install &quot;./quarto-${QUARTO_VERSION}-linux-amd64.deb&quot;</code></
 <h3 class="anchored" data-anchor-id="enrichir-limage-docker">3. Enrichir l’image <code>Docker</code></h3>
 <p>On va vouloir mettre à jour notre image pour automatiser, à terme, la production de nos livrables (le notebook et la page web).</p>
 <p>Pour cela, il est nécessaire que notre image intègre le logiciel <code>quarto</code>.</p>
-<p>:one: A partir du script précédent d’installation de <code>quarto</code>, enrichir l’image <code>Docker</code><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<p><span class="emoji" data-emoji="one">1️⃣</span> A partir du script précédent d’installation de <code>quarto</code>, enrichir l’image <code>Docker</code><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
 <!----
 ENV QUARTO_VERSION="0.9.287"
 RUN wget "https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.deb"
@@ -4894,10 +4921,10 @@ RUN apt install "./quarto-${QUARTO_VERSION}-linux-amd64.deb"
 </section>
 <section id="automatisation-avec-github-actions" class="level3">
 <h3 class="anchored" data-anchor-id="automatisation-avec-github-actions">4. Automatisation avec <code>Github Actions</code></h3>
-<p>:one: Créer un nouveau fichier <code>.github/workflows.report.yml</code></p>
+<p><span class="emoji" data-emoji="one">1️⃣</span> Créer un nouveau fichier <code>.github/workflows.report.yml</code></p>
 <p>Si les dépendances et l’image ont bien été enrichis, cette étape est quasi directe avec</p>
 <p></p>
-<p>{{% panel name=“Version autonome :car:” %}}</p>
+<p>{{% panel name=“Version autonome <span class="emoji" data-emoji="car">🚗</span>” %}}</p>
 <ul>
 <li>Donner comme nom <code>Deploy as website</code></li>
 <li>Effectuer cette action à chaque <code>push</code> sur les branches <code>main</code>, <code>master</code> et <code>dev</code></li>
@@ -4935,14 +4962,14 @@ RUN apt install "./quarto-${QUARTO_VERSION}-linux-amd64.deb"
 <span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">path</span><span class="kw">:</span><span class="at"> report.ipynb</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>{{% /panel %}}</p>
 <p></p>
-<p>Si vous êtes fier de vous, vous pouvez ajouter le badge de ce workflow sur le <code>README</code> :sunglasses:</p>
+<p>Si vous êtes fier de vous, vous pouvez ajouter le badge de ce workflow sur le <code>README</code> <span class="emoji" data-emoji="sunglasses">😎</span></p>
 <p>Cette étape nous a permis d’automatiser la construction de nos livrables. Mais la mise à disposition de ce livrable est encore assez manuelle: il faut aller chercher à la main la dernière version du notebook pour la partager.</p>
 <p>On va améliorer cela en déployant automatiquement un site <em>web</em> présentant en page d’accueil notre rapport et permettant le téléchargement du notebook.</p>
 </section>
 </section>
 <section id="etape-4-déploiement-de-ce-rapport-automatique-sur-le-web" class="level2">
 <h2 class="anchored" data-anchor-id="etape-4-déploiement-de-ce-rapport-automatique-sur-le-web">Etape 4: Déploiement de ce rapport automatique sur le web</h2>
-<p>:one: Dans un premier temps, nous allons connecter notre dépôt <code>Github</code> au service tiers <code>Netlify</code></p>
+<p><span class="emoji" data-emoji="one">1️⃣</span> Dans un premier temps, nous allons connecter notre dépôt <code>Github</code> au service tiers <code>Netlify</code></p>
 <ul>
 <li>Aller sur https://www.netlify.com/ et faire <code>Sign up</code> (utiliser son compte <code>Github</code>)</li>
 <li>Dans la page d’accueil de votre profil, vous pouvez cliquer sur <code>Add new site &gt; Import an existing project</code></li>
@@ -4950,13 +4977,13 @@ RUN apt install "./quarto-${QUARTO_VERSION}-linux-amd64.deb"
 <li>Cliquer sur le nom du projet et laisser les paramètres par défaut (nous allons modifier par la suite)</li>
 <li>Cliquer sur <code>Deploy site</code></li>
 </ul>
-<p>:two: A ce stade, votre déploiement devrait échouer. C’est normal, vous essayez de déployer depuis <code>master</code> qui ne comporte pas de html. Mais le rapport n’est pas non plus présent dans la branche <code>dev</code>. En fait, aucune branche ne comporte le rapport: celui-ci est généré dans votre <em>pipeline</em> mais n’est jamais présent dans le dépôt car il s’agit d’un <em>output</em>. On va désactiver le déploiement automatique pour privilégier un déploiement depuis <code>Github Actions</code>:</p>
+<p><span class="emoji" data-emoji="two">2️⃣</span> A ce stade, votre déploiement devrait échouer. C’est normal, vous essayez de déployer depuis <code>master</code> qui ne comporte pas de html. Mais le rapport n’est pas non plus présent dans la branche <code>dev</code>. En fait, aucune branche ne comporte le rapport: celui-ci est généré dans votre <em>pipeline</em> mais n’est jamais présent dans le dépôt car il s’agit d’un <em>output</em>. On va désactiver le déploiement automatique pour privilégier un déploiement depuis <code>Github Actions</code>:</p>
 <ul>
 <li>Aller dans <code>Site Settings</code> puis, à gauche, cliquer sur <code>Build and Deploy</code></li>
 <li>Dans la section <code>Build settings</code>, cliquer sur <code>Stop builds</code> et valider</li>
 </ul>
 <p>On vient de désactiver le déploiement automatique par défaut. On va faire communiquer notre dépôt <code>Github</code> et <code>Netlify</code> par le biais de l’intégration continue.</p>
-<p>:three: Pour cela, il faut créer un jeton <code>Netlify</code> pour que les serveurs de <code>Github</code>, lorsqu’ils disposent d’un rapport, puissent l’envoyer à <code>Netlify</code> pour la mise sur le <em>web</em>. Il va être nécessaire de créer deux variables d’environnement pour connecter <code>Github</code> et <code>Netlify</code>: l’identifiant du site et le <em>token</em></p>
+<p><span class="emoji" data-emoji="three">3️⃣</span> Pour cela, il faut créer un jeton <code>Netlify</code> pour que les serveurs de <code>Github</code>, lorsqu’ils disposent d’un rapport, puissent l’envoyer à <code>Netlify</code> pour la mise sur le <em>web</em>. Il va être nécessaire de créer deux variables d’environnement pour connecter <code>Github</code> et <code>Netlify</code>: l’identifiant du site et le <em>token</em></p>
 <ul>
 <li>Pour le token :
 <ul>
@@ -4974,7 +5001,7 @@ RUN apt install "./quarto-${QUARTO_VERSION}-linux-amd64.deb"
 <li>Créer le secret <code>NETLIFY_SITE_ID</code> en collant l’identifiant du site</li>
 </ul></li>
 </ul>
-<p>:four: Nous avons effectué toutes les configurations nécessaires. On va maintenant mettre à jour l’intégration continue afin de mettre à disposition sur le <em>web</em> notre rapport. On va utiliser l’interface en ligne de commande (CLI) de <code>Netlify</code>. Celle-ci attend que le site <em>web</em> se trouve dans un dossier <code>public</code> et que la page d’accueil soit nommée <code>index.html</code>:</p>
+<p><span class="emoji" data-emoji="four">4️⃣</span> Nous avons effectué toutes les configurations nécessaires. On va maintenant mettre à jour l’intégration continue afin de mettre à disposition sur le <em>web</em> notre rapport. On va utiliser l’interface en ligne de commande (CLI) de <code>Netlify</code>. Celle-ci attend que le site <em>web</em> se trouve dans un dossier <code>public</code> et que la page d’accueil soit nommée <code>index.html</code>:</p>
 <p></p>
 <p>{{% panel name=“Vision d’ensemble” %}}</p>
 <ul>
