@@ -221,16 +221,90 @@ jetons d'API et chemin des fichiers.
 ::: {.callout-caution collapse="true"}
 ## Checkpoint
 
-[Script _checkpoint_](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application2/titanic.py)
+[`titanic.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application2/titanic.py)
 :::
 
 ## Etape 3: gestion des paramètres
 
-- 1 fichier `secrets.yaml`: jeton d'API
-- 1 fichier `config.yaml`: chemins + un paramètre comme le split train/test
+L'exécution du code et les résultats obtenus
+dépendent de certains paramètres. L'étude de résultats
+alternatifs, en jouant sur 
+des variantes des paramètres, est à ce stade compliquée
+car il est nécessaire de parcourir le code pour trouver
+ces paramètres. De plus, certains paramètres personnels
+comme des jetons
+d'API ou des mots de passe n'ont pas vocation à 
+être présents dans le code. 
 
-OLD
+Il est plus judicieux de considérer ces paramètres comme des
+variables d'entrée du script. Cela peut être fait de deux
+manières:
 
+1. Avec des arguments optionnels appelés depuis la ligne de commande.
+Cela peut être pratique pour mettre en oeuvre des tests automatisés[^noteCI] mais
+n'est pas forcément pertinent pour toutes les variables. Nous allons montrer
+cet usage avec le nombre d'arbres de notre _random forest_ ;
+2. En utilisant un fichier de configuration dont les valeurs sont importées dans
+le script principal. Nous allons le mettre en oeuvre pour deux types de fichiers:
+les éléments de configuration à partager et ceux à conserver pour soi mais 
+pouvant servir.
+
+[^noteCI]: Nous le verrons lorsque nous mettrons en oeuvre l'intégration continue.
+
+::: {.callout-tip}
+## Paramétrisation du script
+
+1. En s'inspirant de [cette réponse](https://stackoverflow.com/a/69377311/9197726), 
+créer une variable `n_trees` qui peut éventuellement être paramétrée en ligne de commande
+et dont la valeur par défaut est 20.
+2. Tester cette paramétrisation en ligne de commande avec la valeur par défaut
+puis 2, 10 et 50 arbres
+3. Repérer le jeton d’API dans le code. Retirer le jeton d’API du code
+et créer à la racine du projet un fichier YAML nommé `secrets.yaml`
+où vous écrivez ce secret sous la forme `key: value`
+4. Pour éviter d'avoir à le faire plus tard,
+créer une fonction `import_yaml_config` qui prend en argument le
+chemin d'un fichier `YAML`
+et renvoie le contenu de celui-ci en _output_. Vous pouvez suivre
+le conseil du chapitre sur la [Qualité du code](/chapters/code-quality.html)
+en adoptant le _type hinting_.
+5. Créer la variable `API_TOKEN` ayant la valeur stockée dans `secrets.yaml`.
+5. Tester en ligne de commande que l'exécution du fichier est toujours
+sans erreur
+6. Refaire un diagnostic avec [`PyLint`](https://pylint.readthedocs.io/en/latest/)
+et corriger les éventuels messages. 
+7. Créer un fichier `config.yaml` stockant trois informations: le chemin des données
+d'entraînement, des données de test et la répartition train/test utilisée dans le code. 
+Créer les variables correspondantes dans le code après avoir utilisé `import_yaml_config`
+8. Créer un fichier `.gitignore`. Ajouter dans ce fichier `secrets.yaml`
+car il ne faut pas committer ce fichier.
+8. Créer un fichier `README.md` où vous indiquez qu'il faut créer un fichier `secrets.yaml` pour
+pouvoir utiliser l'API. 
+
+
+<details>
+<summary>Indice si vous ne trouvez pas comment lire un fichier `YAML`</summary>
+Si le fichier s'appelle `toto.yaml`, vous pouvez l'importer de cette manière:
+```python
+with open("toto.yaml", "r", encoding="utf-8") as stream:
+    dict_config = yaml.safe_load(stream)
+```
+</details>
+
+:::
+
+
+::: {.callout-caution collapse="true"}
+## Checkpoint
+
+- [`titanic.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application2/titanic.py)
+- [`README.md`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application2/readme.md)
+- [`config.yaml`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application2/config.yaml)
+- [`secrets.yaml`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application2/secrets.yaml)
+- [`.gitignore`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application2/.gitignore)
+
+
+:::
 
 
 ## Etape 2 : Modularisation - mise en fonctions et mise en module
@@ -262,8 +336,6 @@ $ python main.py
 ```
 
 Si tout a correctement fonctionné, la performance du `RandomForest` et la matrice de confusion devraient s'afficher dans la console.
-
-## Etape 4 : appliquer les standards de qualité de code
 
 
 ## Etape 5 : adopter une architecture standardisée de projet
