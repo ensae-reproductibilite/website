@@ -498,34 +498,55 @@ $ cookiecutter https://github.com/drivendata/cookiecutter-data-science
 Ici, on a déjà un projet, on va donc faire les choses dans l'autre sens : on va s'inspirer de la structure proposée afin de réorganiser celle de notre projet selon les standards communautaires.
 :::
 
-
-- analyser et comprendre la [structure de projet](https://drivendata.github.io/cookiecutter-data-science/#directory-structure) proposée par le template
-- créer les dossiers qui vous semblent pertinents pour contenir les différents éléments de notre projet selon le modèle
-- vous aller devoir séparer le module `functions.py` en différents modules afin de pouvoir entrer dans la structure suggérée dans le dossier `src` (le dossier destiné à contenir le code source de votre package)
-- vous devriez arriver à une structure semblable à celle-ci :
+En s'inspirant du _cookiecutter data science_
+on va adopter la structure suivante:
 
 ```shell
-ensae-reproductibilite-projet
+ensae-reproductibilite-application
+├── main.py
+├── README.md
 ├── data
 │   └── raw
 │       ├── test.csv
 │       └── train.csv
-├── main.py
+├── configuration
+│   ├── secrets.yaml
+│   └── config.yaml
 ├── notebooks
 │   └── titanic.ipynb
-├── README.md
 └── src
     ├── data
-    │   ├── import_data.py
+    │   └── import_data.py
     ├── features
     │   └── build_features.py
     └── models
         └── train_evaluate.py
 ```
 
-{{% box status="tip" title="Note" icon="fa fa-hint" %}}
-Il est normal d'avoir des dossiers `__pycache__` qui traînent : ils se créent automatiquement à l'exécution d'un script en Python. On verra comment les supprimer définitivement à l'étape 8.
-{{% /box %}}
+::: {.callout-tip}
+
+## Application 6: adopter une structure lisible
+
+- _(optionnel)_ Analyser et comprendre la [structure de projet](https://drivendata.github.io/cookiecutter-data-science/#directory-structure) proposée par le template
+- Modifier l'arborescence du projet selon le modèle
+- Adapter les scripts et les fichiers de configuration à la nouvelle arborescence
+- Ajouter le dossier __pycache__ au `.gitignore`[^pycache] et le dossier `data`
+:::
+
+[^pycache]: Il est normal d'avoir des dossiers `__pycache__` qui traînent : ils se créent automatiquement à l'exécution d'un script en `Python`.
+
+::: {.callout-caution collapse="true"}
+## Checkpoint
+
+- [`build_features.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/build_features.py)
+- [`import_data.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/import_data.py)
+- [`train_evaluate.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/train_evaluate.py)
+- [`main.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/main.py)
+
+Les autres fichiers sont inchangés, à l'exception de leur emplacement.
+
+:::
+
 
 ## Etape 6 : fixer l'environnement d'exécution {#conda-export}
 
@@ -564,20 +585,7 @@ mc cp train.csv s3/lgaliana/ensae-reproductibilite/train.csv
 mc cp test.csv s3/lgaliana/ensae-reproductibilite/test.csv
 ----->
 
-## Etape 8 : nettoyer le dépôt Git
-
-Des dossiers parasites `__pycache__` se sont glissés dans notre projet. Ils se créent automatiquement à l'exécution d'un script en Python, afin de rendre plus rapide les exécutions ultérieures. Ils n'ont cependant pas de raison d'être versionnés, vu que ce sont des fichiers locaux (spécifiques à un environnement d'exécution donné).
-
-- supprimer les différents dossiers `__pycache__` du projet
-- ajouter le [fichier .gitignore adapté à Python](https://github.com/github/gitignore/blob/main/Python.gitignore) à la racine du projet
-- ajouter le dossier `data/` au `.gitignore` pour éviter tout ajout involontaire de données au dépôt Git
-
-{{% box status="tip" title="Note" icon="fa fa-hint" %}}
-En pratique, mieux vaut adopter l'habitude de toujours mettre un `.gitignore`, pertinent selon le langage du projet, dès le début du projet. `GitHub` offre cette option à l'initialisation d'un projet. Le site
-[gitignore.io](https://www.toptal.com/developers/gitignore) propose des modèles
-selon le langage que vous utilisez qui peuvent être utiles.
-{{% /box %}}
-
+<!-----
 ## Etape 9 : ouvrir une *pull request* sur le dépôt du projet
 
 Enfin terminé ! Enfin presque... On s'est donné beaucoup de mal à nettoyer ce dépôt et le mettre aux standards, autant valoriser ce travail. On va pour cela faire une *pull request* sur le [dépôt du projet initial](https://github.com/avouacr/ensae-reproductibilite-projet), c'est à dire proposer à l'auteur d'intégrer tous les changements que vous avez effectué en committant à chaque étape. 
@@ -589,6 +597,7 @@ Si tout s'est bien passé, vous devriez à présent voir votre *pull request* su
 {{% box status="warning" title="Warning" icon="fa fa-exclamation-triangle" %}}
 Faire une *pull request* via la branche `master` d’un *fork* est très mal vu. En effet, il faut souvent faire des contorsionnements pour réussir à faire coïncider deux histoires qui n’ont pas de raison de coïncider. On s'évite beaucoup de problèmes en prenant l'habitude de toujours faire ses *pull requests* à partir d'une autre branche que `master`.
 {{% /box %}}
+------------------>
 
 # Partie 2 : construction d'un projet portable et reproductible {#partie2}
 
