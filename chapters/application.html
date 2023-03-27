@@ -4088,8 +4088,6 @@ text-align: justify;
   <li><a href="#etape-2-adopter-une-architecture-standardisée-de-projet" id="toc-etape-2-adopter-une-architecture-standardisée-de-projet" class="nav-link" data-scroll-target="#etape-2-adopter-une-architecture-standardisée-de-projet">Etape 2 : adopter une architecture standardisée de projet</a></li>
   <li><a href="#conda-export" id="toc-conda-export" class="nav-link" data-scroll-target="#conda-export">Etape 6 : fixer l’environnement d’exécution</a></li>
   <li><a href="#stockageS3" id="toc-stockageS3" class="nav-link" data-scroll-target="#stockageS3">Etape 7 : stocker les données de manière externe</a></li>
-  <li><a href="#etape-8-nettoyer-le-dépôt-git" id="toc-etape-8-nettoyer-le-dépôt-git" class="nav-link" data-scroll-target="#etape-8-nettoyer-le-dépôt-git">Etape 8 : nettoyer le dépôt Git</a></li>
-  <li><a href="#etape-9-ouvrir-une-pull-request-sur-le-dépôt-du-projet" id="toc-etape-9-ouvrir-une-pull-request-sur-le-dépôt-du-projet" class="nav-link" data-scroll-target="#etape-9-ouvrir-une-pull-request-sur-le-dépôt-du-projet">Etape 9 : ouvrir une <em>pull request</em> sur le dépôt du projet</a></li>
   </ul></li>
   <li><a href="#partie2" id="toc-partie2" class="nav-link" data-scroll-target="#partie2">Partie 2 : construction d’un projet portable et reproductible</a>
   <ul class="collapse">
@@ -4577,29 +4575,66 @@ $ cookiecutter https://github.com/drivendata/cookiecutter-data-science</code></p
 <p>Ici, on a déjà un projet, on va donc faire les choses dans l’autre sens : on va s’inspirer de la structure proposée afin de réorganiser celle de notre projet selon les standards communautaires.</p>
 </div>
 </div>
-<ul>
-<li>analyser et comprendre la <a href="https://drivendata.github.io/cookiecutter-data-science/#directory-structure">structure de projet</a> proposée par le template</li>
-<li>créer les dossiers qui vous semblent pertinents pour contenir les différents éléments de notre projet selon le modèle</li>
-<li>vous aller devoir séparer le module <code>functions.py</code> en différents modules afin de pouvoir entrer dans la structure suggérée dans le dossier <code>src</code> (le dossier destiné à contenir le code source de votre package)</li>
-<li>vous devriez arriver à une structure semblable à celle-ci :</li>
-</ul>
-<pre class="shell"><code>ensae-reproductibilite-projet
+<p>En s’inspirant du <em>cookiecutter data science</em> on va adopter la structure suivante:</p>
+<pre class="shell"><code>ensae-reproductibilite-application
+├── main.py
+├── README.md
 ├── data
 │   └── raw
 │       ├── test.csv
 │       └── train.csv
-├── main.py
+├── configuration
+│   ├── secrets.yaml
+│   └── config.yaml
 ├── notebooks
 │   └── titanic.ipynb
-├── README.md
 └── src
     ├── data
-    │   ├── import_data.py
+    │   └── import_data.py
     ├── features
     │   └── build_features.py
     └── models
         └── train_evaluate.py</code></pre>
-<p>{{% box status=“tip” title=“Note” icon=“fa fa-hint” %}} Il est normal d’avoir des dossiers <code>__pycache__</code> qui traînent : ils se créent automatiquement à l’exécution d’un script en Python. On verra comment les supprimer définitivement à l’étape 8. {{% /box %}}</p>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Application 6: adopter une structure lisible
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><em>(optionnel)</em> Analyser et comprendre la <a href="https://drivendata.github.io/cookiecutter-data-science/#directory-structure">structure de projet</a> proposée par le template</li>
+<li>Modifier l’arborescence du projet selon le modèle</li>
+<li>Adapter les scripts et les fichiers de configuration à la nouvelle arborescence</li>
+<li>Ajouter le dossier <strong>pycache</strong> au <code>.gitignore</code><a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a> et le dossier <code>data</code></li>
+</ul>
+</div>
+</div>
+<div class="callout-caution callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Checkpoint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-17" class="callout-17-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/build_features.py"><code>build_features.py</code></a></li>
+<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/import_data.py"><code>import_data.py</code></a></li>
+<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/train_evaluate.py"><code>train_evaluate.py</code></a></li>
+<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/main.py"><code>main.py</code></a></li>
+</ul>
+<p>Les autres fichiers sont inchangés, à l’exception de leur emplacement.</p>
+</div>
+</div>
+</div>
 </section>
 <section id="conda-export" class="level2">
 <h2 class="anchored" data-anchor-id="conda-export">Etape 6 : fixer l’environnement d’exécution</h2>
@@ -4624,23 +4659,19 @@ $ cookiecutter https://github.com/drivendata/cookiecutter-data-science</code></p
 mc cp train.csv s3/lgaliana/ensae-reproductibilite/train.csv
 mc cp test.csv s3/lgaliana/ensae-reproductibilite/test.csv
 ----->
-</section>
-<section id="etape-8-nettoyer-le-dépôt-git" class="level2">
-<h2 class="anchored" data-anchor-id="etape-8-nettoyer-le-dépôt-git">Etape 8 : nettoyer le dépôt Git</h2>
-<p>Des dossiers parasites <code>__pycache__</code> se sont glissés dans notre projet. Ils se créent automatiquement à l’exécution d’un script en Python, afin de rendre plus rapide les exécutions ultérieures. Ils n’ont cependant pas de raison d’être versionnés, vu que ce sont des fichiers locaux (spécifiques à un environnement d’exécution donné).</p>
-<ul>
-<li>supprimer les différents dossiers <code>__pycache__</code> du projet</li>
-<li>ajouter le <a href="https://github.com/github/gitignore/blob/main/Python.gitignore">fichier .gitignore adapté à Python</a> à la racine du projet</li>
-<li>ajouter le dossier <code>data/</code> au <code>.gitignore</code> pour éviter tout ajout involontaire de données au dépôt Git</li>
-</ul>
-<p>{{% box status=“tip” title=“Note” icon=“fa fa-hint” %}} En pratique, mieux vaut adopter l’habitude de toujours mettre un <code>.gitignore</code>, pertinent selon le langage du projet, dès le début du projet. <code>GitHub</code> offre cette option à l’initialisation d’un projet. Le site <a href="https://www.toptal.com/developers/gitignore">gitignore.io</a> propose des modèles selon le langage que vous utilisez qui peuvent être utiles. {{% /box %}}</p>
-</section>
-<section id="etape-9-ouvrir-une-pull-request-sur-le-dépôt-du-projet" class="level2">
-<h2 class="anchored" data-anchor-id="etape-9-ouvrir-une-pull-request-sur-le-dépôt-du-projet">Etape 9 : ouvrir une <em>pull request</em> sur le dépôt du projet</h2>
-<p>Enfin terminé ! Enfin presque… On s’est donné beaucoup de mal à nettoyer ce dépôt et le mettre aux standards, autant valoriser ce travail. On va pour cela faire une <em>pull request</em> sur le <a href="https://github.com/avouacr/ensae-reproductibilite-projet">dépôt du projet initial</a>, c’est à dire proposer à l’auteur d’intégrer tous les changements que vous avez effectué en committant à chaque étape.</p>
-<p>Suivre la procédure décrite dans la <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork">documentation GitHub</a> pour créer une <em>pull request</em> à partir de votre <em>fork</em>. Pour la branche <em>upstream</em> (le dépôt cible), on va choisir <code>master</code>. Par contre, pour la branche locale (celle sur votre dépôt), on va choisir la branche <code>nettoyage</code>.</p>
-<p>Si tout s’est bien passé, vous devriez à présent voir votre <em>pull request</em> sur le dépôt cible (<a href="https://github.com/avouacr/ensae-reproductibilite-projet/pulls">ici</a>). Bravo, vous venez de faire votre première contribution à l’open source !</p>
-<p>{{% box status=“warning” title=“Warning” icon=“fa fa-exclamation-triangle” %}} Faire une <em>pull request</em> via la branche <code>master</code> d’un <em>fork</em> est très mal vu. En effet, il faut souvent faire des contorsionnements pour réussir à faire coïncider deux histoires qui n’ont pas de raison de coïncider. On s’évite beaucoup de problèmes en prenant l’habitude de toujours faire ses <em>pull requests</em> à partir d’une autre branche que <code>master</code>. {{% /box %}}</p>
+<!-----
+## Etape 9 : ouvrir une *pull request* sur le dépôt du projet
+
+Enfin terminé ! Enfin presque... On s'est donné beaucoup de mal à nettoyer ce dépôt et le mettre aux standards, autant valoriser ce travail. On va pour cela faire une *pull request* sur le [dépôt du projet initial](https://github.com/avouacr/ensae-reproductibilite-projet), c'est à dire proposer à l'auteur d'intégrer tous les changements que vous avez effectué en committant à chaque étape. 
+
+Suivre la procédure décrite dans la [documentation GitHub](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork) pour créer une *pull request* à partir de votre *fork*. Pour la branche *upstream* (le dépôt cible), on va choisir `master`. Par contre, pour la branche locale (celle sur votre dépôt), on va choisir la branche `nettoyage`.
+
+Si tout s'est bien passé, vous devriez à présent voir votre *pull request* sur le dépôt cible ([ici](https://github.com/avouacr/ensae-reproductibilite-projet/pulls)). Bravo, vous venez de faire votre première contribution à l'open source !
+
+{{% box status="warning" title="Warning" icon="fa fa-exclamation-triangle" %}}
+Faire une *pull request* via la branche `master` d’un *fork* est très mal vu. En effet, il faut souvent faire des contorsionnements pour réussir à faire coïncider deux histoires qui n’ont pas de raison de coïncider. On s'évite beaucoup de problèmes en prenant l'habitude de toujours faire ses *pull requests* à partir d'une autre branche que `master`.
+{{% /box %}}
+------------------>
 </section>
 </section>
 <section id="partie2" class="level1">
@@ -4653,7 +4684,7 @@ mc cp test.csv s3/lgaliana/ensae-reproductibilite/test.csv
 <section id="enjeu" class="level3">
 <h3 class="anchored" data-anchor-id="enjeu">Enjeu</h3>
 <p>Lors de l’<a href="#stockageS3">étape 7</a>, nous avons amélioré la qualité du script en séparant stockage et code. Cependant, peut-être avez-vous remarqué que nous avons introduit un nom de <em>bucket</em> personnel dans le script (voir <a href="https://github.com/linogaliana/ensae-reproductibilite-projet-1/blob/v7/main.py#L9">le fichier <code>main.py</code></a>). Il s’agit typiquement du genre de petit vice caché d’un script qui peut générer une erreur: vous n’avez pas accès au bucket en question donc si vous essayez de faire tourner ce script en l’état, vous allez rencontrer une erreur.</p>
-<p>Une bonne pratique pour gérer ce type de configuration est d’utiliser un fichier <code>YAML</code> qui stocke de manière hiérarchisée les variables globales <a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a>.</p>
+<p>Une bonne pratique pour gérer ce type de configuration est d’utiliser un fichier <code>YAML</code> qui stocke de manière hiérarchisée les variables globales <a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a>.</p>
 <p>En l’occurrence, nous n’avons besoin que de deux éléments pour pouvoir dé-personnaliser ce script :</p>
 <ul>
 <li>le nom du bucket</li>
@@ -5214,7 +5245,7 @@ sudo apt install &quot;./quarto-${QUARTO_VERSION}-linux-amd64.deb&quot;</code></
 <h3 class="anchored" data-anchor-id="enrichir-limage-docker">3. Enrichir l’image <code>Docker</code></h3>
 <p>On va vouloir mettre à jour notre image pour automatiser, à terme, la production de nos livrables (le notebook et la page web).</p>
 <p>Pour cela, il est nécessaire que notre image intègre le logiciel <code>quarto</code>.</p>
-<p><span class="emoji" data-emoji="one">1️⃣</span> A partir du script précédent d’installation de <code>quarto</code>, enrichir l’image <code>Docker</code><a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a></p>
+<p><span class="emoji" data-emoji="one">1️⃣</span> A partir du script précédent d’installation de <code>quarto</code>, enrichir l’image <code>Docker</code><a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a></p>
 <!----
 ENV QUARTO_VERSION="0.9.287"
 RUN wget "https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.deb"
@@ -5390,8 +5421,9 @@ RUN apt install "./quarto-${QUARTO_VERSION}-linux-amd64.deb"
 <p>La variable <code>secrets</code> n’existera que dans le cas où un fichier <code>secrets.yaml</code> existe. Le script reste donc reproductible même pour un utilisateur n’ayant pas le fichier <code>secrets.yaml</code>.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn5"><p>Nous proposons ici d’adopter le principe de la <strong>programmation fonctionnelle</strong>. Pour encore fiabiliser un processus, il serait possible d’adopter le paradigme de la <strong>programmation orientée objet (POO)</strong>. Celle-ci est plus rebutante et demande plus de temps au développeur. L’arbitrage coût-avantage est négatif pour notre exemple, nous proposons donc de nous en passer. Néanmoins, pour une mise en production réelle d’un modèle, il est recommandé de l’adopter. C’est d’ailleurs obligatoire avec des <a href="https://pythonds.linogaliana.fr/pipeline-scikit/"><em>pipelines</em> <code>scikit</code></a>.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn6"><p>Au passage vous pouvez noter que mauvaises pratiques discutables, peuvent être corrigées, notamment l’utilisation excessive de <code>apply</code> là où il serait possible d’utiliser des méthodes embarquées par <code>Pandas</code>. Cela est plutôt de l’ordre du bon style de programmation que de la qualité formelle du script. Ce n’est donc pas obligatoire mais c’est mieux.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn7"><p>Le format <code>YAML</code> est un format de fichier où les informations sont hiérarchisées. Avec le <em>package</em> <code>YAML</code> on peut très facilement le transformer en <code>dict</code>, ce qui est très pratique pour accéder à une information.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn8"><p>Le <code>sudo</code> n’est pas nécessaire puisque vous êtes déjà en <code>root</code><a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>Il est normal d’avoir des dossiers <code>__pycache__</code> qui traînent : ils se créent automatiquement à l’exécution d’un script en <code>Python</code>.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p>Le format <code>YAML</code> est un format de fichier où les informations sont hiérarchisées. Avec le <em>package</em> <code>YAML</code> on peut très facilement le transformer en <code>dict</code>, ce qui est très pratique pour accéder à une information.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn9"><p>Le <code>sudo</code> n’est pas nécessaire puisque vous êtes déjà en <code>root</code><a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
