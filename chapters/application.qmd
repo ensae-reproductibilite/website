@@ -321,7 +321,7 @@ with open("toto.yaml", "r", encoding="utf-8") as stream:
 :::
 
 
-## Etape 2 : Modularisation - mise en fonctions et mise en module
+## Etape 4 : Adopter la programmation fonctionnelle
 
 Nous allons **mettre en fonctions les parties importantes de l'analyse, et les mettre dans un module afin de pouvoir les importer directement depuis le notebook**.
 
@@ -387,39 +387,117 @@ Les autres fichiers inchangés:
 :::
 
 
-{{% box status="warning" title="Warning" icon="fa fa-exclamation-triangle" %}}
-Attention à bien **spécifier les dépendances** (packages à importer) dans le module pour que les fonctions puissent faire leur travail indépendamment du notebook !
-{{% /box %}}
 
-## Etape 3 : utiliser un `main` script
+# Partie 2 : adoption d'une structure modulaire {#partie2}
 
-Fini le temps de l'expérimentation : on va maintenant essayer de se passer complètement du notebook. Pour cela, on va utiliser un `main` script, c'est à dire un script qui reproduit l'analyse en important et en exécutant les différentes fonctions dans l'ordre attendu.
+Dans la partie précédente,
+on a appliqué de manière incrémentale de nombreuses bonnes pratiques vues tout au long du cours.
+Ce faisant, on s'est déjà considérablement rapprochés d'un
+possible partage du code : celui-ci est lisible et intelligible. 
+Le code est proprement versionné sur un
+dépôt `GitHub`.
+ 
+Néanmoins,
+la structure du projet n'est pas encore normalisée. 
+De plus, 
+l'adoption d'une structure plus modulaire facilitera
+la compréhension de la chaine de traitement.
 
-- créer un script `main.py` (convention de nommage pour les `main` scripts en Python)
-- importer les fonctions nécessaires à partir du module `functions.py`. Ne pas faire d' `import *`, ce n'est pas une bonne pratique ! Appeler les fonctions une par une en les séparant par des virgules
-- programmer leur exécution dans l'ordre attendu dans le script
-- vérifier que tout fonctionne bien en exécutant le `main` script à partir de l'exécutable Python :
+
+## Etape 1 : modularisation
+
+Fini le temps de l'expérimentation : on va maintenant essayer de se passer complètement du _notebook_.
+Pour cela, on va utiliser un `main` script, c'est à dire un script qui reproduit l'analyse en important et en exécutant les différentes fonctions dans l'ordre attendu.
+
+
+::: {.callout-tip}
+## Application 5: modularisation
+
+- Déplacer les fonctions dans une série de fichiers dédiés:
+    +  `import_data.py`: fonctions d'import de données 
+    +  `build_features.py`: fonctions regroupant les étapes de _feature engineering_ 
+    +  `train_evaluate.py`: fonctions d'entrainement et d'évaluation du modèle
+- Spécifier les dépendances (i.e. les packages à importer)
+dans les modules pour que ceux-ci puissent s'exécuter indépendamment ;
+- Renommer `titanic.py` en `main.py` pour suivre la convention de nommage des projets `Python` ;
+- Importer les fonctions nécessaires à partir des modules. ⚠️ Ne pas utiliser `from XXX import *`, ce n'est pas une bonne pratique ! 
+- Vérifier que tout fonctionne bien en exécutant le _script_ `main` à partir de la ligne de commande :
 
 ```shell
 $ python main.py
 ```
+:::
 
-Si tout a correctement fonctionné, la performance du `RandomForest` et la matrice de confusion devraient s'afficher dans la console.
+On dispose maintenant d'une application `Python` fonctionnelle. 
+Néanmoins, le projet est certes plus fiable mais sa structuration
+laisse à désirer et il serait difficile de rentrer à nouveau
+dans le projet dans quelques temps. 
 
+<details>
+<summary>Etat actuel du projet 🙈</summary>
 
-## Etape 5 : adopter une architecture standardisée de projet
+```shell
+├── README.md
+├── train.csv
+├── test.csv
+├── .gitignore
+├── config.yaml
+├── secrets.yaml
+├── import_data.py
+├── build_features.py
+├── train_evaluate.py
+└──main.py
+```
 
-On va maintenant modifier l'architecture de notre projet pour la rendre plus standardisée. Pour cela, on va utiliser le package *cookiecutter* qui génère des templates de projet. En particulier, on va choisir le [template datascience](https://drivendata.github.io/cookiecutter-data-science/) développé par la communauté pour s'inspirer de sa structure.
+</details>
 
-{{% box status="tip" title="Note" icon="fa fa-hint" %}}
-L'idée de *cookiecutter* est de proposer des templates que l'on utilise pour initialiser un projet, afin de bâtir à l'avance une structure évolutive. La syntaxe à utiliser dans ce cas est la suivante : 
+Comme cela est expliqué dans la
+partie [Structure des projets](/chapters/projects-architecture.html),
+on va adopter une structure certes arbitraire mais qui va 
+faciliter l'autodocumentation de notre projet.  
+
+De plus, une telle structure va faciliter des évolutions optionnelles
+comme la packagisation du projet. Passer d'une structure modulaire
+bien faite à un _package_ est quasi-immédiat en `Python`. 
+
+::: {.callout-caution collapse="true"}
+## Checkpoint
+
+- [`build_features.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/build_features.py)
+- [`import_data.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/import_data.py)
+- [`train_evaluate.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/train_evaluate.py)
+- [`main.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/main.py)
+
+Les autres fichiers inchangés:
+
+- [`README.md`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/readme.md)
+- [`config.yaml`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/config.yaml)
+- [`secrets.yaml`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/secrets.yaml)
+- [`.gitignore`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/.gitignore)
+
+:::
+
+## Etape 2 : adopter une architecture standardisée de projet
+
+On va maintenant modifier l'architecture de notre projet pour la rendre plus standardisée.
+Pour cela, on va s'inspirer des structures
+[`cookiecutter`](https://cookiecutter.readthedocs.io/en/stable/)
+qui génèrent des _templates_ de projet.
+
+On va s'inspirer de la structure du [_template datascience_](https://drivendata.github.io/cookiecutter-data-science/)
+développé par la communauté.
+
+::: {.callout-note}
+L'idée de [`cookiecutter`](https://cookiecutter.readthedocs.io/en/stable/) est de proposer des _templates_ que l'on utilise pour __initialiser__ un projet, afin de bâtir à l'avance une structure évolutive. La syntaxe à utiliser dans ce cas est la suivante : 
+
 ```shell
 $ pip install cookiecutter
 $ cookiecutter https://github.com/drivendata/cookiecutter-data-science
 ```
 
 Ici, on a déjà un projet, on va donc faire les choses dans l'autre sens : on va s'inspirer de la structure proposée afin de réorganiser celle de notre projet selon les standards communautaires.
-{{% /box %}}
+:::
+
 
 - analyser et comprendre la [structure de projet](https://drivendata.github.io/cookiecutter-data-science/#directory-structure) proposée par le template
 - créer les dossiers qui vous semblent pertinents pour contenir les différents éléments de notre projet selon le modèle
@@ -439,7 +517,6 @@ ensae-reproductibilite-projet
 └── src
     ├── data
     │   ├── import_data.py
-    │   └── train_test_split.py
     ├── features
     │   └── build_features.py
     └── models
