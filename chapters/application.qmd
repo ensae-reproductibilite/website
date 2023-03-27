@@ -39,7 +39,7 @@ outils nécessaires sont pré-installés et pré-configurés.
 
 
 
-# Partie 1 : application des bonnes pratiques
+# Partie 1 : qualité du script
 
 Cette première partie vise à **rendre le projet conforme aux bonnes pratiques** présentées dans le cours.
 
@@ -53,6 +53,7 @@ Elle fait intervenir les notions suivantes :
 
 Le plan de la partie est le suivant :
 
+<!----
 0. :zero: _Forker_ le dépôt et créer une branche de travail
 1. :one: S'assurer que le _notebook_ s'exécute correctement
 2. :two: Modularisation : mise en fonctions et mise en module
@@ -63,7 +64,7 @@ Le plan de la partie est le suivant :
 7. :seven: Stocker les données de manière externe
 8. :eight: Nettoyer le projet `Git`
 9. :nine: Ouvrir une *pull request* sur le dépôt du projet.
-
+------------->
 
 Nous allons partir de ce _Notebook_ `Jupyter`,
 que vous pouvez prévisualiser voire tester
@@ -252,7 +253,7 @@ pouvant servir.
 [^noteCI]: Nous le verrons lorsque nous mettrons en oeuvre l'intégration continue.
 
 ::: {.callout-tip}
-## Paramétrisation du script
+## Application 3: Paramétrisation du script
 
 1. En s'inspirant de [cette réponse](https://stackoverflow.com/a/69377311/9197726), 
 créer une variable `n_trees` qui peut éventuellement être paramétrée en ligne de commande
@@ -268,7 +269,7 @@ chemin d'un fichier `YAML`
 et renvoie le contenu de celui-ci en _output_. Vous pouvez suivre
 le conseil du chapitre sur la [Qualité du code](/chapters/code-quality.html)
 en adoptant le _type hinting_.
-5. Créer la variable `API_TOKEN` ayant la valeur stockée dans `secrets.yaml`.
+5. Créer la variable `API_TOKEN` ayant la valeur stockée dans `secrets.yaml`[^fileexist].
 5. Tester en ligne de commande que l'exécution du fichier est toujours
 sans erreur
 6. Refaire un diagnostic avec [`PyLint`](https://pylint.readthedocs.io/en/latest/)
@@ -281,6 +282,19 @@ car il ne faut pas committer ce fichier.
 8. Créer un fichier `README.md` où vous indiquez qu'il faut créer un fichier `secrets.yaml` pour
 pouvoir utiliser l'API. 
 
+[^fileexist]: Ici, le jeton d'API n'est pas indispensable pour que le code
+    fonctionne. Afin d'éviter une erreur non nécessaire
+    lorsqu'on automatisera le processus, on peut
+    créer une condition qui vérifie la présence ou non de ce fichier. 
+    
+    Cela peut être fait avec la fonction `os.path.exists` :
+
+        if os.path.exists('secrets.yaml'):
+            secrets = import_yaml_config("secrets.yaml")
+
+    La variable `secrets` n'existera que dans le cas où un fichier `secrets.yaml` existe. 
+    Le script reste donc reproductible même pour un utilisateur n'ayant pas le fichier
+    `secrets.yaml`. 
 
 <details>
 <summary>Indice si vous ne trouvez pas comment lire un fichier `YAML`</summary>
@@ -297,11 +311,11 @@ with open("toto.yaml", "r", encoding="utf-8") as stream:
 ::: {.callout-caution collapse="true"}
 ## Checkpoint
 
-- [`titanic.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application2/titanic.py)
-- [`README.md`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application2/readme.md)
-- [`config.yaml`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application2/config.yaml)
-- [`secrets.yaml`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application2/secrets.yaml)
-- [`.gitignore`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application2/.gitignore)
+- [`titanic.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/titanic.py)
+- [`README.md`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/readme.md)
+- [`config.yaml`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/config.yaml)
+- [`secrets.yaml`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/secrets.yaml)
+- [`.gitignore`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/.gitignore)
 
 
 :::
@@ -309,14 +323,69 @@ with open("toto.yaml", "r", encoding="utf-8") as stream:
 
 ## Etape 2 : Modularisation - mise en fonctions et mise en module
 
-Nous allons **mettre en fonctions les parties importantes de l'analyse, et les mettre dans un module afin de pouvoir les importer directement depuis le notebook**. En reformattant le code présent dans le notebook :
+Nous allons **mettre en fonctions les parties importantes de l'analyse, et les mettre dans un module afin de pouvoir les importer directement depuis le notebook**.
 
-- créer une fonction qui importe les données d'entraînement (`train.csv`) et de test (`test.csv`) et renvoie des `DataFrames` pandas
-- créer une (ou plusieurs) fonction(s) pour réaliser les étapes de *feature engineering*
-- créer une fonction qui réalise le *split train/test* de validation
-- créer une fonction qui entraîne et évalue un classifieur `RandomForest`, et qui prend en paramètre le nombre d'arbres (`n_estimators`). La fonction doit imprimer à la fin la performance obtenue et la matrice de confusion.
-- mettre ces fonctions dans un module `functions.py`
+Cet exercice étant chronophage, il n'est __pas obligatoire de le réaliser en entier__. L'important est de
+comprendre la démarche et d'adopter fréquemment une approche fonctionnelle[^POO]. Pour obtenir 
+une chaine entièrement fonctionnalisée, vous pouvez reprendre le _checkpoint_.
+
+[^POO]: Nous proposons ici d'adopter le principe de la __programmation fonctionnelle__. Pour encore fiabiliser
+un processus, il serait possible d'adopter le paradigme de la __programmation orientée objet (POO)__. Celle-ci est
+plus rebutante et demande plus de temps au développeur. L'arbitrage coût-avantage est négatif pour notre
+exemple, nous proposons donc de nous en passer. Néanmoins, pour une mise en production réelle d'un modèle,
+il est recommandé de l'adopter. C'est d'ailleurs obligatoire avec des [_pipelines_ `scikit`](https://pythonds.linogaliana.fr/pipeline-scikit/). 
+
+::: {.callout-tip}
+## Application 4: adoption des standards de programmation fonctionnelle 
+
+- Créer une fonction qui importe les données d'entraînement (`train.csv`) et de test (`test.csv`) et renvoie des `DataFrames` `Pandas` ;
+- En fonction du temps disponible, créer plusieurs fonctions pour réaliser les étapes de *feature engineering*:
+    + La création de la variable _"Title"_ peut être automatisée en vertu du principe _"do not repeat yourself"_[^notepandas].
+    + Regrouper ensemble les `fillna` et essayer de créer une fonction généralisant l'opération. 
+    + Les _label encoders_ peuvent être transformés en deux fonctions: une première pour encoder une colonne puis une seconde qui utilise
+    la première de manière répétée pour encoder plusieurs colonnes. _Remarquez les erreurs de copier-coller que cela corrige_
+    + Finaliser les dernières transformations avec des fonctions
+- Créer une fonction qui réalise le *split train/test* de validation en fonction d'un paramètre représentant la proportion de l'échantillon de test.
+- Créer une fonction qui entraîne et évalue un classifieur `RandomForest`, et qui prend en paramètre le nombre d'arbres (`n_estimators`). La fonction doit imprimer à la fin la performance obtenue et la matrice de confusion.
+- Déplacer toutes les fonctions ensemble, en début de script.
+<!----- plus tard ?
+- Mettre ces fonctions dans un module `functions.py`
 - importer les fonctions via le module dans le notebook et vérifier que l'on retrouve bien les différents résultats en utilisant les fonctions.
+------->
+:::
+
+[^notepandas]: Au passage vous pouvez noter que mauvaises pratiques discutables,
+    peuvent
+    être corrigées, notamment l'utilisation excessive de `apply` là où
+    il serait possible d'utiliser des méthodes embarquées par `Pandas`.
+    Cela est plutôt de l'ordre du bon style de programmation que de la
+    qualité formelle du script. Ce n'est donc pas obligatoire mais c'est mieux. 
+
+
+::: {.callout-important}
+Le fait d'appliquer des fonctions a déjà amélioré la fiabilité du processus
+en réduisant le nombre d'erreurs de copier-coller. Néanmoins, pour vraiment
+fiabiliser le processus, il faudrait utiliser un _pipeline_ de transformations
+de données. 
+
+Ceci n'est pas encore au programme du cours mais le sera dans une prochaine 
+version. 
+:::
+
+::: {.callout-caution collapse="true"}
+## Checkpoint
+
+- [`titanic.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application4/titanic.py)
+
+Les autres fichiers inchangés:
+
+- [`README.md`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/readme.md)
+- [`config.yaml`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/config.yaml)
+- [`secrets.yaml`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/secrets.yaml)
+- [`.gitignore`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/.gitignore)
+
+:::
+
 
 {{% box status="warning" title="Warning" icon="fa fa-exclamation-triangle" %}}
 Attention à bien **spécifier les dépendances** (packages à importer) dans le module pour que les fonctions puissent faire leur travail indépendamment du notebook !
