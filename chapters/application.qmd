@@ -547,43 +547,101 @@ Les autres fichiers sont inchangés, à l'exception de leur emplacement.
 
 :::
 
+### Etape 3: indiquer l'environnement minimal de reproductibilité
 
-## Etape 6 : fixer l'environnement d'exécution {#conda-export}
+Le script `main.py` nécessite un certain nombre de packages pour
+être fonctionnel. Chez vous les packages nécessaires sont
+bien sûr installés mais êtes-vous assuré que c'est le cas 
+chez la personne qui testera votre code ? 
 
-Afin de favoriser la portabilité du projet, il est d'usage de "fixer l'environnement", c'est à dire d'indiquer dans un fichier toutes les dépendances utilisées ainsi que leurs version. Il est conventionnellement localisé à la racine du projet.
+Afin de favoriser la portabilité du projet,
+il est d'usage de _"fixer l'environnement"_,
+c'est-à-dire d'indiquer dans un fichier toutes les dépendances utilisées ainsi que leurs version.
+Nous proposons de créer un fichier `requirements.txt` minimal, sur lequel nous reviendrons
+dans la partie consacrée aux environnements reproductibles. 
 
-Sur le VSCode du SSP Cloud, on se situe dans un environnement `conda`.
-La commande pour exporter un environnement `conda` est la suivante : 
+Le fichier `requirements.txt` est conventionnellement localisé à la racine du projet.
+Ici on ne va pas fixer les versions, on raffinera ce fichier plus tard.
+
+::: {.callout-tip}
+
+## Application 7: création du `requirements.txt`
+
+- Créer un fichier `requirements.txt` avec la liste des packages nécessaires
+- Ajouter une indication dans `README.md` sur l'installation des _packages_ grâce au fichier `requirements.txt` 
+:::
+
+::: {.callout-caution collapse="true"}
+## Checkpoint
+
+- [`requirements.txt`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application7/requirements.txt)
+- [`README.md`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application7/README.md)
+
+:::
+
+## Etape 4 : stocker les données de manière externe {#stockageS3}
+
+
+::: {.callout-warning}
+Pour mettre en oeuvre cette étape, il peut être utile de
+comprendre un peu comme fonctionne le SSP Cloud.
+Vous devrez suivre la [documentation du SSP Cloud](https://docs.sspcloud.fr/onyxia-guide/stockage-de-donnees) pour la réaliser. Une aide-mémoire est également disponible dans le cours
+de 2e année de l'ENSAE [Python pour la data science](https://linogaliana-teaching.netlify.app/reads3/#)
+:::
+
+Comme on l'a vu dans le cours ([partie structure des projets](/chapters/project-structure.html)),
+les données ne sont pas censées être versionnées sur un projet `Git`.
+
+L'idéal pour éviter cela tout en maintenant la reproductibilité est d'utiliser une solution de stockage externe.
+On va utiliser pour cela `MinIO`, la solution de stockage de type `S3` offerte par le SSP Cloud. 
+
+::: {.callout-tip}
+
+## Application 8: utilisation d'un système de stockage distant
+
+A partir de la ligne de commande,
+utiliser l'utilitaire [MinIO](https://min.io/docs/minio/linux/reference/minio-mc.html)
+pour copier les données `data/raw/train.csv` et `data/raw/test.csv` vers votre
+bucket personnel, respectivement dans les dossiers `ensae-reproductibilite/data/raw/train.csv`
+et `ensae-reproductibilite/data/raw/test.csv`. 
+
+<details>
+<summary>Indice</summary>
+
+Structure à adopter:
 
 ```shell
-$ conda env export > environment.yml
+$ mc cp data/raw/train.csv s3/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/train.csv
+$ mc cp data/raw/test.csv s3/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/test.csv
 ```
 
-Vous devriez à présent avoir un fichier `environement.yml` à la racine de votre projet, qui contient les dépendances et leurs versions.
+en modifiant l'emplacement de votre bucket personnel
+</details>
 
-{{% box status="tip" title="Note" icon="fa fa-hint" %}}
-En réalité, on aun peu triché : on a exporté l'environnement de base du VSCode SSP Cloud, qui contient beaucoup plus de packages que ceux utilisés par notre projet. On verra dans la [Partie 2](#partie2) de l'application comment fixer proprement les dépendances de notre projet.
-{{% /box %}}
+- Pour se simplifier la vie, on va utiliser des URL de téléchargement des fichiers
+(comme si ceux-ci étaient sur n'importe quel espace de stockage) plutôt que d'utiliser
+une librairie `S3` compatible comme `boto3` ou `s3fs`. Pour cela, en ligne de
+commande, faire:
 
-## Etape 7 : stocker les données de manière externe {#stockageS3}
+```shell
+mc anonymous set download s3/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/
+```
 
-{{% box status="warning" title="Warning" icon="fa fa-exclamation-triangle" %}}
-Cette étape n'est pas facile. Vous devrez suivre la [documentation du SSP Cloud](https://docs.sspcloud.fr/onyxia-guide/stockage-de-donnees) pour la réaliser. Une aide-mémoire est également disponible dans le cours
-de [Python pour les data-scientists](https://linogaliana-teaching.netlify.app/reads3/#)
-{{% /box %}}
+en modifiant `<BUCKET_PERSONNEL>`. Les URL de téléchargement seront de la forme 
+`https://minio.lab.sspcloud.fr/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/test.csv`
+et `https://minio.lab.sspcloud.fr/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/train.csv`
 
-Comme on l'a vu dans le cours, les données ne sont pas censées être versionnées sur un projet Git. L'idéal pour éviter cela tout en maintenant la reproductibilité est d'utiliser une solution de stockage externe. On va utiliser pour cela `MinIO`, la solution de stockage de type `S3` offerte par le SSP Cloud. 
+- Modifier `configuration.yaml` pour utiliser directement les URL dans l'import 
+- Supprimer les fichiers `.csv` du dossier `data` de votre projet, on n'en a plus besoin vu qu'on les importe de l'extérieur
+- Vérifier le bon fonctionnement de votre application
+:::
 
-- créer un dossier `ensae-reproductibilite` dans votre bucket personnel via l'[interface utilisateur](https://datalab.sspcloud.fr/mes-fichiers)
-- modifier votre fonction d'import des données pour qu'elle récupère les données à partir de MinIO. Elle devra prendre en paramètres le nom du bucket et le dossier dans lequel sont contenues les données sur MinIO.
-- modifier le `main` script pour appeler la fonction avec les paramètres propres à votre compte
-- supprimer les fichiers `.csv` du dossier `data` de votre projet, on n'en a plus besoin vu qu'on les importe de l'extérieur
-- vérifier le bon fonctionnement de votre application
+::: {.callout-caution collapse="true"}
+## Checkpoint
 
-<!-----
-mc cp train.csv s3/lgaliana/ensae-reproductibilite/train.csv
-mc cp test.csv s3/lgaliana/ensae-reproductibilite/test.csv
------>
+- [`config.yaml`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application8/config.yaml)
+
+:::
 
 <!-----
 ## Etape 9 : ouvrir une *pull request* sur le dépôt du projet
@@ -599,7 +657,7 @@ Faire une *pull request* via la branche `master` d’un *fork* est très mal vu.
 {{% /box %}}
 ------------------>
 
-# Partie 2 : construction d'un projet portable et reproductible {#partie2}
+# Partie 2 : construction d'un projet portable et reproductible {#partie3}
 
 Dans la partie précédente,
 on a appliqué de manière incrémentale de nombreuses bonnes pratiques vues tout au long du cours.
@@ -1252,15 +1310,15 @@ dependencies:
 :three: Créer un fichier nommé `report.qmd`
 
 ~~~markdown
----
-title: "Comprendre les facteurs de survie sur le Titanic"
-subtitle: "Un rapport innovant"
-format:
-  html:
-    self-contained: true
-  ipynb: default
-jupyter: python3
----
+  ---
+  title: "Comprendre les facteurs de survie sur le Titanic"
+  subtitle: "Un rapport innovant"
+  format:
+    html:
+      self-contained: true
+    ipynb: default
+  jupyter: python3
+  ---
 
 Voici un rapport présentant quelques intuitions issues d'un modèle 
 _random forest_ sur le jeu de données `Titanic` entraîné et 
