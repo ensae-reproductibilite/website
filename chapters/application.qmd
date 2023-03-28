@@ -643,7 +643,11 @@ et `https://minio.lab.sspcloud.fr/<BUCKET_PERSONNEL>/ensae-reproductibilite/data
 
 :::
 
-# Partie 2bis: packagisation de son projets (optionnel)
+# Partie 2bis: packagisation de son projet (optionnel)
+
+Cette série d'actions n'est pas forcément pertinente pour tous
+les projets. Elle fait un peu la transition entre la modularité
+et la portabilité. 
 
 ## Etape 1 : proposer des tests unitaires (optionnel)
 
@@ -749,6 +753,134 @@ Les autres fichiers sont inchangés.
 
 ## Etape 2 : transformer son projet en package (optionnel)
 
+Notre projet est modulaire, ce qui le rend assez simple à transformer
+en package, en s'inspirant du `cookiecutter` adapté, issu
+de [cet ouvrage](https://py-pkgs.org/03-how-to-package-a-python#package-structure).
+
+<details>
+<summary>Structure visée</summary>
+
+```shell
+ensae-reproductibilite-application
+├── docs                                    ┐ 
+│   ├── main.py                             │ 
+│   └── notebooks                           │ Package documentation and examples
+│       ├── titanic.ipynb                   │ 
+├── README.md                               ┘ 
+├── pyproject.toml                          ┐ 
+├── requirements.txt                        │
+├── src                                     │
+│   └── titanicml                           │ Package source code, metadata,
+│       ├── __init__.py                     │ and build instructions 
+│       ├── config.yaml                     │
+│       ├── import_data.py                  │
+│       ├── build_features.py               │ 
+│       └── train_evaluate.py               ┘
+└── tests                                   ┐
+    └── test_create_variable_title.py       ┘ Package tests
+```
+</details>
+
+<details>
+<summary>Rappel: structure actuelle</summary>
+
+```shell
+ensae-reproductibilite-application
+├── notebooks                                 
+│   └── titanic.ipynb                  
+├── configuration                                 
+│   └── config.yaml                  
+├── main.py                              
+├── README.md                 
+├── requirements.txt                      
+└── src 
+    ├── data                                
+    │   ├── import_data.py                    
+    │   └── test_create_variable_title.py      
+    ├── features                           
+    │   └── build_features.py      
+    └── models                          
+        └── train_evaluate.py              
+```
+</details>
+
+::: {.callout-tip}
+
+## Application 10: packagisation _(optionnel)_
+
+- Déplacer les fichiers dans le dossier `src` pour respecter la nouvelle
+arborescence ;
+- Dans `src/titanicml`, créer un fichier vide `__init__.py`[^init] ;
+- Déplacer le fichier de configuration dans le _package_ (nécessaire à la reproductibilité) ;
+- Créer le dossier `docs` et mettre les fichiers indiqués dedans
+- Modifier `src/titanicml/import_data.py` :
+    + Ajouter la variable `config_file = os.path.join(os.path.dirname(__file__), "config.yaml")`. Cela permettra d'utiliser directement le fichier ;
+    + Proposer un argument par défaut à la fonction `import_config_yaml` égal à `config_file`
+- Créer un fichier `pyproject.toml` à partir du contenu de [ce modèle de `pyproject`](https://github.com/linogaliana/ensae-reproductibilite-application/blob/main/checkpoints/application10/pyproject.toml)[^setuptools]
+- Installer le package en local avec `pip install .`
+- Modifier le contenu de `docs/main.py` pour importer les fonctions de notre _package_ `titanicml` et tester en 
+ligne de commande notre fichier `main.py`
+:::
+
+[^init]: Le fichier `__init__.py` indique à `Python` que le dossier
+est un _package_. Il permet de proposer certaines configurations
+lors de l'import du _package_. Il permet également de contrôler
+les objets exportés (c'est-à-dire mis à disposition de l'utilisateur)
+par le _package_ par rapport aux objets internes au _package_. 
+En le laissant vide, nous allons utiliser ce fichier 
+pour importer l'ensemble des fonctions de nos sous-modules. 
+Ce n'est pas la meilleure pratique mais un contrôle plus fin des
+objets exportés demanderait un investissement qui ne vaut, ici, pas
+le coût. 
+
+
+[^setuptools]: Ce `pyproject.toml` est un modèle qui utilise `setuptools`
+    pour _build_ le _package_. C'est l'outil classique. 
+    Néanmoins, pour des usages plus raffinés, 
+    il peut être utile d'utiliser [`poetry`](https://python-poetry.org/)
+    qui propose des fonctionnalités plus complètes.  
+
+
+::: {.callout-note}
+
+Pour créer la structure minimale d'un _package_, le plus simple est
+d'utiliser le `cookiecutter` adapté,
+issu de [cet ouvrage](https://py-pkgs.org/03-how-to-package-a-python#package-structure).
+
+Comme on a déjà une structure très modulaire, on va plutôt recréer cette
+structure dans notre projet déjà existant. En fait, il ne manque qu'un fichier essentiel, 
+le principal distinguant un projet classique d'un package : `pyproject.toml`.
+
+```shell
+cookiecutter https://github.com/py-pkgs/py-pkgs-cookiecutter.git
+```
+
+<details>
+<summary>Dérouler pour voir les choix possibles</summary>
+```shell
+author_name [Monty Python]: Daffy Duck
+package_name [mypkg]: titanicml
+package_short_description []: Impressive Titanic survival analysis
+package_version [0.1.0]: 
+python_version [3.9]: 
+Select open_source_license:
+1 - MIT
+2 - Apache License 2.0
+3 - GNU General Public License v3.0
+4 - Creative Commons Attribution 4.0
+5 - BSD 3-Clause
+6 - Proprietary
+7 - None
+Choose from 1, 2, 3, 4, 5, 6 [1]: 
+Select include_github_actions:
+1 - no
+2 - ci
+3 - ci+cd
+Choose from 1, 2, 3 [1]:
+```
+</details>
+
+:::
 
 
 <!-----
