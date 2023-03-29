@@ -253,29 +253,112 @@ du temps pour écrire des tests unitaires qui ne sont pas maintenus et donc
 ne renvoie plus de diagnostics pertinent est du temps perdu. 
 :::
 
-# Packages
+# _Template_ de projet _data science_
 
-La meilleure façon d'assurer la reproductibilité d'un projet est
-d'intégrer ses scripts dans une structure de _package_.
-Un gros projet
-de _data-science_ va ainsi dépendre d'un ou plusieurs _packages_, ce qui 
+En `Python` il existe des modèles de structure de projets :
+les [`cookiecutters`](https://cookiecutter.readthedocs.io/en/stable/).
+Il s'agit de modèles d'aborescences de fichiers (fichiers `Python` mais également tout
+type de fichiers) proposés par la communauté et téléchargeables comme point
+de départ d'un projet. 
 
-- assure une gestion cohérente des dépendances
-- offre une certaine structure pour la documentation
-- facilitera sa réutilisation (les utilisateurs peuvent n'être intéressés
-que par une partie du projet)
-- permettra des économies d'échelle (on peut réutiliser
-l'un des packages pour un autre projet)
-- facilite le debuggage (il est
-plus facile d'identifier une erreur quand elle est dans un package)
+L'idée de [`cookiecutter`](https://cookiecutter.readthedocs.io/en/stable/) est de proposer des _templates_ que l'on utilise pour __initialiser__ un projet, afin de bâtir à l'avance une structure évolutive. 
+On va s'inspirer de la structure du [_template datascience_](https://drivendata.github.io/cookiecutter-data-science/)
+développé par la communauté.
+La syntaxe à utiliser dans ce cas est la suivante : 
+
+```shell
+$ pip install cookiecutter
+$ cookiecutter https://github.com/drivendata/cookiecutter-data-science
+```
+
+Le modèle est personnalisable, notamment pour faciliter l'interaction
+entre un système de stockage distant. L'aborescence générée
+est assez massive pour permettre une grande diversité de projet. Il 
+n'est souvent pas nécessaire d'avoir toutes les composantes du `cookiecutter`.
+
+<details>
+<summary>Structure complète générée par le cookiecutter data science</summary>
+
+├── LICENSE
+├── Makefile           <- Makefile with commands like `make data` or `make train`
+├── README.md          <- The top-level README for developers using this project.
+├── data
+│   ├── external       <- Data from third party sources.
+│   ├── interim        <- Intermediate data that has been transformed.
+│   ├── processed      <- The final, canonical data sets for modeling.
+│   └── raw            <- The original, immutable data dump.
+│
+├── docs               <- A default Sphinx project; see sphinx-doc.org for details
+│
+├── models             <- Trained and serialized models, model predictions, or model summaries
+│
+├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
+│                         the creator's initials, and a short `-` delimited description, e.g.
+│                         `1.0-jqp-initial-data-exploration`.
+│
+├── references         <- Data dictionaries, manuals, and all other explanatory materials.
+│
+├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
+│   └── figures        <- Generated graphics and figures to be used in reporting
+│
+├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
+│                         generated with `pip freeze > requirements.txt`
+│
+├── setup.py           <- Make this project pip installable with `pip install -e`
+├── src                <- Source code for use in this project.
+│   ├── __init__.py    <- Makes src a Python module
+│   │
+│   ├── data           <- Scripts to download or generate data
+│   │   └── make_dataset.py
+│   │
+│   ├── features       <- Scripts to turn raw data into features for modeling
+│   │   └── build_features.py
+│   │
+│   ├── models         <- Scripts to train models and then use trained models to make
+│   │   │                 predictions
+│   │   ├── predict_model.py
+│   │   └── train_model.py
+│   │
+│   └── visualization  <- Scripts to create exploratory and results oriented visualizations
+│       └── visualize.py
+│
+└── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
+```
+
+</details>
+
+# Transformer son projet en _package_ `Python`
+
+Le _package_ est la structure aboutie d'un projet `Python`
+autosuffisant. Il s'agit d'une manière 
+formelle de contrôler 
+la reproductibilité d'un projet car:
+
+- le _package_ assure une gestion cohérente des dépendances
+- le _package_ offre une certaine structure pour la documentation
+- le _package_ facilite la réutilisation du code
+- le _package_ permet des économies d'échelle car on peut réutiliser
+l'un des packages pour un autre projet
+- le _package_ facilite le debuggage car il est
+plus facile d'identifier une erreur quand elle est dans un package
 - ...
 
-https://py-pkgs.org/03-how-to-package-a-python
+En `Python`, le _package_ est une structure peu contraignante si on
+a adopté les bonnes pratiques de structuration de projet. 
+A partir de la structure modulaire précédemment évoquée, il n'y a qu'un pas
+vers le package: l'ajout d'un fichier `pyproject.toml` qui contrôle
+la construction du _package_ ([voir ici](https://py-pkgs.org/03-how-to-package-a-python)).
 
+Il existe plusieurs outils pour installer un package dans le système à
+partir d'une structure de fichiers locale[^devtools]. Les deux principaux sont
 
-# Templates
+- [`setuptools`](https://pypi.org/project/setuptools/)
+- [`poetry`](https://python-poetry.org/)
 
--   Python : cookiescutter package et data science
+[^devtools] L'équivalent `R` de ces packages est [`devtools`](https://devtools.r-lib.org/)
+
+Le package fait la transition entre un code modulaire et un code portable, 
+concept sur lequel nous reviendrons dans le prochain chapitre. 
 
 
 # Vers la séparation du stockage du code et des données et de l'environnement d'exécution
