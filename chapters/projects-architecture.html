@@ -211,8 +211,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul class="collapse">
   <li><a href="#tests-unitaires" id="toc-tests-unitaires" class="nav-link" data-scroll-target="#tests-unitaires">Tests unitaires</a></li>
   </ul></li>
-  <li><a href="#packages" id="toc-packages" class="nav-link" data-scroll-target="#packages">Packages</a></li>
-  <li><a href="#templates" id="toc-templates" class="nav-link" data-scroll-target="#templates">Templates</a></li>
+  <li><a href="#template-de-projet-data-science" id="toc-template-de-projet-data-science" class="nav-link" data-scroll-target="#template-de-projet-data-science"><em>Template</em> de projet <em>data science</em></a></li>
+  <li><a href="#transformer-son-projet-en-package-python" id="toc-transformer-son-projet-en-package-python" class="nav-link" data-scroll-target="#transformer-son-projet-en-package-python">Transformer son projet en <em>package</em> <code>Python</code></a></li>
   <li><a href="#vers-la-séparation-du-stockage-du-code-et-des-données-et-de-lenvironnement-dexécution" id="toc-vers-la-séparation-du-stockage-du-code-et-des-données-et-de-lenvironnement-dexécution" class="nav-link" data-scroll-target="#vers-la-séparation-du-stockage-du-code-et-des-données-et-de-lenvironnement-dexécution">Vers la séparation du stockage du code et des données et de l’environnement d’exécution</a>
   <ul class="collapse">
   <li><a href="#publication" id="toc-publication" class="nav-link" data-scroll-target="#publication">Publication</a></li>
@@ -430,24 +430,39 @@ Warning
 </div>
 </section>
 </section>
-<section id="packages" class="level1">
-<h1>Packages</h1>
-<p>La meilleure façon d’assurer la reproductibilité d’un projet est d’intégrer ses scripts dans une structure de <em>package</em>. Un gros projet de <em>data-science</em> va ainsi dépendre d’un ou plusieurs <em>packages</em>, ce qui</p>
+<section id="template-de-projet-data-science" class="level1">
+<h1><em>Template</em> de projet <em>data science</em></h1>
+<p>En <code>Python</code> il existe des modèles de structure de projets : les <a href="https://cookiecutter.readthedocs.io/en/stable/"><code>cookiecutters</code></a>. Il s’agit de modèles d’aborescences de fichiers (fichiers <code>Python</code> mais également tout type de fichiers) proposés par la communauté et téléchargeables comme point de départ d’un projet.</p>
+<p>L’idée de <a href="https://cookiecutter.readthedocs.io/en/stable/"><code>cookiecutter</code></a> est de proposer des <em>templates</em> que l’on utilise pour <strong>initialiser</strong> un projet, afin de bâtir à l’avance une structure évolutive. On va s’inspirer de la structure du <a href="https://drivendata.github.io/cookiecutter-data-science/"><em>template datascience</em></a> développé par la communauté. La syntaxe à utiliser dans ce cas est la suivante :</p>
+<pre class="shell"><code>$ pip install cookiecutter
+$ cookiecutter https://github.com/drivendata/cookiecutter-data-science</code></pre>
+<p>Le modèle est personnalisable, notamment pour faciliter l’interaction entre un système de stockage distant. L’aborescence générée est assez massive pour permettre une grande diversité de projet. Il n’est souvent pas nécessaire d’avoir toutes les composantes du <code>cookiecutter</code>.</p>
+<details>
+<summary>
+Structure complète générée par le cookiecutter data science
+</summary>
+<p>├── LICENSE ├── Makefile &lt;- Makefile with commands like <code>make data</code> or <code>make train</code> ├── README.md &lt;- The top-level README for developers using this project. ├── data │ ├── external &lt;- Data from third party sources. │ ├── interim &lt;- Intermediate data that has been transformed. │ ├── processed &lt;- The final, canonical data sets for modeling. │ └── raw &lt;- The original, immutable data dump. │ ├── docs &lt;- A default Sphinx project; see sphinx-doc.org for details │ ├── models &lt;- Trained and serialized models, model predictions, or model summaries │ ├── notebooks &lt;- Jupyter notebooks. Naming convention is a number (for ordering), │ the creator’s initials, and a short <code>-</code> delimited description, e.g. │ <code>1.0-jqp-initial-data-exploration</code>. │ ├── references &lt;- Data dictionaries, manuals, and all other explanatory materials. │ ├── reports &lt;- Generated analysis as HTML, PDF, LaTeX, etc. │ └── figures &lt;- Generated graphics and figures to be used in reporting │ ├── requirements.txt &lt;- The requirements file for reproducing the analysis environment, e.g. │ generated with <code>pip freeze &gt; requirements.txt</code> │ ├── setup.py &lt;- Make this project pip installable with <code>pip install -e</code> ├── src &lt;- Source code for use in this project. │ ├── <strong>init</strong>.py &lt;- Makes src a Python module │ │ │ ├── data &lt;- Scripts to download or generate data │ │ └── make_dataset.py │ │ │ ├── features &lt;- Scripts to turn raw data into features for modeling │ │ └── build_features.py │ │ │ ├── models &lt;- Scripts to train models and then use trained models to make │ │ │ predictions │ │ ├── predict_model.py │ │ └── train_model.py │ │ │ └── visualization &lt;- Scripts to create exploratory and results oriented visualizations │ └── visualize.py │ └── tox.ini &lt;- tox file with settings for running tox; see tox.readthedocs.io ```</p>
+</details>
+</section>
+<section id="transformer-son-projet-en-package-python" class="level1">
+<h1>Transformer son projet en <em>package</em> <code>Python</code></h1>
+<p>Le <em>package</em> est la structure aboutie d’un projet <code>Python</code> autosuffisant. Il s’agit d’une manière formelle de contrôler la reproductibilité d’un projet car:</p>
 <ul>
-<li>assure une gestion cohérente des dépendances</li>
-<li>offre une certaine structure pour la documentation</li>
-<li>facilitera sa réutilisation (les utilisateurs peuvent n’être intéressés que par une partie du projet)</li>
-<li>permettra des économies d’échelle (on peut réutiliser l’un des packages pour un autre projet)</li>
-<li>facilite le debuggage (il est plus facile d’identifier une erreur quand elle est dans un package)</li>
+<li>le <em>package</em> assure une gestion cohérente des dépendances</li>
+<li>le <em>package</em> offre une certaine structure pour la documentation</li>
+<li>le <em>package</em> facilite la réutilisation du code</li>
+<li>le <em>package</em> permet des économies d’échelle car on peut réutiliser l’un des packages pour un autre projet</li>
+<li>le <em>package</em> facilite le debuggage car il est plus facile d’identifier une erreur quand elle est dans un package</li>
 <li>…</li>
 </ul>
-<p>https://py-pkgs.org/03-how-to-package-a-python</p>
-</section>
-<section id="templates" class="level1">
-<h1>Templates</h1>
+<p>En <code>Python</code>, le <em>package</em> est une structure peu contraignante si on a adopté les bonnes pratiques de structuration de projet. A partir de la structure modulaire précédemment évoquée, il n’y a qu’un pas vers le package: l’ajout d’un fichier <code>pyproject.toml</code> qui contrôle la construction du <em>package</em> (<a href="https://py-pkgs.org/03-how-to-package-a-python">voir ici</a>).</p>
+<p>Il existe plusieurs outils pour installer un package dans le système à partir d’une structure de fichiers locale[^devtools]. Les deux principaux sont</p>
 <ul>
-<li>Python : cookiescutter package et data science</li>
+<li><a href="https://pypi.org/project/setuptools/"><code>setuptools</code></a></li>
+<li><a href="https://python-poetry.org/"><code>poetry</code></a></li>
 </ul>
+<p>[^devtools] L’équivalent <code>R</code> de ces packages est <a href="https://devtools.r-lib.org/"><code>devtools</code></a></p>
+<p>Le package fait la transition entre un code modulaire et un code portable, concept sur lequel nous reviendrons dans le prochain chapitre.</p>
 </section>
 <section id="vers-la-séparation-du-stockage-du-code-et-des-données-et-de-lenvironnement-dexécution" class="level1">
 <h1>Vers la séparation du stockage du code et des données et de l’environnement d’exécution</h1>
