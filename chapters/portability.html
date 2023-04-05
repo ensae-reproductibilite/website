@@ -200,7 +200,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
    
   <ul>
   <li><a href="#la-notion-de-portabilité" id="toc-la-notion-de-portabilité" class="nav-link active" data-scroll-target="#la-notion-de-portabilité">La notion de portabilité</a></li>
-  <li><a href="#les-environnements-virtuels-snake" id="toc-les-environnements-virtuels-snake" class="nav-link" data-scroll-target="#les-environnements-virtuels-snake">Les environnements virtuels :snake:</a>
+  <li><a href="#les-environnements-virtuels" id="toc-les-environnements-virtuels" class="nav-link" data-scroll-target="#les-environnements-virtuels">Les environnements virtuels 🐍</a>
   <ul class="collapse">
   <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a></li>
   <li><a href="#fonctionnement" id="toc-fonctionnement" class="nav-link" data-scroll-target="#fonctionnement">Fonctionnement</a></li>
@@ -213,7 +213,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </ul></li>
   <li><a href="#limites" id="toc-limites" class="nav-link" data-scroll-target="#limites">Limites</a></li>
   </ul></li>
-  <li><a href="#les-conteneurs" id="toc-les-conteneurs" class="nav-link" data-scroll-target="#les-conteneurs">Les conteneurs</a>
+  <li><a href="#les-conteneurs" id="toc-les-conteneurs" class="nav-link" data-scroll-target="#les-conteneurs">Les conteneurs 🐋</a>
   <ul class="collapse">
   <li><a href="#introduction-1" id="toc-introduction-1" class="nav-link" data-scroll-target="#introduction-1">Introduction</a></li>
   <li><a href="#fonctionnement-1" id="toc-fonctionnement-1" class="nav-link" data-scroll-target="#fonctionnement-1">Fonctionnement</a></li>
@@ -264,23 +264,34 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="la-notion-de-portabilité" class="level1">
 <h1>La notion de portabilité</h1>
 <p>Dans les chapitres précédents, nous avons vu un ensemble de bonnes pratiques qui permettent de considérablement améliorer la qualité d’un projet : rendre le code plus lisible, adopter une structure du projet normalisée et évolutive, et versionner proprement son code sur un dépôt <code>GitHub</code>.</p>
-<p>Une fois ces bonnes pratiques appliquées à notre projet, ce dernier apparaît largement partageable. Du moins en théorie, car la pratique est souvent plus compliquée : il y a fort à parier que si vous essayez d’exécuter votre projet sur un autre environnement d’exécution (un autre ordinateur, un serveur, etc.), les choses ne se passent pas du tout comme attendu. Cela signifique qu’<strong>en l’état, le projet n’est pas portable : il n’est pas possible, sans modifications coûteuses, de l’exécuter dans un environnement différent de celui dans lequel il a été développé</strong>.</p>
+<p>Une fois ces bonnes pratiques appliquées à notre projet, ce dernier apparaît largement partageable. Du moins en théorie, car la pratique est souvent plus compliquée : il y a fort à parier que si vous essayez d’exécuter votre projet sur un autre environnement d’exécution (un autre ordinateur, un serveur, etc.), les choses ne se passent pas du tout comme attendu. Cela signifie que qu’<strong>en l’état, le projet n’est pas portable : il n’est pas possible, sans modifications coûteuses, de l’exécuter dans un environnement différent de celui dans lequel il a été développé</strong>.</p>
 <p>La principale raison est qu’un code ne vit pas dans une bulle isolée, il contient en général de nombreuses adhérences, plus ou moins visibles, au langage et à l’environnement dans lesquels il a été développé :</p>
 <ul>
 <li>des dépendances dans le langage du projet ;</li>
 <li>des dépendances dans d’autres langages (ex : <code>NumPy</code> est écrit en <code>C</code> et nécessite donc un compilateur <code>C</code>) ;</li>
-<li>des librairies systèmes nécessaires pour installer certains <em>packages</em> (par exemple, : les librairies de cartographie dynamique comme <code>Leaflet</code> ou <code>Folium</code> nécessitent la librairie système <code>GDAL</code>), qui ne seront pas les mêmes selon le système d’exploitation utilisé.</li>
+<li>des librairies systèmes nécessaires pour installer certains <em>packages</em> (par exemple, les librairies de cartographie dynamique comme <code>Leaflet</code> ou <code>Folium</code> nécessitent la librairie système <code>GDAL</code>), qui ne seront pas les mêmes selon le système d’exploitation utilisé.</li>
 </ul>
-<p>Si le premier problème peut être géré relativement facilement en adoptant une <a href="XXXXXX">structure de projet</a> et en spécifiant bien les différentes dépendances utilisées, les deux autres nécessitent en général des outils plus avancés.</p>
+<p>Si le premier problème peut être géré relativement facilement en adoptant une <a href="XXXXXX">structure de projet</a> et en spécifiant bien les différentes dépendances utilisées, par exemple avec un fichier <code>requirements.txt</code>, les deux autres nécessitent en général des outils plus avancés.</p>
 <p>Ces outils vont nous permettre de <strong>normaliser l’environnement afin de produire un projet portable</strong>, i.e.&nbsp;exécutable sur une large variété d’environnements d’exécution. Cette étape est primordiale lorsque l’on se préoccupe de la mise en production d’un projet, car elle assure une transition relativement indolore entre l’environnement de développement et celui de production.</p>
-<p><img src="https://img.devrant.com/devrant/rant/r_174386_yx6zV.jpg" class="img-fluid"></p>
-<p>Image empruntée à https://devrant.com/rants/174386/when-i-say-but-it-works-on-my-machine</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://img.devrant.com/devrant/rant/r_174386_yx6zV.jpg" class="img-fluid figure-img"></p>
+</figure>
+</div>
+<p><em>Image empruntée à [devrant.com}(https://devrant.com/rants/174386/when-i-say-but-it-works-on-my-machine)</em></p>
 </section>
-<section id="les-environnements-virtuels-snake" class="level1">
-<h1>Les environnements virtuels :snake:</h1>
+<section id="les-environnements-virtuels" class="level1">
+<h1>Les environnements virtuels 🐍</h1>
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>Pour illustrer l’importance de travailler avec des environnements virtuels, mettons-nous à la place d’un.e aspirant <em>data scientist</em> qui commencerait ses premiers projets. Selon toute vraisemblance, il va commencer par installer une distribution de <code>Python</code> — souvent, via <code>Anaconda</code> — sur son poste et commencer à développer, projet après projet. Dans cette approche, les différents <em>packages</em> qu’il va être amené à utiliser vont être installés au même endroit. Cela pose plusieurs problèmes : - <strong>conflits de version</strong> : une application A peut dépendre de la version 1 d’un package là où une application B peut dépendre de la version 2 de ce même package. Une seule application peut donc fonctionner dans cette configuration ; - <strong>version de <code>Python</code> fixe</strong> — on ne peut avoir qu’une seule installation par système — là où on voudrait pouvoir avoir des versions différentes selon le projet ; - <strong>reproductiblité limitée</strong> : difficile de dire quel projet repose sur tel package, dans la mesure où ceux-ci s’accumulent en un même endroit au fil des projets ; - <strong>portabilité limitée</strong> : conséquence du point précédent, il est difficile de fixer dans un fichier les dépendances spécifiques à un projet.</p>
+<p>Pour illustrer l’importance de travailler avec des environnements virtuels, mettons-nous à la place d’un.e aspirant.e <em>data scientist</em> qui commencerait ses premiers projets.</p>
+<p>Selon toute vraisemblance, on va commencer par installer une distribution de <code>Python</code> — souvent, via <code>Anaconda</code> — sur son poste et commencer à développer, projet après projet. Dans cette approche, les différents <em>packages</em> qu’on va être amené à utiliser vont être installés au même endroit. Cela pose plusieurs problèmes :</p>
+<ul>
+<li><strong>conflits de version</strong> : une application A peut dépendre de la version 1 d’un package là où une application B peut dépendre de la version 2 de ce même package. Une seule application peut donc fonctionner dans cette configuration ;</li>
+<li><strong>version de <code>Python</code> fixe</strong> — on ne peut avoir qu’une seule installation par système — là où on voudrait pouvoir avoir des versions différentes selon le projet ;</li>
+<li><strong>reproductiblité limitée</strong> : difficile de dire quel projet repose sur tel package, dans la mesure où ceux-ci s’accumulent en un même endroit au fil des projets ;</li>
+<li><strong>portabilité limitée</strong> : conséquence du point précédent, il est difficile de fixer dans un fichier les dépendances spécifiques à un projet.</li>
+</ul>
 <p>Les environnements virtuels constituent une solution à ces différents problèmes.</p>
 </section>
 <section id="fonctionnement" class="level2">
@@ -300,7 +311,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul>
 <p>En pratique, ces implémentations sont relativement proches. La différence majeure est que <code>conda</code> est à la fois un <em>package manager</em> (comme <code>pip</code>) et un gestionnaire d’environnements virtuels (comme <code>venv</code>).</p>
 <p>Pendant longtemps, <code>conda</code> en tant que <em>package manager</em> s’est avéré très pratique en <em>data science</em>, dans la mesure où il gérait non seulement les dépendances <code>Python</code> mais aussi dans d’autres langages — comme des dépendances <code>C</code>. Par ailleurs, la <em>distribution</em> <code>Anaconda</code>, qui contient à la fois <code>Python</code>, <code>conda</code> et beaucoup de <em>packages</em> utiles pour la <em>data science</em>, explique également cette popularité auprès des <em>data scientists</em>.</p>
-<p>Pour toutes ces raisons, nous allons présenter l’utilisation de <code>conda</code> comme gestionnaire d’environnements virtuels. Les principes présentés restent néanmoins valides pour les autres implémentations</p>
+<p>Néanmoins, l’accès de plus en plus fréquent à des <a href="https://pythonwheels.com/"><em>wheels</em></a> a permis un retour en grâce des environnements virtuels implémentés par <code>venv</code>.</p>
+<p>Pour toutes ces raisons, nous allons présenter l’utilisation de <code>conda</code> comme gestionnaire d’environnements virtuels. Les principes présentés restent néanmoins valides pour les autres implémentations.</p>
 </section>
 <section id="conda" class="level2">
 <h2 class="anchored" data-anchor-id="conda">Conda</h2>
@@ -456,7 +468,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 </section>
 <section id="les-conteneurs" class="level1">
-<h1>Les conteneurs</h1>
+<h1>Les conteneurs 🐋</h1>
 <section id="introduction-1" class="level2">
 <h2 class="anchored" data-anchor-id="introduction-1">Introduction</h2>
 <p>Avec les environnements virtuels, l’idée était de permettre à chaque utilisateur potentiel de notre projet d’installer sur son environnement d’exécution les packages nécessaires à la bonne exécution du projet. Néanmoins, comme on l’a vu, cette approche ne garantit pas une reproductibilité parfaite et a l’inconvénient de nécessiter beaucoup de gestion manuelle.</p>
