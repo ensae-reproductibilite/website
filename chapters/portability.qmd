@@ -73,14 +73,17 @@ et un gestionnaire d'environnements virtuels (comme `venv`).
 
 Pendant longtemps, `conda` en tant que *package manager* s'est avéré très pratique en *data science*, dans la mesure où il gérait non seulement les dépendances `Python` mais aussi dans d'autres langages — comme des dépendances `C`. Par ailleurs, la *distribution* `Anaconda`, qui contient à la fois `Python`, `conda` et beaucoup de *packages* utiles pour la *data science*, explique également cette popularité auprès des *data scientists*. 
 
-Néanmoins, l'accès de plus en plus fréquent
+La lenteur de l'installation des packages dans
+les environnements `conda` par rapport à `pip`
+et l'accès de plus en plus fréquent
 à des [_wheels_](https://pythonwheels.com/)
 a permis un retour en grâce des
 environnements virtuels implémentés par `venv`.
 
-
-
-Pour toutes ces raisons, nous allons présenter l'utilisation de `conda` comme gestionnaire d'environnements virtuels. Les principes présentés restent néanmoins valides pour les autres implémentations.
+Pour toutes ces raisons,
+nous allons présenter l'utilisation de `conda` comme gestionnaire
+d'environnements virtuels. Les principes présentés
+restent néanmoins valides pour les autres implémentations.
 
 ## Conda
 
@@ -124,7 +127,12 @@ Downloading and Extracting Packages
 ...
 ```
 
-Comme indiqué dans les logs, Conda a créé notre environnement et nous indique son emplacement sur le *filesystem*. En réalité, l'environnement n'est jamais vraiment vierge : Conda nous demande — et il faut répondre oui en tapant "y" — d'installer un certain nombre de packages, qui sont ceux qui viennent avec la distribution Miniconda.
+Comme indiqué dans les logs,
+`Conda` a créé notre environnement et nous indique son emplacement sur le *filesystem*.
+En réalité, l'environnement n'est jamais vraiment vierge :
+`Conda` nous demande — et il faut répondre oui en tapant _"y"_ — 
+d'installer un certain nombre de packages,
+qui sont ceux qui viennent avec la distribution `Miniconda`.
 
 On peut vérifier que l'environnement a bien été créé en listant les environnements installés sur le système.
 
@@ -273,10 +281,14 @@ Pour supprimer l'environnement `dev`, on utilise la commande `conda env remove -
 | `conda env export > environment.yml` | Exporter les spécifications de l’environnement dans un fichier `environment.yml` |
 
 
+## Environnements virtuels
+
+TO DO
 
 ## Limites
 
 Développer dans des environnements virtuels est une bonne pratique, car cela accroît la portabilité d'une application. Néanmoins, il y a plusieurs limites à leur utilisation :
+
 - les librairies système nécessaires à l'installation des packages ne sont pas gérées ;
 - les environnements virtuels ne permettent pas toujours de gérer des projets faisant intervenir différents langages de programmation ;
 - devoir installer `conda`, `Python`, et les packages nécessaires à chaque changement d'environnement peut être assez long et pénible en pratique ;
@@ -288,17 +300,23 @@ La technologie des conteneurs permet de répondre à ces différents problèmes.
 
 ## Introduction
 
-Avec les environnements virtuels, l'idée était de permettre à chaque utilisateur potentiel de notre projet d'installer sur son environnement d'exécution les packages nécessaires à la bonne exécution du projet. Néanmoins, comme on l'a vu, cette approche ne garantit pas une reproductibilité parfaite et a l'inconvénient de nécessiter beaucoup de gestion manuelle.
+Avec les environnements virtuels, l'idée était de permettre à chaque utilisateur potentiel de notre projet d'installer sur son environnement d'exécution les packages nécessaires à la bonne exécution du projet.
+Néanmoins, comme on l'a vu, cette approche ne garantit pas une reproductibilité parfaite et a l'inconvénient de nécessiter beaucoup de gestion manuelle.
 
-Changeons de perspective : au lieu de distribuer une recette permettant à l'utilisateur de recréer l'environnement nécessaire sur sa machine, ne pourrait-on pas directement distribuer à l'utilisateur une machine contenant l'environnement pré-configuré ? Bien entendu, on ve pas configurer et envoyer des ordinateurs portables à tous les utilisateurs potentiels d'un projet. Une autre solution serait de distribuer des machines virtuelles, qui tournent sur un serveur et simulent un véritable ordinateur. Ces machines ont cependant l'inconvénient d'être assez lourdes, et complexes à répliquer et distribuer. Pour pallier ces différentes limites, on va utiliser la technologie des conteneurs.
+Changeons de perspective : _au lieu de distribuer une recette permettant à l'utilisateur de recréer l'environnement nécessaire sur sa machine, ne pourrait-on pas directement distribuer à l'utilisateur une machine contenant l'environnement pré-configuré ?_
 
-![](https://external-preview.redd.it/aR6WdUcsrEgld5xUlglgKX_0sC_NlryCPTXIHk5qdu8.jpg?auto=webp&s=5fe64dd318eec71711d87805d43def2765dd83cd)
+Bien entendu, on ve pas configurer et envoyer des ordinateurs portables à tous les utilisateurs potentiels d'un projet.
+Une autre solution serait de distribuer des machines virtuelles, qui tournent sur un serveur et simulent un véritable ordinateur.
+Ces machines ont cependant l'inconvénient d'être assez lourdes, et complexes à répliquer et distribuer. Pour pallier ces différentes limites, on va utiliser la technologie des conteneurs.
 
-Image trouvée sur [reddit](https://www.reddit.com/r/ProgrammerHumor/comments/cw58z7/it_works_on_my_machine/)
+![](https://external-preview.redd.it/aR6WdUcsrEgld5xUlglgKX_0sC_NlryCPTXIHk5qdu8.jpg?auto=webp&s=5fe64dd318eec71711d87805d43def2765dd83cd){fig-align="center"}
+
+_Image trouvée sur [reddit](https://www.reddit.com/r/ProgrammerHumor/comments/cw58z7/it_works_on_my_machine/)_
 
 ## Fonctionnement
 
-Comme les machines virtuelles, les conteneurs permettent d'empaqueter complètement l'environnement (librairies systèmes, application, configuration) qui permet de faire tourner l'application. Mais à l'inverse d'une machine virtuelle, le conteneur n'inclut pas de système d'exploitation propre, il utilise celui de la machine hôte qui l'exécute. La technologie des conteneurs permet ainsi de garantir une très forte reproductibilité tout en restant suffisamment légère pour permettre une distribution et un déploiement simple aux utilisateurs.
+Comme les machines virtuelles, les conteneurs permettent d'empaqueter complètement l'environnement (librairies systèmes, application, configuration) qui permet de faire tourner l'application.
+Mais à l'inverse d'une machine virtuelle, le conteneur n'inclut pas de système d'exploitation propre, il utilise celui de la machine hôte qui l'exécute. La technologie des conteneurs permet ainsi de garantir une très forte reproductibilité tout en restant suffisamment légère pour permettre une distribution et un déploiement simple aux utilisateurs.
 
 **Différences entre l'approche conteneurs (gauche) et l'approche machines virtuelles (droite)**
 
@@ -421,27 +439,26 @@ pas nécessaire d'utiliser une image disposant de `R` si on n'utilise que
 du `Python`. En général, les différents langages proposent des images de petite taille dans lequel un interpréteur est déjà installé et proprement configuré. Dans cette application, on aurait par exemple pu utiliser l'image [python:3.9-slim-buster](https://hub.docker.com/layers/python/library/python/3.9-slim-buster/images/sha256-e07b35c0c81c21995a43cefd64730ac0e57a5164cc440b6a5c94c118cfacd0ca?context=explore).
 
 
-
-{{% box status="hint" title="Hint: choix des librairies système" icon="fa fa-lightbulb" %}}
+::: {.callout-tip}
 Avec la première commande `RUN` du `Dockerfile`, nous installons `Python` mais aussi des librairies système nécessaires au bon fonctionnement de l'application. Mais comment les avons-nous trouvées ?
 
 Par essai et erreur. Lors de l'étape de [build](#build) que l'on verra juste après, le moteur `Docker` va essayer de construire l'image selon les spécifications du `Dockerfile`, comme s'il partait d'un ordinateur vide contenant simplement `Ubuntu 20.04`. Si des librairies manquent, le processus de *build* devrait renvoyer une erreur, qui s'affichera dans les *logs* de l'application, affichés par défaut dans la console. Quand on a de la chance, les logs décrivent explicitement les librairies système manquantes. Mais souvent, les messages d'erreur ne sont pas très explicites, et il faut alors les copier dans un moteur de recherche bien connu pour trouver la réponse, souvent sur [Stackoverflow](https://stackoverflow.com/).
-{{% /box %}}
+:::
 
-{{% box status="hint" title="Hint: pourquoi `COPY` ?" icon="fa fa-lightbulb" %}}
+
+::: {.callout-tip}
 La recette présente dans le `Dockerfile` peut nécessiter l'utilisation de
 fichiers appartenant au dossier de travail. Pour que `Docker` les trouve
 dans son contexte, il est nécessaire d'introduire une
 commande `COPY`. C'est un petit peu comme pour la cuisine: pour utiliser
 un produit dans une recette, il faut le sortir du frigo (fichier local)
 et le mettre sur la table. 
+:::
 
-{{% /box %}}
-
-
-{{% box status="note" title="Note: les commandes Docker" icon="fa fa-comment" %}}
+::: {.callout-note}
 Nous n'avons vu que les commandes `Docker` les plus fréquentes, il en existe beaucoup d'autres en pratique. N'hésitez pas à consulter la [documentation officielle](https://docs.docker.com/engine/reference/builder/) pour comprendre leur utilisation.
-{{% /box %}}
+:::
+
 
 #### Construction d'une image Docker {#build}
 
@@ -537,6 +554,7 @@ $ docker run -d -p 8000:5000 myflaskapp:latest
 ```
 
 Détaillons la syntaxe de cette commande :
+
 - `docker run tag` : lance l'image dont on fournit le *tag*. Le *tag* est de la forme `repository/projet:version`. Ici, il n'y a pas de *repository* puisque tout est fait en local ;
 - `-d` : "détache" le conteneur du terminal qui le lance ;
 - `-p` : effectue un *mapping* entre un port de la machine qui exécute le conteneur, et le conteneur lui-même. Notre conteneur écoute sur le port 5000, et l'on veut que notre application soit exposée sur le port 8000 de notre machine.
@@ -550,6 +568,7 @@ CONTAINER ID   IMAGE        COMMAND                  CREATED         STATUS     
 ```
 
 Les conteneurs peuvent être utilisés pour réaliser des tâches très différentes. Grossièrement, on peut distinguer deux situations :
+
 - le conteneur effectue une tâche "one-shot", c'est à dire une opération qui a vocation à s'effectuer en un certain temps, suite à quoi le conteneur peut s'arrêter ;
 - le conteneur exécute une application. Dans ce cas, on souhaite que le conteneur reste en vie aussi longtemps que l'on souhaite utiliser l'application en question.
 
