@@ -211,6 +211,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#en-pratique" id="toc-en-pratique" class="nav-link" data-scroll-target="#en-pratique">En pratique</a></li>
   <li><a href="#aide-mémoire" id="toc-aide-mémoire" class="nav-link" data-scroll-target="#aide-mémoire">Aide-mémoire</a></li>
   </ul></li>
+  <li><a href="#environnements-virtuels" id="toc-environnements-virtuels" class="nav-link" data-scroll-target="#environnements-virtuels">Environnements virtuels</a></li>
   <li><a href="#limites" id="toc-limites" class="nav-link" data-scroll-target="#limites">Limites</a></li>
   </ul></li>
   <li><a href="#les-conteneurs" id="toc-les-conteneurs" class="nav-link" data-scroll-target="#les-conteneurs">Les conteneurs 🐋</a>
@@ -311,7 +312,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul>
 <p>En pratique, ces implémentations sont relativement proches. La différence majeure est que <code>conda</code> est à la fois un <em>package manager</em> (comme <code>pip</code>) et un gestionnaire d’environnements virtuels (comme <code>venv</code>).</p>
 <p>Pendant longtemps, <code>conda</code> en tant que <em>package manager</em> s’est avéré très pratique en <em>data science</em>, dans la mesure où il gérait non seulement les dépendances <code>Python</code> mais aussi dans d’autres langages — comme des dépendances <code>C</code>. Par ailleurs, la <em>distribution</em> <code>Anaconda</code>, qui contient à la fois <code>Python</code>, <code>conda</code> et beaucoup de <em>packages</em> utiles pour la <em>data science</em>, explique également cette popularité auprès des <em>data scientists</em>.</p>
-<p>Néanmoins, l’accès de plus en plus fréquent à des <a href="https://pythonwheels.com/"><em>wheels</em></a> a permis un retour en grâce des environnements virtuels implémentés par <code>venv</code>.</p>
+<p>La lenteur de l’installation des packages dans les environnements <code>conda</code> par rapport à <code>pip</code> et l’accès de plus en plus fréquent à des <a href="https://pythonwheels.com/"><em>wheels</em></a> a permis un retour en grâce des environnements virtuels implémentés par <code>venv</code>.</p>
 <p>Pour toutes ces raisons, nous allons présenter l’utilisation de <code>conda</code> comme gestionnaire d’environnements virtuels. Les principes présentés restent néanmoins valides pour les autres implémentations.</p>
 </section>
 <section id="conda" class="level2">
@@ -347,7 +348,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="ex">Proceed</span> <span class="er">(</span><span class="ex">[y]/n</span><span class="kw">)</span><span class="ex">?</span> y</span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="ex">Downloading</span> and Extracting Packages</span>
 <span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Comme indiqué dans les logs, Conda a créé notre environnement et nous indique son emplacement sur le <em>filesystem</em>. En réalité, l’environnement n’est jamais vraiment vierge : Conda nous demande — et il faut répondre oui en tapant “y” — d’installer un certain nombre de packages, qui sont ceux qui viennent avec la distribution Miniconda.</p>
+<p>Comme indiqué dans les logs, <code>Conda</code> a créé notre environnement et nous indique son emplacement sur le <em>filesystem</em>. En réalité, l’environnement n’est jamais vraiment vierge : <code>Conda</code> nous demande — et il faut répondre oui en tapant <em>“y”</em> — d’installer un certain nombre de packages, qui sont ceux qui viennent avec la distribution <code>Miniconda</code>.</p>
 <p>On peut vérifier que l’environnement a bien été créé en listant les environnements installés sur le système.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> info <span class="at">--envs</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># conda environments:</span></span>
@@ -461,9 +462,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </table>
 </section>
 </section>
+<section id="environnements-virtuels" class="level2">
+<h2 class="anchored" data-anchor-id="environnements-virtuels">Environnements virtuels</h2>
+<p>TO DO</p>
+</section>
 <section id="limites" class="level2">
 <h2 class="anchored" data-anchor-id="limites">Limites</h2>
-<p>Développer dans des environnements virtuels est une bonne pratique, car cela accroît la portabilité d’une application. Néanmoins, il y a plusieurs limites à leur utilisation : - les librairies système nécessaires à l’installation des packages ne sont pas gérées ; - les environnements virtuels ne permettent pas toujours de gérer des projets faisant intervenir différents langages de programmation ; - devoir installer <code>conda</code>, <code>Python</code>, et les packages nécessaires à chaque changement d’environnement peut être assez long et pénible en pratique ; - dans un environnement de production, gérer des environnements virtuels différents pour chaque projet peut s’avérer rapidement complexe pour les administrateurs système.</p>
+<p>Développer dans des environnements virtuels est une bonne pratique, car cela accroît la portabilité d’une application. Néanmoins, il y a plusieurs limites à leur utilisation :</p>
+<ul>
+<li>les librairies système nécessaires à l’installation des packages ne sont pas gérées ;</li>
+<li>les environnements virtuels ne permettent pas toujours de gérer des projets faisant intervenir différents langages de programmation ;</li>
+<li>devoir installer <code>conda</code>, <code>Python</code>, et les packages nécessaires à chaque changement d’environnement peut être assez long et pénible en pratique ;</li>
+<li>dans un environnement de production, gérer des environnements virtuels différents pour chaque projet peut s’avérer rapidement complexe pour les administrateurs système.</li>
+</ul>
 <p>La technologie des conteneurs permet de répondre à ces différents problèmes.</p>
 </section>
 </section>
@@ -472,9 +483,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="introduction-1" class="level2">
 <h2 class="anchored" data-anchor-id="introduction-1">Introduction</h2>
 <p>Avec les environnements virtuels, l’idée était de permettre à chaque utilisateur potentiel de notre projet d’installer sur son environnement d’exécution les packages nécessaires à la bonne exécution du projet. Néanmoins, comme on l’a vu, cette approche ne garantit pas une reproductibilité parfaite et a l’inconvénient de nécessiter beaucoup de gestion manuelle.</p>
-<p>Changeons de perspective : au lieu de distribuer une recette permettant à l’utilisateur de recréer l’environnement nécessaire sur sa machine, ne pourrait-on pas directement distribuer à l’utilisateur une machine contenant l’environnement pré-configuré ? Bien entendu, on ve pas configurer et envoyer des ordinateurs portables à tous les utilisateurs potentiels d’un projet. Une autre solution serait de distribuer des machines virtuelles, qui tournent sur un serveur et simulent un véritable ordinateur. Ces machines ont cependant l’inconvénient d’être assez lourdes, et complexes à répliquer et distribuer. Pour pallier ces différentes limites, on va utiliser la technologie des conteneurs.</p>
-<p><img src="https://external-preview.redd.it/aR6WdUcsrEgld5xUlglgKX_0sC_NlryCPTXIHk5qdu8.jpg?auto=webp&amp;s=5fe64dd318eec71711d87805d43def2765dd83cd" class="img-fluid"></p>
-<p>Image trouvée sur <a href="https://www.reddit.com/r/ProgrammerHumor/comments/cw58z7/it_works_on_my_machine/">reddit</a></p>
+<p>Changeons de perspective : <em>au lieu de distribuer une recette permettant à l’utilisateur de recréer l’environnement nécessaire sur sa machine, ne pourrait-on pas directement distribuer à l’utilisateur une machine contenant l’environnement pré-configuré ?</em></p>
+<p>Bien entendu, on ve pas configurer et envoyer des ordinateurs portables à tous les utilisateurs potentiels d’un projet. Une autre solution serait de distribuer des machines virtuelles, qui tournent sur un serveur et simulent un véritable ordinateur. Ces machines ont cependant l’inconvénient d’être assez lourdes, et complexes à répliquer et distribuer. Pour pallier ces différentes limites, on va utiliser la technologie des conteneurs.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://external-preview.redd.it/aR6WdUcsrEgld5xUlglgKX_0sC_NlryCPTXIHk5qdu8.jpg?auto=webp&amp;s=5fe64dd318eec71711d87805d43def2765dd83cd" class="img-fluid figure-img"></p>
+</figure>
+</div>
+<p><em>Image trouvée sur <a href="https://www.reddit.com/r/ProgrammerHumor/comments/cw58z7/it_works_on_my_machine/">reddit</a></em></p>
 </section>
 <section id="fonctionnement-1" class="level2">
 <h2 class="anchored" data-anchor-id="fonctionnement-1">Fonctionnement</h2>
@@ -549,11 +565,46 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><code>EXPOSE</code> : informe <code>Docker</code> que le conteneur “écoute” sur le port 5000, qui est le port par défaut utilisé par le serveur web de <code>Flask</code> ;</li>
 <li><code>CMD</code> : spécifie la commande que doit exécuter le conteneur lors de son lancement. Il s’agit d’une liste, qui contient les différentes parties de la commande sous forme de chaînes de caractères. Ici, on lance <code>Flask</code>, qui sait automatiquement quelle application lancer du fait de la commande <code>ENV</code> spécifiée précédemment.</li>
 </ul>
-<p>{{% box status=“hint” title=“Hint: choix des librairies système” icon=“fa fa-lightbulb” %}} Avec la première commande <code>RUN</code> du <code>Dockerfile</code>, nous installons <code>Python</code> mais aussi des librairies système nécessaires au bon fonctionnement de l’application. Mais comment les avons-nous trouvées ?</p>
-<p>Par essai et erreur. Lors de l’étape de <a href="#build">build</a> que l’on verra juste après, le moteur <code>Docker</code> va essayer de construire l’image selon les spécifications du <code>Dockerfile</code>, comme s’il partait d’un ordinateur vide contenant simplement <code>Ubuntu 20.04</code>. Si des librairies manquent, le processus de <em>build</em> devrait renvoyer une erreur, qui s’affichera dans les <em>logs</em> de l’application, affichés par défaut dans la console. Quand on a de la chance, les logs décrivent explicitement les librairies système manquantes. Mais souvent, les messages d’erreur ne sont pas très explicites, et il faut alors les copier dans un moteur de recherche bien connu pour trouver la réponse, souvent sur <a href="https://stackoverflow.com/">Stackoverflow</a>. {{% /box %}}</p>
-<p>{{% box status=“hint” title=“Hint: pourquoi <code>COPY</code> ?” icon=“fa fa-lightbulb” %}} La recette présente dans le <code>Dockerfile</code> peut nécessiter l’utilisation de fichiers appartenant au dossier de travail. Pour que <code>Docker</code> les trouve dans son contexte, il est nécessaire d’introduire une commande <code>COPY</code>. C’est un petit peu comme pour la cuisine: pour utiliser un produit dans une recette, il faut le sortir du frigo (fichier local) et le mettre sur la table.</p>
-<p>{{% /box %}}</p>
-<p>{{% box status=“note” title=“Note: les commandes Docker” icon=“fa fa-comment” %}} Nous n’avons vu que les commandes <code>Docker</code> les plus fréquentes, il en existe beaucoup d’autres en pratique. N’hésitez pas à consulter la <a href="https://docs.docker.com/engine/reference/builder/">documentation officielle</a> pour comprendre leur utilisation. {{% /box %}}</p>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Avec la première commande <code>RUN</code> du <code>Dockerfile</code>, nous installons <code>Python</code> mais aussi des librairies système nécessaires au bon fonctionnement de l’application. Mais comment les avons-nous trouvées ?</p>
+<p>Par essai et erreur. Lors de l’étape de <a href="#build">build</a> que l’on verra juste après, le moteur <code>Docker</code> va essayer de construire l’image selon les spécifications du <code>Dockerfile</code>, comme s’il partait d’un ordinateur vide contenant simplement <code>Ubuntu 20.04</code>. Si des librairies manquent, le processus de <em>build</em> devrait renvoyer une erreur, qui s’affichera dans les <em>logs</em> de l’application, affichés par défaut dans la console. Quand on a de la chance, les logs décrivent explicitement les librairies système manquantes. Mais souvent, les messages d’erreur ne sont pas très explicites, et il faut alors les copier dans un moteur de recherche bien connu pour trouver la réponse, souvent sur <a href="https://stackoverflow.com/">Stackoverflow</a>.</p>
+</div>
+</div>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>La recette présente dans le <code>Dockerfile</code> peut nécessiter l’utilisation de fichiers appartenant au dossier de travail. Pour que <code>Docker</code> les trouve dans son contexte, il est nécessaire d’introduire une commande <code>COPY</code>. C’est un petit peu comme pour la cuisine: pour utiliser un produit dans une recette, il faut le sortir du frigo (fichier local) et le mettre sur la table.</p>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Nous n’avons vu que les commandes <code>Docker</code> les plus fréquentes, il en existe beaucoup d’autres en pratique. N’hésitez pas à consulter la <a href="https://docs.docker.com/engine/reference/builder/">documentation officielle</a> pour comprendre leur utilisation.</p>
+</div>
+</div>
 </section>
 <section id="build" class="level4">
 <h4 class="anchored" data-anchor-id="build">Construction d’une image Docker</h4>
@@ -626,12 +677,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>L’étape de <em>build</em> a permis de créer une <em>image</em> <code>Docker</code>. Une image doit être vue comme un <em>template</em> : elle permet d’exécuter l’application sur n’importe quel environnement d’exécution sur lequel un moteur <code>Docker</code> est installé. En l’état, on a donc juste <em>construit</em>, mais rien <em>lancé</em> : notre application ne tourne pas encore. Pour cela, il faut créer un <em>conteneur</em>, i.e.&nbsp;une instance vivante de l’image qui permet d’accéder à l’application. Cela se fait via la commande <code>docker run</code>.</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker run <span class="at">-d</span> <span class="at">-p</span> 8000:5000 myflaskapp:latest</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="ex">6a2ab0d82d051a3829b182ede7b9152f7b692117d63fa013e7dfe6232f1b9e81</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Détaillons la syntaxe de cette commande : - <code>docker run tag</code> : lance l’image dont on fournit le <em>tag</em>. Le <em>tag</em> est de la forme <code>repository/projet:version</code>. Ici, il n’y a pas de <em>repository</em> puisque tout est fait en local ; - <code>-d</code> : “détache” le conteneur du terminal qui le lance ; - <code>-p</code> : effectue un <em>mapping</em> entre un port de la machine qui exécute le conteneur, et le conteneur lui-même. Notre conteneur écoute sur le port 5000, et l’on veut que notre application soit exposée sur le port 8000 de notre machine.</p>
+<p>Détaillons la syntaxe de cette commande :</p>
+<ul>
+<li><code>docker run tag</code> : lance l’image dont on fournit le <em>tag</em>. Le <em>tag</em> est de la forme <code>repository/projet:version</code>. Ici, il n’y a pas de <em>repository</em> puisque tout est fait en local ;</li>
+<li><code>-d</code> : “détache” le conteneur du terminal qui le lance ;</li>
+<li><code>-p</code> : effectue un <em>mapping</em> entre un port de la machine qui exécute le conteneur, et le conteneur lui-même. Notre conteneur écoute sur le port 5000, et l’on veut que notre application soit exposée sur le port 8000 de notre machine.</li>
+</ul>
 <p>Lorsque l’on exécute <code>docker run</code>, <code>Docker</code> nous répond simplement un <em>hash</em> qui identifie le conteneur que l’on a lancé. On peut vérifier qu’il tourne bien avec la commande <code>docker ps</code>, qui renvoie toutes les informations associées au conteneur.</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker ps</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="ex">CONTAINER</span> ID   IMAGE        COMMAND                  CREATED         STATUS         PORTS                                   NAMES</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="ex">6a2ab0d82d05</span>   myflaskapp   <span class="st">"flask run --host=0.…"</span>   7 seconds ago   Up 6 seconds   0.0.0.0:8000-<span class="op">&gt;</span>5000/tcp, :::8000-<span class="op">&gt;</span>5000/tcp   vigorous_kalam</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Les conteneurs peuvent être utilisés pour réaliser des tâches très différentes. Grossièrement, on peut distinguer deux situations : - le conteneur effectue une tâche “one-shot”, c’est à dire une opération qui a vocation à s’effectuer en un certain temps, suite à quoi le conteneur peut s’arrêter ; - le conteneur exécute une application. Dans ce cas, on souhaite que le conteneur reste en vie aussi longtemps que l’on souhaite utiliser l’application en question.</p>
+<p>Les conteneurs peuvent être utilisés pour réaliser des tâches très différentes. Grossièrement, on peut distinguer deux situations :</p>
+<ul>
+<li>le conteneur effectue une tâche “one-shot”, c’est à dire une opération qui a vocation à s’effectuer en un certain temps, suite à quoi le conteneur peut s’arrêter ;</li>
+<li>le conteneur exécute une application. Dans ce cas, on souhaite que le conteneur reste en vie aussi longtemps que l’on souhaite utiliser l’application en question.</li>
+</ul>
 <p>Dans notre cas d’application, on se situe dans la seconde configuration puisque l’on veut exécuter une application web. Lorsque l’application tourne, elle expose sur le <em>localhost</em>, accessible depuis un navigateur web — en l’occurence, à l’adresse <a href="localhost:8000/">localhost:8000/</a>. Les calculs sont effectués sur un serveur local, et le navigateur sert d’interface avec l’utilisateur — comme lorsque vous utilisez un notebook <code>Jupyter</code> par exemple.</p>
 <p>Finalement, on a pu développer et exécuter une application complète sur notre environnement local, sans avoir eu à installer quoi que ce soit sur notre machine personnelle, à part <code>Docker.</code></p>
 </section>
