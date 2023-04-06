@@ -211,7 +211,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#en-pratique" id="toc-en-pratique" class="nav-link" data-scroll-target="#en-pratique">En pratique</a></li>
   <li><a href="#aide-mémoire" id="toc-aide-mémoire" class="nav-link" data-scroll-target="#aide-mémoire">Aide-mémoire</a></li>
   </ul></li>
-  <li><a href="#environnements-virtuels" id="toc-environnements-virtuels" class="nav-link" data-scroll-target="#environnements-virtuels">Environnements virtuels</a></li>
   <li><a href="#limites" id="toc-limites" class="nav-link" data-scroll-target="#limites">Limites</a></li>
   </ul></li>
   <li><a href="#les-conteneurs" id="toc-les-conteneurs" class="nav-link" data-scroll-target="#les-conteneurs">Les conteneurs 🐋</a>
@@ -311,15 +310,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>Dans le domaine de la <em>data science</em>, l’implémentation la plus courante est sans doute <code>conda</code>.</li>
 </ul>
 <p>En pratique, ces implémentations sont relativement proches. La différence majeure est que <code>conda</code> est à la fois un <em>package manager</em> (comme <code>pip</code>) et un gestionnaire d’environnements virtuels (comme <code>venv</code>).</p>
-<p>Pendant longtemps, <code>conda</code> en tant que <em>package manager</em> s’est avéré très pratique en <em>data science</em>, dans la mesure où il gérait non seulement les dépendances <code>Python</code> mais aussi dans d’autres langages — comme des dépendances <code>C</code>. Par ailleurs, la <em>distribution</em> <code>Anaconda</code>, qui contient à la fois <code>Python</code>, <code>conda</code> et beaucoup de <em>packages</em> utiles pour la <em>data science</em>, explique également cette popularité auprès des <em>data scientists</em>.</p>
-<p>La lenteur de l’installation des packages dans les environnements <code>conda</code> par rapport à <code>pip</code> et l’accès de plus en plus fréquent à des <a href="https://pythonwheels.com/"><em>wheels</em></a> a permis un retour en grâce des environnements virtuels implémentés par <code>venv</code>.</p>
+<p>Pendant longtemps, <code>conda</code> en tant que <em>package manager</em> s’est avéré très pratique en <em>data science</em>, dans la mesure où il gérait non seulement les dépendances <code>Python</code> mais aussi dans d’autres langages — comme des dépendances <code>C</code>. L’autre différence majeure avec <code>pip</code> est que Conda utilise une méthode plus avancée — et donc également plus coûteuse en temps — de résolution des dépendances<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. En effet, différents packages peuvent spécifier différentes versions d’un même package dont ils dépendent tous les deux, ce qui provoque un conflit de version. Conda va par défaut appliquer un algorithme qui vise à gérer au mieux ces conflits, là où <code>pip</code> va choisir une approche plus minimaliste. Enfin, la <em>distribution</em> <code>Anaconda</code>, qui contient à la fois <code>Python</code>, <code>conda</code> et beaucoup de <em>packages</em> utiles pour la <em>data science</em>, explique également cette popularité auprès des <em>data scientists</em>.</p>
 <p>Pour toutes ces raisons, nous allons présenter l’utilisation de <code>conda</code> comme gestionnaire d’environnements virtuels. Les principes présentés restent néanmoins valides pour les autres implémentations.</p>
 </section>
 <section id="conda" class="level2">
 <h2 class="anchored" data-anchor-id="conda">Conda</h2>
 <section id="installation" class="level3">
 <h3 class="anchored" data-anchor-id="installation">Installation</h3>
-<p>Les instructions à suivre pour installer <code>conda</code> sont détaillées dans la <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html">documentation officielle</a>. <code>conda</code> seul étant peu utile en pratique, il est généralement installé dans le cadre de distributions. Les deux plus populaires sont : - <code>Miniconda</code> : une distribution minimaliste contenant <code>conda</code>, <code>Python</code> ainsi qu’un petit nombre de packages techniques très utiles ; - <code>Anaconda</code> : une distribution assez volumineuse contenant <code>conda</code>, <code>Python</code>, d’autres logiciels (<code>R</code>, <code>Spyder</code>, etc.) ainsi qu’un ensemble de packages utiles pour la <em>data science</em> (<code>SciPy</code>, <code>NumPy</code>, etc.).</p>
+<p>Les instructions à suivre pour installer <code>conda</code> sont détaillées dans la <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html">documentation officielle</a>. <code>conda</code> seul étant peu utile en pratique, il est généralement installé dans le cadre de distributions. Les deux plus populaires sont :</p>
+<ul>
+<li><code>Miniconda</code> : une distribution minimaliste contenant <code>conda</code>, <code>Python</code> ainsi qu’un petit nombre de packages techniques très utiles ;</li>
+<li><code>Anaconda</code> : une distribution assez volumineuse contenant <code>conda</code>, <code>Python</code>, d’autres logiciels (<code>R</code>, <code>Spyder</code>, etc.) ainsi qu’un ensemble de packages utiles pour la <em>data science</em> (<code>SciPy</code>, <code>NumPy</code>, etc.).</li>
+</ul>
 <p>Le choix de la distribution importe assez peu en pratique, dans la mesure où nous allons de toute manière utiliser des environnements virtuels vierges pour développer nos projets.</p>
 <p><strong>L’écosystème Conda</strong></p>
 <p><img src="../conda-eco.png" class="img-fluid"></p>
@@ -382,7 +384,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h4 class="anchored" data-anchor-id="installer-un-package">Installer un package</h4>
 <p>La syntaxe pour installer un package avec Conda est très similaire à celle de <code>pip</code> :</p>
 <pre class="shell"><code>conda install nom_du_package</code></pre>
-<p>La différence est que là où <code>pip install</code> va installer un package à partir du répertoire <a href="https://pypi.org/">PyPI</a>, <code>conda install</code> va chercher le package sur les répertoires maintenus par les développeurs de Conda<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. Installons par exemple le package phare de <em>machine learning</em> <code>scikit-learn</code>.</p>
+<p>La différence est que là où <code>pip install</code> va installer un package à partir du répertoire <a href="https://pypi.org/">PyPI</a>, <code>conda install</code> va chercher le package sur les répertoires maintenus par les développeurs de Conda<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. Installons par exemple le package phare de <em>machine learning</em> <code>scikit-learn</code>.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> conda install scikit-learn</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Collecting</span> package metadata <span class="er">(</span><span class="ex">current_repodata.json</span><span class="kw">)</span><span class="bu">:</span> done</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Solving</span> environment: done</span>
@@ -395,7 +397,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="ex">-</span> scikit-learn</span>
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Là encore, Conda nous demande d’installer d’autres packages, qui sont des dépendances de <code>scikit-learn</code>. Par exemple, la librairie de calcul scientifique <code>NumPy</code>.</p>
-<p>L’autre différence majeure avec <code>pip</code> est que Conda utilise une méthode plus avancée — et donc également plus coûteuse en temps — de résolution des dépendances. En effet, différents packages peuvent spécifier différentes versions d’un même package dont ils dépendent tous les deux, ce qui provoque un conflit de version. Conda va par défaut appliquer un algorithme qui vise à gérer au mieux ces conflits, là où <code>pip</code> va choisir une approche plus minimaliste<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
 <p>Il arrive que des packages disponibles sur le répertoire <code>PyPI</code> ne soient pas disponible sur les canaux gérés par Conda. Dans ce cas, il est possible d’installer un package dans l’environnement via la commande <code>pip install</code>. Il est néanmonins toujours préférable de privilégier une installation via Conda si disponible.</p>
 </section>
 <section id="exporter-les-spécifications-de-lenvironnement" class="level4">
@@ -462,10 +463,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </table>
 </section>
 </section>
-<section id="environnements-virtuels" class="level2">
-<h2 class="anchored" data-anchor-id="environnements-virtuels">Environnements virtuels</h2>
-<p>TO DO</p>
-</section>
 <section id="limites" class="level2">
 <h2 class="anchored" data-anchor-id="limites">Limites</h2>
 <p>Développer dans des environnements virtuels est une bonne pratique, car cela accroît la portabilité d’une application. Néanmoins, il y a plusieurs limites à leur utilisation :</p>
@@ -513,7 +510,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h3 class="anchored" data-anchor-id="principes">Principes</h3>
 <p>Un conteneur Docker est mis à disposition sous la forme d’une <strong>image</strong>, c’est à dire d’un fichier binaire qui contient l’environnement nécessaire à l’exécution de l’application.</p>
 <p>Pour construire (<em>build</em>) l’image, on utilise un <code>Dockerfile</code>, un fichier texte qui contient la recette — sous forme de commandes Linux — de construction de l’environnement. L’image va être uploadée (<em>push</em>) sur un dépôt (<em>registry</em>), public ou privé, depuis lequel les utilisateurs vont pouvoir télécharger l’image (<em>pull</em>). Le moteur Docker permet ensuite de lancer (<em>run</em>) un <strong>conteneur</strong>, c’est à dire une instance vivante de l’image.</p>
-<p>{{% box status=“note” title=“Note: les commandes Docker” icon=“fa fa-comment” %}} Le répertoire d’images publiques le plus connu est <a href="https://hub.docker.com/"><code>DockerHub</code></a>. Il s’agit d’un répertoire où n’importe qui peut proposer une image <code>Docker</code>, associée ou non à un projet disponible sur <code>Github</code> <i class="fab fa-github"></i> ou <code>Gitlab</code> <i class="fab fa-gitlab"></i>. Il est possible de mettre à disposition de manière manuelle des images mais, comme nous le montrerons, il est beaucoup plus pratique d’utiliser des fonctionalités d’interaction automatique entre <code>DockerHub</code> et un dépôt <code>Git</code>. {{% /box %}}</p>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Le répertoire d’images publiques le plus connu est <a href="https://hub.docker.com/"><code>DockerHub</code></a>. Il s’agit d’un répertoire où n’importe qui peut proposer une image <code>Docker</code>, associée ou non à un projet disponible sur <code>Github</code> ou <code>Gitlab</code>. Il est possible de mettre à disposition de manière manuelle des images mais, comme nous le montrerons dans le chapitre sur la <a href="../chapters/deployment.html">mise en production</a>, il est beaucoup plus pratique d’utiliser des fonctionalités d’interaction automatique entre <code>DockerHub</code> et un dépôt <code>GitHub</code>.</p>
+</div>
+</div>
 </section>
 <section id="en-pratique-1" class="level3">
 <h3 class="anchored" data-anchor-id="en-pratique-1">En pratique</h3>
@@ -608,7 +617,7 @@ Note
 </section>
 <section id="build" class="level4">
 <h4 class="anchored" data-anchor-id="build">Construction d’une image Docker</h4>
-<p>Pour construire une image à partir d’un <code>Dockerfile</code>, il suffit d’utiliser la commande <code>docker build</code>. Il faut ensuite spécifier deux éléments importnats : - le <em>build context</em>. Il faut indiquer à <code>Docker</code> le chemin de notre projet, qui doit contenir le <code>Dockerfile</code>. En pratique, il est plus simple de se mettre dans le dossier du projet via la commande <code>cd</code>, puis de passer <code>.</code> comme <em>build context</em> pour indiquer à <code>Docker</code> de <em>build</em> “d’ici” ; - le <em>tag</em>, c’est à dire le nom de l’image. Tant que l’on utilisee <code>Docker</code> en local, le <em>tag</em> importe peu. On verra par la suite que la structure du <em>tag</em> a de l’importance lorsque l’on souhaite <a href="#imp-exp-docker">exporter ou importer une image <code>Docker</code></a> à partir d’un dépôt distant.</p>
+<p>Pour construire une image à partir d’un <code>Dockerfile</code>, il suffit d’utiliser la commande <code>docker build</code>. Il faut ensuite spécifier deux éléments importnats : - le <em>build context</em>. Il faut indiquer à <code>Docker</code> le chemin de notre projet, qui doit contenir le <code>Dockerfile</code>. En pratique, il est plus simple de se mettre dans le dossier du projet via la commande <code>cd</code>, puis de passer <code>.</code> comme <em>build context</em> pour indiquer à <code>Docker</code> de <em>build</em> “d’ici” ; - le <em>tag</em>, c’est à dire le nom de l’image. Tant que l’on utilisee <code>Docker</code> en local, le <em>tag</em> importe peu. On verra par la suite que la structure du <em>tag</em> a de l’importance lorsque l’on souhaite <a href="#imp-docker">exporter</a> ou <a href="#exp-docker">importer</a> une image <code>Docker</code> à partir d’un dépôt distant.</p>
 <p>Regardons ce qui se passe en pratique lorsque l’on essaie de construire notre image.</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker build <span class="at">-t</span> myflaskapp .</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Sending</span> build context to Docker daemon     47MB</span>
@@ -695,8 +704,8 @@ Note
 <p>Dans notre cas d’application, on se situe dans la seconde configuration puisque l’on veut exécuter une application web. Lorsque l’application tourne, elle expose sur le <em>localhost</em>, accessible depuis un navigateur web — en l’occurence, à l’adresse <a href="localhost:8000/">localhost:8000/</a>. Les calculs sont effectués sur un serveur local, et le navigateur sert d’interface avec l’utilisateur — comme lorsque vous utilisez un notebook <code>Jupyter</code> par exemple.</p>
 <p>Finalement, on a pu développer et exécuter une application complète sur notre environnement local, sans avoir eu à installer quoi que ce soit sur notre machine personnelle, à part <code>Docker.</code></p>
 </section>
-<section id="imp-exp-docker" class="level4">
-<h4 class="anchored" data-anchor-id="imp-exp-docker">Exporter une image <code>Docker</code></h4>
+<section id="exp-docker" class="level4">
+<h4 class="anchored" data-anchor-id="exp-docker">Exporter une image <code>Docker</code></h4>
 <p>Jusqu’à maintenant, toutes les commandes <code>Docker</code> que nous avons exécutées se sont passées en local. Ce mode de fonctionnement peut être intéressant pour la phase de développement. Mais comme on l’a vu, un des gros avantages de <code>Docker</code> est la facilité de redistribution des images construites, qui peuvent ensuite être utilisées par de nombreux utilisateurs pour faire tourner notre application. Pour cela, il nous faut uploader notre image sur un dépôt distant, à partir duquel les utilisateurs pourront la télécharger.</p>
 <p>Plusieurs possibilités existent selon le contexte de travail : une entreprise peut avoir un dépôt interne par exemple. Si le projet est open-source, on peut utiliser le <a href="https://hub.docker.com/">DockerHub</a>. Le <em>workflow</em> pour uploader une image est le suivant : - créer un compte sur le DockerHub ; - créer un projet (public) sur le DockerHub, qui va héberger les images <code>Docker</code> du projet ; - sur un terminal, utiliser <code>docker login</code> pour s’authentifier au <code>DockerHub</code> ; - on va modifier le <em>tag</em> que l’on fournit lors du <em>build</em> pour spécifier le chemin attendu. Dans notre cas : <code>docker build -t compte/projet:version .</code> ; - uploader l’image avec <code>docker push compte/projet:version</code></p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker push avouacr/myflaskapp:1.0.0</span>
@@ -709,8 +718,8 @@ Note
 <span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="ex">c5ec52c98b31:</span> Pushed </span>
 <span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="ex">1.0.0:</span> digest: sha256:b75fe53fd1990c3092ec41ab0966a9fbbb762f3047957d99327cc16e27c68cc9 size: 1574</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="imp-exp-docker" class="level4">
-<h4 class="anchored" data-anchor-id="imp-exp-docker">Importer une image <code>Docker</code></h4>
+<section id="imp-docker" class="level4">
+<h4 class="anchored" data-anchor-id="imp-docker">Importer une image <code>Docker</code></h4>
 <p>En supposant que le dépôt utilisé pour uploader l’image est public, la procédure que doit suivre un utilisateur pour la télécharger se résume à utiliser la commande <code>docker pull compte/projet:version</code></p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker pull avouacr/myflaskapp:1.0.0</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="ex">1.0.0:</span> Pulling from avouacr/myflaskapp</span>
@@ -820,8 +829,8 @@ Note
 <div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
 
 <ol>
-<li id="fn1"><p>Ces répertoires sont, dans le langage <code>conda</code> les <em>canaux</em>. Le canal par défaut est maintenu par les développeurs d<code>Anaconda</code>. Cependant, pour en assurer la stabilité, ce canal a une forte inertie. La <code>conda-forge</code> a émergé pour offrir plus de flexibilité aux développeurs de <em>package</em> qui peuvent ainsi mettre à disposition des versions plus récentes de leurs packages, comme sur <a href="https://pypi.org/">PyPI</a>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p><a href="https://flask.palletsprojects.com/en/2.1.x/"><code>Flask</code></a> est un <em>framework</em> permettant de déployer, de manière légère, des applications reposant sur <code>Python</code>.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>La lenteur de l’installation des packages dans les environnements <code>conda</code> par rapport à <code>pip</code> et l’accès de plus en plus fréquent à des <a href="https://pythonwheels.com/"><em>wheels</em></a> a permis un retour en grâce des environnements virtuels implémentés par <code>venv</code>. Une autre alternative populaire est <a href="https://mamba.readthedocs.io/en/latest/"><code>mamba</code></a>, une réimplémentation de <code>Conda</code> en <code>C++</code> qui utilise un <em>solver</em> bien plus efficace. En proposant celui-ci, le projet <code>mamba</code> vise à pallier l’un des irritants principaux de <code>conda</code>, à savoir la lenteur du <em>solver</em>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Ces répertoires sont, dans le langage <code>conda</code> les <em>canaux</em>. Le canal par défaut est maintenu par les développeurs d<code>Anaconda</code>. Cependant, pour en assurer la stabilité, ce canal a une forte inertie. La <code>conda-forge</code> a émergé pour offrir plus de flexibilité aux développeurs de <em>package</em> qui peuvent ainsi mettre à disposition des versions plus récentes de leurs packages, comme sur <a href="https://pypi.org/">PyPI</a>.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn3"><p><a href="https://flask.palletsprojects.com/en/2.1.x/"><code>Flask</code></a> est un <em>framework</em> permettant de déployer, de manière légère, des applications reposant sur <code>Python</code>.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn4"><p>Dans l’idéal, on essaie de partir d’une couche la plus petite possible pour limiter la taille de l’image finalement obtenue. Il n’est en effet pas nécessaire d’utiliser une image disposant de <code>R</code> si on n’utilise que du <code>Python</code>. En général, les différents langages proposent des images de petite taille dans lequel un interpréteur est déjà installé et proprement configuré. Dans cette application, on aurait par exemple pu utiliser l’image <a href="https://hub.docker.com/layers/python/library/python/3.9-slim-buster/images/sha256-e07b35c0c81c21995a43cefd64730ac0e57a5164cc440b6a5c94c118cfacd0ca?context=explore">python:3.9-slim-buster</a>.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
