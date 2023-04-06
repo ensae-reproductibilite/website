@@ -953,163 +953,317 @@ Faire une *pull request* via la branche `master` d’un *fork* est très mal vu.
 {{% /box %}}
 ------------------>
 
-# Partie 2 : construction d'un projet portable et reproductible {#partie3}
+# Partie 3 : construction d'un projet portable et reproductible {#partie3}
 
 Dans la partie précédente,
-on a appliqué de manière incrémentale de nombreuses bonnes pratiques vues tout au long du cours.
+on a appliqué de manière incrémentale de nombreuses bonnes pratiques vues
+dans les chapitres [Qualité du code](/chapters/code-quality.html)
+et [Structure des projets](/chapters/projects-architecture.html)
+tout au long du cours.
+
 Ce faisant, on s'est déjà considérablement rapprochés d'une
 possible mise en production : le code est lisible,
 la structure du projet est normalisée et évolutive,
 et le code est proprement versionné sur un
-dépôt `GitHub` <i class="fab fa-github"></i>.
+dépôt `GitHub`.
 
 A présent, nous avons une version du projet qui est largement partageable.
-Du moins en théorie, car la pratique est souvent plus compliquée : il y a fort à parier que si vous essayez d'exécuter votre projet sur un autre environnement (typiquement, votre ordinateur personnel),
+Du moins en théorie, car la pratique est souvent plus compliquée :
+il y a fort à parier que si vous essayez d'exécuter votre projet sur un autre environnement (typiquement, votre ordinateur personnel),
 les choses ne se passent pas du tout comme attendu. Cela signifie qu'**en l'état, le projet n'est pas portable : il n'est pas possible, sans modifications coûteuses, de l'exécuter dans un environnement différent de celui dans lequel il a été développé**.
 
-Dans cette seconde partie, nous allons voir comment **normaliser l'environnement d'exécution afin de produire un projet portable**. On sera alors tout proche de pouvoir mettre le projet en production.
+Dans cette seconde partie, nous allons voir 
+comment **normaliser l'environnement d'exécution afin de produire un projet portable**.
+Autrement dit, nous n'allons plus nous contenter de modularité mais allons rechercher
+la portabilité.
+On sera alors tout proche de pouvoir mettre le projet en production.
 On progressera dans l'échelle de la reproductibilité 
 de la manière suivante: 
-- :one: [**Gérer des variables d'environnement hors du code**](#configyaml) ;
-- :two: [**Environnements virtuels**](#anaconda) ;
+
+- :one: [**Environnements virtuels**](#anaconda) ;
+- :two: Créer un script shell qui permet, depuis un environnement minimal, de construire l'application de A à Z ;
 - :three: [**Images et conteneurs `Docker`**](#docker).
 
 
-## Etape 1: créer un répertoire de variables servant d'input {#configyaml}
+Nous allons repartir de l'application 8, c'est-à-dire d'un projet
+modulaire mais qui n'est pas, à strictement parler, un package
+(objet des applications optionnelles suivantes 9 et 10). 
 
-### Enjeu
+Pour se replacer dans l'état du projet à ce niveau,
+il est possible d'utiliser le _tag_ _ad hoc_.
 
-Lors de l'[étape 7](#stockageS3), nous avons amélioré la qualité du script en 
-séparant stockage et code. Cependant, peut-être avez-vous remarqué
-que nous avons introduit un nom de _bucket_ personnel dans le script
-(voir [le fichier `main.py`](https://github.com/linogaliana/ensae-reproductibilite-projet-1/blob/v7/main.py#L9)).
-Il s'agit typiquement du genre de petit vice caché d'un script qui peut 
-générer une erreur: vous n'avez pas accès au bucket en question donc
-si vous essayez de faire tourner ce script en l'état, vous allez rencontrer
-une erreur.
-
-Une bonne pratique pour gérer ce type de configuration est d'utiliser un 
-fichier `YAML` qui stocke de manière hiérarchisée les variables globales
-[^3].
-
-[^3]: Le format `YAML` est un format de fichier où les informations sont 
-hiérarchisées. Avec le _package_ `YAML` on peut très facilement le transformer
-en `dict`, ce qui est très pratique pour accéder à une information.
-
-En l'occurrence, nous n'avons besoin que de deux éléments pour pouvoir
-dé-personnaliser ce script :
-
-- le nom du bucket
-- l'emplacement dans le bucket
-
-### Application
-
-Dans `VSCode`, créer un fichier nommé `config.yaml` et le localiser à la racine
-de votre dépôt. Voici, une proposition de hiérarchisation de l'information
-que vous devez adapter à votre nom d'utilisateur :
-
-```yaml
-input:
-  bucket: "lgaliana"
-  path: "ensae-reproductibilite"
+```shell
+git checkout appli8
 ```
 
-Dans `main.py`, importer ce fichier et remplacer la ligne précédemment
-évoquée par les valeurs du fichier. Tester en faisant tourner `main.py`
-<!-----
-https://github.com/linogaliana/ensae-reproductibilite-projet-1/commit/4a9d935223b6af366d4cf2a2a208d98a25407fc6
------>
 
-## Etape 2 :  créer un environnement conda à partir du fichier `environment.yml` {#anaconda}
+## Etape 1 : un environnement pour rendre le projet portable {#anaconda}
 
-L'environnement `conda` créé avec `conda env export` ([étape 6](#conda-export))
-contient énormément
-de dépendances, dont de nombreuses qui ne nous sont pas nécessaires (il 
-en serait de même avec `pip freeze`). 
-Nous n'avons en effet besoin que des _packages_ présents dans la
-section `import` de nos scripts et les dépendances nécessaires
-pour que ces _packages_ soient fonctionnels.
+Pour qu'un projet soit portable, il doit remplir deux conditions:
+
+- Ne pas nécessiter de dépendance
+qui ne soient pas renseignées quelque part
+- Ne pas proposer des dépendances inutiles, qui ne
+sont pas utilisées dans le cadre du projet. 
+
+::: {.panel-tabset}
+
+## Environnement virtuel
+
+L'approche la plus légère est l'environnement virtuel. 
+Nous avons en fait implicitement déjà commencé à aller vers
+cette direction
+en créant un fichier `requirements.txt`. 
+
+:::: {.callout-tip}
+
+## Application 11a: environnement virtuel `venv` 
+
+1. Exécuter `pip freeze` en ligne de commande et observer la (très) longue
+liste de package
+2. Créer l'environnement virtuel `titanic` en s'inspirant de [la documentation officielle](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/)[^pythonversion]
+3. Utiliser `ls` pour observer et comprendre le contenu du dossier `titanic/bin` installé
+4. Activer l'environnement et vérifier l'installation de `Python` maintenant utilisée par votre machine <!---source titanic/bin/activate && which python---->
+5. Vérifier directement depuis la ligne de commande que `Python` exécute bien une commande avec:
+
+    ```shell
+    python -c "print('Hello')"
+    ```
+
+6. Faire la même chose mais avec `import pandas as pd`
+7. Installer les packages à partir du `requirements.txt`. Tester à nouveau `import pandas as pd` pour comprendre la différence. 
+8. Exécuter `pip freeze` et comprendre la différence avec la situation précédente.
+9. Vérifier que le script `main.py` fonctionne bien. Sinon ajouter les _packages_ manquants dans le `requirements.txt` et reprendre de manière itérative à partir de la question 7
+10. Ajouter le dossier `titanic/` au `.gitignore` pour ne pas ajouter ce dossier à `Git`
+::::
+
+[^pythonversion]: Si vous désirez aussi contrôler la version de `Python`, ce qui peut être important
+dans une perspective de portabilité, vous pouvez ajouter une option, par exemple `-p python3.9`. 
+
+:::: {.callout-caution collapse="true"}
+## Checkpoint
+
+```shell
+git checkout appli11a
+```
+
+::::
+
+## Environnement conda
+
+Les environnements `conda` sont plus lourds à mettre en oeuvre que les 
+environnements virtuels mais peuvent permettre un contrôle
+plus formel des dépendances. 
+
+`conda` est à la fois un gestionnaire de packages (alternative à `pip`)
+et d'environnements virtuels. L'inconvénient de l'utilisation de `conda`
+pour gérer les environnements virtuels est que cet outil est assez lent 
+car l'algorithme de vérification des conflits de version n'est pas
+extrêmement rapide.
+
+Pour cette raison, nous allons
+utiliser [`mamba`](https://mamba.readthedocs.io/en/latest/user_guide/mamba.html),
+un utilitaire de gestion des environnements `conda` qui est plus rapide. 
+
+:::: {.callout-tip}
+
+## Application 11b: environnement `conda` 
+
+1. Exécuter `conda env export` en ligne de commande et observer la (très) longue
+liste de package
+2. Tester l'utilisation d'un package qu'on n'utilise pas dans notre chaine de
+production, par exemple `seaborn`:
+
+    ```shell
+    python -c "import seaborn as sns"
+    ```
+
+3. Créer un environnement `titanic`
+avec [`mamba create`](https://mamba.readthedocs.io/en/latest/user_guide/mamba.html#quickstart)
+en listant les packages que vous aviez mis dans le `requirements.txt` et en ajoutant
+l'option `-c conda-forge` à la fin pour utiliser [la _conda forge_](https://conda-forge.org/) 
+4. Activer l'environnement et vérifier l'installation de `Python` maintenant utilisée par votre machine <!---mamba activate titanic && which python---->
+5. _(optionnel)_ Utiliser `ls` dans le dossier parent de `Python`
+pour observer et comprendre le contenu de celui-ci
+
+6. Vérifier que cette fois `seaborn` n'est pas installé dans l'environnement :
+
+    ```shell
+    python -c "import seaborn as sns"
+    ```
+
+7. Exécuter à nouveau `conda env export` et comprendre la différence avec la situation précédente[^splitscreen].
+8. Vérifier que le script `main.py` fonctionne bien. Sinon utiliser `mamba install` avec les _packages_ manquants jusqu'à ce 
+que la chaine de production fonctionne
+9. Créer le fichier `environment.yml` à partir de `conda env export`:
+
+    ```shell
+    conda env export > environment.yml
+    ```
+
+10. Ajouter le dossier `titanic/` au `.gitignore` pour ne pas ajouter ce dossier à `Git`
+
+::::
+
+[^splitscreen]: Pour comparer les deux listes, vous pouvez utiliser la fonctionnalité de _split_ 
+du terminal sur `VSCode` pour comparer les outputs de `conda env export` en les mettant 
+en face à face. 
+
+:::: {.callout-caution collapse="true"}
+## Checkpoint
+
+```shell
+git checkout appli11b
+```
+
+::::
 
 
-Vous allez chercher à obtenir
-un `environment.yml` beaucoup plus parcimonieux
-que celui généré par `conda env export`
+:::
 
-{{< panelset class="simplification" >}}
+## Etape 2: construire une application de A à Z via un script shell
 
-{{% panel name="Approche générale :koala: " %}}
+Bien que la logique de la conteneurisation soit une brique de base
+de toutes les plateformes _data science_ modernes, il est
+compliqué de trouver une instance en ligne qui 
+propose un environnement bac à sable permettant un usage
+de `Docker`.
 
-Le tableau récapitulatif présent dans
-la [partie portabilité](/portability/#aide-mémoire)
-peut être utile dans cette partie. L'idée est 
-de partir _from scratch_ et figer l'environnement qui
-permet d'avoir une appli fonctionnelle. 
+L'environnement [Play with Docker](https://labs.play-with-docker.com)
+est intéressant mais est assez versatile. On va donc procéder différemment
+en fonctionnant en deux étapes, quitte à perdre l'aspect interactif :
 
-* Créer un environnement vide avec `Python 3.10`
-<!---
-conda create -n monenv python=3.10.0
----->
+- Nous allons d'abord créer un script shell qui construit notre
+application de _machine learning_ de A à Z ;
+- Nous transformerons celui-ci en `Dockerfile` dans un deuxième temps. C'est l'objet
+de l'étape suivante. 
 
-* Activer cet environnement
+::: {.panel-tabset}
 
-* Installer en ligne de commande avec `pip` les packages nécessaires
-pour faire tourner votre code
+## Environnement virtuel
 
-<!---
-pip install pandas PyYAML s3fs scikit-learn
----->
+:::: {.callout-tip}
 
-* Faire un `pip freeze > requirements.txt` ou 
-`conda env export > environment.yml` (privilégier la deuxième option)
+## Application 12a : créer un fichier d'installation de A à Z
 
-* Retirer la section `prefix` (si elle est présente)
-et changer la section `name` en `monenv`
+1. Créer un service `ubuntu` sur le SSP Cloud en cliquant sur [ce lien](https://datalab.sspcloud.fr/launcher/inseefrlab-helm-charts-datascience/ubuntu?autoLaunch=false&git.cache=%C2%AB36000%C2%BB&git.repository=%C2%ABhttps%3A%2F%2Fgithub.com%2Flinogaliana%2Fensae-reproductibilite-application-correction.git%C2%BB)
+2. Cloner le dépôt et se placer au niveau du checkpoint 11a avec `git checkout appli11a`
+3. Se placer dans le dossier du projet avec `cd`
+4. On va se placer en super-utilisateur dans la ligne de commande en tapant
 
+```shell
+sudo bash
+```
 
-{{% /panel %}}
+5. Créer le fichier `install.sh` avec le contenu suivant:
 
+<details>
+<summary>Script à créer sous le nom `install.sh` </summary>
+```shell
+apt-get -y update && apt-get -y install wget
 
-{{% panel name="Approche fainéante :sloth:" %}}
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
+    bash Miniconda3-latest-Linux-x86_64.sh -b -p /miniconda && \
+    rm -f Miniconda3-latest-Linux-x86_64.sh
 
-Nous allons générer une version plus minimaliste grâce à
-l'utilitaire [`pipreqs`](https://github.com/bndr/pipreqs)
+PATH="/miniconda/bin:${PATH}"
 
-* Installer `pipreqs` en `pip install`
-* En ligne de commande, depuis la racine du projet, faire `pipreqs`
-* Ouvrir le `requirements.txt` automatiquement généré. Il est beaucoup plus
-minimal que celui que vous obtiendriez avec `pip freeze` ou
-l'`environment.yml` obtenu à [l'étape 6](#conda-export). 
-* Remplacer toute la section `dependencies` du `environment.yml`
-par le contenu du `requirements.txt`
-(:warning: ne pas oublier l'indentation et le tiret en début de ligne)
-* :warning: Modifier le tiret à `scikit learn`. Il ne faut pas un _underscore_ mais
-un tiret
-* Ajouter la version de python (par exemple `python=3.10.0`)
-au début de la section `dependencies`
-* Retirer la section `prefix` du fichier `environment.yml` (si elle est présente)
-et changer le contenu de la section `name` en `monenv`
-* Créer l'environnement
-([voir le tableau récapitulatif dans la partie portabilité](/portability/#aide-mémoire))
+# Create environment
+python -m venv titanic
+source titanic/bin/activate
+pip install -r requirements.txt
 
-<!----
-conda env create -f environment.yml
------->
+python main.py
+```
+</details>
 
+6. Changer les permissions sur le fichier 
 
-{{% /panel %}}
+```shell
+chmod u+x ./install.sh
+```
 
-{{% /panelset %}}
+7. Exécuter le script depuis la ligne de commande
 
+::::
 
-Maintenant, il reste à tester si tout fonctionne bien dans notre 
-environnement plus minimaliste:
+:::: {.callout-caution collapse="true"}
+## Checkpoint
 
-* Activer l'environnement
-* Tester votre script en ligne de commande
-* Faire un `commit` quand vous êtes contents
+```shell
+git checkout appli12a
+```
+
+::::
 
 
-## Etape 3: conteneuriser avec Docker <i class="fab fa-docker"></i> {#docker}
+## Environnement `conda`
+
+:::: {.callout-tip}
+
+## Application 12b : créer un fichier d'installation de A à Z
+
+1. Créer un service `ubuntu` sur le SSP Cloud en cliquant sur [ce lien](https://datalab.sspcloud.fr/launcher/inseefrlab-helm-charts-datascience/ubuntu?autoLaunch=false&git.cache=%C2%AB36000%C2%BB&git.repository=%C2%ABhttps%3A%2F%2Fgithub.com%2Flinogaliana%2Fensae-reproductibilite-application-correction.git%C2%BB)
+2. Cloner le dépôt et se placer au niveau du checkpoint 11b avec `git checkout appli11b`
+3. Se placer dans le dossier du projet avec `cd`
+4. On va se placer en super-utilisateur dans la ligne de commande en tapant
+
+```shell
+sudo bash
+```
+
+5. Créer le fichier `install.sh` avec le contenu suivant:
+
+<details>
+<summary>Script à créer sous le nom `install.sh` </summary>
+```shell
+apt-get -y update && apt-get -y install wget
+
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
+    bash Miniconda3-latest-Linux-x86_64.sh -b -p /miniconda && \
+    rm -f Miniconda3-latest-Linux-x86_64.sh
+
+PATH="/miniconda/bin:${PATH}"
+
+# Create environment
+conda install mamba -c conda-forge
+mamba create -n titanic pandas PyYAML scikit-learn -c conda-forge
+mamba activate titanic
+
+PATH="/miniconda/envs/titanic/bin:${PATH}"
+
+python main.py
+```
+</details>
+
+6. Changer les permissions sur le fichier 
+
+```shell
+chmod u+x ./install.sh
+```
+
+7. Exécuter le script depuis la ligne de commande
+
+::::
+
+:::: {.callout-caution collapse="true"}
+## Checkpoint
+
+```shell
+git checkout appli12b
+```
+
+::::
+
+:::
+
+
+## Etape 3: conteneuriser avec `Docker` {#docker}
+
+
+
+
+OLD
 
 ### Préliminaire
 
