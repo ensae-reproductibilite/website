@@ -221,63 +221,49 @@
     "href": "chapters/deployment.html",
     "title": "Déployer et valoriser son projet de data science",
     "section": "",
-    "text": "Dans les chapitres précédents, nous avons exploré la manière dont une structure de projet et de code adéquate facilite la réutilisation d’un projet. Cependant, le code est rarement, en soi, le produit final mais un moyen. Le code peut servir à mettre en oeuvre une application, à effectuer des traitements sur une base de données pour un papier ou un rapport, etc. La fréquence de ré-utilisation du code peut elle-même être variable: certains projets vont être utilisés quotidiennement alors que d’autres ne le seront qu’à des échéances diverses.\nComme tout produit, un projet a un cycle de vie. Pour faire simple, on peut séparer celui-ci en trois phases:\n\nla phase de développement correspond à l’écriture du code et à des exploitations exploratoires ;\nla phase de mise en production correspond à l’adaptation du prototype à des contraintes nécessaires pour qu’un projet produise un output à la demande ;\nla phase de maintenance correspond à la situation où on ne met plus en oeuvre de nouvelles fonctionalités mais où on s’assure qu’un projet informatique continue de produire les output désirés malgré l’évolution du contexte.\n\nEn pratique, la distinction entre ces moments d’un projet peut être floue. Par exemple, grâce à Git, on peut ainsi mettre en oeuvre de nouvelles fonctionalités (protypage correspond à la phase de développement) parallèles à celles déjà existantes (phase de maintenance). Néanmoins, ces différences conceptuelles sont intéressantes pour appréhender les contraintes différentes de ces phases d’un projet.\n\n\nLes bonnes pratiques mises en oeuvre jusqu’à présent avaient pour objectif de faciliter la compréhension et la réutilisation d’un projet. Elles sont donc particulièrement appropriées pour réduire le coût en temps de la mise en production et de la maintenance d’un projet. Ces coûts pourraient amener un projet, même utile, à être abandonné.\n\n\n\nDe même, l’emphase du chapitre précédent sur la portabilité vise à faciliter la mise en production. En effet, en créant un environnement normalisé qui créé des conditions simples pour reproduire certains output, on évite un hiatus entre le protypage et la mise en production."
+    "text": "Contexte : on a un projet conforme aux bonnes pratiques de développement et portable (dockerisé)\nMise en prod : faire vivre son application dans l’espace de ses utilisateurs\nBesoins :\n\nDéterminer le format de valorisation de son application (API, app interactive, site web..)\nDéployer l’application dans un environnement de production\nIndustrialisation : automatisation des étapes, orchestration end-to-end du pipeline, monitoring..\n\nSolution : approche CI/CD\nIllustration des concepts : déploiement d’une API pour exposer un modèle simple de ML\nQui déploie et comment ? Les différents rôles : Data Scientist, Data Engineer, Data Ops…\nEnjeu pour le data scientist : pas une maîtrise technique de tous les outils info, mais comprendre les concepts pour pouvoir jouer le rôle d’interface entre le métier et les équipes techniques (data engineer, ops..)"
   },
   {
-    "objectID": "chapters/deployment.html#pipelines-de-données",
-    "href": "chapters/deployment.html#pipelines-de-données",
+    "objectID": "chapters/deployment.html#intégration-continue",
+    "href": "chapters/deployment.html#intégration-continue",
     "title": "Déployer et valoriser son projet de data science",
-    "section": "Pipelines de données",
-    "text": "Pipelines de données\nUne chaine de production implique plusieurs étapes qui peuvent éventuellement nécessiter plusieurs langages. Ces étapes peuvent être vues comme des transformations à la chaine d’un ou plusieurs inputs afin de produire un ou plusieurs output.\nLa représentation de ces étapes peut être faite à l’aide des diagrammes acycliques dirigés (DAG):\n\nUn workflow complet sera ainsi reproductible si on peut, en ayant accès aux inputs et à l’ensemble des règles de transformation reproduire exactement les outputs. Si les inputs ou le code change, on peut être en mesure de mettre à jour les outputs, si possible sans faire retourner les parties du projet non concernés.\nUne première manière de développer est l’approche manuelle, qui est une tâche digne de Sisyphe:\n\nEcriture du code\nExécution du code jusqu’à sa fin\nDécouverte d’une erreur ou mise à jour du code ou des données\nRelance le code dans son ensemble\n\nPour éviter ce cycle interminable, on est tenté d’écrire des bases intermédiaires et de ne faire tourner qu’une partie du code. Cette approche, si elle a l’avantage de faire gagner du temps, est néanmoins dangereuse car on peut facilement oublier de mettre à jour une base intermédiaire qui a changé ou au contraire refaire tourner une partie du code qui n’a pas été mise à jour.\nIl existe des méthodes plus fiables pour éviter ces gestes manuels. Celles-ci sont inspirées de GNU Make et consistent à créer le chemin de dépendance de la chaine de production (lister l’environnement, les inputs et les outputs à produire), à déterminer les chemins affectés par un changement de code ou de données pour ne faire tourner à nouveau que les étapes nécessaires.\nLes implémentations en Python et R sont nombreuses. Parmi celles-ci, on peut mettre en valeur\n\nsnakemake pour Python\ntargets pour R"
+    "section": "Intégration continue",
+    "text": "Intégration continue\n\nAutomatisation des phases de build et de test (data validation, model validation..)\nMise à disposition des artifacts (forme “morte”)\nImplémentation : GitHub Actions"
+  },
+  {
+    "objectID": "chapters/deployment.html#déploiement",
+    "href": "chapters/deployment.html#déploiement",
+    "title": "Déployer et valoriser son projet de data science",
+    "section": "Déploiement",
+    "text": "Déploiement\n\nAvantages de déployer sur une infra Cloud\nFonctionnement basique de Kubernetes\nGitOps\nImplémentation : Kubernetes"
   },
   {
     "objectID": "chapters/deployment.html#orchestration",
     "href": "chapters/deployment.html#orchestration",
     "title": "Déployer et valoriser son projet de data science",
     "section": "Orchestration",
-    "text": "Orchestration\nCertains outils vont plus loin:\n\nargo\nmlflow\nairflow"
+    "text": "Orchestration\n\nModélisation d’un pipeline data sous forme de DAG\nImplémentation : argo-workflow"
   },
   {
-    "objectID": "chapters/deployment.html#définition",
-    "href": "chapters/deployment.html#définition",
+    "objectID": "chapters/deployment.html#spécificités-liées-à-la-mise-en-prod-de-modèles-de-ml",
+    "href": "chapters/deployment.html#spécificités-liées-à-la-mise-en-prod-de-modèles-de-ml",
     "title": "Déployer et valoriser son projet de data science",
-    "section": "Définition",
-    "text": "Définition\n\nL’intégration continue est un ensemble de pratiques utilisées en génie logiciel consistant à vérifier à chaque modification de code source que le résultat des modifications ne produit pas de régression dans l’application développée. […] Elle permet d’automatiser l’exécution des suites de tests et de voir l’évolution du développement du logiciel.\n\n\nLa livraison continue est une approche d’ingénierie logicielle dans laquelle les équipes produisent des logiciels dans des cycles courts, ce qui permet de le mettre à disposition à n’importe quel moment. Le but est de construire, tester et diffuser un logiciel plus rapidement."
+    "section": "Spécificités liées à la mise en prod de modèles de ML",
+    "text": "Spécificités liées à la mise en prod de modèles de ML\n\nEntrainement : batch ou online\nBatch vs real-time prediction\nFeedback loops expérimentation/déploiement/monitoring\nExposer le modèle via une API"
   },
   {
-    "objectID": "chapters/deployment.html#avantages",
-    "href": "chapters/deployment.html#avantages",
+    "objectID": "chapters/deployment.html#notions-dobservabilité",
+    "href": "chapters/deployment.html#notions-dobservabilité",
     "title": "Déployer et valoriser son projet de data science",
-    "section": "Avantages",
-    "text": "Avantages\nL’approche CI/CD garantit une automatisation et une surveillance continues tout au long du cycle de vie d’un projet.\nCela présente de nombreux avantages:\n\non peut anticiper les contraintes de la mise en production grâce à des environnements normalisés partant d’image docker standardisées\non peut tester les changements apportés à un livrable par un nouveau prototype\non peut déterminer très rapidement l’introduction de bugs dans un projet"
+    "section": "Notions d’observabilité",
+    "text": "Notions d’observabilité\n\nDrifts\nQuelles métriques monitorer"
   },
   {
-    "objectID": "chapters/deployment.html#mise-en-oeuvre",
-    "href": "chapters/deployment.html#mise-en-oeuvre",
+    "objectID": "chapters/deployment.html#amélioration-continue",
+    "href": "chapters/deployment.html#amélioration-continue",
     "title": "Déployer et valoriser son projet de data science",
-    "section": "Mise en oeuvre",
-    "text": "Mise en oeuvre\nL’idée de l’approche CI/CD est ainsi d’associer chaque changement de code (commit) à l’exécution de scripts automatisés. Bien que mis en oeuvre de manière différente, Gitlab et Github proposent tous les deux ce type de fonctionalités.\nLes actions Github sont un ensemble de règles qui se suivent au format YAML. Cela permet de définir différentes étapes du processus avec, pour chaque étape, des éléments de configuration.\nVoici, par exemple, l’action qui sert de modèle à modifier dans l’exercice d’application\nname: Python Package using Conda\n\non: [push]\n\njobs:\n  build-linux:\n    runs-on: ubuntu-latest\n    strategy:\n      max-parallel: 5\n\n    steps:\n    - uses: actions/checkout@v3\n    - name: Set up Python 3.10\n      uses: actions/setup-python@v3\n      with:\n        python-version: 3.10\n    - name: Add conda to system path\n      run: |\n        # $CONDA is an environment variable pointing to the root of the miniconda directory\n        echo $CONDA/bin >> $GITHUB_PATH\n    - name: Install dependencies\n      run: |\n        conda env update --file environment.yml --name base\n    - name: Lint with flake8\n      run: |\n        conda install flake8\n        # stop the build if there are Python syntax errors or undefined names\n        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics\n        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide\n        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics\n    - name: Test with pytest\n      run: |\n        conda install pytest\n        pytest"
-  },
-  {
-    "objectID": "chapters/deployment.html#quest-ce-quun-site-web",
-    "href": "chapters/deployment.html#quest-ce-quun-site-web",
-    "title": "Déployer et valoriser son projet de data science",
-    "section": "Qu’est-ce qu’un site web ?",
-    "text": "Qu’est-ce qu’un site web ?\nPour simplifier, on peut voir un site web comme la combinaison de trois éléments:\n\nune arborescence de fichiers HTML qui présentent le contenu du site dans un balisage lourd\ndes fichiers CSS qui gèrent la mise en forme1\ndes fonctions javascript\n\nIl existe énormément d’outils aujourd’hui qui permettent, sans connaissance en HTML, CSS ou JS, de créer un site web. Dans le domaine de la data-science, le format Markdown (fichiers .md) s’est imposé.\nMarkdown est un système d’édition doté d’une syntaxe simplifiée souvent utilisé pour faire de la documentation de projet. Le format est utilisé sur de nombreux sites internet, notamment Gitlab et Stackoverflow. L’extension de ce type de fichier est .md. Markdown présente plusieurs avantages:\n\nil est facile d’inclure des blocs de code informatique et des équations mathématiques dans un document Markdown ;\nle formatage de blocs de texte ou de code est simple et très bien fait (et beaucoup plus léger qu’en LaTeX par exemple) ;\nil existe des outils de conversion de Markdown en HTML très bien faits.\n\nPlus d’éléments sur la logique de Markdown et ses intérêts sont disponibles dans le chapitre R Markdown de la documentation utilitR"
-  },
-  {
-    "objectID": "chapters/deployment.html#comment-faire-un-site-web",
-    "href": "chapters/deployment.html#comment-faire-un-site-web",
-    "title": "Déployer et valoriser son projet de data science",
-    "section": "Comment faire un site web ?",
-    "text": "Comment faire un site web ?\nIl existe historiquement plusieurs approches dans l’écosystème de la data-science, selon le langage utilisé et l’output désiré.\nSi on part de fichiers qui présentent des blocs de code qui ne nécessitent pas d’être exécutés, l’écosystème le plus riche est Hugo. Celui-ci permet de générer des sites web à l’architecture complexe à partir d’une arborescence de .md. C’est l’approche adoptée pour ce site web\nCependant, il est souvent nécessaire d’exécuter des bouts de code pour tester les exemples présentés, ou générer des tableaux ou sorties graphiques. Pour cela, historiquement, il existe deux paradigmes:\n\nJupyterBook qui vise à générer des sites web et des notebooks à partir de fichiers markdown. Le notebook n’est donc pas le produit de départ (cf. XXXX) mais un livrable.\nR Markdown: l’écosystème le plus riche avec de nombreux modèles de documents customisables (documents HTML ou articles PDF, sites web de documentation avec bookdown, blogs avec blogdown, dashboards, etc.) Le principe de R Markdown est d’offrir une surcouche à Markdown pour que les blocs de code soient exécutés afin de créer un output reproductible.\n\nR Markdown est un système d’une grande richesse. Initialement pensé pour les utilisateurs de R, ce paradigme permet maintenant de créer des documents executant d’autres langages, notamment du Python (le cours de python de 2e année de l’ENSAE est testé et construit grâce à R Markdown).\nQuarto est le petit nouveau dans cet écosystème, amené à devenir un outil standard des data-scientists comme peuvent l’être, aujourd’hui, les Notebooks Jupyter. Successeur de R Markdown, il vise à améliorer l’aspect universel des documents produits en n’obligeant plus à utiliser R pour compiler le document qui ne le nécessitent pas. C’est un outil particulièrement adapté aux utilisateurs de Python\n\nUn document quarto hérite des principes de base d’un document R Markdown, notamment la structure. Il comporte ainsi deux parties principales :\n\nL’en-tête (YAML header) qui gère les éléments de style et les paramètres globaux;\nLe contenu qui gère le fond et permet d’alterner librement texte et code :\n\nLes blocs de texte brut mis en forme selon la syntaxe markdown\nLes blocs de code sont présentés dans des chunks identifiés par un langage (ici python) qui seront exécutés de manière linéaire et produiront l’output désiré (ici une figure matplotlib)."
-  },
-  {
-    "objectID": "chapters/deployment.html#comment-mettre-à-disposition-un-site-web",
-    "href": "chapters/deployment.html#comment-mettre-à-disposition-un-site-web",
-    "title": "Déployer et valoriser son projet de data science",
-    "section": "Comment mettre à disposition un site web ?",
-    "text": "Comment mettre à disposition un site web ?\nMettre à jour manuellement un site web après l’avoir compilé est une tâche pénible et source d’erreur dans un projet actif de data-science. L’automatisation issue de l’approche CI/CD permet un gain de confort aussi dans ce domaine.\nSupposons qu’on ait mis en oeuvre une routine pour automatiser la construction d’un site web à partir de fichiers Markdown. Comment les mettre à disposition ?\nIl existe plusieurs manières de déployer automatiquement un site web :\n\nGitlab pages ;\nGithub pages ;\nNetlify.\n\nCes trois services sont gratuits. Ils consistent à mettre à disposition un DNS sur lequel des fichiers HTML peuvent être mis à disposition automatiquement pour assurer que chaque commit\nL’exercice d’application supposant l’utilisation de Github, il présentera Netlify qui est plus pratique que Github Pages2. Le résultat de cette chaine de production d’un site web reproductible est accessible à l’url https://spiffy-florentine-c913b9.netlify.app/"
+    "section": "Amélioration continue",
+    "text": "Amélioration continue\n\nRéentraînement : périodique vs continu"
   },
   {
     "objectID": "chapters/evaluation.html",
@@ -569,7 +555,7 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Mise en production de projets data science",
+    "title": "Mise en production des projets de data science",
     "section": "",
     "text": "Cours dans le parcours data science en dernière année à l’ENSAE construit par Romain Avouac et Lino Galiana.\nLes slides associées au cours sont disponibles à cette adresse.\nParcours en construction"
   }
