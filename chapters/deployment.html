@@ -179,20 +179,10 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="la-notion-de-mise-en-production" class="level1">
 <h1>La notion de mise en production</h1>
-<ul>
-<li>Contexte : on a un projet conforme aux bonnes pratiques de développement et portable (dockerisé)</li>
-<li>Mise en prod : faire vivre son application dans l’espace de ses utilisateurs</li>
-<li>Besoins :
-<ul>
-<li>Déterminer le format de valorisation de son application (API, app interactive, site web..)</li>
-<li>Déployer l’application dans un environnement de production</li>
-<li>Industrialisation : automatisation des étapes, orchestration end-to-end du pipeline, monitoring..</li>
-</ul></li>
-<li>Solution : approche CI/CD</li>
-<li>Illustration des concepts : déploiement d’une API pour exposer un modèle simple de ML</li>
-<li>Qui déploie et comment ? Les différents rôles : Data Scientist, Data Engineer, Data Ops…</li>
-<li>Enjeu pour le data scientist : pas une maîtrise technique de tous les outils info, mais comprendre les concepts pour pouvoir jouer le rôle d’interface entre le métier et les équipes techniques (data engineer, ops..)</li>
-</ul>
+<p>Les chapitres précédents nous ont permis de construire un projet de data science à la fois conforme aux bonnes pratiques de développement et portable. Ce faisant, nous avons déjà largement réduit le coût de transition entre notre environnement de développement et un environnement de production. La notion de mise en production désigne précisément cette transition vers un environnement de production, c’est à dire un environnement dans lequel l’application sera <strong>déployée</strong> et donc accessible à ses utilisateurs potentiels, avec une haute disponibilité — idéalement, 24h sur 24.</p>
+<p>Réaliser une mise en production nécessite d’effectuer un certain nombre de choix, plus ou moins contraints. D’abord, il est nécessaire de bien comprendre le besoin métier — qui seront les utilisateurs potentiels de notre application et quels sont leurs besoins — pour déterminer le format de valorisation pertinent pour celle-ci. Par exemple, le format adapté pour mettre à disposition un modèle entraîné de <em>machine learning</em> ne sera pas le même que l’on s’adresse au grand public — auquel cas on s’orientera certainement vers une application interactive simple d’utilisation<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> — ou à une équipe interne de notre organisation qui voudrait effectuer de la prédiction à partir du modèle — cas dans lequel une API requêtable via un langage de programmation s’avèrera sans doute plus pertinente. Un second choix à effectuer concerne l’infrastructure de production sur laquelle va être déployée l’application. Si des considérations techniques entrent en compte pour déterminer l’infrastructure pertinente, ce choix est en général contraint pour le <em>data scientist</em> par ce qu’il a à sa disposition au sein de son organisation. Enfin, il est nécessaire de choisir les outils qui vont permettre l’<strong>industrialisation</strong> du projet : automatisation du déploiement, orchestration des traitements, <em>monitoring</em> de la solution en production, etc.</p>
+<p>La diversité des réponses qui peuvent être apportées à chacun de ces choix illustre la complexité du sujet de la mise en production. Il serait bien illusoire de prétendre traiter ici ce sujet avec exhaustivité. Afin de restreindre cette complexité, nous allons effectuer à chaque étape des choix raisonnables, c’est à dire qui représentent des pratiques courantes dans le domaine de la <em>data science</em>. Ainsi, nous allons nous restreindre au cas du déploiement d’un modèle de <em>machine learning</em>, exposé via une API, car il s’agit d’une tâche fréquemment effectuée dans le monde de la <em>data science</em> et sur laquelle il est donc bon d’avoir quelques notions. Comme nous allons effectuer le déploiement sur le <a href="https://datalab.sspcloud.fr">SSP Cloud</a>, l’infrastructure de production sera un cluster <code>Kubernetes</code>. Là encore, cette solution constitue un standard actuel de l’industrie. Enfin, pour ce qui est des outils utilisés pour l’industrialisation de notre projet, nous choisirons également des solutions standards et <em>open-source</em>, que nous présenterons au fur et à mesure du chapitre. Dans tous les cas, l’enjeu de ce cours est de transmettre les concepts sous-jacents à la mise en production plus que de former à telle ou telle technologie.</p>
+<p>Par rapport au précédent, ce chapitre est assez technique et repose sur une vaste palette d’outils. Notre propos n’est cependant pas de dire que le <em>data scientist</em> doit maîtriser l’ensemble des concepts et outils présentés. Au contraire : avec la complexification des projets et des infrastructures, un ensemble de professions ont émergé — <em>date engineer</em>, <em>dev ops</em>, <em>machine learning engineer</em>, etc. — dont les rôles sont plus centrés sur la mise en production de projets. Néanmoins, nous sommes convaincus qu’il est essentiel que le <em>data scientist</em> possède des notions sur le sujet afin de pouvoir jouer le rôle d’interface entre le métier et les équipes techniques. Ce chapitre est une tentative de condenser ces différentes notions sous une forme la plus accessible possible.</p>
 </section>
 <section id="lapproche-cicd" class="level1">
 <h1>L’approche CI/CD</h1>
@@ -597,7 +587,13 @@ plus riche.  -->
 </section>
 </section>
 
-</main> <!-- /main -->
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Pensons au cas récent de <code>ChatGPT</code>, qui doit en partie son succès au fait d’avoir réussi à exposer le modèle entraîné via une interface intuitive et réactive.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
