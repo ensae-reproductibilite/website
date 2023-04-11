@@ -227,13 +227,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul class="collapse">
   <li><a href="#anaconda" id="toc-anaconda" class="nav-link" data-scroll-target="#anaconda">Etape 1 : un environnement pour rendre le projet portable</a></li>
   <li><a href="#etape-2-construire-lenvironnement-de-notre-application-via-un-script-shell" id="toc-etape-2-construire-lenvironnement-de-notre-application-via-un-script-shell" class="nav-link" data-scroll-target="#etape-2-construire-lenvironnement-de-notre-application-via-un-script-shell">Etape 2: construire l’environnement de notre application via un script <code>shell</code></a></li>
-  <li><a href="#docker" id="toc-docker" class="nav-link" data-scroll-target="#docker">Etape 3: conteneuriser avec <code>Docker</code></a>
+  <li><a href="#docker" id="toc-docker" class="nav-link" data-scroll-target="#docker">Etape 3: conteneuriser l’application avec <code>Docker</code></a>
   <ul class="collapse">
   <li><a href="#préliminaire" id="toc-préliminaire" class="nav-link" data-scroll-target="#préliminaire">Préliminaire</a></li>
   <li><a href="#création-dun-premier-dockerfile" id="toc-création-dun-premier-dockerfile" class="nav-link" data-scroll-target="#création-dun-premier-dockerfile">Création d’un premier Dockerfile</a></li>
   <li><a href="#construire-limage" id="toc-construire-limage" class="nav-link" data-scroll-target="#construire-limage">Construire l’image</a></li>
   <li><a href="#tester-limage-découverte-du-cache" id="toc-tester-limage-découverte-du-cache" class="nav-link" data-scroll-target="#tester-limage-découverte-du-cache">Tester l’image: découverte du cache</a></li>
-  <li><a href="#corriger-une-faille-de-reproductibilité" id="toc-corriger-une-faille-de-reproductibilité" class="nav-link" data-scroll-target="#corriger-une-faille-de-reproductibilité">Corriger une faille de reproductibilité</a></li>
   </ul></li>
   </ul></li>
   <li><a href="#partie-4-mise-en-production" id="toc-partie-4-mise-en-production" class="nav-link" data-scroll-target="#partie-4-mise-en-production">Partie 4 : mise en production</a>
@@ -1400,123 +1399,90 @@ Checkpoint
 </div>
 </section>
 <section id="docker" class="level2">
-<h2 class="anchored" data-anchor-id="docker">Etape 3: conteneuriser avec <code>Docker</code></h2>
+<h2 class="anchored" data-anchor-id="docker">Etape 3: conteneuriser l’application avec <code>Docker</code></h2>
 <p>Maintenant qu’on sait que ce script préparatoire fonctionne, on va le transformer en <code>Dockerfile</code> (la syntaxe <code>Docker</code> est légèrement différente de la syntaxe <code>Linux</code> classique) et le tester dans un environnement bac à sable ou sur des machines mises à disposition par les services d’intégration continue de <code>Github</code>.</p>
-<p>Plan:</p>
-<ol type="1">
-<li>Appli1: script en docker</li>
-<li>Appli2 optionnel: tester dans l’environnement bac à sable</li>
-<li>Appli3: GHA docker</li>
-</ol>
-<p><strong>TO BE UPDATED</strong></p>
 <section id="préliminaire" class="level3">
 <h3 class="anchored" data-anchor-id="préliminaire">Préliminaire</h3>
 <ul>
-<li>Se rendre sur l’environnement bac à sable <a href="https://labs.play-with-docker.com">Play with Docker</a></li>
+<li><a href="https://docs.docker.com/get-docker/">Installer Docker</a> sur sa machine ou bien se rendre sur l’environnement bac à sable <a href="https://labs.play-with-docker.com">Play with Docker</a></li>
 <li>Dans le terminal <code>Linux</code>, cloner votre dépôt <code>Github</code> <i class="fab fa-github"></i></li>
-<li>Créer via la ligne de commande un fichier <code>Dockerfile</code>. Il y a plusieurs manières de procéder, en voici un exemple:</li>
+<li>Créer via la ligne de commande un fichier texte vierge nommé <code>Dockerfile</code> (la majuscule au début du mot est importante)</li>
 </ul>
-<pre class="shell"><code>echo "#Dockerfile pour reproduire mon super travail" &gt; Dockerfile</code></pre>
+<pre class="shell"><code>touch Dockerfile</code></pre>
 <ul>
-<li>Ouvrir ce fichier via l’éditeur proposé par l’environnement bac à sable.</li>
+<li>Ouvrir ce fichier via un éditeur de texte</li>
 </ul>
 </section>
 <section id="création-dun-premier-dockerfile" class="level3">
 <h3 class="anchored" data-anchor-id="création-dun-premier-dockerfile">Création d’un premier Dockerfile</h3>
-<ul>
-<li><span class="emoji" data-emoji="one">1️⃣</span> Comme couche de départ, partir d’une image légère comme <code>ubuntu:20.04</code></li>
-<li><span class="emoji" data-emoji="two">2️⃣</span> Dans une deuxième couche, faire un <code>apt get -y update</code> et installer <code>wget</code> qui va être nécessaire pour télécharger <code>Miniconda</code> depuis la ligne de commande</li>
-<li><span class="emoji" data-emoji="three">3️⃣</span> Dans la troisième couche, nous allons installer <code>Miniconda</code> :
-<ul>
-<li>Télécharger la dernière version de <code>Miniconda</code> avec <code>wget</code> depuis l’url de téléchargement direct https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh</li>
-<li>Installer <code>Miniconda</code> dans le chemin <code>/home/coder/local/bin/conda</code></li>
-<li>Effacer le fichier d’installation pour libérer de la place sur l’image</li>
-</ul></li>
-<li><span class="emoji" data-emoji="four">4️⃣</span> En quatrième couche, on va installer <code>mamba</code> pour accélérer l’installation des packages dans notre environnement.</li>
-<li><span class="emoji" data-emoji="five">5️⃣</span> En cinquième couche, nous allons créer l’environnement <code>conda</code>:
-<ul>
-<li>Utiliser <code>COPY</code> pour que <code>Docker</code> soit en mesure d’utiliser le fichier <code>environment.yml</code> (sinon <code>Docker</code> renverra une erreur)</li>
-<li>Créer l’environnement vide <code>monenv</code> (présentant uniquement <code>Python</code> 3.10) avec la commande <code>conda</code> adéquate</li>
-<li>Mettre à jour l’environnement en utilisant <code>environment.yml</code> avec <code>mamba</code></li>
-</ul></li>
-<li><span class="emoji" data-emoji="six">6️⃣</span> Utiliser <code>ENV</code> pour ajouter l’environnement <code>monenv</code> au <code>PATH</code> et utiliser le <em>fix</em> suivant:</li>
-</ul>
-<div class="sourceCode" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>RUN echo <span class="st">"export PATH=$PATH"</span> <span class="op">&gt;&gt;</span> <span class="op">/</span>home<span class="op">/</span>coder<span class="op">/</span>.bashrc  <span class="co"># Temporary fix while PATH gets overwritten by code-server</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<ul>
-<li><span class="emoji" data-emoji="seven">7️⃣</span> Exposer sur le port <code>5000</code></li>
-<li><span class="emoji" data-emoji="eight">8️⃣</span> En dernière étape, utiliser <code>CMD</code> pour reproduire le comportement de <code>python main.py</code></li>
-</ul>
-<p>{{% box status=“hint” title=“Hint: <code>mamba</code>” icon=“fa fa-lightbulb” %}} <code>mamba</code> est une alternative à <code>conda</code> pour installer des <em>packages</em> dans un environnement <code>Miniconda</code>/<code>Anaconda</code>. <code>mamba</code> n’est pas obligatoire, <code>conda</code> peut suffire. Cependant, <code>mamba</code> est beaucoup plus rapide que <code>conda</code> pour installer des packages à installer ; il s’agit donc d’un utilitaire très pratique. {{% /box %}}</p>
-<p></p>
-<p>{{% panel name=“Indications supplémentaires” %}}</p>
-<p>Cliquer sur les onglets ci-dessus <span class="emoji" data-emoji="point_up_2">👆</span> pour bénéficier d’indications supplémentaires, pour vous aider. Cependant, essayez de ne pas les consulter immédiatement: n’hésitez pas à tâtonner.</p>
-<p>{{% /panel %}}</p>
-<p>{{% panel name=“Installation de Miniconda” %}}</p>
-<pre class="shell"><code># INSTALL MINICONDA -------------------------------
-ARG CONDA_DIR=/home/coder/local/bin/conda
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-RUN bash Miniconda3-latest-Linux-x86_64.sh -b -p $CONDA_DIR
-RUN rm -f Miniconda3-latest-Linux-x86_64.sh</code></pre>
-<p>{{% /panel %}}</p>
-<p>{{% panel name=“Installation de mamba” %}}</p>
-<pre class="shell"><code>ENV PATH="/home/coder/local/bin/conda/bin:${PATH}"
-RUN conda install mamba -n base -c conda-forge</code></pre>
-<p>{{% /panel %}}</p>
-<p>{{% panel name=“Création de l’environnement” %}}</p>
-<pre class="shell"><code>COPY environment.yml .
-RUN conda create -n monenv python=3.10
-RUN mamba env update -n monenv -f environment.yml</code></pre>
-<p>{{% /panel %}}</p>
-<p></p>
+<pre class="shell"><code>FROM ubuntu:22.04
+
+WORKDIR ${HOME}/titanic
+
+# Install Python
+RUN apt-get -y update &amp;&amp; \
+    apt-get install -y python3-pip
+
+# Install project dependencies
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+CMD ["python3", "main.py"]</code></pre>
 </section>
 <section id="construire-limage" class="level3">
 <h3 class="anchored" data-anchor-id="construire-limage">Construire l’image</h3>
-<p>Maintenant, nous avons défini notre recette. Il nous reste à faire notre plat et à le goûter</p>
+<p>Le <code>Dockerfile</code> est la recette de construction de l’image. La construction effective de l’image à partir de cette recette s’appelle l’étape de <code>build</code>.</p>
 <ul>
 <li>Utiliser <code>docker build</code> pour créer une image avec le tag <code>my-python-app</code></li>
-<li>Vérifier les images dont vous disposez. Vous devriez avoir un résultat proche de celui-ci</li>
 </ul>
-<!---
-docker build . -t my-python-app
-docker images
----->
-<pre class="shell"><code>REPOSITORY      TAG       IMAGE ID       CREATED         SIZE
-my-python-app   latest    c0dfa42d8520   6 minutes ago   2.23GB
-ubuntu          20.04     825d55fb6340   6 days ago      72.8MB</code></pre>
+<pre class="shell"><code>docker build . -t my-python-app</code></pre>
+<ul>
+<li>Vérifier les images dont vous disposez. Vous devriez avoir un résultat proche de celui-ci :</li>
+</ul>
+<pre class="shell"><code>$ docker images
+
+REPOSITORY      TAG       IMAGE ID       CREATED         SIZE
+my-python-app   latest    c0dfa42d8520   6 minutes ago   836MB
+ubuntu          25.04     825d55fb6340   6 days ago      77.8MB</code></pre>
 </section>
 <section id="tester-limage-découverte-du-cache" class="level3">
 <h3 class="anchored" data-anchor-id="tester-limage-découverte-du-cache">Tester l’image: découverte du cache</h3>
-<p>Il ne reste plus qu’à goûter la recette et voir si le plat est bon.</p>
-<p>Utiliser <code>docker run</code> avec l’option <code>it</code> pour pouvoir appeler l’image depuis son tag</p>
-<!----
-docker run -it my-python-app
----->
-<p><span class="emoji" data-emoji="warning">⚠️</span> <span class="emoji" data-emoji="bomb">💣</span> <span class="emoji" data-emoji="fire">🔥</span> <code>Docker</code> ne sait pas où trouver le fichier <code>main.py</code>. D’ailleurs, il ne connait pas d’autres fichiers de notre application qui sont nécessaires pour faire tourner le code: <code>config.yaml</code> et le dossier <code>src</code></p>
+<p>L’étape de <code>build</code> a fonctionné: une image a été construite. Mais fait-elle effectivement ce que l’on attend d’elle ? Pour le savoir, il faut passer à l’étape suivante, l’étape de <code>run</code>.</p>
+<pre class="shell"><code>$ docker run -it my-python-app
+
+python3: can't open file '/~/titanic/main.py': [Errno 2] No such file or directory</code></pre>
+<p>Le message d’erreur est clair : <code>Docker</code> ne sait pas où trouver le fichier <code>main.py</code>. D’ailleurs, il ne connait pas non plus les autres fichiers de notre application qui sont nécessaires pour faire tourner le code: <code>config.yaml</code> et le dossier <code>src</code>.</p>
 <ul>
-<li><p>Avant l’étape <code>EXPOSE</code> utiliser plusieurs <code>ADD</code> et/ou <code>COPY</code> pour que l’application dispose de tous les éléments minimaux pour être en mesure de fonctionner</p></li>
-<li><p>Refaire tourner <code>docker run</code> <!---
-docker run -it my-python-app
----></p></li>
+<li>Avant l’étape <code>CMD</code>, copier les fichiers nécessaires sur l’image afin que l’application dispose de tous les éléments nécessaires pour être en mesure de fonctionner.</li>
 </ul>
-<p>{{% box status=“tip” title=“Note” icon=“fa fa-hint” %}} Ici, le <em>cache</em> permet d’économiser beaucoup de temps. Par besoin de refaire tourner toutes les étapes, <code>Docker</code> agit de manière intelligente en faisant tourner uniquement les nouvelles étapes. {{% /box %}}</p>
-</section>
-<section id="corriger-une-faille-de-reproductibilité" class="level3">
-<h3 class="anchored" data-anchor-id="corriger-une-faille-de-reproductibilité">Corriger une faille de reproductibilité</h3>
-<p>Vous devriez rencontrer une erreur liée à la variable d’environnement <code>AWS_ENDPOINT_URL</code>. C’est normal, elle est inconnue de cet environnement minimaliste. D’ailleurs, <code>Docker</code> n’a aucune raison de connaître votre espace de stockage sur le <code>S3</code> du <code>SSP-Cloud</code> si vous ne lui dites pas. Donc cet environnement ne sait pas comment accéder aux fichiers présents dans votre <code>minio</code>.</p>
-<p>Vous allez régler ce problème avec les étapes suivantes, :</p>
+<details>
+<summary>
+Nouveau <code>Dockerfile</code>
+</summary>
+<pre class="shell"><code>FROM ubuntu:22.04
+
+WORKDIR ${HOME}/titanic
+
+# Install Python
+RUN apt-get -y update &amp;&amp; \
+    apt-get install -y python3-pip
+
+# Install project dependencies
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY main.py .
+COPY src ./src
+COPY configuration ./configuration
+CMD ["python3", "main.py"]</code></pre>
+</details>
 <ul>
-<li><span class="emoji" data-emoji="one">1️⃣</span> Naviguer dans l’<a href="https://datalab.sspcloud.fr/mes-fichiers">interface du SSP-Cloud</a> pour retrouver les liens d’accès direct de vos fichiers</li>
-<li><span class="emoji" data-emoji="two">2️⃣</span> Dans <code>VSCode</code>, les mettre dans <code>config.yaml</code> (faire de nouvelles clés)</li>
-<li><span class="emoji" data-emoji="three">3️⃣</span> Dans <code>VSCode</code>, modifier la fonction d’import pour s’adapter à ce changement.</li>
-<li><span class="emoji" data-emoji="four">4️⃣</span> Faire un <code>commit</code> et pusher les fichiers</li>
-<li><span class="emoji" data-emoji="five">5️⃣</span> Dans l’environnement bac à sable, faire un <code>pull</code> pour récupérer ces modifications</li>
-<li><span class="emoji" data-emoji="six">6️⃣</span> Tester à nouveau le <code>build</code> (là encore le <em>cache</em> est bien pratique !)</li>
+<li>Refaire tourner l’étape de <code>build</code></li>
 </ul>
-<!---
-cf. 
-https://github.com/linogaliana/ensae-reproductibilite-projet-1/commit/56946b4c5cb860d50b908d98a87fb549624314a6
------>
-<p><span class="emoji" data-emoji="tada">🎉</span> A ce stade, la matrice de confusion doit fonctionner. Vous avez créé votre première application reproductible !</p>
+<p>{{% box status=“tip” title=“Note” icon=“fa fa-hint” %}} Ici, le <em>cache</em> permet d’économiser beaucoup de temps. Par besoin de refaire tourner toutes les étapes, <code>Docker</code> agit de manière intelligente en faisant tourner uniquement les étapes qui ont changé. {{% /box %}}</p>
+<ul>
+<li>Refaire tourner l’étape de <code>run</code>. A ce stade, la matrice de confusion doit fonctionner. Vous avez créé votre première application reproductible !</li>
+</ul>
 </section>
 </section>
 </section>
