@@ -1548,15 +1548,18 @@ valorisations ultérieures.
 
 Là encore, nous allons utiliser une série d'actions pré-configurées.
 
-:one: Pour que `Github` puisse s'authentifier auprès de `DockerHub`, il va 
+Pour que `Github` puisse s'authentifier auprès de `DockerHub`, il va 
 falloir d'abord interfacer les deux plateformes. Pour cela, nous allons utiliser
 un jeton (_token_) `DockerHub` que nous allons mettre dans un espace
-sécurisé associé à votre dépôt `Github`. Cette démarche sera là même
-ultérieurement lorsque nous connecterons notre dépôt à un autre
-service tiers, à savoir `Netlify`:
+sécurisé associé à votre dépôt `Github`.
+
+::: {.callout-tip}
+
+## Application 15a: configuration
 
 - Se rendre sur
 https://hub.docker.com/ et créer un compte.
+- Créer un dépôt public `application-correction`
 - Aller dans les paramètres (https://hub.docker.com/settings/general)
 et cliquer, à gauche, sur `Security`
 - Créer un jeton personnel d'accès, ne fermez pas l'onglet en question,
@@ -1566,12 +1569,18 @@ vous ne pouvez voir sa valeur qu'une fois.
 - Donner le nom `DOCKERHUB_TOKEN` à ce jeton et copier la valeur. Valider
 - Créer un deuxième secret nommé `DOCKERHUB_USERNAME` ayant comme valeur le nom d'utilisateur
 que vous avez créé sur `Dockerhub`
+:::
 
-:two: A ce stade, nous avons donné les moyens à `Github` de s'authentifier avec
+
+A ce stade, nous avons donné les moyens à `Github` de s'authentifier avec
 notre identité sur `Dockerhub`. Il nous reste à mettre en oeuvre l'action
 en s'inspirant de https://github.com/docker/build-push-action/#usage.
 On ne va modifier que trois éléments dans ce fichier. Effectuer les 
 actions suivantes:
+
+::: {.callout-tip}
+
+## Application 15b: automatisation de l'image `Docker`
 
 - Créer depuis `VSCode` un fichier
 `.github/workflows/docker.yml` et coller le
@@ -1582,6 +1591,9 @@ le pipeline ;
 - Changer le tag à la fin pour mettre `<username>/ensae-repro-docker:latest`
 où `username` est le nom d'utilisateur sur `DockerHub`;
 - Faire un `commit` et un `push` de ces fichiers
+
+:::
+
 
 :four: Comme on est fier de notre travail, on va afficher ça avec un badge sur le 
 `README`. Pour cela, on se rend dans l'onglet `Actions` et on clique sur
