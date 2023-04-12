@@ -233,7 +233,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul class="collapse">
   <li><a href="#etape-préliminaire" id="toc-etape-préliminaire" class="nav-link" data-scroll-target="#etape-préliminaire">Etape préliminaire</a></li>
   <li><a href="#etape-1-mise-en-place-de-tests-automatisés" id="toc-etape-1-mise-en-place-de-tests-automatisés" class="nav-link" data-scroll-target="#etape-1-mise-en-place-de-tests-automatisés">Etape 1: mise en place de tests automatisés</a></li>
-  <li><a href="#application-14-premier-script-dintégration-continue" id="toc-application-14-premier-script-dintégration-continue" class="nav-link" data-scroll-target="#application-14-premier-script-dintégration-continue">Application 14: premier script d’intégration continue</a></li>
   <li><a href="#etape-2-automatisation-de-la-livraison-de-limage-docker" id="toc-etape-2-automatisation-de-la-livraison-de-limage-docker" class="nav-link" data-scroll-target="#etape-2-automatisation-de-la-livraison-de-limage-docker">Etape 2: Automatisation de la livraison de l’image <code>Docker</code></a></li>
   <li><a href="#etape-3-création-dun-rapport-automatique" id="toc-etape-3-création-dun-rapport-automatique" class="nav-link" data-scroll-target="#etape-3-création-dun-rapport-automatique">Etape 3: création d’un rapport automatique</a>
   <ul class="collapse">
@@ -1573,10 +1572,16 @@ Checkpoint
 <h2 class="anchored" data-anchor-id="etape-1-mise-en-place-de-tests-automatisés">Etape 1: mise en place de tests automatisés</h2>
 <p>Avant d’essayer de mettre en oeuvre la création de notre image <code>Docker</code> de manière automatisée, nous allons présenter la logique de l’intégration continue en testant de manière automatisée notre script <code>main.py</code>.</p>
 <p>Pour cela, nous allons partir de la structure proposée dans l’<a href="https://github.com/actions/setup-python">action officielle</a>. La documentation associée est <a href="https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python">ici</a></p>
-<p>::: {.callout-tip}</p>
-</section>
-<section id="application-14-premier-script-dintégration-continue" class="level2">
-<h2 class="anchored" data-anchor-id="application-14-premier-script-dintégration-continue">Application 14: premier script d’intégration continue</h2>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Application 14: premier script d’intégration continue
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <p>A partir de l’exemple présent dans la <a href="https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python">documentation officielle</a> de <code>Github</code>, on a déjà une base de départ qui peut être modifiée:</p>
 <ol type="1">
 <li>Créer un fichier <code>.github/workflows/test.yml</code> avec le contenu de l’exemple de la documentation</li>
@@ -1585,6 +1590,10 @@ Checkpoint
 <li>Remplacer <code>russ</code> par <code>pylint</code> pour vérifier la qualité du code. Ajouter l’argument <code>--fail-under=6</code> pour renvoyer une erreur en cas de note trop basse</li>
 <li>Plutôt que <code>pytest</code>, utiliser <code>python main.py</code> pour tester que la matrice de confusion s’affiche bien.</li>
 </ol>
+<details>
+<summary>
+Fichier <code>.github/workflows/test.yml</code> obtenu
+</summary>
 <div class="sourceCode" id="cb54"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> Python package</span></span>
 <span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">push</span><span class="kw">]</span></span>
@@ -1614,81 +1623,25 @@ Checkpoint
 <span id="cb54-27"><a href="#cb54-27" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Test workflow</span></span>
 <span id="cb54-28"><a href="#cb54-28" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
 <span id="cb54-29"><a href="#cb54-29" aria-hidden="true" tabindex="-1"></a>          python main.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p></p>
-<p>{{% panel name=“Utilisation d’un <em>template</em> <code>Github</code> <span class="emoji" data-emoji="cat">🐱</span>” %}}</p>
-<p><strong>Methode la plus simple: utilisation d’un <em>template</em> Github</strong></p>
-<p>Si vous cliquez sur l’onglet <code>Actions</code> de votre dépôt, <code>Github</code> vous propose des <em>workflows</em> standardisés reliés à <code>Python</code>. Choisir l’option <code>Python Package using Anaconda</code>.</p>
-<p>warning: Nous n’allons modifier que deux éléments de ce fichier.</p>
-<p><span class="emoji" data-emoji="one">1️⃣</span> La dernière étape (<code>Test with pytest</code>) ne nous est pas nécessaire car nous n’avons pas de tests unitaires Nous allons donc remplacer celle-ci par l’utilisation de <code>pylint</code> pour avoir une note de qualité du package.</p>
-<ul>
-<li>Utiliser <code>pylint</code> à cette étape pour noter les scripts ;</li>
-<li>Vous pouvez fixer un score minimal à 5 (option <code>--fail-under=5</code>)</li>
-</ul>
-<p><span class="emoji" data-emoji="two">2️⃣</span> Mettre entre guillements la version de <code>Python</code> pour que celle-ci soit reconnue.</p>
-<p><span class="emoji" data-emoji="three">3️⃣</span> Enfin, finaliser la création de ce script:</p>
-<ul>
-<li>En cliquant sur le bouton <code>Start Commit</code>, choisir la méthode <code>Create a new branch for this commit and start a pull request</code> en nommant la branche <code>dev</code></li>
-<li>Créer la <code>Pull Request</code> en lui donnant un nom signifiant</li>
-</ul>
-<p>{{% /panel %}}</p>
-<p>{{% panel name=“Méthode manuelle” %}}</p>
-<p><span class="emoji" data-emoji="warning">⚠️</span> On est plutôt sur une méthode de galérien. Il vaut mieux privilégier l’autre approche</p>
-<p>On va éditer depuis <code>VisualStudio</code> nos fichiers.</p>
-<ul>
-<li>Créer une branche <code>dev</code> en ligne de commande</li>
-<li>Créer un dossier <code>.github/workflows</code> via la ligne de commande ou l’explorateur de fichier <!---mkdir .github/workflows -p ----></li>
-<li>Créer un fichier <code>.github/workflows/quality.yml</code>.</li>
-</ul>
-<p>Nous allons construire, par étape, une version simplifiée du <code>Dockerfile</code> présent dans <a href="https://medium.com/swlh/enhancing-code-quality-with-github-actions-67561c6f7063">ce post</a> et dans <a href="https://autobencoder.com/2020-08-24-conda-actions/">celui-ci</a></p>
-<p><span class="emoji" data-emoji="one">1️⃣</span> D’abord, définissons des paramètres pour indiquer à <code>Github</code> quand faire tourner notre script:</p>
-<ul>
-<li>Commencez par nommer votre <em>workflow</em> par exemple <code>Python Linting</code> avec la clé <code>name</code></li>
-<li>Nous allons faire tourner ce <em>workflow</em> dans la branche <code>master</code> et dans la branche actuelle (<code>dev</code>). Ici, nous laissons de côté les autres éléments (par exemple le fait de faire tourner à chaque <em>pull request</em>). La clé <code>on</code> est dédiée à cet usage</li>
-</ul>
-<p><span class="emoji" data-emoji="two">2️⃣</span> Ensuite, défnissons le contexte d’exécution des tâches (<code>jobs</code>) de notre script dans les options de la partie <code>build</code>:</p>
-<ul>
-<li>Utilisons une machine <code>ubuntu-latest</code>. Nous verrons plus tard comment améliorer cela.</li>
-</ul>
-<p><span class="emoji" data-emoji="three">3️⃣</span> Nous allons ensuite mélanger des étapes pré-définies (des actions du <em>marketplace</em>) et des instructions que nous faisons :</p>
-<ul>
-<li>Le <em>runner</em> <code>Github</code> doit récupérer le contenu de notre dépôt, pour cela utiliser l’action <code>checkout</code>. Par rapport à l’exemple, il convient d’ajouter, pour le moment, un paramètre <code>ref</code> avec le nom de la branche (par exemple <code>dev</code>)</li>
-<li><del>On installe ensuite <code>Python</code> avec l’action <code>setup-python</code></del> Pas besoin d’installer <code>Python</code>, on va utiliser l’option <code>conda-incubator/setup-miniconda@v2</code></li>
-<li>Pour installer <code>Python</code> et l’environnement <code>conda</code>, on va plutôt utiliser l’astuce de <a href="https://autobencoder.com/2020-08-24-conda-actions/">ce blog</a> avec l’option <code>conda-incubator/setup-miniconda@v2</code></li>
-<li>On utilise ensuite <code>flake8</code> et <code>pylint</code> (option <code>--fail-under=5</code>) pour effectuer des diagnostics de qualité</li>
-</ul>
-<p>Il ne reste plus qu’à faire un <code>commit</code> et espérer que cela fonctionne. Cela devrait donner le fichier suivant :</p>
-<div class="sourceCode" id="cb55"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> Python Linting</span></span>
-<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span></span>
-<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">push</span><span class="kw">:</span></span>
-<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">branches</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">master</span><span class="kw">,</span><span class="at"> dev</span><span class="kw">]</span></span>
-<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a><span class="fu">jobs</span><span class="kw">:</span></span>
-<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">build</span><span class="kw">:</span></span>
-<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">runs-on</span><span class="kw">:</span><span class="at"> ubuntu-latest    </span></span>
-<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
-<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/checkout@v3</span></span>
-<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
-<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">ref</span><span class="kw">:</span><span class="at"> </span><span class="st">"dev"</span></span>
-<span id="cb55-12"><a href="#cb55-12" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> conda-incubator/setup-miniconda@v2</span></span>
-<span id="cb55-13"><a href="#cb55-13" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
-<span id="cb55-14"><a href="#cb55-14" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">activate-environment</span><span class="kw">:</span><span class="at"> monenv</span></span>
-<span id="cb55-15"><a href="#cb55-15" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">environment-file</span><span class="kw">:</span><span class="at"> environment.yml</span></span>
-<span id="cb55-16"><a href="#cb55-16" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">python-version</span><span class="kw">:</span><span class="at"> </span><span class="st">'3.10'</span></span>
-<span id="cb55-17"><a href="#cb55-17" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">auto-activate-base</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
-<span id="cb55-18"><a href="#cb55-18" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">shell</span><span class="kw">:</span><span class="at"> bash -l {0}</span></span>
-<span id="cb55-19"><a href="#cb55-19" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb55-20"><a href="#cb55-20" aria-hidden="true" tabindex="-1"></a>          conda info</span>
-<span id="cb55-21"><a href="#cb55-21" aria-hidden="true" tabindex="-1"></a>          conda list</span>
-<span id="cb55-22"><a href="#cb55-22" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Lint with flake8</span></span>
-<span id="cb55-23"><a href="#cb55-23" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb55-24"><a href="#cb55-24" aria-hidden="true" tabindex="-1"></a>          pip install flake8</span>
-<span id="cb55-25"><a href="#cb55-25" aria-hidden="true" tabindex="-1"></a>          flake8 src --count --select=E9,F63,F7,F82 --show-source --statistics</span>
-<span id="cb55-26"><a href="#cb55-26" aria-hidden="true" tabindex="-1"></a>          flake8 src --count --max-complexity=10 --max-line-length=79 --statistics</span>
-<span id="cb55-27"><a href="#cb55-27" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Lint with Pylint</span></span>
-<span id="cb55-28"><a href="#cb55-28" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb55-29"><a href="#cb55-29" aria-hidden="true" tabindex="-1"></a>          pip install pylint</span>
-<span id="cb55-30"><a href="#cb55-30" aria-hidden="true" tabindex="-1"></a>          pylint src</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>{{% /panel %}}</p>
-<p></p>
+</details>
+</div>
+</div>
+<div class="callout-caution callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-42-contents" aria-controls="callout-42" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Checkpoint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-42" class="callout-42-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<pre class="shell"><code>git checkout appli14</code></pre>
+</div>
+</div>
+</div>
 <p>Maintenant, nous pouvons observer que l’onglet <code>Actions</code> s’est enrichi. Chaque <code>commit</code> va entraîner une action pour tester nos scripts.</p>
 <p>Si la note est mauvaise, nous aurons une croix rouge (et nous recevrons un mail). On pourra ainsi détecter, en développant son projet, les moments où on dégrade la qualité du script afin de la rétablir immédiatemment.</p>
 <p>{{% box status=“hint” title=“Un <code>linter</code> sous forme de <em>hook</em> pre-commit” icon=“fa fa-lightbulb” %}}</p>
