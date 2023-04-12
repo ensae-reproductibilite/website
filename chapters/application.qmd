@@ -49,7 +49,7 @@ pouvez lancer le service en cliquant directement [ici](https://datalab.sspcloud.
 - Générer un jeton d'accès (*token*) sur `GitHub` afin de permettre l'authentification en ligne de commande à votre compte.
 La procédure est décrite [ici](https://docs.sspcloud.fr/onyxia-guide/controle-de-version#creer-un-jeton-dacces-token). Garder le jeton généré de côté.
 
-- Forker le dépôt `Github` : https://github.com/linogaliana/ensae-reproductibilite-application-correction
+- Forker le dépôt `Github` : [https://github.com/ensae-reproductibilite/application-correction](https://github.com/ensae-reproductibilite/application-correction)
 
 - Clôner __votre__ dépôt `Github` en utilisant le
 terminal depuis `Visual Studio` (`Terminal > New Terminal`) :
@@ -1258,27 +1258,40 @@ git checkout appli12b
 ## Etape 3: conteneuriser l'application avec `Docker` {#docker}
 
 
-Maintenant qu'on sait que ce script préparatoire fonctionne, on va le transformer en `Dockerfile` (la syntaxe `Docker` est légèrement différente de la syntaxe `Linux` classique) et le tester dans un environnement bac à sable ou sur des machines mises à disposition par les services d'intégration continue de `Github`.
+::: {.callout-note}
+Cette application nécessite l'accès à une version interactive de `Docker`.
+Il n'y a pas beaucoup d'instances en ligne disponibles.
 
-### Préliminaire
+Nous proposons deux solutions:
+
+- [Installer `Docker`](https://docs.docker.com/get-docker/) sur sa machine ;
+- Se rendre sur l'environnement bac à sable _[Play with Docker](https://labs.play-with-docker.com)_
+:::
+
+Maintenant qu'on sait que ce script préparatoire fonctionne, on va le transformer en `Dockerfile` (la syntaxe `Docker` est légèrement différente de la syntaxe `Linux` classique).
+Puis on va le tester dans un environnement bac à sable (pour ensuite
+pouvoir plus facilement automatiser la construction de l'image
+`Docker` par la suite).
+
 
 ::: {.callout-tip}
 
 ## Application 13: création de l'image `Docker` 
 
+Se placer dans un environnement avec `Docker`
 
-- [Installer Docker](https://docs.docker.com/get-docker/) sur sa machine ou bien se rendre sur l'environnement bac à sable [Play with Docker](https://labs.play-with-docker.com)
-- Dans le terminal `Linux`, cloner votre dépôt `Github`  <i class="fab fa-github"></i>
+- Dans le terminal `Linux`, cloner votre dépôt `Github` 
 - Créer via la ligne de commande un fichier texte vierge nommé `Dockerfile` (la majuscule au début du mot est importante)
 
+<details><summary>Commande pour créer un `Dockerfile` vierge depuis la ligne de commande</summary>
 ```shell
 touch Dockerfile
 ```
+</details>
 
-- Ouvrir ce fichier via un éditeur de texte
+- Ouvrir ce fichier via un éditeur de texte et copier le contenu suivant dedans:
 
-### Création d'un premier Dockerfile
-
+<details><summary>Premier `Dockerfile`</summary>
 ```shell
 FROM ubuntu:22.04
 
@@ -1294,6 +1307,7 @@ RUN pip install -r requirements.txt
 
 CMD ["python3", "main.py"]
 ```
+</details>
 
 ### Construire l'image
 
@@ -1317,7 +1331,11 @@ ubuntu          25.04     825d55fb6340   6 days ago      77.8MB
 
 ### Tester l'image: découverte du cache
 
-L'étape de `build` a fonctionné: une image a été construite. Mais fait-elle effectivement ce que l'on attend d'elle ? Pour le savoir, il faut passer à l'étape suivante, l'étape de `run`.
+L'étape de `build` a fonctionné: une image a été construite.
+
+Mais fait-elle effectivement ce que l'on attend d'elle ?
+
+Pour le savoir, il faut passer à l'étape suivante, l'étape de `run`.
 
 ```shell
 $ docker run -it my-python-app
@@ -1353,7 +1371,8 @@ CMD ["python3", "main.py"]
 
 - Refaire tourner l'étape de `build`
 
-- Refaire tourner l'étape de `run`. A ce stade, la matrice de confusion doit fonctionner. Vous avez créé votre première application reproductible !
+- Refaire tourner l'étape de `run`. A ce stade, la matrice de confusion doit fonctionner 🎉.
+Vous avez créé votre première application reproductible !
 
 :::
 
@@ -1365,14 +1384,28 @@ en faisant tourner uniquement les étapes qui ont changé.
 
 :::
 
+
+::: {.callout-caution collapse="true"}
+## Checkpoint
+
+```shell
+git checkout appli13
+```
+
+:::
+
 # Partie 4 : mise en production
 
 Une image `Docker` est un livrable qui n'est pas forcément intéressant
 pour tous les publics. Certains préféreront avoir un plat bien préparé
 qu'une recette. Nous allons donc proposer d'aller plus loin en proposant
-plusieurs types de livrables. Cela va nous amener à découvrir les outils
-du CI/CD (_Continuous Integration / Continuous Delivery_)
-qui sont au coeur de l'approche `DevOps`. Notre approche appliquée
+plusieurs types de livrables.
+
+Cela va nous amener à découvrir les outils
+du `CI/CD` (_Continuous Integration / Continuous Delivery_)
+qui sont au coeur de l'approche `DevOps`.
+
+Notre approche appliquée
 au _machine learning_ va nous entraîner plutôt du côté du `MLOps` qui devient
 une approche de plus en plus fréquente dans l'industrie de la 
 _data science_.
