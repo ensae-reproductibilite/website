@@ -1444,8 +1444,67 @@ via la commande `git checkout -b dev`)
 
 Avant d'essayer de mettre en oeuvre la création de notre image
 `Docker` de manière automatisée, nous allons présenter la logique
-de l'intégration continue en généralisant les évaluations de
-qualité du code avec le `linter`
+de l'intégration continue en testant de manière automatisée
+notre script `main.py`.
+
+Pour cela, nous allons partir de la structure proposée dans l'[action officielle](https://github.com/actions/setup-python). 
+La documentation associée est [ici](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python)
+
+
+::: {.callout-tip}
+
+## Application 14: premier script d'intégration continue
+
+A partir de l'exemple présent
+dans la [documentation officielle](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python)
+de `Github`, on a déjà une base de départ qui peut être modifiée:
+
+1. Créer un fichier `.github/workflows/test.yml` avec le contenu
+de l'exemple de la documentation
+2. N'utiliser que les versions 3.9 à 3.11 de `Python`
+3. Utiliser le fichier `requirements.txt` pour installer les dépendances. 
+Ajouter l'argument `cache: 'pip'` au moment de l'étape `actions/setup-python@v4`
+([voir documentation](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python#installing-dependencies))
+pour mettre en _cache_ les dépendances afin de gagner du temps sur les installations
+ultérieures
+4. Remplacer `russ` par `pylint` pour vérifier la qualité du code. Ajouter l'argument `--fail-under=6` pour
+renvoyer une erreur en cas de note trop basse
+5. Plutôt que `pytest`, utiliser `python main.py` pour tester que la matrice de confusion s'affiche bien.
+
+```yaml
+name: Python package
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint
+          pip install -r requirements.txt
+      - name: Lint
+        run: |
+          pylint src --fail-under=6
+      - name: Test workflow
+        run: |
+          python main.py
+```
+
+
+
 
 {{< panelset class="nommage" >}}
 {{% panel name="Utilisation d'un _template_ `Github` :cat:" %}}
