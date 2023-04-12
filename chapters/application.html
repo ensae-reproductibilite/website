@@ -1587,7 +1587,7 @@ Application 14: premier script d’intégration continue
 <li>Créer un fichier <code>.github/workflows/test.yml</code> avec le contenu de l’exemple de la documentation</li>
 <li>N’utiliser que les versions 3.9 à 3.11 de <code>Python</code></li>
 <li>Utiliser le fichier <code>requirements.txt</code> pour installer les dépendances. Ajouter l’argument <code>cache: 'pip'</code> au moment de l’étape <code>actions/setup-python@v4</code> (<a href="https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python#installing-dependencies">voir documentation</a>) pour mettre en <em>cache</em> les dépendances afin de gagner du temps sur les installations ultérieures</li>
-<li>Remplacer <code>russ</code> par <code>pylint</code> pour vérifier la qualité du code. Ajouter l’argument <code>--fail-under=6</code> pour renvoyer une erreur en cas de note trop basse</li>
+<li>Remplacer <code>russ</code> par <code>pylint</code> pour vérifier la qualité du code. Ajouter l’argument <code>--fail-under=6</code> pour renvoyer une erreur en cas de note trop basse<a href="#fn13" class="footnote-ref" id="fnref13" role="doc-noteref"><sup>13</sup></a></li>
 <li>Plutôt que <code>pytest</code>, utiliser <code>python main.py</code> pour tester que la matrice de confusion s’affiche bien.</li>
 </ol>
 <details>
@@ -1644,33 +1644,64 @@ Checkpoint
 </div>
 <p>Maintenant, nous pouvons observer que l’onglet <code>Actions</code> s’est enrichi. Chaque <code>commit</code> va entraîner une action pour tester nos scripts.</p>
 <p>Si la note est mauvaise, nous aurons une croix rouge (et nous recevrons un mail). On pourra ainsi détecter, en développant son projet, les moments où on dégrade la qualité du script afin de la rétablir immédiatemment.</p>
-<p>{{% box status=“hint” title=“Un <code>linter</code> sous forme de <em>hook</em> pre-commit” icon=“fa fa-lightbulb” %}}</p>
-<p><code>Git</code> offre une fonctionalité intéressante lorsqu’on est puriste: les <em>hooks</em>. Il s’agit de règles qui doivent être satisfaites pour que le fichier puisse être committé. Cela assurera que chaque <code>commit</code> remplisse des critères de qualité afin d’éviter le problème de la procrastination.</p>
-<p>La <a href="https://pylint.pycqa.org/en/latest/user_guide/pre-commit-integration.html">documentation de pylint</a> offre des explications supplémentaires.</p>
-<p>{{% /box %}}</p>
 </section>
 <section id="etape-2-automatisation-de-la-livraison-de-limage-docker" class="level2">
 <h2 class="anchored" data-anchor-id="etape-2-automatisation-de-la-livraison-de-limage-docker">Etape 2: Automatisation de la livraison de l’image <code>Docker</code></h2>
 <p>Maintenant, nous allons automatiser la mise à disposition de notre image sur <code>DockerHub</code>. Cela facilitera sa réutilisation mais aussi des valorisations ultérieures.</p>
 <p>Là encore, nous allons utiliser une série d’actions pré-configurées.</p>
-<p><span class="emoji" data-emoji="one">1️⃣</span> Pour que <code>Github</code> puisse s’authentifier auprès de <code>DockerHub</code>, il va falloir d’abord interfacer les deux plateformes. Pour cela, nous allons utiliser un jeton (<em>token</em>) <code>DockerHub</code> que nous allons mettre dans un espace sécurisé associé à votre dépôt <code>Github</code>. Cette démarche sera là même ultérieurement lorsque nous connecterons notre dépôt à un autre service tiers, à savoir <code>Netlify</code>:</p>
+<p>Pour que <code>Github</code> puisse s’authentifier auprès de <code>DockerHub</code>, il va falloir d’abord interfacer les deux plateformes. Pour cela, nous allons utiliser un jeton (<em>token</em>) <code>DockerHub</code> que nous allons mettre dans un espace sécurisé associé à votre dépôt <code>Github</code>.</p>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Application 15a: configuration
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <ul>
 <li>Se rendre sur https://hub.docker.com/ et créer un compte.</li>
+<li>Créer un dépôt public <code>application-correction</code></li>
 <li>Aller dans les paramètres (https://hub.docker.com/settings/general) et cliquer, à gauche, sur <code>Security</code></li>
 <li>Créer un jeton personnel d’accès, ne fermez pas l’onglet en question, vous ne pouvez voir sa valeur qu’une fois.</li>
 <li>Dans votre dépôt <code>Github</code>, cliquer sur l’onglet <code>Settings</code> et cliquer, à gauche, sur <code>Actions</code>. Sur la page qui s’affiche, cliquer sur <code>New repository secret</code></li>
 <li>Donner le nom <code>DOCKERHUB_TOKEN</code> à ce jeton et copier la valeur. Valider</li>
 <li>Créer un deuxième secret nommé <code>DOCKERHUB_USERNAME</code> ayant comme valeur le nom d’utilisateur que vous avez créé sur <code>Dockerhub</code></li>
 </ul>
-<p><span class="emoji" data-emoji="two">2️⃣</span> A ce stade, nous avons donné les moyens à <code>Github</code> de s’authentifier avec notre identité sur <code>Dockerhub</code>. Il nous reste à mettre en oeuvre l’action en s’inspirant de https://github.com/docker/build-push-action/#usage. On ne va modifier que trois éléments dans ce fichier. Effectuer les actions suivantes:</p>
+</div>
+</div>
+<p>A ce stade, nous avons donné les moyens à <code>Github</code> de s’authentifier avec notre identité sur <code>Dockerhub</code>. Il nous reste à mettre en oeuvre l’action en s’inspirant de https://github.com/docker/build-push-action/#usage. On ne va modifier que trois éléments dans ce fichier. Effectuer les actions suivantes:</p>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Application 15b: automatisation de l’image <code>Docker</code>
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <ul>
-<li>Créer depuis <code>VSCode</code> un fichier <code>.github/workflows/docker.yml</code> et coller le contenu du <em>template</em> dedans ;</li>
-<li>Changer le nom en un titre plus signifiant (par exemple <em>“Production de l’image Docker”</em>)</li>
-<li>Ajouter <code>master</code> et <code>dev</code> à la liste des branches sur lesquelles tourne le pipeline ;</li>
-<li>Changer le tag à la fin pour mettre <code>&lt;username&gt;/ensae-repro-docker:latest</code> où <code>username</code> est le nom d’utilisateur sur <code>DockerHub</code>;</li>
+<li>Créer depuis <code>VSCode</code> un fichier <code>.github/workflows/docker.yml</code> et coller le contenu du <a href="https://github.com/marketplace/actions/build-and-push-docker-images"><em>template</em></a> dedans ;</li>
+<li>Changer le tag à la fin pour mettre <code>&lt;username&gt;/application-correction:latest</code> où <code>username</code> est le nom d’utilisateur sur <code>DockerHub</code>;</li>
+<li>Changer le nom en un titre plus signifiant (par exemple <em>“Production de l’image Docker”</em>) ;</li>
+<li>Si besoin, changer les branches sur lesquelles peut tourner le pipeline ;</li>
 <li>Faire un <code>commit</code> et un <code>push</code> de ces fichiers</li>
 </ul>
-<p><span class="emoji" data-emoji="four">4️⃣</span> Comme on est fier de notre travail, on va afficher ça avec un badge sur le <code>README</code>. Pour cela, on se rend dans l’onglet <code>Actions</code> et on clique sur un des scripts en train de tourner.</p>
+</div>
+</div>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Application 15c: Afficher un badge dans le <code>README</code>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Comme on est fier de notre travail, on va afficher ça avec un badge sur le <code>README</code>. Pour cela, on se rend dans l’onglet <code>Actions</code> et on clique sur un des scripts en train de tourner.</p>
 <ul>
 <li>En haut à droite, on clique sur <code>...</code></li>
 <li>Sélectionner <code>Create status badge</code></li>
@@ -1678,6 +1709,8 @@ Checkpoint
 <li>Copier dans le <code>README</code> depuis <code>VSCode</code></li>
 <li>Faire de même pour l’autre <em>workflow</em></li>
 </ul>
+</div>
+</div>
 <p><span class="emoji" data-emoji="five">5️⃣</span> Maintenant, il nous reste à tester notre application dans l’espace bac à sable:</p>
 <ul>
 <li>Se rendre sur l’environnement bac à sable</li>
@@ -1909,7 +1942,7 @@ sudo apt install "./quarto-${QUARTO_VERSION}-linux-amd64.deb"</code></pre>
 <h3 class="anchored" data-anchor-id="enrichir-limage-docker">3. Enrichir l’image <code>Docker</code></h3>
 <p>On va vouloir mettre à jour notre image pour automatiser, à terme, la production de nos livrables (le notebook et la page web).</p>
 <p>Pour cela, il est nécessaire que notre image intègre le logiciel <code>quarto</code>.</p>
-<p><span class="emoji" data-emoji="one">1️⃣</span> A partir du script précédent d’installation de <code>quarto</code>, enrichir l’image <code>Docker</code><a href="#fn13" class="footnote-ref" id="fnref13" role="doc-noteref"><sup>13</sup></a></p>
+<p><span class="emoji" data-emoji="one">1️⃣</span> A partir du script précédent d’installation de <code>quarto</code>, enrichir l’image <code>Docker</code><a href="#fn14" class="footnote-ref" id="fnref14" role="doc-noteref"><sup>14</sup></a></p>
 <!----
 ENV QUARTO_VERSION="0.9.287"
 RUN wget "https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.deb"
@@ -2090,7 +2123,9 @@ RUN apt install "./quarto-${QUARTO_VERSION}-linux-amd64.deb"
 <li id="fn10"><p>Ce <code>pyproject.toml</code> est un modèle qui utilise <code>setuptools</code> pour <em>build</em> le <em>package</em>. C’est l’outil classique. Néanmoins, pour des usages plus raffinés, il peut être utile d’utiliser <a href="https://python-poetry.org/"><code>poetry</code></a> qui propose des fonctionnalités plus complètes.<a href="#fnref10" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn11"><p>Si vous désirez aussi contrôler la version de <code>Python</code>, ce qui peut être important dans une perspective de portabilité, vous pouvez ajouter une option, par exemple <code>-p python3.9</code>.<a href="#fnref11" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn12"><p>Pour comparer les deux listes, vous pouvez utiliser la fonctionnalité de <em>split</em> du terminal sur <code>VSCode</code> pour comparer les outputs de <code>conda env export</code> en les mettant en face à face.<a href="#fnref12" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn13"><p>Le <code>sudo</code> n’est pas nécessaire puisque vous êtes déjà en <code>root</code><a href="#fnref13" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn13"><p>Il existe une approche alternative pour faire des tests réguliers: les <em>hooks</em> <code>Git</code>. Il s’agit de règles qui doivent être satisfaites pour que le fichier puisse être committé. Cela assurera que chaque <code>commit</code> remplisse des critères de qualité afin d’éviter le problème de la procrastination.</p>
+<p>La <a href="https://pylint.pycqa.org/en/latest/user_guide/pre-commit-integration.html">documentation de pylint</a> offre des explications supplémentaires.<a href="#fnref13" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn14"><p>Le <code>sudo</code> n’est pas nécessaire puisque vous êtes déjà en <code>root</code><a href="#fnref14" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
