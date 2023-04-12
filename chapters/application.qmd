@@ -1471,6 +1471,9 @@ ultérieures
 renvoyer une erreur en cas de note trop basse
 5. Plutôt que `pytest`, utiliser `python main.py` pour tester que la matrice de confusion s'affiche bien.
 
+<details>
+<summary>Fichier `.github/workflows/test.yml` obtenu</summary>
+
 ```yaml
 name: Python package
 
@@ -1502,116 +1505,18 @@ jobs:
         run: |
           python main.py
 ```
+</details>
 
+:::
 
+::: {.callout-caution collapse="true"}
+## Checkpoint
 
+```shell
+git checkout appli14
+```
 
-{{< panelset class="nommage" >}}
-{{% panel name="Utilisation d'un _template_ `Github` :cat:" %}}
-
-__Methode la plus simple: utilisation d'un _template_ Github__
-
-Si vous cliquez sur l'onglet `Actions` de votre dépôt, `Github` vous propose des _workflows_ standardisés reliés à `Python`. Choisir l'option `Python Package using Anaconda`.
-
-warning: Nous n'allons modifier que deux éléments de ce fichier.
-
-:one: La dernière étape (`Test with pytest`) ne nous est pas nécessaire car nous n'avons pas de tests unitaires Nous allons donc remplacer celle-ci par l'utilisation de `pylint` pour avoir une note de qualité du package.
-
-+ Utiliser `pylint` à cette étape pour noter les scripts ;
-+ Vous pouvez fixer un score minimal à 5 (option `--fail-under=5`)
-
-:two: Mettre entre guillements la version de `Python` pour que celle-ci soit reconnue.
-
-:three: Enfin, finaliser la création de ce script:
-
-- En cliquant sur le bouton `Start Commit`, choisir la méthode
-`Create a new branch for this commit and start a pull request`
-en nommant la branche `dev`
-- Créer la `Pull Request` en lui donnant un nom signifiant
-
-{{% /panel %}}
-
-{{% panel name="Méthode manuelle" %}}
-
-:warning: On est plutôt sur une méthode de galérien. Il vaut
-mieux privilégier l'autre approche
-
-On va éditer
-depuis `VisualStudio` nos fichiers.
-
-- Créer une branche `dev` en ligne de commande
-- Créer un dossier `.github/workflows` via la ligne de commande ou l'explorateur de fichier 
-<!---mkdir .github/workflows -p ---->
-- Créer un fichier `.github/workflows/quality.yml`. 
-
-
-Nous allons construire, par étape, une version simplifiée du `Dockerfile` présent
-dans [ce post](https://medium.com/swlh/enhancing-code-quality-with-github-actions-67561c6f7063) et
-dans [celui-ci](https://autobencoder.com/2020-08-24-conda-actions/)
-
-:one: D'abord, définissons des paramètres pour indiquer à `Github`
-quand faire tourner notre script:
-
-- Commencez par nommer votre _workflow_ par exemple `Python Linting` avec la clé `name`
-- Nous allons faire tourner ce _workflow_ dans la branche `master` et dans la branche actuelle (`dev`). Ici, nous laissons de côté les autres éléments (par exemple le fait de faire tourner à chaque _pull request_). La clé `on` est dédiée à cet usage
-
-:two: Ensuite, défnissons le contexte d'exécution des tâches (`jobs`)
-de notre script dans
-les options de la partie `build`:
-
-- Utilisons une machine `ubuntu-latest`. Nous verrons plus tard
-comment améliorer cela. 
-    
-:three: Nous allons ensuite mélanger des étapes pré-définies (des actions du _marketplace_) et des instructions que nous faisons :
-
-- Le _runner_ `Github` doit récupérer le contenu de notre dépôt, pour cela utiliser l'action `checkout`. Par rapport à l'exemple, il convient d'ajouter, pour le moment, un paramètre `ref` avec le nom de la branche (par exemple `dev`)
-- ~~On installe ensuite `Python` avec l'action `setup-python`~~ Pas besoin d'installer `Python`, on va utiliser l'option `conda-incubator/setup-miniconda@v2`
-- Pour installer `Python` et l'environnement `conda`, on va plutôt utiliser l'astuce de [ce blog](https://autobencoder.com/2020-08-24-conda-actions/) avec l'option `conda-incubator/setup-miniconda@v2`
-- On utilise ensuite `flake8` et `pylint` (option `--fail-under=5`)
-pour effectuer des diagnostics de qualité
-
-Il ne reste plus qu'à faire un `commit` et espérer que cela fonctionne.
-Cela devrait donner le fichier suivant : 
-
-
-```yaml
-name: Python Linting
-on:
-  push:
-    branches: [master, dev]
-jobs:
-  build:
-    runs-on: ubuntu-latest    
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: "dev"
-      - uses: conda-incubator/setup-miniconda@v2
-        with:
-          activate-environment: monenv
-          environment-file: environment.yml
-          python-version: '3.10'
-          auto-activate-base: false
-      - shell: bash -l {0}
-        run: |
-          conda info
-          conda list
-      - name: Lint with flake8
-        run: |
-          pip install flake8
-          flake8 src --count --select=E9,F63,F7,F82 --show-source --statistics
-          flake8 src --count --max-complexity=10 --max-line-length=79 --statistics
-      - name: Lint with Pylint
-        run: |
-          pip install pylint
-          pylint src
-``` 
-
-
-{{% /panel %}}
-
-
-{{< /panelset >}}
+:::
 
  
 Maintenant, nous pouvons observer que l'onglet `Actions`
