@@ -230,9 +230,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#docker" id="toc-docker" class="nav-link" data-scroll-target="#docker">Etape 3: conteneuriser l’application avec <code>Docker</code></a>
   <ul class="collapse">
   <li><a href="#préliminaire" id="toc-préliminaire" class="nav-link" data-scroll-target="#préliminaire">Préliminaire</a></li>
-  <li><a href="#création-dun-premier-dockerfile" id="toc-création-dun-premier-dockerfile" class="nav-link" data-scroll-target="#création-dun-premier-dockerfile">Création d’un premier Dockerfile</a></li>
-  <li><a href="#construire-limage" id="toc-construire-limage" class="nav-link" data-scroll-target="#construire-limage">Construire l’image</a></li>
-  <li><a href="#tester-limage-découverte-du-cache" id="toc-tester-limage-découverte-du-cache" class="nav-link" data-scroll-target="#tester-limage-découverte-du-cache">Tester l’image: découverte du cache</a></li>
   </ul></li>
   </ul></li>
   <li><a href="#partie-4-mise-en-production" id="toc-partie-4-mise-en-production" class="nav-link" data-scroll-target="#partie-4-mise-en-production">Partie 4 : mise en production</a>
@@ -1403,6 +1400,16 @@ Checkpoint
 <p>Maintenant qu’on sait que ce script préparatoire fonctionne, on va le transformer en <code>Dockerfile</code> (la syntaxe <code>Docker</code> est légèrement différente de la syntaxe <code>Linux</code> classique) et le tester dans un environnement bac à sable ou sur des machines mises à disposition par les services d’intégration continue de <code>Github</code>.</p>
 <section id="préliminaire" class="level3">
 <h3 class="anchored" data-anchor-id="préliminaire">Préliminaire</h3>
+<div class="callout-tip callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Application 13: création de l’image <code>Docker</code>
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <ul>
 <li><a href="https://docs.docker.com/get-docker/">Installer Docker</a> sur sa machine ou bien se rendre sur l’environnement bac à sable <a href="https://labs.play-with-docker.com">Play with Docker</a></li>
 <li>Dans le terminal <code>Linux</code>, cloner votre dépôt <code>Github</code> <i class="fab fa-github"></i></li>
@@ -1412,7 +1419,6 @@ Checkpoint
 <ul>
 <li>Ouvrir ce fichier via un éditeur de texte</li>
 </ul>
-</section>
 <section id="création-dun-premier-dockerfile" class="level3">
 <h3 class="anchored" data-anchor-id="création-dun-premier-dockerfile">Création d’un premier Dockerfile</h3>
 <pre class="shell"><code>FROM ubuntu:22.04
@@ -1477,12 +1483,25 @@ COPY configuration ./configuration
 CMD ["python3", "main.py"]</code></pre>
 </details>
 <ul>
-<li>Refaire tourner l’étape de <code>build</code></li>
+<li><p>Refaire tourner l’étape de <code>build</code></p></li>
+<li><p>Refaire tourner l’étape de <code>run</code>. A ce stade, la matrice de confusion doit fonctionner. Vous avez créé votre première application reproductible !</p></li>
 </ul>
-<p>{{% box status=“tip” title=“Note” icon=“fa fa-hint” %}} Ici, le <em>cache</em> permet d’économiser beaucoup de temps. Par besoin de refaire tourner toutes les étapes, <code>Docker</code> agit de manière intelligente en faisant tourner uniquement les étapes qui ont changé. {{% /box %}}</p>
-<ul>
-<li>Refaire tourner l’étape de <code>run</code>. A ce stade, la matrice de confusion doit fonctionner. Vous avez créé votre première application reproductible !</li>
-</ul>
+</section>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Ici, le <em>cache</em> permet d’économiser beaucoup de temps. Par besoin de refaire tourner toutes les étapes, <code>Docker</code> agit de manière intelligente en faisant tourner uniquement les étapes qui ont changé.</p>
+</div>
+</div>
 </section>
 </section>
 </section>
