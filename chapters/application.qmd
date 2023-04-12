@@ -1468,8 +1468,17 @@ Ajouter l'argument `cache: 'pip'` au moment de l'étape `actions/setup-python@v4
 pour mettre en _cache_ les dépendances afin de gagner du temps sur les installations
 ultérieures
 4. Remplacer `russ` par `pylint` pour vérifier la qualité du code. Ajouter l'argument `--fail-under=6` pour
-renvoyer une erreur en cas de note trop basse
+renvoyer une erreur en cas de note trop basse[^hook]
 5. Plutôt que `pytest`, utiliser `python main.py` pour tester que la matrice de confusion s'affiche bien.
+
+[^hook]: Il existe une approche alternative pour faire des tests
+    réguliers: les _hooks_ `Git`.
+    Il s'agit de règles qui doivent être satisfaites pour que le 
+    fichier puisse être committé. Cela assurera que chaque `commit` remplisse
+    des critères de qualité afin d'éviter le problème de la procrastination.
+    
+    La [documentation de pylint](https://pylint.pycqa.org/en/latest/user_guide/pre-commit-integration.html) offre des explications supplémentaires. 
+
 
 <details>
 <summary>Fichier `.github/workflows/test.yml` obtenu</summary>
@@ -1529,17 +1538,6 @@ en développant son projet, les moments où on dégrade la qualité du script
 afin de la rétablir immédiatemment. 
 
 
-{{% box status="hint" title="Un `linter` sous forme de _hook_ pre-commit" icon="fa fa-lightbulb" %}}
-
-`Git` offre une fonctionalité intéressante lorsqu'on est puriste: les 
-_hooks_. Il s'agit de règles qui doivent être satisfaites pour que le 
-fichier puisse être committé. Cela assurera que chaque `commit` remplisse
-des critères de qualité afin d'éviter le problème de la procrastination.
-
-La [documentation de pylint](https://pylint.pycqa.org/en/latest/user_guide/pre-commit-integration.html)
-offre des explications supplémentaires. 
-
-{{% /box %}}
 
 
 ## Etape 2: Automatisation de la livraison de l'image `Docker`
