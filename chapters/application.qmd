@@ -1,5 +1,5 @@
 ---
-title: "Appliquer les concepts étudiés à un projet de data science"
+title: "Appliquer pas à pas les concepts étudiés à un projet de data science"
 author: "Romain Avouac et Lino Galiana"
 draft: false
 # layout options: single, single-sidebar
@@ -10,6 +10,9 @@ from: markdown+emoji
 
 
 L'objectif de cette mise en application est d'**illustrer les différentes étapes qui séparent la phase de développement d'un projet de celle de la mise en production**. Elle permettra de mettre en pratique les différents concepts présentés tout au long du cours.
+
+Celle-ci est un tutoriel pas à pas pour avoir un projet reproductible et disponible sous plusieurs livrables. 
+Toutes les étapes ne sont pas indispensables à tous les projets de _data science_. 
 
 Nous nous plaçons dans une situation initiale correspondant à la fin de la phase de développement d'un projet de data science.
 On a un notebook un peu monolithique, qui réalise les étapes classiques d'un *pipeline* de *machine learning* :
@@ -1671,8 +1674,6 @@ qu'a lieu le découpage en train/test, l'entrainement
 et l'évaluation
 du modèle
 
-```
-
 :::
 
 
@@ -1685,8 +1686,205 @@ git checkout appli16
 
 :::
 
+## Etape 2: développer une API en local
 
-OLD -> A ACTUALISER
+::: {.callout-tip}
+
+## Application 17: Mise à disposition sous forme d'API
+
+- Créer un nouveau service `SSPCloud` en paramétrant dans l'onglet
+`Networking` le port 5000 ;
+- Cloner le dépôt et se placer au niveau de l'application précédente (`git checkout appli16`)
+- Installer `fastAPI` et `uvicorn` puis les ajouter au `requirements.txt`
+- Renommer le fichier `main.py` en `train.py` et insérer le contenu suivant dedans :
+
+<details>
+<summary>
+Fichier `train.py`
+</summary>
+"""
+Prediction de la survie d'un individu sur le Titanic
+"""
+
+# GESTION ENVIRONNEMENT --------------------------------
+
+import sys
+import os
+from joblib import dump
+from sklearn.metrics import confusion_matrix
+import src.data.import_data as imp
+import src.features.build_features as bf
+import src.models.train_evaluate as te
+
+
+# PARAMETRES -------------------------------
+
+config = imp.import_yaml_config("configuration/config.yaml")
+path_secrets_yaml = "configuration/secrets.yaml"
+if os.path.exists(path_secrets_yaml):
+    secrets = imp.import_yaml_config(path_secrets_yaml)
+    API_TOKEN = secrets["api"]["token"]
+
+# Number trees as command line argument
+N_TREES = int(sys.argv[1]) if len(sys.argv) == 2 else 20
+
+
+LOCATION_TRAIN = config["path"]["train"]
+LOCATION_TEST = config["path"]["test"]
+TEST_FRACTION = config["model"]["test_fraction"]
+
+
+# FEATURE ENGINEERING --------------------------------
+
+TrainingData = imp.import_data(LOCATION_TRAIN)
+TestData = imp.import_data(LOCATION_TEST)
+
+# Create a 'Title' variable
+TrainingData = imp.create_variable_title(TrainingData)
+TestData = imp.create_variable_title(TestData)
+
+
+## IMPUTATION DES VARIABLES ================
+
+
+# Making a new feature hasCabin which is 1 if cabin is available else 0
+TrainingData = bf.check_has_cabin(TrainingData)
+TestData = bf.check_has_cabin(TestData)
+
+TrainingData = bf.ticket_length(TrainingData)
+TestData = bf.ticket_length(TestData)
+
+
+train, test = te.split_train_test_titanic(
+    TrainingData,
+    fraction_test=TEST_FRACTION
+    )
+
+
+# MODELISATION: RANDOM FOREST ----------------------------
+
+pipe = te.random_forest_titanic(
+    data=TrainingData, fraction_test=TEST_FRACTION, n_trees=N_TREES
+)
+
+pipe.fit(train.drop("Survived", axis="columns"), train["Survived"])
+
+
+# EVALUATE ----------------------------
+
+rdmf_score = pipe.score(test.drop("Survived", axis="columns"), test["Survived"])
+print(
+    f"{round(rdmf_score * 100)} % de bonnes réponses sur les données de test pour validation \
+            (résultat qu'on attendrait si on soumettait notre prédiction \
+                sur le dataset de test.csv)"
+)
+
+print("matrice de confusion")
+print(
+    confusion_matrix(
+        test["Survived"], pipe.predict(test.drop("Survived", axis="columns"))
+    )
+)
+
+
+# model export
+dump(pipe, 'model.joblib')
+</details>
+
+- Créer le fichier `main.py` permettant d'initialiser l'API:
+
+<details>
+<summary>
+Fichier `main.py`
+</summary>
+from enum import IntEnum, Enum
+from typing import Optional
+
+from fastapi import FastAPI
+from fastapi.encoders import jsonable_encoder
+from pydantic import BaseModel
+from joblib import load
+
+import pandas as pd
+
+model = load('model.joblib')
+
+app = FastAPI(
+    title="Prédiction de survie sur le Titanic",
+    description=
+    "Application de prédiction de survie sur le Titanic 🚢 <br>Une version par API pour faciliter la réutilisation du modèle 🚀" +\
+        "<br><br><img src=\"https://media.vogue.fr/photos/5faac06d39c5194ff9752ec9/1:1/w_2404,h_2404,c_limit/076_CHL_126884.jpg\" width=\"200\">"
+    )
+
+
+@app.get("/", tags=["Welcome"])
+def show_welcome_page():
+    """
+    Show welcome page with model name and version.
+    """
+
+    return {
+        "Message": "API de prédiction de survie sur le Titanic",
+        "Model_name": 'Titanic ML',
+        "Model_version": "0.1",
+    }
+
+
+@app.get("/predict", tags=["Predict"])
+async def predict(
+    pclass: int = 3,
+    sex: str = "female",
+    age: float = 29.0,
+    sib_sp: int = 1,
+    parch: int = 1,
+    fare: float = 16.5,
+    embarked: str = "S",
+    title: str = "Miss.",
+    has_cabin: int = 1,
+    ticket_len: int = 7
+) -> str :
+    """
+    """
+
+    df = pd.DataFrame(
+        {
+            "Pclass": [pclass],
+            "Sex": [sex],
+            "Age": [age],
+            "SibSp": [sib_sp],
+            "parch": [parch],
+            "Fare": [fare],
+            "Embarked": [embarked],
+            "Title": [title],
+            "hasCabin": [has_cabin],
+            "Ticket_Len": [ticket_len] 
+        }
+    )
+
+    prediction = "Survived 🎉" if int(model.predict(df)) == 1 else "Dead ⚰️"
+
+    return prediction
+</details>
+
+- Exécuter `train.py` pour stocker en local le modèle entraîné
+- Ajouter `model.joblib` au `.gitignore`
+- Déployer en local l'API avec la commande
+
+```shell
+uvicorn model_api:app --reload --host "0.0.0.0" --port 5000
+```
+
+- A partir du `README` du service, se rendre sur l'URL de déploiement, 
+ajouter `/docs/` à celui-ci et observer la documentation de l'API 
+- Tester la requête `/predict`
+
+:::
+
+```shell
+git checkout appli17
+```
+
+:::
 
 ## Etape 3: création d'un rapport automatique
 
