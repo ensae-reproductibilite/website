@@ -1394,7 +1394,7 @@ git checkout appli13
 
 :::
 
-# Partie 4 : mise en production
+# Partie 4 : automatisation avec l'intégration continue
 
 Une image `Docker` est un livrable qui n'est pas forcément intéressant
 pour tous les publics. Certains préféreront avoir un plat bien préparé
@@ -1430,15 +1430,6 @@ sur le modèle de notre `linter` précédent
 
 Nous allons utiliser `Github Actions` pour cela. 
 
-## Etape préliminaire
-
-Pour ne pas risquer de tout casser sur notre branche `master`, nous allons 
-nous placer sur une branche nommée `dev`:
-
-- si dans l'étape suivante vous appliquez la méthode la plus simple, vous
-allez pouvoir la créer depuis l'interface de `Github` ;
-- si vous utilisez l'autre méthode, vous allez devoir la créer en local (
-via la commande `git checkout -b dev`)
 
 ## Etape 1: mise en place de tests automatisés
 
@@ -1593,11 +1584,10 @@ le pipeline ;
 - Faire un `commit` et un `push` de ces fichiers
 :::
 
-
-::: {.callout-tip}
-
 Comme on est fier de notre travail, on va afficher ça avec un badge sur le 
 `README`. 
+
+::: {.callout-tip}
 
 ## Application 15c: Afficher un badge dans le `README`
 
@@ -1645,6 +1635,55 @@ git checkout appli15
 
 :::
 
+
+# Partie 5: mise en production d'une API servant un modèle de machine learning
+
+## Etape 1: création d'un pipeline `scikit`
+
+
+Notre code respecte des bonnes pratiques formelles. Cependant, la mise en
+production nécessite d'être exigeant sur la mise en oeuvre opérationnelle
+de notre _pipeline_. 
+
+Quand  on utilise `scikit`, la bonne pratique est d'utiliser
+les [_pipelines_](https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html)
+qui sécurisent les étapes de _feature engineering_ avant la mise en oeuvre d'un modèle (que
+ce soit pour l'entraînement ou le test sur un nouveau jeu de données). 
+
+On va donc devoir refactoriser notre application pour utiliser un _pipeline_ `scikit`. 
+Les raisons sont expliquées [ici](https://scikit-learn.org/stable/common_pitfalls.html).
+Cela aura
+aussi l'avantage de rendre les étapes plus lisibles. 
+
+
+::: {.callout-tip}
+
+## Application 16: Un _pipeline_ de _machine learning_
+
+- Refactoriser le code de `random_forest_titanic` pour créer 
+un vrai pipeline de _preprocessing_ avant la modélisation
+
+- Simplifier la fonction `split_train_test_titanic`
+en la réduisant au découpage train/test
+
+- Modifier `main.py` pour que ce soit à ce niveau
+qu'a lieu le découpage en train/test, l'entrainement
+et l'évaluation
+du modèle
+
+```
+
+:::
+
+
+::: {.callout-caution collapse="true"}
+## Checkpoint
+
+```shell
+git checkout appli16
+```
+
+:::
 
 
 OLD -> A ACTUALISER
