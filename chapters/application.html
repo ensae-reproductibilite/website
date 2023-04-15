@@ -1816,93 +1816,7 @@ Application 17: Mise à disposition sous forme d’API
 <summary>
 Fichier <code>train.py</code>
 </summary>
-<div class="sourceCode" id="cb60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
-<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a><span class="co">Prediction de la survie d'un individu sur le Titanic</span></span>
-<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
-<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a><span class="co"># GESTION ENVIRONNEMENT --------------------------------</span></span>
-<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
-<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> joblib <span class="im">import</span> dump</span>
-<span id="cb60-10"><a href="#cb60-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> confusion_matrix</span>
-<span id="cb60-11"><a href="#cb60-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> src.data.import_data <span class="im">as</span> imp</span>
-<span id="cb60-12"><a href="#cb60-12" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> src.features.build_features <span class="im">as</span> bf</span>
-<span id="cb60-13"><a href="#cb60-13" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> src.models.train_evaluate <span class="im">as</span> te</span>
-<span id="cb60-14"><a href="#cb60-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-15"><a href="#cb60-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-16"><a href="#cb60-16" aria-hidden="true" tabindex="-1"></a><span class="co"># PARAMETRES -------------------------------</span></span>
-<span id="cb60-17"><a href="#cb60-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-18"><a href="#cb60-18" aria-hidden="true" tabindex="-1"></a>config <span class="op">=</span> imp.import_yaml_config(<span class="st">"configuration/config.yaml"</span>)</span>
-<span id="cb60-19"><a href="#cb60-19" aria-hidden="true" tabindex="-1"></a>path_secrets_yaml <span class="op">=</span> <span class="st">"configuration/secrets.yaml"</span></span>
-<span id="cb60-20"><a href="#cb60-20" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> os.path.exists(path_secrets_yaml):</span>
-<span id="cb60-21"><a href="#cb60-21" aria-hidden="true" tabindex="-1"></a>    secrets <span class="op">=</span> imp.import_yaml_config(path_secrets_yaml)</span>
-<span id="cb60-22"><a href="#cb60-22" aria-hidden="true" tabindex="-1"></a>    API_TOKEN <span class="op">=</span> secrets[<span class="st">"api"</span>][<span class="st">"token"</span>]</span>
-<span id="cb60-23"><a href="#cb60-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-24"><a href="#cb60-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Number trees as command line argument</span></span>
-<span id="cb60-25"><a href="#cb60-25" aria-hidden="true" tabindex="-1"></a>N_TREES <span class="op">=</span> <span class="bu">int</span>(sys.argv[<span class="dv">1</span>]) <span class="cf">if</span> <span class="bu">len</span>(sys.argv) <span class="op">==</span> <span class="dv">2</span> <span class="cf">else</span> <span class="dv">20</span></span>
-<span id="cb60-26"><a href="#cb60-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-27"><a href="#cb60-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-28"><a href="#cb60-28" aria-hidden="true" tabindex="-1"></a>LOCATION_TRAIN <span class="op">=</span> config[<span class="st">"path"</span>][<span class="st">"train"</span>]</span>
-<span id="cb60-29"><a href="#cb60-29" aria-hidden="true" tabindex="-1"></a>LOCATION_TEST <span class="op">=</span> config[<span class="st">"path"</span>][<span class="st">"test"</span>]</span>
-<span id="cb60-30"><a href="#cb60-30" aria-hidden="true" tabindex="-1"></a>TEST_FRACTION <span class="op">=</span> config[<span class="st">"model"</span>][<span class="st">"test_fraction"</span>]</span>
-<span id="cb60-31"><a href="#cb60-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-32"><a href="#cb60-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-33"><a href="#cb60-33" aria-hidden="true" tabindex="-1"></a><span class="co"># FEATURE ENGINEERING --------------------------------</span></span>
-<span id="cb60-34"><a href="#cb60-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-35"><a href="#cb60-35" aria-hidden="true" tabindex="-1"></a>TrainingData <span class="op">=</span> imp.import_data(LOCATION_TRAIN)</span>
-<span id="cb60-36"><a href="#cb60-36" aria-hidden="true" tabindex="-1"></a>TestData <span class="op">=</span> imp.import_data(LOCATION_TEST)</span>
-<span id="cb60-37"><a href="#cb60-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-38"><a href="#cb60-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a 'Title' variable</span></span>
-<span id="cb60-39"><a href="#cb60-39" aria-hidden="true" tabindex="-1"></a>TrainingData <span class="op">=</span> imp.create_variable_title(TrainingData)</span>
-<span id="cb60-40"><a href="#cb60-40" aria-hidden="true" tabindex="-1"></a>TestData <span class="op">=</span> imp.create_variable_title(TestData)</span>
-<span id="cb60-41"><a href="#cb60-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-42"><a href="#cb60-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-43"><a href="#cb60-43" aria-hidden="true" tabindex="-1"></a><span class="co">## IMPUTATION DES VARIABLES ================</span></span>
-<span id="cb60-44"><a href="#cb60-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-45"><a href="#cb60-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-46"><a href="#cb60-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Making a new feature hasCabin which is 1 if cabin is available else 0</span></span>
-<span id="cb60-47"><a href="#cb60-47" aria-hidden="true" tabindex="-1"></a>TrainingData <span class="op">=</span> bf.check_has_cabin(TrainingData)</span>
-<span id="cb60-48"><a href="#cb60-48" aria-hidden="true" tabindex="-1"></a>TestData <span class="op">=</span> bf.check_has_cabin(TestData)</span>
-<span id="cb60-49"><a href="#cb60-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-50"><a href="#cb60-50" aria-hidden="true" tabindex="-1"></a>TrainingData <span class="op">=</span> bf.ticket_length(TrainingData)</span>
-<span id="cb60-51"><a href="#cb60-51" aria-hidden="true" tabindex="-1"></a>TestData <span class="op">=</span> bf.ticket_length(TestData)</span>
-<span id="cb60-52"><a href="#cb60-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-53"><a href="#cb60-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-54"><a href="#cb60-54" aria-hidden="true" tabindex="-1"></a>train, test <span class="op">=</span> te.split_train_test_titanic(</span>
-<span id="cb60-55"><a href="#cb60-55" aria-hidden="true" tabindex="-1"></a>    TrainingData,</span>
-<span id="cb60-56"><a href="#cb60-56" aria-hidden="true" tabindex="-1"></a>    fraction_test<span class="op">=</span>TEST_FRACTION</span>
-<span id="cb60-57"><a href="#cb60-57" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb60-58"><a href="#cb60-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-59"><a href="#cb60-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-60"><a href="#cb60-60" aria-hidden="true" tabindex="-1"></a><span class="co"># MODELISATION: RANDOM FOREST ----------------------------</span></span>
-<span id="cb60-61"><a href="#cb60-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-62"><a href="#cb60-62" aria-hidden="true" tabindex="-1"></a>pipe <span class="op">=</span> te.random_forest_titanic(</span>
-<span id="cb60-63"><a href="#cb60-63" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>TrainingData, fraction_test<span class="op">=</span>TEST_FRACTION, n_trees<span class="op">=</span>N_TREES</span>
-<span id="cb60-64"><a href="#cb60-64" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb60-65"><a href="#cb60-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-66"><a href="#cb60-66" aria-hidden="true" tabindex="-1"></a>pipe.fit(train.drop(<span class="st">"Survived"</span>, axis<span class="op">=</span><span class="st">"columns"</span>), train[<span class="st">"Survived"</span>])</span>
-<span id="cb60-67"><a href="#cb60-67" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-68"><a href="#cb60-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-69"><a href="#cb60-69" aria-hidden="true" tabindex="-1"></a><span class="co"># EVALUATE ----------------------------</span></span>
-<span id="cb60-70"><a href="#cb60-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-71"><a href="#cb60-71" aria-hidden="true" tabindex="-1"></a>rdmf_score <span class="op">=</span> pipe.score(test.drop(<span class="st">"Survived"</span>, axis<span class="op">=</span><span class="st">"columns"</span>), test[<span class="st">"Survived"</span>])</span>
-<span id="cb60-72"><a href="#cb60-72" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(</span>
-<span id="cb60-73"><a href="#cb60-73" aria-hidden="true" tabindex="-1"></a>    <span class="ss">f"</span><span class="sc">{</span><span class="bu">round</span>(rdmf_score <span class="op">*</span> <span class="dv">100</span>)<span class="sc">}</span><span class="ss"> % de bonnes réponses sur les données de test pour validation </span><span class="ch">\</span></span>
-<span id="cb60-74"><a href="#cb60-74" aria-hidden="true" tabindex="-1"></a><span class="ss">            (résultat qu'on attendrait si on soumettait notre prédiction </span><span class="ch">\</span></span>
-<span id="cb60-75"><a href="#cb60-75" aria-hidden="true" tabindex="-1"></a><span class="ss">                sur le dataset de test.csv)"</span></span>
-<span id="cb60-76"><a href="#cb60-76" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb60-77"><a href="#cb60-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-78"><a href="#cb60-78" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"matrice de confusion"</span>)</span>
-<span id="cb60-79"><a href="#cb60-79" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(</span>
-<span id="cb60-80"><a href="#cb60-80" aria-hidden="true" tabindex="-1"></a>    confusion_matrix(</span>
-<span id="cb60-81"><a href="#cb60-81" aria-hidden="true" tabindex="-1"></a>        test[<span class="st">"Survived"</span>], pipe.predict(test.drop(<span class="st">"Survived"</span>, axis<span class="op">=</span><span class="st">"columns"</span>))</span>
-<span id="cb60-82"><a href="#cb60-82" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb60-83"><a href="#cb60-83" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb60-84"><a href="#cb60-84" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-85"><a href="#cb60-85" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-86"><a href="#cb60-86" aria-hidden="true" tabindex="-1"></a><span class="co"># model export</span></span>
-<span id="cb60-87"><a href="#cb60-87" aria-hidden="true" tabindex="-1"></a>dump(pipe, <span class="st">'model.joblib'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+Récupérer le contenu sur <a href="https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/tree/appli17/train.py">cette page</a>
 </details>
 <ul>
 <li>Créer le fichier <code>main.py</code> permettant d’initialiser l’API:</li>
@@ -1911,73 +1825,7 @@ Fichier <code>train.py</code>
 <summary>
 Fichier <code>main.py</code>
 </summary>
-<div class="sourceCode" id="cb61"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> enum <span class="im">import</span> IntEnum, Enum</span>
-<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> Optional</span>
-<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastapi <span class="im">import</span> FastAPI</span>
-<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastapi.encoders <span class="im">import</span> jsonable_encoder</span>
-<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pydantic <span class="im">import</span> BaseModel</span>
-<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> joblib <span class="im">import</span> load</span>
-<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb61-10"><a href="#cb61-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb61-11"><a href="#cb61-11" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> load(<span class="st">'model.joblib'</span>)</span>
-<span id="cb61-12"><a href="#cb61-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb61-13"><a href="#cb61-13" aria-hidden="true" tabindex="-1"></a>app <span class="op">=</span> FastAPI(</span>
-<span id="cb61-14"><a href="#cb61-14" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">"Prédiction de survie sur le Titanic"</span>,</span>
-<span id="cb61-15"><a href="#cb61-15" aria-hidden="true" tabindex="-1"></a>    description<span class="op">=</span></span>
-<span id="cb61-16"><a href="#cb61-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Application de prédiction de survie sur le Titanic 🚢 &lt;br&gt;Une version par API pour faciliter la réutilisation du modèle 🚀"</span> <span class="op">+\</span></span>
-<span id="cb61-17"><a href="#cb61-17" aria-hidden="true" tabindex="-1"></a>        <span class="st">"&lt;br&gt;&lt;br&gt;&lt;img src=</span><span class="ch">\"</span><span class="st">https://media.vogue.fr/photos/5faac06d39c5194ff9752ec9/1:1/w_2404,h_2404,c_limit/076_CHL_126884.jpg</span><span class="ch">\"</span><span class="st"> width=</span><span class="ch">\"</span><span class="st">200</span><span class="ch">\"</span><span class="st">&gt;"</span></span>
-<span id="cb61-18"><a href="#cb61-18" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb61-19"><a href="#cb61-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb61-20"><a href="#cb61-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb61-21"><a href="#cb61-21" aria-hidden="true" tabindex="-1"></a><span class="at">@app.get</span>(<span class="st">"/"</span>, tags<span class="op">=</span>[<span class="st">"Welcome"</span>])</span>
-<span id="cb61-22"><a href="#cb61-22" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> show_welcome_page():</span>
-<span id="cb61-23"><a href="#cb61-23" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb61-24"><a href="#cb61-24" aria-hidden="true" tabindex="-1"></a><span class="co">    Show welcome page with model name and version.</span></span>
-<span id="cb61-25"><a href="#cb61-25" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb61-26"><a href="#cb61-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb61-27"><a href="#cb61-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
-<span id="cb61-28"><a href="#cb61-28" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Message"</span>: <span class="st">"API de prédiction de survie sur le Titanic"</span>,</span>
-<span id="cb61-29"><a href="#cb61-29" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Model_name"</span>: <span class="st">'Titanic ML'</span>,</span>
-<span id="cb61-30"><a href="#cb61-30" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Model_version"</span>: <span class="st">"0.1"</span>,</span>
-<span id="cb61-31"><a href="#cb61-31" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb61-32"><a href="#cb61-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb61-33"><a href="#cb61-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb61-34"><a href="#cb61-34" aria-hidden="true" tabindex="-1"></a><span class="at">@app.get</span>(<span class="st">"/predict"</span>, tags<span class="op">=</span>[<span class="st">"Predict"</span>])</span>
-<span id="cb61-35"><a href="#cb61-35" aria-hidden="true" tabindex="-1"></a><span class="cf">async</span> <span class="kw">def</span> predict(</span>
-<span id="cb61-36"><a href="#cb61-36" aria-hidden="true" tabindex="-1"></a>    pclass: <span class="bu">int</span> <span class="op">=</span> <span class="dv">3</span>,</span>
-<span id="cb61-37"><a href="#cb61-37" aria-hidden="true" tabindex="-1"></a>    sex: <span class="bu">str</span> <span class="op">=</span> <span class="st">"female"</span>,</span>
-<span id="cb61-38"><a href="#cb61-38" aria-hidden="true" tabindex="-1"></a>    age: <span class="bu">float</span> <span class="op">=</span> <span class="fl">29.0</span>,</span>
-<span id="cb61-39"><a href="#cb61-39" aria-hidden="true" tabindex="-1"></a>    sib_sp: <span class="bu">int</span> <span class="op">=</span> <span class="dv">1</span>,</span>
-<span id="cb61-40"><a href="#cb61-40" aria-hidden="true" tabindex="-1"></a>    parch: <span class="bu">int</span> <span class="op">=</span> <span class="dv">1</span>,</span>
-<span id="cb61-41"><a href="#cb61-41" aria-hidden="true" tabindex="-1"></a>    fare: <span class="bu">float</span> <span class="op">=</span> <span class="fl">16.5</span>,</span>
-<span id="cb61-42"><a href="#cb61-42" aria-hidden="true" tabindex="-1"></a>    embarked: <span class="bu">str</span> <span class="op">=</span> <span class="st">"S"</span>,</span>
-<span id="cb61-43"><a href="#cb61-43" aria-hidden="true" tabindex="-1"></a>    title: <span class="bu">str</span> <span class="op">=</span> <span class="st">"Miss."</span>,</span>
-<span id="cb61-44"><a href="#cb61-44" aria-hidden="true" tabindex="-1"></a>    has_cabin: <span class="bu">int</span> <span class="op">=</span> <span class="dv">1</span>,</span>
-<span id="cb61-45"><a href="#cb61-45" aria-hidden="true" tabindex="-1"></a>    ticket_len: <span class="bu">int</span> <span class="op">=</span> <span class="dv">7</span></span>
-<span id="cb61-46"><a href="#cb61-46" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="bu">str</span> :</span>
-<span id="cb61-47"><a href="#cb61-47" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb61-48"><a href="#cb61-48" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb61-49"><a href="#cb61-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb61-50"><a href="#cb61-50" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame(</span>
-<span id="cb61-51"><a href="#cb61-51" aria-hidden="true" tabindex="-1"></a>        {</span>
-<span id="cb61-52"><a href="#cb61-52" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Pclass"</span>: [pclass],</span>
-<span id="cb61-53"><a href="#cb61-53" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Sex"</span>: [sex],</span>
-<span id="cb61-54"><a href="#cb61-54" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Age"</span>: [age],</span>
-<span id="cb61-55"><a href="#cb61-55" aria-hidden="true" tabindex="-1"></a>            <span class="st">"SibSp"</span>: [sib_sp],</span>
-<span id="cb61-56"><a href="#cb61-56" aria-hidden="true" tabindex="-1"></a>            <span class="st">"parch"</span>: [parch],</span>
-<span id="cb61-57"><a href="#cb61-57" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Fare"</span>: [fare],</span>
-<span id="cb61-58"><a href="#cb61-58" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Embarked"</span>: [embarked],</span>
-<span id="cb61-59"><a href="#cb61-59" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Title"</span>: [title],</span>
-<span id="cb61-60"><a href="#cb61-60" aria-hidden="true" tabindex="-1"></a>            <span class="st">"hasCabin"</span>: [has_cabin],</span>
-<span id="cb61-61"><a href="#cb61-61" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Ticket_Len"</span>: [ticket_len] </span>
-<span id="cb61-62"><a href="#cb61-62" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb61-63"><a href="#cb61-63" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb61-64"><a href="#cb61-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb61-65"><a href="#cb61-65" aria-hidden="true" tabindex="-1"></a>    prediction <span class="op">=</span> <span class="st">"Survived 🎉"</span> <span class="cf">if</span> <span class="bu">int</span>(model.predict(df)) <span class="op">==</span> <span class="dv">1</span> <span class="cf">else</span> <span class="st">"Dead ⚰️"</span></span>
-<span id="cb61-66"><a href="#cb61-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb61-67"><a href="#cb61-67" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> prediction</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+Récupérer le contenu sur <a href="https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/tree/appli17/main.py">cette page</a>
 </details>
 <ul>
 <li>Exécuter <code>train.py</code> pour stocker en local le modèle entraîné</li>
@@ -2017,27 +1865,67 @@ Checkpoint
 <section id="partie-7-livrer-un-site-web-de-manière-automatisée" class="level1">
 <h1>Partie 7: livrer un site web de manière automatisée</h1>
 <p>On va proposer un nouveau livrable pour parler à un public plus large. Pour cela, on va déployer un site web statique qui permet de visualiser rapidement les résultats du modèle.</p>
-<p>On propose de créer un site web qui permet de comprendre, avec l’appui des valeurs de Shapley, les facteurs qui auraient pu nous mettre la puce à l’oreille sur les destins de Jake et de Rose.</p>
+<p>On propose de créer un site web qui permet de comprendre, avec l’appui des <a href="https://christophm.github.io/interpretable-ml-book/shapley.html">valeurs de Shapley</a>, les facteurs qui auraient pu nous mettre la puce à l’oreille sur les destins de Jake et de Rose.</p>
+<p>Pour faire ce site web, on va utiliser <code>Quarto</code> et déployer sur <code>Github Pages</code>. Des étapes préliminaires sont réalisées en <code>Python</code> puis l’affichage interactif sera contrôlé par du <code>JavaScript</code> grâce à des <a href="https://quarto.org/docs/interactive/ojs/">blocs <code>Observable</code></a>.</p>
 <div class="callout-tip callout callout-style-default callout-captioned">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-caption-container flex-fill">
-Application 18: Déploiement automatisé d’un site web
+Application 19: Déploiement automatisé d’un site web
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Pour cela, on va utiliser <code>Quarto</code> et déployer sur <code>Github pages</code>.</p>
+<p>Dans un premier temps, on va créer un projet <code>Quarto</code> au sein de notre dépôt:</p>
 <ul>
-<li>Installer <code>quarto</code></li>
-<li>Utiliser <code>quarto create-project</code> et supprimer le fichier avec l’extension <code>.qmd</code> créé</li>
-<li>Récupérer le contenu du modèle de site web sur <a href="https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/tree/appli18/index.qmd">cette page</a> et mettre dans un fichier <code>index.qmd</code></li>
-<li>Modifier fichier <code>train.py</code> à partir de <a href="https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/tree/appli18/train.py">cette page</a></li>
-<li>En ligne de commande, faire <code>quarto preview</code> et observer le site web généré en local</li>
-<li>Créer une branche <code>gh-pages</code> à partir du contenu de <a href="https://quarto.org/docs/publishing/github-pages.html">cette page</a></li>
-<li>Créer un fichier <code>.github/workflows/website.yaml</code> avec le contenu de <a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-website/master/.github/workflows/publish.yaml">ce fichier</a></li>
+<li>Installer <code>Quarto</code> dans votre environnement local (s’il n’est pas déjà disponible) ;</li>
+<li>Dans le projet, utiliser la commande <code>quarto create-project</code> pour initialiser le projet <code>Quarto</code> ;</li>
+<li>Supprimer le fichier automatiquement généré avec l’extension <code>.qmd</code> ;</li>
+<li>Récupérer le contenu du modèle de fichier <code>Quarto Markdown</code> <a href="https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/tree/appli19/index.qmd">cette page</a>. Celui-ci permet de générer la page d’accueil de notre site. Enregistrer dans un fichier nommé <code>index.qmd</code></li>
 </ul>
+<p>On teste ensuite la compilation en local du fichier:</p>
+<ul>
+<li>Modifier le fichier <code>train.py</code> à partir de <a href="https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/tree/appli19/train.py">cette page</a> pour être en mesure de compiler le fichier</li>
+<li>Exécuter le fichier <code>train.py</code></li>
+<li>En ligne de commande, faire <code>quarto preview</code> (ajouter les arguments <code>--port 5000 --host 0.0.0.0</code> si vous passez par le <code>SSPCloud</code>)</li>
+<li>Observer le site web généré en local</li>
+</ul>
+<p>Enfin, on va construire et déployer automatiquement ce site web grâce au combo <code>Github Actions</code> et <code>Github Pages</code>:</p>
+<ul>
+<li>Créer une branche <code>gh-pages</code> à partir du contenu de <a href="https://quarto.org/docs/publishing/github-pages.html">cette page</a></li>
+<li>Créer un fichier <code>.github/workflows/website.yaml</code> avec le contenu de <a href="https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/tree/appli19/.github/workflows/publish.yaml">ce fichier</a></li>
+</ul>
+</div>
+</div>
+<div class="callout-note callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>On doit dans cette application modifier le fichier <code>train.py</code> pour enregistrer en local une duplication du modèle de <em>machine learning</em> et de l’ensemble d’entraînement car pour ces deux éléments on n’est pas allé au bout de la démarche MLOps d’enregistrement dans un <em>model registry</em> et un <em>feature store</em>.</p>
+<p>Dans la prochaine version de ce cours, qui intègrera <code>MLFlow</code>, on aura une démarche plus propre car on utilisera bien le modèle de production et le jeu d’entrainement associé.</p>
+</div>
+</div>
+<div class="callout-caution callout callout-style-default callout-captioned">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-54-contents" aria-controls="callout-54" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-caption-container flex-fill">
+Checkpoint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-54" class="callout-54-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<pre class="shell"><code>git checkout appli18</code></pre>
+</div>
 </div>
 </div>
 
