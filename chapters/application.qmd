@@ -1714,95 +1714,7 @@ git checkout appli16
 <summary>
 Fichier `train.py`
 </summary>
-```python
-"""
-Prediction de la survie d'un individu sur le Titanic
-"""
-
-# GESTION ENVIRONNEMENT --------------------------------
-
-import sys
-import os
-from joblib import dump
-from sklearn.metrics import confusion_matrix
-import src.data.import_data as imp
-import src.features.build_features as bf
-import src.models.train_evaluate as te
-
-
-# PARAMETRES -------------------------------
-
-config = imp.import_yaml_config("configuration/config.yaml")
-path_secrets_yaml = "configuration/secrets.yaml"
-if os.path.exists(path_secrets_yaml):
-    secrets = imp.import_yaml_config(path_secrets_yaml)
-    API_TOKEN = secrets["api"]["token"]
-
-# Number trees as command line argument
-N_TREES = int(sys.argv[1]) if len(sys.argv) == 2 else 20
-
-
-LOCATION_TRAIN = config["path"]["train"]
-LOCATION_TEST = config["path"]["test"]
-TEST_FRACTION = config["model"]["test_fraction"]
-
-
-# FEATURE ENGINEERING --------------------------------
-
-TrainingData = imp.import_data(LOCATION_TRAIN)
-TestData = imp.import_data(LOCATION_TEST)
-
-# Create a 'Title' variable
-TrainingData = imp.create_variable_title(TrainingData)
-TestData = imp.create_variable_title(TestData)
-
-
-## IMPUTATION DES VARIABLES ================
-
-
-# Making a new feature hasCabin which is 1 if cabin is available else 0
-TrainingData = bf.check_has_cabin(TrainingData)
-TestData = bf.check_has_cabin(TestData)
-
-TrainingData = bf.ticket_length(TrainingData)
-TestData = bf.ticket_length(TestData)
-
-
-train, test = te.split_train_test_titanic(
-    TrainingData,
-    fraction_test=TEST_FRACTION
-    )
-
-
-# MODELISATION: RANDOM FOREST ----------------------------
-
-pipe = te.random_forest_titanic(
-    data=TrainingData, fraction_test=TEST_FRACTION, n_trees=N_TREES
-)
-
-pipe.fit(train.drop("Survived", axis="columns"), train["Survived"])
-
-
-# EVALUATE ----------------------------
-
-rdmf_score = pipe.score(test.drop("Survived", axis="columns"), test["Survived"])
-print(
-    f"{round(rdmf_score * 100)} % de bonnes réponses sur les données de test pour validation \
-            (résultat qu'on attendrait si on soumettait notre prédiction \
-                sur le dataset de test.csv)"
-)
-
-print("matrice de confusion")
-print(
-    confusion_matrix(
-        test["Survived"], pipe.predict(test.drop("Survived", axis="columns"))
-    )
-)
-
-
-# model export
-dump(pipe, 'model.joblib')
-```
+Récupérer le contenu sur [cette page](https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/tree/appli17/train.py)
 </details>
 
 - Créer le fichier `main.py` permettant d'initialiser l'API:
@@ -1811,75 +1723,7 @@ dump(pipe, 'model.joblib')
 <summary>
 Fichier `main.py`
 </summary>
-```python
-from enum import IntEnum, Enum
-from typing import Optional
-
-from fastapi import FastAPI
-from fastapi.encoders import jsonable_encoder
-from pydantic import BaseModel
-from joblib import load
-
-import pandas as pd
-
-model = load('model.joblib')
-
-app = FastAPI(
-    title="Prédiction de survie sur le Titanic",
-    description=
-    "Application de prédiction de survie sur le Titanic 🚢 <br>Une version par API pour faciliter la réutilisation du modèle 🚀" +\
-        "<br><br><img src=\"https://media.vogue.fr/photos/5faac06d39c5194ff9752ec9/1:1/w_2404,h_2404,c_limit/076_CHL_126884.jpg\" width=\"200\">"
-    )
-
-
-@app.get("/", tags=["Welcome"])
-def show_welcome_page():
-    """
-    Show welcome page with model name and version.
-    """
-
-    return {
-        "Message": "API de prédiction de survie sur le Titanic",
-        "Model_name": 'Titanic ML',
-        "Model_version": "0.1",
-    }
-
-
-@app.get("/predict", tags=["Predict"])
-async def predict(
-    pclass: int = 3,
-    sex: str = "female",
-    age: float = 29.0,
-    sib_sp: int = 1,
-    parch: int = 1,
-    fare: float = 16.5,
-    embarked: str = "S",
-    title: str = "Miss.",
-    has_cabin: int = 1,
-    ticket_len: int = 7
-) -> str :
-    """
-    """
-
-    df = pd.DataFrame(
-        {
-            "Pclass": [pclass],
-            "Sex": [sex],
-            "Age": [age],
-            "SibSp": [sib_sp],
-            "parch": [parch],
-            "Fare": [fare],
-            "Embarked": [embarked],
-            "Title": [title],
-            "hasCabin": [has_cabin],
-            "Ticket_Len": [ticket_len] 
-        }
-    )
-
-    prediction = "Survived 🎉" if int(model.predict(df)) == 1 else "Dead ⚰️"
-
-    return prediction
-```
+Récupérer le contenu sur [cette page](https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/tree/appli17/main.py)
 </details>
 
 - Exécuter `train.py` pour stocker en local le modèle entraîné
@@ -1919,23 +1763,67 @@ Pour cela, on va déployer un site web statique qui permet de visualiser
 rapidement les résultats du modèle.
 
 On propose de créer un site web qui permet de comprendre, avec l'appui
-des valeurs de Shapley, les facteurs qui auraient pu nous mettre la puce
+des [valeurs de Shapley](https://christophm.github.io/interpretable-ml-book/shapley.html),
+les facteurs qui auraient pu nous mettre la puce
 à l'oreille sur les destins de Jake et de Rose. 
+
+Pour faire ce site web,
+on va utiliser `Quarto` et déployer sur `Github Pages`.
+Des étapes préliminaires sont réalisées en `Python` 
+puis l'affichage interactif 
+sera contrôlé par du `JavaScript` grâce
+à des [blocs `Observable`](https://quarto.org/docs/interactive/ojs/). 
 
 
 ::: {.callout-tip}
 
-## Application 18: Déploiement automatisé d'un site web
+## Application 19: Déploiement automatisé d'un site web
 
-Pour cela, on va utiliser `Quarto` et déployer sur `Github pages`.
+Dans un premier temps, on va créer un projet `Quarto`
+au sein de notre dépôt: 
 
-- Installer `quarto`
-- Utiliser `quarto create-project` et supprimer le fichier avec l'extension `.qmd` créé
-- Récupérer le contenu du modèle de site web sur [cette page](https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/tree/appli18/index.qmd) et mettre dans un fichier `index.qmd`
-- Modifier fichier `train.py` à partir de [cette page](https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/tree/appli18/train.py)
-- En ligne de commande, faire `quarto preview` et observer le site web généré en local
+- Installer `Quarto` dans votre environnement local (s'il n'est pas déjà disponible) ;
+- Dans le projet, utiliser la commande `quarto create-project` pour initialiser le projet `Quarto` ;
+- Supprimer le fichier automatiquement généré avec l'extension `.qmd` ;
+- Récupérer le contenu du modèle de fichier `Quarto Markdown` [cette page](https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/tree/appli19/index.qmd). Celui-ci permet de générer la page d'accueil de notre site. Enregistrer dans un fichier nommé `index.qmd`
+
+On teste ensuite la compilation en local du fichier:
+
+- Modifier le fichier `train.py` à partir de [cette page](https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/tree/appli19/train.py) pour être en mesure de compiler le fichier 
+- Exécuter le fichier `train.py`
+- En ligne de commande, faire `quarto preview` (ajouter les arguments `--port 5000 --host 0.0.0.0` si vous passez par le `SSPCloud`)
+- Observer le site web généré en local
+
+Enfin, on va construire et déployer automatiquement ce site web grâce au
+combo `Github Actions` et `Github Pages`:
+
 - Créer une branche `gh-pages` à partir du contenu de [cette page](https://quarto.org/docs/publishing/github-pages.html)
-- Créer un fichier `.github/workflows/website.yaml` avec le contenu de [ce fichier](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-website/master/.github/workflows/publish.yaml)
+- Créer un fichier `.github/workflows/website.yaml` avec le contenu de [ce fichier](https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/tree/appli19/.github/workflows/publish.yaml)
 
+:::
+
+::: {.callout-note}
+
+On doit dans cette application modifier le fichier `train.py`
+pour enregistrer en local une duplication du modèle
+de _machine learning_ et de l'ensemble d'entraînement
+car pour ces deux éléments
+on n'est pas allé au bout de la démarche MLOps
+d'enregistrement dans un _model registry_ et un
+_feature store_.
+
+Dans la prochaine version de ce cours, qui
+intègrera `MLFlow`, on aura une démarche plus 
+propre car on utilisera bien le modèle de production
+et le jeu d'entrainement associé. 
+:::
+
+
+::: {.callout-caution collapse="true"}
+## Checkpoint
+
+```shell
+git checkout appli18
+```
 
 :::
