@@ -19,13 +19,98 @@ La diversité des réponses qui peuvent être apportées à chacun de ces choix 
 
 Par rapport au précédent, ce chapitre est assez technique et repose sur une vaste palette d'outils. Notre propos n'est cependant pas de dire que le *data scientist* doit maîtriser l'ensemble des concepts et outils présentés. Au contraire : avec la complexification des projets et des infrastructures, un ensemble de professions ont émergé — *date engineer*, *dev ops*, *machine learning engineer*, etc. — dont les rôles sont plus spécifiquement centrés sur l'industrialisation des projets. Néanmoins, nous sommes convaincus qu'il est essentiel que le *data scientist* possède des notions sur le sujet afin de pouvoir jouer le **rôle d'interface** entre le métier et les équipes techniques. Ce chapitre est une tentative de condenser ces différentes notions sous une forme la plus accessible possible.
 
+Ce chapitre nous amènera à explorer plusieurs écosystèmes, pour lesquels 
+on retrouve quelques _buzz-words_ dont voici les définitions :
+
+| Terme | Définition|
+|------|--------|
+| [`DevOps`](https://fr.wikipedia.org/wiki/Devops) | mouvement en ingénierie informatique et une pratique technique visant à l'unification du développement logiciel (dev) et de l'administration des infrastructures informatiques (ops) |
+| [`MLOps`](https://fr.wikipedia.org/wiki/MLOps) | ensemble de pratiques qui vise à déployer et maintenir des modèles de machine learning en production de manière fiable et efficace |
+| `CI/CD` | combinaison des pratiques d'intégration continue et de livraison continue ou de déploiement continu |
+
+
 # L'approche CI/CD
+
+
+## Définition
+
+> L’intégration continue est un ensemble de pratiques utilisées en génie logiciel consistant à vérifier à chaque modification de code source que le résultat des modifications ne produit pas de régression dans l’application développée. […] Elle permet d’automatiser l’exécution des suites de tests et de voir l’évolution du développement du logiciel.
+
+> La livraison continue est une approche d’ingénierie logicielle dans laquelle les équipes produisent des logiciels dans des cycles courts, ce qui permet de le mettre à disposition à n’importe quel moment. Le but est de construire, tester et diffuser un logiciel plus rapidement.
+
+![](/cicd_exemple.png)
+
+L'approche CI/CD garantit une automatisation et une surveillance continues
+tout au long du cycle de vie d'un projet. 
+
+Cela présente de nombreux avantages:
+
+- on peut anticiper les contraintes de la mise en production grâce à des environnements
+normalisés partant d'image docker standardisées
+- on peut tester les changements apportés à un livrable par un nouveau prototype 
+- on peut déterminer très rapidement l'introduction de bugs dans un projet.
+
 
 ## Intégration continue
 
 - Automatisation des phases de build et de test (data validation, model validation..)
 - Mise à disposition des artifacts (forme "morte")
-- Implémentation : GitHub Actions
+
+### Mise en oeuvre : `GitHub Actions`
+
+Les actions `Github` sont un ensemble de règles qui se suivent au 
+format `YAML`. Cela permet de définir différentes étapes du processus
+avec, pour chaque étape, des éléments de configuration. 
+Elles permettent de partir d'une configuration minimale
+(ici une machine `ubuntu`) et d'appliquer des instructions à la suite,
+par étape. 
+
+<details>
+<summary>Exemple d'action impliquant exclusivement de l'intégration continue ([application 14](https://linogaliana.github.io/ensae-reproductibilite-website/chapters/application.html#etape-1-mise-en-place-de-tests-automatis%C3%A9s))</summary>
+```yaml
+name: Python package
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint
+          pip install -r requirements.txt
+      - name: Lint
+        run: |
+          pylint src --fail-under=6
+      - name: Test workflow
+        run: |
+          python main.py
+```
+</details>
+
+
+::: {.callout-note}
+L'intégration continue est aussi au coeur des fonctionnalités
+de `Gitlab`. Il s'agissait même d'une fonctionnalité disponible
+des années avant `Github`. 
+
+La syntaxe est différente mais le principe est le même : on part
+d'une machine à la configuration minimale depuis des serveurs
+mis à disposition et on teste la reproductibilité de son projet.  
+:::
+
 
 ## Déploiement
 
@@ -38,6 +123,44 @@ Par rapport au précédent, ce chapitre est assez technique et repose sur une va
 
 - Modélisation d'un pipeline data sous forme de DAG
 - Implémentation : argo-workflow
+
+Une chaine de production implique plusieurs étapes qui peuvent éventuellement 
+nécessiter plusieurs langages. Ces étapes peuvent être vues comme une suite de 
+transformations.
+
+La représentation de ces étapes peut être faite à l'aide des diagrammes
+acycliques dirigés (DAG):
+
+![](https://miro.medium.com/max/1400/1*grWvT-3jUcrnbTrsVtRHAg.png)
+
+Un _workflow_ complet sera ainsi reproductible si on peut, en ayant accès
+aux _inputs_ et à l'ensemble des règles de transformation, reproduire
+exactement les outputs. 
+Si les inputs ou le code changent, on peut être en mesure de mettre à jour
+les outputs, si possible sans faire retourner les parties du projet non
+concernés. 
+
+Une première manière de développer est l'approche manuelle, qui est une tâche
+digne de Sisyphe:
+
+1. Ecriture du code
+2. Exécution du code jusqu'à sa fin
+3. Découverte d'une erreur ou mise à jour du code ou des données
+4. Relance le code dans son ensemble
+
+Pour éviter ce cycle interminable, on est tenté d'écrire des bases
+intermédiaires et de ne faire tourner qu'une partie du code. 
+Cette approche, si elle a l'avantage de faire gagner du temps, est 
+néanmoins dangereuse car on peut facilement oublier de mettre à jour
+une base intermédiaire qui a changé ou au contraire refaire tourner
+une partie du code qui n'a pas été mise à jour. 
+
+Il existe des méthodes plus fiables pour éviter ces gestes manuels. 
+Celles-ci sont inspirées de [GNU Make](https://www.gnu.org/software/make/)
+et consistent à créer le chemin de dépendance de la chaine de production 
+(lister l'environnement, les inputs et les outputs à produire), à déterminer
+les chemins affectés par un changement de code ou de données pour
+ne faire tourner à nouveau que les étapes nécessaires. 
 
 # Application au ML : le MLOps
 
