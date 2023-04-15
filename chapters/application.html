@@ -566,10 +566,7 @@ Application 4: adoption des standards de programmation fonctionnelle
 </ul></li>
 <li>Créer une fonction qui réalise le <em>split train/test</em> de validation en fonction d’un paramètre représentant la proportion de l’échantillon de test.</li>
 <li>Créer une fonction qui entraîne et évalue un classifieur <code>RandomForest</code>, et qui prend en paramètre le nombre d’arbres (<code>n_estimators</code>). La fonction doit imprimer à la fin la performance obtenue et la matrice de confusion.</li>
-<li>Déplacer toutes les fonctions ensemble, en début de script. <!----- plus tard ?
-- Mettre ces fonctions dans un module `functions.py`
-- importer les fonctions via le module dans le notebook et vérifier que l'on retrouve bien les différents résultats en utilisant les fonctions.
--------></li>
+<li>Déplacer toutes les fonctions ensemble, en début de script.</li>
 </ul>
 </div>
 </div>
@@ -619,6 +616,12 @@ Checkpoint
 <section id="partie2" class="level1">
 <h1>Partie 2 : adoption d’une structure modulaire</h1>
 <p>Dans la partie précédente, on a appliqué de manière incrémentale de nombreuses bonnes pratiques vues tout au long du cours. Ce faisant, on s’est déjà considérablement rapprochés d’un possible partage du code : celui-ci est lisible et intelligible. Le code est proprement versionné sur un dépôt <code>GitHub</code>.</p>
+<details>
+<summary>
+Illustration de l’état actuel du projet
+</summary>
+<img src="../schema_post_appli4.png" class="img-fluid">
+</details>
 <p>Néanmoins, la structure du projet n’est pas encore normalisée. De plus, l’adoption d’une structure plus modulaire facilitera la compréhension de la chaine de traitement.</p>
 <section id="etape-1-modularisation" class="level2">
 <h2 class="anchored" data-anchor-id="etape-1-modularisation">Etape 1 : modularisation</h2>
@@ -1116,25 +1119,18 @@ Checkpoint
 </div>
 </div>
 </div>
-<!-----
-## Etape 9 : ouvrir une *pull request* sur le dépôt du projet
-
-Enfin terminé ! Enfin presque... On s'est donné beaucoup de mal à nettoyer ce dépôt et le mettre aux standards, autant valoriser ce travail. On va pour cela faire une *pull request* sur le [dépôt du projet initial](https://github.com/avouacr/ensae-reproductibilite-projet), c'est à dire proposer à l'auteur d'intégrer tous les changements que vous avez effectué en committant à chaque étape. 
-
-Suivre la procédure décrite dans la [documentation GitHub](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork) pour créer une *pull request* à partir de votre *fork*. Pour la branche *upstream* (le dépôt cible), on va choisir `master`. Par contre, pour la branche locale (celle sur votre dépôt), on va choisir la branche `nettoyage`.
-
-Si tout s'est bien passé, vous devriez à présent voir votre *pull request* sur le dépôt cible ([ici](https://github.com/avouacr/ensae-reproductibilite-projet/pulls)). Bravo, vous venez de faire votre première contribution à l'open source !
-
-{{% box status="warning" title="Warning" icon="fa fa-exclamation-triangle" %}}
-Faire une *pull request* via la branche `master` d’un *fork* est très mal vu. En effet, il faut souvent faire des contorsionnements pour réussir à faire coïncider deux histoires qui n’ont pas de raison de coïncider. On s'évite beaucoup de problèmes en prenant l'habitude de toujours faire ses *pull requests* à partir d'une autre branche que `master`.
-{{% /box %}}
------------------->
 </section>
 </section>
 <section id="partie3" class="level1">
 <h1>Partie 3 : construction d’un projet portable et reproductible</h1>
 <p>Dans la partie précédente, on a appliqué de manière incrémentale de nombreuses bonnes pratiques vues dans les chapitres <a href="../chapters/code-quality.html">Qualité du code</a> et <a href="../chapters/projects-architecture.html">Structure des projets</a> tout au long du cours.</p>
 <p>Ce faisant, on s’est déjà considérablement rapprochés d’une possible mise en production : le code est lisible, la structure du projet est normalisée et évolutive, et le code est proprement versionné sur un dépôt <code>GitHub</code>.</p>
+<details>
+<summary>
+Illustration de l’état actuel du projet
+</summary>
+<img src="../schema_post_appli8.png" class="img-fluid">
+</details>
 <p>A présent, nous avons une version du projet qui est largement partageable. Du moins en théorie, car la pratique est souvent plus compliquée : il y a fort à parier que si vous essayez d’exécuter votre projet sur un autre environnement (typiquement, votre ordinateur personnel), les choses ne se passent pas du tout comme attendu. Cela signifie qu’<strong>en l’état, le projet n’est pas portable : il n’est pas possible, sans modifications coûteuses, de l’exécuter dans un environnement différent de celui dans lequel il a été développé</strong>.</p>
 <p>Dans cette seconde partie, nous allons voir comment <strong>normaliser l’environnement d’exécution afin de produire un projet portable</strong>. Autrement dit, nous n’allons plus nous contenter de modularité mais allons rechercher la portabilité. On sera alors tout proche de pouvoir mettre le projet en production. On progressera dans l’échelle de la reproductibilité de la manière suivante:</p>
 <ul>
