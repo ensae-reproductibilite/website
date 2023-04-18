@@ -1580,6 +1580,7 @@ actions suivantes:
 ## Application 15b: automatisation de l'image `Docker`
 
 - En s'inspirant de ce [_template_](https://github.com/marketplace/actions/build-and-push-docker-images), ajouter un nouveau job `docker` dans le fichier `ci.yaml` qui va *build* et *push* l'image sur le `DockerHub`
+- Définir le job `test` comme prérequis du job `docker` en vous référant à cette [documentation](https://docs.github.com/en/actions/using-jobs/using-jobs-in-a-workflow#defining-prerequisite-jobs)
 - Changer le tag à la fin pour mettre `<username>/application-correction:latest`
 où `username` est le nom d'utilisateur sur `DockerHub`;
 
@@ -1613,6 +1614,7 @@ jobs:
           python main.py
   docker:
     runs-on: ubuntu-latest
+    needs: test
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -1749,14 +1751,14 @@ git checkout appli16
 <summary>
 Fichier `train.py`
 </summary>
-Récupérer le contenu sur [cette page](https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/tree/appli17/train.py)
+Récupérer le contenu sur [cette page](https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/appli17/train.py)
 </details>
 
-- Créer le fichier `main.py` permettant d'initialiser l'API:
+- Créer le fichier `api.py` permettant d'initialiser l'API:
 
 <details>
 <summary>
-Fichier `main.py`
+Fichier `api.py`
 </summary>
 Récupérer le contenu sur [cette page](https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/tree/appli17/main.py)
 </details>
@@ -1766,7 +1768,7 @@ Récupérer le contenu sur [cette page](https://raw.githubusercontent.com/ensae-
 - Déployer en local l'API avec la commande
 
 ```shell
-uvicorn main:app --reload --host "0.0.0.0" --port 5000
+uvicorn api:app --reload --host "0.0.0.0" --port 5000
 ```
 
 - A partir du `README` du service, se rendre sur l'URL de déploiement, 
