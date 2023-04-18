@@ -1739,7 +1739,7 @@ git checkout appli16
 
 ::: {.callout-tip}
 
-## Application 17: Mise à disposition sous forme d'API
+## Application 17: Mise à disposition sous forme d'API locale
 
 - Créer un nouveau service `SSPCloud` en paramétrant dans l'onglet
 `Networking` le port 5000 ;
@@ -1784,6 +1784,63 @@ et depuis `Python` avec `requests` (`requests.get(url).json()`)
 
 ```shell
 git checkout appli17
+```
+
+:::
+
+## Etape 3: déployer l'API
+
+A ce stade, nous avons déployé l'API seulement localement, dans le cadre d'un service. Ce mode de déploiement est très pratique pour la phase de développement, afin de s'assurer que l'API fonctionne comme attendu. A présent, il est temps de passer à l'étape de déploiement, qui permettra à notre API d'être accessible via une URL sur le web, et donc aux utilisateurs potentiels de la requêter. Pour se faire, on va utiliser les possibilités offertes par `Kubernetes`, sur lequel est basé le [SSP Cloud](https://datalab.sspcloud.fr).
+
+::: {.callout-tip}
+
+## Application 18: Dockeriser l'API
+
+- Modifier le `Dockerfile` pour tenir compte des changements dans les noms de fichier effecutés dans l'application précédente
+- Créer un script `run.sh` à la racine du projet qui lance le script `train.py` puis déploie localement l'API 
+
+<details>
+<summary>
+Fichier `run.sh`
+</summary>
+```shell
+#/bin/bash
+
+python3 train.py
+uvicorn api:app --reload --host "0.0.0.0" --port 5000
+```
+</details>
+
+- Donner au script `run.sh` des permissions d'exécution : `chmod +x run.sh`
+
+- Changer l'instruction `CMD` du `Dockerfile` pour exécuter le script `run.sh` au lancement du conteneur
+
+:::
+
+::: {.callout-caution collapse="true"}
+## Checkpoint
+
+```shell
+git checkout appli18
+```
+
+- *Commit* et *push* les changements
+
+- Une fois le CI terminé, récupérer la nouvelle image dans l'environnement de test et vérifier que l'API se déploie correctement
+
+:::
+
+## Application 18: Déployer l'API
+
+
+
+:::
+
+::: {.callout-caution collapse="true"}
+## Checkpoint
+
+```shell
+git checkout appli18
 ```
 
 :::
