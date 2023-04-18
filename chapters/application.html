@@ -1675,6 +1675,7 @@ Application 15b: automatisation de l’image <code>Docker</code>
 <div class="callout-body-container callout-body">
 <ul>
 <li>En s’inspirant de ce <a href="https://github.com/marketplace/actions/build-and-push-docker-images"><em>template</em></a>, ajouter un nouveau job <code>docker</code> dans le fichier <code>ci.yaml</code> qui va <em>build</em> et <em>push</em> l’image sur le <code>DockerHub</code></li>
+<li>Définir le job <code>test</code> comme prérequis du job <code>docker</code> en vous référant à cette <a href="https://docs.github.com/en/actions/using-jobs/using-jobs-in-a-workflow#defining-prerequisite-jobs">documentation</a></li>
 <li>Changer le tag à la fin pour mettre <code>&lt;username&gt;/application-correction:latest</code> où <code>username</code> est le nom d’utilisateur sur <code>DockerHub</code>;</li>
 </ul>
 <details>
@@ -1707,21 +1708,22 @@ Fichier <code>.github/workflows/ci.yaml</code> obtenu
 <span id="cb56-24"><a href="#cb56-24" aria-hidden="true" tabindex="-1"></a>          python main.py</span>
 <span id="cb56-25"><a href="#cb56-25" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">docker</span><span class="kw">:</span></span>
 <span id="cb56-26"><a href="#cb56-26" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">runs-on</span><span class="kw">:</span><span class="at"> ubuntu-latest</span></span>
-<span id="cb56-27"><a href="#cb56-27" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
-<span id="cb56-28"><a href="#cb56-28" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Set up QEMU</span></span>
-<span id="cb56-29"><a href="#cb56-29" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> docker/setup-qemu-action@v2</span></span>
-<span id="cb56-30"><a href="#cb56-30" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Set up Docker Buildx</span></span>
-<span id="cb56-31"><a href="#cb56-31" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> docker/setup-buildx-action@v2</span></span>
-<span id="cb56-32"><a href="#cb56-32" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Login to Docker Hub</span></span>
-<span id="cb56-33"><a href="#cb56-33" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> docker/login-action@v2</span></span>
-<span id="cb56-34"><a href="#cb56-34" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
-<span id="cb56-35"><a href="#cb56-35" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">username</span><span class="kw">:</span><span class="at"> ${{ secrets.DOCKERHUB_USERNAME }}</span></span>
-<span id="cb56-36"><a href="#cb56-36" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">password</span><span class="kw">:</span><span class="at"> ${{ secrets.DOCKERHUB_TOKEN }}</span></span>
-<span id="cb56-37"><a href="#cb56-37" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Build and push</span></span>
-<span id="cb56-38"><a href="#cb56-38" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> docker/build-push-action@v4</span></span>
-<span id="cb56-39"><a href="#cb56-39" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
-<span id="cb56-40"><a href="#cb56-40" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">push</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
-<span id="cb56-41"><a href="#cb56-41" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">tags</span><span class="kw">:</span><span class="at"> linogaliana/application-correction:latest</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb56-27"><a href="#cb56-27" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">needs</span><span class="kw">:</span><span class="at"> test</span></span>
+<span id="cb56-28"><a href="#cb56-28" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
+<span id="cb56-29"><a href="#cb56-29" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Set up QEMU</span></span>
+<span id="cb56-30"><a href="#cb56-30" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> docker/setup-qemu-action@v2</span></span>
+<span id="cb56-31"><a href="#cb56-31" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Set up Docker Buildx</span></span>
+<span id="cb56-32"><a href="#cb56-32" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> docker/setup-buildx-action@v2</span></span>
+<span id="cb56-33"><a href="#cb56-33" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Login to Docker Hub</span></span>
+<span id="cb56-34"><a href="#cb56-34" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> docker/login-action@v2</span></span>
+<span id="cb56-35"><a href="#cb56-35" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
+<span id="cb56-36"><a href="#cb56-36" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">username</span><span class="kw">:</span><span class="at"> ${{ secrets.DOCKERHUB_USERNAME }}</span></span>
+<span id="cb56-37"><a href="#cb56-37" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">password</span><span class="kw">:</span><span class="at"> ${{ secrets.DOCKERHUB_TOKEN }}</span></span>
+<span id="cb56-38"><a href="#cb56-38" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Build and push</span></span>
+<span id="cb56-39"><a href="#cb56-39" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> docker/build-push-action@v4</span></span>
+<span id="cb56-40"><a href="#cb56-40" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
+<span id="cb56-41"><a href="#cb56-41" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">push</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb56-42"><a href="#cb56-42" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">tags</span><span class="kw">:</span><span class="at"> linogaliana/application-correction:latest</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <ul>
 <li>Faire un <code>commit</code> et un <code>push</code> de ces fichiers</li>
@@ -1853,23 +1855,23 @@ Application 17: Mise à disposition sous forme d’API
 <summary>
 Fichier <code>train.py</code>
 </summary>
-Récupérer le contenu sur <a href="https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/tree/appli17/train.py">cette page</a>
+Récupérer le contenu sur <a href="https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/appli17/train.py">cette page</a>
 </details>
 <ul>
-<li>Créer le fichier <code>main.py</code> permettant d’initialiser l’API:</li>
+<li>Créer le fichier <code>api.py</code> permettant d’initialiser l’API:</li>
 </ul>
 <details>
 <summary>
-Fichier <code>main.py</code>
+Fichier <code>api.py</code>
 </summary>
-Récupérer le contenu sur <a href="https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/tree/appli17/main.py">cette page</a>
+Récupérer le contenu sur <a href="https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/appli17/api.py">cette page</a>
 </details>
 <ul>
 <li>Exécuter <code>train.py</code> pour stocker en local le modèle entraîné</li>
 <li>Ajouter <code>model.joblib</code> au <code>.gitignore</code></li>
 <li>Déployer en local l’API avec la commande</li>
 </ul>
-<pre class="shell"><code>uvicorn main:app --reload --host "0.0.0.0" --port 5000</code></pre>
+<pre class="shell"><code>uvicorn api:app --reload --host "0.0.0.0" --port 5000</code></pre>
 <ul>
 <li>A partir du <code>README</code> du service, se rendre sur l’URL de déploiement, ajouter <code>/docs/</code> à celui-ci et observer la documentation de l’API</li>
 <li>Se servir de la documentation pour tester les requêtes <code>/predict</code></li>
