@@ -1797,12 +1797,12 @@ A ce stade, nous avons déployé l'API seulement localement, dans le cadre d'un 
 ## Application 18: Dockeriser l'API
 
 - Modifier le `Dockerfile` pour tenir compte des changements dans les noms de fichier effecutés dans l'application précédente
+
 - Créer un script `run.sh` à la racine du projet qui lance le script `train.py` puis déploie localement l'API 
 
 <details>
-<summary>
-Fichier `run.sh`
-</summary>
+<summary>Fichier `run.sh`</summary>
+
 ```shell
 #/bin/bash
 
@@ -1815,6 +1815,10 @@ uvicorn api:app --reload --host "0.0.0.0" --port 5000
 
 - Changer l'instruction `CMD` du `Dockerfile` pour exécuter le script `run.sh` au lancement du conteneur
 
+- *Commit* et *push* les changements
+
+- Une fois le CI terminé, récupérer la nouvelle image dans l'environnement de test et vérifier que l'API se déploie correctement
+
 :::
 
 ::: {.callout-caution collapse="true"}
@@ -1823,16 +1827,97 @@ uvicorn api:app --reload --host "0.0.0.0" --port 5000
 ```shell
 git checkout appli18
 ```
-
-- *Commit* et *push* les changements
-
-- Une fois le CI terminé, récupérer la nouvelle image dans l'environnement de test et vérifier que l'API se déploie correctement
-
 :::
 
-## Application 18: Déployer l'API
 
+## Application 19: Déployer l'API
 
+- Créer un dossier `deployment` à la racine du projet qui va contenir les fichiers de configuration nécessaires pour déployer sur un cluster `Kubernetes`
+
+- En vous inspirant de la [documentation](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment), y ajouter un premier fichier `deployment.yaml` qui va spécifier la configuration du *Pod* à lancer sur le cluster
+
+<details>
+<summary>Fichier `deployment/deployment.yaml`</summary>
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: titanic-deployment
+  labels:
+    app: titanic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: titanic
+  template:
+    metadata:
+      labels:
+        app: titanic
+    spec:
+      containers:
+      - name: titanic
+        image: linogaliana/application-correction:latest
+        ports:
+        - containerPort: 5000
+```
+</details>
+
+- En vous inspirant de la [documentation](https://kubernetes.io/fr/docs/concepts/services-networking/service/#d%C3%A9finition-d-un-service), y ajouter un second fichier `service.yaml` qui va créer une ressource `Service` permettant de donner une identité fixe au `Pod` précédemment créé au sein du cluster
+
+<details>
+<summary>Fichier `deployment/service.yaml`</summary>
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: titanic-service
+spec:
+  selector:
+    app: titanic
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+```
+</details>
+
+- En vous inspirant de la [documentation](https://kubernetes.io/docs/concepts/services-networking/ingress/#the-ingress-resource), y ajouter un troisième fichier `ingress.yaml` qui va créer une ressource `Ingress` permettant d'exposer le service via une URL en dehors du cluster
+
+<details>
+<summary>Fichier `deployment/ingress.yaml`</summary>
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: titanic-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - titanic.kub.sspcloud.fr
+  rules:
+  - host: titanic.kub.sspcloud.fr
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: titanic-service
+            port:
+              number: 80
+```
+</details>
+
+- Appliquer ces fichiers de configuration sur le cluster : `kubectl apply -f deployement/`
+
+- Si tout a correctement fonctionné, vous devriez pouvoir accéder à l'API à l'URL spécifiée dans le fichier `deployment/ingress.yaml`
 
 :::
 
@@ -1840,7 +1925,7 @@ git checkout appli18
 ## Checkpoint
 
 ```shell
-git checkout appli18
+git checkout appli19
 ```
 
 :::
@@ -1917,7 +2002,7 @@ et le jeu d'entrainement associé.
 ## Checkpoint
 
 ```shell
-git checkout appli18
+git checkout appli20
 ```
 
 :::
