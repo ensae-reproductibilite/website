@@ -6,8 +6,8 @@
 Cours sur les bonnes pratiques et la mise en production de projets _data science_
 
 Contenu pour reproduire le site web 
-https://ensae-reproductibilite.netlify.app/
+https://ensae-reproductibilite.github.io/website/
 
-Les slides associées: https://ensae-reproductibilite.github.io/slides/#/title-slide
+Les slides associées: https://ensae-reproductibilite.github.io/website/
 
 
