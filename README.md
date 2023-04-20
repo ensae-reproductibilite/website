@@ -8,6 +8,6 @@ Cours sur les bonnes pratiques et la mise en production de projets _data science
 Contenu pour reproduire le site web 
 https://ensae-reproductibilite.github.io/website/
 
-Les slides associées: https://ensae-reproductibilite.github.io/website/
+Les slides associées: https://ensae-reproductibilite.github.io/slides/#/title-slide
 
 
