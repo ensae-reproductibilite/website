@@ -2,13 +2,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.353">
+<meta name="generator" content="quarto-1.3.450">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Romain Avouac et Lino Galiana">
+<meta name="description" content="Une application fil rouge pour illustrer l’intérêt d’appliquer graduellement les bonnes pratiques dans une optique de mise en production d’une application de data science.">
 
-<title>Mise en production des projets de data science - Appliquer pas à pas les concepts étudiés à un projet de data science</title>
+<title>Mise en production des projets de data science - Application</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -90,7 +91,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
 
@@ -152,9 +154,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Application</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../chapters/evaluation.html" rel="" target="">
+    <a class="nav-link" href="../chapters/evaluation.qmd" rel="" target="">
  <span class="menu-text">Evaluation</span></a>
   </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-github" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+      <i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-bi-github">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/website" rel="" target="">
+ <span class="dropdown-text">Site web</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/slides" rel="" target="">
+ <span class="dropdown-text">Slides</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/application-correction" rel="" target="">
+ <span class="dropdown-text">Application fil rouge</span></a>
+  </li>  
+    </ul>
+  </li>
 </ul>
             <div class="quarto-navbar-tools ms-auto">
 </div>
@@ -223,9 +246,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Appliquer pas à pas les concepts étudiés à un projet de data science</h1>
+<h1 class="title">Application</h1>
+<p class="subtitle lead">Appliquer pas à pas les concepts étudiés à un projet de data science</p>
 </div>
 
+<div>
+  <div class="description">
+    <p>Une application fil rouge pour illustrer l’intérêt d’appliquer graduellement les bonnes pratiques dans une optique de mise en production d’une application de data science.</p>
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
@@ -244,6 +273,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
+<details>
+<summary>
+Dérouler les <em>slides</em> ci-dessous ou <a href="https://ensae-reproductibilite.github.io/slides/#/title-slide">cliquer ici</a> pour afficher les slides en plein écran.
+</summary>
+<div id="cb1" class="sourceCode">
+<pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+<iframe class="sourceCode yaml code-with-copy" src="https://ensae-reproductibilite.github.io/slides/#/title-slide">
+</iframe>
+</div>
+</details>
 <p>L’objectif de cette mise en application est d’<strong>illustrer les différentes étapes qui séparent la phase de développement d’un projet de celle de la mise en production</strong>. Elle permettra de mettre en pratique les différents concepts présentés tout au long du cours.</p>
 <p>Celle-ci est un tutoriel pas à pas pour avoir un projet reproductible et disponible sous plusieurs livrables. Toutes les étapes ne sont pas indispensables à tous les projets de <em>data science</em>.</p>
 <p>Nous nous plaçons dans une situation initiale correspondant à la fin de la phase de développement d’un projet de data science. On a un notebook un peu monolithique, qui réalise les étapes classiques d’un <em>pipeline</em> de <em>machine learning</em> :</p>
@@ -1108,9 +1147,9 @@ Illustration de l’état actuel du projet
 <p>A présent, nous avons une version du projet qui est largement partageable. Du moins en théorie, car la pratique est souvent plus compliquée : il y a fort à parier que si vous essayez d’exécuter votre projet sur un autre environnement (typiquement, votre ordinateur personnel), les choses ne se passent pas du tout comme attendu. Cela signifie qu’<strong>en l’état, le projet n’est pas portable : il n’est pas possible, sans modifications coûteuses, de l’exécuter dans un environnement différent de celui dans lequel il a été développé</strong>.</p>
 <p>Dans cette seconde partie, nous allons voir comment <strong>normaliser l’environnement d’exécution afin de produire un projet portable</strong>. Autrement dit, nous n’allons plus nous contenter de modularité mais allons rechercher la portabilité. On sera alors tout proche de pouvoir mettre le projet en production. On progressera dans l’échelle de la reproductibilité de la manière suivante:</p>
 <ul>
-<li><span class="emoji" data-emoji="one">1️⃣</span> <a href="#anaconda"><strong>Environnements virtuels</strong></a> ;</li>
-<li><span class="emoji" data-emoji="two">2️⃣</span> Créer un script shell qui permet, depuis un environnement minimal, de construire l’application de A à Z ;</li>
-<li><span class="emoji" data-emoji="three">3️⃣</span> <a href="#docker"><strong>Images et conteneurs <code>Docker</code></strong></a>.</li>
+<li>:one: <a href="#anaconda"><strong>Environnements virtuels</strong></a> ;</li>
+<li>:two: Créer un script shell qui permet, depuis un environnement minimal, de construire l’application de A à Z ;</li>
+<li>:three: <a href="#docker"><strong>Images et conteneurs <code>Docker</code></strong></a>.</li>
 </ul>
 <p>Nous allons repartir de l’application 8, c’est-à-dire d’un projet modulaire mais qui n’est pas, à strictement parler, un package (objet des applications optionnelles suivantes 9 et 10).</p>
 <p>Pour se replacer dans l’état du projet à ce niveau, il est possible d’utiliser le <em>tag</em> <em>ad hoc</em>.</p>
@@ -1745,7 +1784,7 @@ Application 15d: Tester l’application
 <li>Tester le bon fonctionnement de l’image</li>
 </ul>
 <div class="sourceCode" id="cb58"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="at">docker run -it &lt;username_dockerhub&gt;/application-correction:latest</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><span class="emoji" data-emoji="tada">🎉</span> La matrice de confusion doit s’afficher ! Vous avez grandement facilité la réutilisation de votre image.</p>
+<p>:tada: La matrice de confusion doit s’afficher ! Vous avez grandement facilité la réutilisation de votre image.</p>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
