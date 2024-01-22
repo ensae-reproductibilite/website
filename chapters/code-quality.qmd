@@ -18,6 +18,14 @@ pour afficher les slides en plein écran.
 
 </details>
 
+Ce chapitre constitue une introduction à la question de la qualité du code, 
+premier niveau dans l'échelle des bonnes pratiques. Celui-ci présente
+les enjeux de la qualité du code, les principaux généraux pour améliorer
+celuici et quelques outils ou gestes faciles à mettre en oeuvre
+pour améliorer la qualité du code. Ceux-ci sont approfondis dans
+l'[application fil rouge](/chapters/application.qmd). 
+ 
+
 # Introduction
 
 ## L'enjeu d'un code lisible et maintenable
@@ -26,20 +34,21 @@ pour afficher les slides en plein écran.
 >
 > Guido Van Rossum[^1]
 
-[^1]: Guido Van Rossum est le créateur de `Python`, c'est donc quelqu'un qu'il est pertinent d'écouter.
+[^1]: Guido Van Rossum est le créateur de {{< fa brands python >}}, c'est donc quelqu'un qu'il est pertinent d'écouter.
 
-Lorsque l'on s'initie à la pratique de la *data science*, il est assez naturel de voir le code d'une manière très fonctionnelle : je veux réaliser une tâche donnée — par exemple un algorithme de classification — et je vais donc assembler dans un *notebook* des bouts de code, souvent trouvés sur internet, jusqu'à obtenir un projet qui réalise la tâche voulue. La structure du projet importe assez peu, tant qu'elle permet d'importer correctement les données nécessaires à la tâche en question.
+Lorsqu'on s'initie à la pratique de la *data science*, il est assez naturel de voir le code d'une manière très fonctionnelle : je veux réaliser une tâche donnée — par exemple un algorithme de classification — et je vais donc assembler dans un *notebook* des bouts de code, souvent trouvés sur internet, jusqu'à obtenir un projet qui réalise la tâche voulue. La structure du projet importe assez peu, tant qu'elle permet d'importer correctement les données nécessaires à la tâche en question.
 
-Si cette approche flexible et minimaliste fonctionne très bien lors de la phase d'apprentissage, il est malgré tout indispensable de s'en détacher progressivement à mesure que l'on progresse et que l'on peut être amené à réaliser des projets plus professionnels ou bien à intégrer des projets collaboratifs.
+Si cette approche flexible et minimaliste fonctionne très bien lors de la phase d'apprentissage, il est malgré tout indispensable de s'en détacher progressivement à mesure que l'on progresse et que l'on peut être amené à réaliser des projets plus professionnels ou bien à intégrer des projets collaboratifs. Autrement, on risque
+de __produire du code qui sera difficile à reprendre et à faire évoluer et ainsi sans doute abandonné__.
 
-En particulier, il est important de proposer, parmi les multiples manières de résoudre un problème informatique, une solution qui soit intelligible par d'autres personnes parlant le langage. Le code est en effet lu bien plus souvent qu'il n'est écrit, c'est donc avant tout un __outil de communication__. De même, la maintenance d'un code demande généralement beaucoup plus de moyens que sa phase de développement initial, il est donc important de penser en amont la qualité de son code et la structure de son projet de sorte à le rendre au maximum maintenable dans le temps.
+En particulier, il est important de proposer, parmi les multiples manières de résoudre un problème informatique, une solution qui soit intelligible par d'autres personnes parlant le même langage. Le code est en effet lu bien plus souvent qu'il n'est écrit, c'est donc avant tout un __outil de communication__. De même, la maintenance d'un code demande généralement beaucoup plus de moyens que sa phase de développement initial, il est donc important de penser en amont la qualité de son code et la structure de son projet de sorte à le rendre au maximum maintenable dans le temps.
 
 Afin de faciliter la communication et réduire la douleur d'avoir à faire évoluer un code obscur, des tentatives plus ou moins institutionnalisées de définir des conventions ont émergé. Ces conventions dépendent naturellement du langage utilisé, mais les principes sous-jacents s'appliquent de manière universelle à tout projet basé sur du code.
 
 
 ## De l'importance de suivre les conventions
 
-`Python` est un langage très lisible.
+`Python` est un langage très __lisible__.
 Avec un peu d’effort sur le nom des objets,
 sur la gestion des dépendances et sur la structure du programme,
 on peut très bien comprendre un script sans avoir besoin de l’exécuter.
@@ -51,30 +60,36 @@ dites `PEP` (_Python Enhancement Proposal_),
 qui constituent un standard dans l’écosystème Python.
 Les deux normes les plus connues sont :
 
-- la norme [`PEP8`](https://peps.python.org/pep-0008/) qui définit un certain nombre de conventions
-relatives au code
-- la norme [`PEP257`](https://peps.python.org/pep-0257/) consacrée à la documentation (_docstrings_).
+- la __norme [`PEP8`](https://peps.python.org/pep-0008/)__ qui définit un certain nombre de conventions
+relatives au code ;
+- la __norme [`PEP257`](https://peps.python.org/pep-0257/)__ consacrée à la documentation (_docstrings_).
 
-::: {.callout-note}
-Dans l'univers `R`, la formalisation
+Ces conventions vont au-delà de la syntaxe. Un certain nombre de standards
+d'organisation d'un projet ont émergé, qui seront abordées
+dans le [prochain chapitre](/chapters/projects-architecture.html). 
+
+::: {.callout-note collapse="true"}
+## Comparaison avec {{< fa brands r-project >}} 
+
+Dans l'univers {{< fa brands r-project >}} , la formalisation
 a été moins organisée. Ce langage est plus permissif que `Python`
-sur certains aspects[^2].
-Néanmoins, des standards ont émergé, à travers
+sur certains aspects[^2]. Néanmoins, des standards ont émergé récemment, à travers
 un certain nombre de _style guides_ dont les plus connus
 sont le
 [_tidyverse style guide_](https://style.tidyverse.org/googl) et le
-[_google style guide_](https://google.github.io/styleguide/Rguide.html)[^3]
-(voir [ce post](https://blog.r-hub.io/2022/03/21/code-style/) qui pointe vers
-un certain nombre de ressources sur le sujet).
+[_google style guide_](https://google.github.io/styleguide/Rguide.html), [MLR style guide](https://github.com/mlr-org/mlr3/wiki/Style-Guide#theoretical-style-guide)...
+
+Pour aller plus loin sur {{< fa brands r-project >}}:
+
+* La formation Insee [aux bonnes pratiques avec `Git` et {{< fa brands r-project >}}](https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/) dont le parcours est très proche de celui de ce cours ; 
+* Des éléments complémentaires dans la [documentation collaborative `utilitR`](https://www.book.utilitr.org/02_bonnes_pratiques/01-qualite-code) ;
+* [Ce post](https://blog.r-hub.io/2022/03/21/code-style/) qui pointe vers
+un certain nombre de ressources sur le sujet.
 :::
 
-[^2]: Par exemple, en `R`, il est possible d'utiliser `<-` ou `=`
+[^2]: Par exemple, en {{< fa brands r-project >}}, il est possible d'utiliser `<-` ou `=`
 pour l'assignation,
 on ne recontre pas d'erreur en cas de mauvaise indentation...
-
-[^3]: Il existe d'autres guides de style notamment le [MLR style guide](https://github.com/mlr-org/mlr3/wiki/Style-Guide#theoretical-style-guide)
-qui est un _framework_ orienté objet de _Machine Learning_ en `R`.
-
 
 Ces conventions sont arbitraires, dans une certaine mesure.  Il est tout à fait
 possible de trouver certaines conventions moins esthétiques que d'autres. 
@@ -90,66 +105,232 @@ difficulté à faire évoluer un code.
 Il existe beaucoup de philosophies différentes sur le style de codage et,
 en fait, le plus important est
 la __cohérence__ :
-si on choisit une convention, par exemple _snake case_ plutôt que
-_camel case_, le mieux est de s'y tenir. 
+si on choisit une convention, par exemple _snake case_ (`toto_a_la_plage`) plutôt que
+_camel case_ (`totoALaPlage`), le mieux est de s'y tenir. 
 
 
-Les conventions vont au-delà de la syntaxe. Un certain nombre de standards
-d'organisation d'un projet ont émergé, qui seront abordées
-dans le [prochain chapitre](/chapters/projects-architecture.html). 
+# Principe 1️⃣: Adopter les standards communautaires
 
-# Comment adopter ces bonnes pratiques ?
-
-Les éléments exposés dans ce chapitre ne sont pas exhaustifs.
-Ils visent à pointer vers quelques problématiques prioritaires tout en proposant des conseils pratiques.
-L'équivalent `R` de ce cours est proposé sous la forme de formation à l'Insee et 
-est accessible depuis [ce lien](https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/). 
-
-Dans la lignée de la vision des bonnes pratiques comme continuum proposée en [introduction](/chapters/introduction.html), il n'est pas nécessairement souhaitable d'appliquer toutes les recommendations présentées dans ce chapitre à chaque projet. Nous recommandons de les voir plutôt comme des bonnes habitudes à acquérir en opérant un va-et-vient régulier entre la pratique et la théorie. Les outils
+Dans la lignée de la vision des bonnes pratiques comme
+continuum proposée en [introduction](/chapters/introduction.qmd), il n'est pas nécessairement souhaitable d'appliquer toutes les recommandations présentées dans ce chapitre à chaque projet. Sur certains projets, le coût marginal
+d'adopter certaines pratiques peut excéder les bénéfices induits. 
+Nous recommandons plutôt de voir les bonnes pratiques comme de bonnes habitudes à acquérir en opérant un va-et-vient régulier entre la pratique et la théorie. Les outils
 que nous allons proposer seront là pour accélérer la mise en oeuvre des bonnes pratiques.
 
-Il est également assez instructif de regarder
+Les éléments exposés dans ce chapitre n'ont pas vocation à être exhaustifs.
+Ils visent à pointer vers quelques ressources utiles tout en proposant des conseils pratiques.
+L'apprentissage par coeur de ces règles ou
+faire des aller-retour en continu entre le code
+et les manuels de règles 
+serait quelques
+peu rébarbatif.
+
+Pour faire le parallèle avec
+le langage naturel, on n'a pas toujours le bécherelle 
+ou le dictionnaire sous les yeux. Les éditeurs de 
+texte ou les smartphones embarquent des correcteurs
+orthographiques qui identifient voire corrigent
+directement le texte écrit. 
+
+## Un bon IDE, un premier pas vers la qualité
+
+Sans les outils automatisés de mise en forme du code, l'adoption des bonnes
+pratiques serait coûteuse en temps et donc difficile à mettre en oeuvre
+au quotidien. Ces outils, que ce soit par le biais de diagnostics ou de
+mise aux normes automatisée du code
+rendent de précieux services. Adopter les standards minimaux de qualité
+est plus ou moins instantanée et économise un temps précieux dans la vie
+d'un projet de _data science_. C'est un préalable indispensable à la 
+mise en production, sur laquelle nous reviendrons ultérieurement. 
+
+
+Le premier pas vers les bonnes pratiques est d'adopter un environnement de développement
+adapté. `VSCode` est un très bon environnement comme nous le découvrirons
+dans la [partie pratique](/chapters/application.qmd). Il propose tous les
+outils d'autocomplétion et de diagnostics usuels (contrairement 
+à `Jupyter`) et propose une grande gamme d'extensions pour enrichir
+les fonctionnalités de l'IDE de manière contributive:
+
+![Exemple de diagnostics et d'actions proposés par `VSCode`](https://code.visualstudio.com/assets/docs/python/editing/packageAbbreviations.gif)
+
+Néanmoins, les outils de détection de code au niveau des IDE
+ne suffisent pas. En effet, ils nécessitent une composante manuelle
+qui peut être chronophage et ainsi pénibles à appliquer
+régulièrement. Heureusement, il existe des outils automatisés de diagnostics
+et de mise en forme. 
+
+
+
+### Les outils automatisés pour le diagnostic et la mise en forme du code 
+
+`Python` étant l'outil de travail principal de milliers de 
+_data-scientists_, un certain nombre d'outils ont vu le jour
+pour réduire le temps nécessaire pour créer un projet ou disposer
+d'un code fonctionnel. Ces outils permettent un gros gain de productivité,
+réduisent le temps passé à effectuer des tâches rébarbatives et améliorent
+la qualité d'un projet en offrant des diagnostics voire des correctifs
+à des codes perfectibles. 
+
+Les deux principaux types d'outils sont les suivants:
+
+1. **_Linter_** : programme qui vérifie que le code est __formellement__ conforme à un certain _guidestyle_
+    + signale des problèmes formels, sans corriger 
+2. **_Formatter_** : programme qui reformate un code pour le rendre conforme à un certain _guidestyle_
+    + modifie directement le code
+
+
+::: {.callout-tip collapse="true"}
+## Exemples
+
+- Exemples d’erreurs repérées par un _linter_ : 
+    + lignes de code trop longues ou mal indentées, parenthèses non équilibrées, noms de fonctions mal construits…
+- Exemples d’erreurs __non__ repérées par un _linter_ :
+    + fonctions mal utilisées, arguments mal spécifiés, structure du code incohérente, code insuffisamment documenté…
+:::
+
+
+### Les _linters_ pour comprendre les mauvaises pratiques appliquées
+
+Les _linters_ sont des outils qui permettent d'évaluer la qualité du 
+code et son risque de provoquer une erreur (explicite ou silencieuse).
+
+Voici quelques exemples de problèmes que peuvent rencontrer les 
+`linters`:
+
+* les variables sont utilisées mais n'existent pas (erreur)
+* les variables inutilisées (inutiles)
+* la mauvaise organisation du code (risque d'erreur)
+* le non respect des bonnes pratiques d'écriture de code
+* les erreurs de syntaxe (par exemple les coquilles)
+    
+La plupart des logiciels de développement embarquent des fonctionalités
+de diagnostic (voire de suggestion de correctif). Il faut parfois
+les paramétrer dans les options (ils sont désactivés pour ne pas
+effrayer l'utilisateur avec des croix rouges partout).
+Néanmoins, si on n'a pas appliqué les correctifs
+au fil de l'eau la masse des modifications à mettre en 
+oeuvre peut être effrayante. 
+
+En `Python`, les deux principaux _linters_
+sont [`PyLint`](https://pylint.readthedocs.io/en/latest/) et
+[`Flake8`](https://flake8.pycqa.org/en/latest/). 
+Dans les exercices, nous proposons d'utiliser `PyLint` qui est
+pratique et pédagogique. Celui-ci s'utilise en ligne de commande,
+de la manière suivante:
+
+::: {.shell}
+
+```shell
+pip install pylint
+pylint monscript.py #pour un fichier
+pylint src #pour tous les fichiers du dossier src
+```
+
+:::
+
+::: {.callout-tip collapse="true"}
+
+L'un des intérêts d'utiliser `PyLint` est qu'on obtient une note,
+ce qui est assez instructif. Nous l'utiliserons dans l'application
+fil rouge pour comprendre la manière dont chaque étape améliore
+la qualité du code. 
+
+Il est possible de mettre en oeuvre des [_pre commit hook_](https://pylint.readthedocs.io/en/latest/user_guide/installation/pre-commit-integration.html) qui empêchent un
+_commit_ n'ayant pas une note minimale. 
+
+:::
+
+### Les _formatters_ pour nettoyer en masse ses scripts 
+
+Le _formatter_ modifie directement le code. On peut
+faire un parallèle avec le correcteur orthographique.
+Cet outil peut
+donc induire un changement substantiel du script
+afin de le rendre plus lisible.  
+
+Le _formater_ le plus utilisé
+est [`Black`](https://black.readthedocs.io/en/stable/). 
+Récemment, [`Ruff`](https://github.com/astral-sh/ruff),
+qui est à la fois un _linter_ et un _formatter_
+a émergé pour intégrerà `Black` des diagnostics
+supplémentaires, issus d'autres _packages_. 
+
+::: {.callout-note collapse="true"}
+
+Pour signaler sur `Github`
+la qualité d'un projet utilisant `Black`, il est possible
+d'ajouter un badge dans le `README`:
+
+[![](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+:::
+
+
+Il est assez instructif de regarder
 le code modifié par les outils pour comprendre et corriger certains problèmes dans sa manière de développer. 
 Par exemple, à la lecture de ce chapitre, vous allez certainement retenir en particulier certaines règles qui tranchent avec vos pratiques actuelles. Vous pouvez alors essayer d'appliquer ces nouvelles règles pendant un certain temps puis, lorsque celles-ci seront devenues naturelles, revenir à ce guide et appliquer le processus à nouveau. En procédant ainsi de manière incrémentale, vous améliorerez progressivement la qualité de vos projets sans avoir l'impression de passer trop de temps sur des micro-détails, au détriment des objectifs globaux du projet.
 
+## Le partage, une démarche favorable à la qualité du code
 
-# Principes généraux
+### L'_opensource_ comme moyen pour améliorer la qualité
 
+En ouvrant son code sur des forges _opensource_ (cf. [chapitre `Git`](/chapters/git.qmd)), il est possible de recevoir
+des suggestions voire des contributions de réutilisateurs
+du code. Cependant, les vertus de l'ouverture vont au-delà.  
+En effet, l'ouverture se traduit généralement par des codes de 
+meilleur qualité, mieux documentés pour pouvoir être réutilisés
+ou ayant simplement bénéficié d'une attention accrue sur la qualité
+pour ne pas paraître ridicule. Même en l'absence de retour de (ré)utilisateurs
+du code, le partage de code améliore la qualité des projets. 
+
+### La revue de code
+
+La revue de code s'inspire de la méthode du _peer reviewing_ du monde académique
+pour améliorer la qualité du code `Python`. Dans une revue de code, 
+le code écrit par une personne est relu et évalué par un ou plusieurs autres développeurs
+afin d'identifier les erreurs et les améliorations possibles.
+Cette pratique permet de détecter les erreurs avant qu'elles ne deviennent des problèmes majeurs,
+d'assurer une cohérence dans le code, de garantir le respect des bonnes pratiques
+mais aussi d'améliorer la qualité du code en identifiant les parties du code qui peuvent être simplifiées, optimisées ou refactorisées pour en améliorer la lisibilité et la maintenabilité.
+
+Un autre avantage de cette approche est qu'elle permet le 
+partage de connaissances entre des personnes expérimentées et des personnes
+plus débutantes ce qui permet à ces dernières de monter en compétence.
+`Github` {{< fa brands github >}} et `Gitlab` {{< fa brands gitlab >}}
+proposent des fonctionnalités très pratiques
+pour la revue de code: discussions, suggestions de modifications...
+
+
+# Principe 2️⃣: favoriser une structure modulaire
 
 Les premières conventions à évoquer ont trait à la syntaxe du code et
 ont les objectifs suivants, qui seront détaillés par la suite :
 
-- [Améliorer la lisibilité](#lisibilite) ce qui est indispensable pour
+- Favoriser la __concision__ pour réduire le risque d'erreur
+et rendre la démarche plus claire ;
+- Améliorer la __lisibilité__ ce qui est indispensable pour
 rendre la démarche intelligible par d'autres mais aussi pour soi, lorsqu'on
 reprend un code écrit il y a quelques temps ;
-- [Favoriser la concision](#concision) pour réduire le risque d'erreur
-et rendre la démarche plus claire ;
-- Suivre les règles explicites ou les conventions d'un langage pour
-[assurer le fonctionnement et la cohérence](#coherence) d'un code ;
-- [Limiter la redondance](#redondance) ce qui permet de simplifier
+- Limiter la __redondance__ ce qui permet de simplifier
 un code (paradigme du _don't repeat yourself_) ;
-- [Documenter un code](#documentation) ce qui facilite son acquisition
-par d'autres (à condition de ne pas aller dans l'excès de documentation).
-
-
-## Lisibilité  {#lisibilite}
-
-Un code écrit avec des noms de variables et de fonctions explicites est autant,
-voire plus, informatif que les commentaires qui l’accompagnent[^autodoc].
-C’est pourquoi il est essentiel de respecter des conventions pour le
-choix des noms des objets afin d’assurer la lisibilité des programmes.
-
-[^autodoc]: Nous allons d'ailleurs plutôt recommander l'__autodocumentation__
-        que la multiplication de commentaires dans un document qui ne seront
-        jamais lus ou qui ne seront pas actualisés en même temps que le code
-        qu'ils accompagnent. 
+- Limite les risques d’__erreurs liées aux copier/coller__
 
 Un certain nombre de conseils sont présents dans le [Hitchhiker's Guide to Python](https://docs.python-guide.org/writing/style/)
 qui vise à faire connaître les préceptes du _"Zen of Python"_ (PEP 20).
 [Ce post de blog](https://towardsdatascience.com/the-zen-of-python-a-guide-to-pythons-design-principles-93f3f76d088a) illustre quelques uns
 de ces principes avec des exemples.
+
+::: {.callout-note collapse="true"}
+## Le _Zen de Python_
+
+Le _"Zen de Python"_ est une collection de principes pour la programmation en `Python`, écrite par Tim Peters en 2004
+sous la forme d'aphorismes. Ceux-ci
+mettent en lumière la philosophie de conception du langage `Python`.
+
 Vous pouvez retrouver ces conseils dans `Python` en 
 tapant le code suivant:
+
+:::: {.python}
 
 ```python
 import this
@@ -179,6 +360,12 @@ If the implementation is easy to explain, it may be a good idea.
 Namespaces are one honking great idea -- let's do more of those!
 ```
 
+::::
+
+:::
+
+### Conseils pour la programmation
+
 Il est conseillé
 de suivre ces deux principes lorsqu'on commence à programmer
 des fonctions (ce qui, comme cela est évoqué par la suite, est
@@ -205,10 +392,46 @@ s'adapter au type d'objet en entrée (par exemple aller chercher des
 éléments différents pour un objet `lm` ou un objet `glm`).
 Cela évite les codes _spaghetti_ 🍝 inutilement complexes qui sont impossibles à débugger.
 
+Néanmoins, il convient d'être pragmatique. La programmation orientée objet peut être
+plus complexe à mettre en oeuvre que la programmation fonctionnelle. Dans de 
+nombreuses situations, cette dernière, si elle est bien faite, suffit largement. 
 
-::: {.callout-tip}
+::: {.callout-note}
 
-## _Type hinting_
+## Le code spaghetti
+
+Le code `spaghetti` est un style d'écriture qui favorise l'apparition du syndrome du plat de spaghettis : 
+un code impossible à déméler parce qu'il fait un usage excessif de conditions, d'exceptions en tous sens, de gestion des événements complexes. Il devient quasi-impossible de savoir quelles ont été les conditions à l'origine de telle ou telle erreur sans exécuter ligne à ligne (et celles-ci sont excessivement nombreuses du fait de mauvaises pratiques de programmation) le programme. 
+
+En fait, la programmation spaghetti qualifie tout ce qui ne permet pas de déterminer le qui, le quoi et le comment. Le code est donc plus long à mettre à jour car cela nécessite de remonter un à un le fil des renvois.
+
+:::
+
+
+# Principe 3️⃣: (auto)documenter son code
+
+- Améliorer la __lisibilité__ du code en permettant aux lecteurs
+de comprendre le lien entre les objets créés dans le code
+ainsi que la manière dont un bloc de code s'inscrit
+dans la démarche plus globale ;
+- [Documenter un code](#documentation) ce qui facilite son acquisition
+par d'autres (à condition de ne pas aller dans l'excès de documentation).
+
+Un code écrit avec des noms de variables et de fonctions explicites est autant,
+voire plus, informatif que les commentaires qui l’accompagnent.
+C’est pourquoi il est essentiel de respecter des conventions, et de s'y tenir,
+pour le
+choix des noms des objets afin d’assurer la lisibilité des programmes.
+
+Il est recommandé de privilégier l'__autodocumentation__
+à la multiplication de commentaires dans un document. Trop de commentaires fait que
+ceux-ci ne seront
+jamais lus. Ils risquent d'ailleurs de ne pas être actualisés en même temps que le code
+qu'ils accompagnent, ce qui est une source d'erreur potentielle.  
+
+
+::: {.callout-tip collapse="true"}
+## Le _type hinting_, un élément d'autodocumentation
 
 `Python` propose une fonctionalité assez plaisante qui est
 le _`type hinting`_
@@ -233,17 +456,12 @@ Le _type hinting_ est un élément d'autodocumentation puisque grâce à ces _hi
 suffit à faire comprendre la volonté de la personne l'ayant écrit. 
 :::
 
+# OLD
 
-::: {.callout-note}
 
-## Le code spaghetti
 
-Le code `spaghetti` est un style d'écriture qui favorise l'apparition du syndrome du plat de spaghettis : 
-un code impossible à déméler parce qu'il fait un usage excessif de conditions, d'exceptions en tous sens, de gestion des événements complexes. Il devient quasi-impossible de savoir quelles ont été les conditions à l'origine de telle ou telle erreur sans exécuter ligne à ligne (et celles-ci sont excessivement nombreuses du fait de mauvaises pratiques de programmation) le programme. 
 
-En fait, la programmation spaghetti qualifie tout ce qui ne permet pas de déterminer le qui, le quoi et le comment. Le code est donc plus long à mettre à jour car cela nécessite de remonter un à un le fil des renvois.
 
-:::
 
 ## Concision  {#concision}
 
@@ -565,110 +783,6 @@ Les deux grands principes de la documentation au sein d'un script sont les suiva
 :::
 
 
-## Outils et méthodes pour améliorer un code
-
-L'apprentissage par coeur de ces règles ou
-faire des aller-retour en continu entre le code
-et les manuels de règles 
-serait quelques
-peu rébarbatif.
-
-Pour faire le parallèle avec
-le langage naturel, on n'a pas toujours le bécherelle 
-ou le dictionnaire sous les yeux. Les éditeurs de 
-texte ou les smartphones embarquent des correcteurs
-orthographiques qui identifient voire corrigent
-directement le texte écrit. 
-
-Il existe le même type d'outils pour les langages
-de programmation.
-`Python` étant l'outil de travail principal de milliers de 
-_data-scientists_, un certain nombre d'outils ont vu le jour
-pour réduire le temps nécessaire pour créer un projet ou disposer
-d'un code fonctionnel. Ces outils permettent un gros gain de productivité,
-réduisent le temps passé à effectuer des tâches rébarbatives et améliorent
-la qualité d'un projet en offrant des diagnostics voire des correctifs
-à des codes perfectibles. 
-
-
-Les principaux outils sont les suivants:
-
-1. **_linter_** : programme qui vérifie que le code est __formellement__ conforme à un certain _guidestyle_
-    + signale problèmes formels, sans corriger 
-2. **_formatter_** : programme qui reformate un code pour le rendre conforme à un certain _guidestyle_
-    + modifie directement le code
-
-
-::: {.callout-tip}
-- Exemples d’erreurs repérées par un _linter_ : 
-    + lignes de code trop longues ou mal indentées, parenthèses non équilibrées, noms de fonctions mal construits…
-- Exemples d’erreurs __non__ repérées par un _linter_ :
-    + fonctions mal utilisées, arguments mal spécifiés, structure du code incohérente, code insuffisamment documenté…
-:::
-
-
-## _Linters_
-
-Les _linters_ sont des outils qui permettent d'évaluer la qualité du 
-code et son risque de provoquer une erreur (explicite ou silencieuse).
-
-Voici quelques exemples de problèmes que peuvent rencontrer les 
-`linters`:
-
-* les variables sont utilisées mais n'existent pas (erreur)
-* les variables inutilisées (inutiles)
-* la mauvaise organisation du code (risque d'erreur)
-* le non respect des bonnes pratiques d'écriture de code
-* les erreurs de syntaxe (par exemple les coquilles)
-    
-La plupart des logiciels de développement embarquent des fonctionalités
-de diagnostic (voire de suggestion de correctif). Il faut parfois
-les paramétrer dans les options (ils sont désactivés pour ne pas
-effrayer l'utilisateur avec des croix rouges partout).
-
-En `Python`, les deux principaux _linters_
-sont [`PyLint`](https://pylint.readthedocs.io/en/latest/) et
-[`Flake8`](https://flake8.pycqa.org/en/latest/). 
-Dans les exercices, nous proposons d'utiliser `PyLint` qui est
-pratique. 
-
-::: {.callout-tip}
-
-L'un des intérêts d'utiliser `PyLint` est qu'on obtient une note,
-ce qui est assez instructif. Nous l'utiliserons dans l'application
-fil rouge pour comprendre la manière dont chaque étape améliore
-la qualité du code. 
-
-Il est possible de mettre en oeuvre des [_pre commit hook_](https://pylint.readthedocs.io/en/latest/user_guide/installation/pre-commit-integration.html) qui empêchent un
-_commit_ n'ayant pas une note minimale. 
-
-:::
-
-
-
-## _Formaters_
-
-Le _formater_ modifie directement le code. On peut
-faire un parallèle avec le correcteur orthographique.
-
-Cet outil peut
-donc induire un changement substantiel du script
-afin de le rendre plus lisible.  
-
-Le _formater_ le plus utilisé
-est [`Black`](https://black.readthedocs.io/en/stable/). 
-
-
-::: {.callout-note}
-
-Pour signaler sur `Github`
-la qualité d'un projet utilisant `Black`, il est possible
-d'ajouter un badge dans le `README`:
-
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-
-:::
-
 # Isoler la configuration du code
 
 L'exécution d'un code peut dépendre d'éléments de configuration
@@ -719,32 +833,6 @@ jeton_insee = secrets['token']['api_insee']
 
 # Méthodes complémentaires pour favoriser la qualité d'un script
 
-## L'_opensource_ comme moyen pour améliorer la qualité
-
-En ouvrant son code, il est possible de recevoir
-des suggestions voire des contributions de réutilisateurs
-du code. Cependant, les vertus de l'ouverture vont au-delà.  
-En effet, l'ouverture se traduit généralement par des codes de 
-meilleur qualité, mieux documentés pour pouvoir être réutilisés
-ou ayant simplement bénéficié d'une attention accrue sur la qualité
-pour ne pas paraître ridicule. Même en l'absence de retour de (ré)utilisateurs
-du code, le partage de code améliore la qualité des projets. 
-
-## Revue de code
-
-La revue de code s'inspire de la méthode du _peer reviewing_ du monde académique
-pour améliorer la qualité du code `Python`. Dans une revue de code, 
-le code écrit par une personne est relu et évalué par un ou plusieurs autres développeurs
-afin d'identifier les erreurs et les améliorations possibles.
-Cette pratique permet de détecter les erreurs avant qu'elles ne deviennent des problèmes majeurs,
-d'assurer une cohérence dans le code, de garantir le respect des bonnes pratiques
-mais aussi d'améliorer la qualité du code en identifiant les parties du code qui peuvent être simplifiées, optimisées ou refactorisées pour en améliorer la lisibilité et la maintenabilité.
-
-Un autre avantage de cette approche est qu'elle permet le 
-partage de connaissances entre des personnes expérimentées et des personnes
-plus débutantes ce qui permet à ces dernières de monter en compétence.
-`Github` et `Gitlab` proposent des fonctionnalités très pratiques
-pour la revue de code: discussions, suggestions de modifications...
 
 
 # Références
