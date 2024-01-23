@@ -26,27 +26,15 @@ Celle-ci est un tutoriel pas à pas pour avoir un projet reproductible et dispon
 Toutes les étapes ne sont pas indispensables à tous les projets de _data science_. 
 
 Nous nous plaçons dans une situation initiale correspondant à la fin de la phase de développement d'un projet de data science.
-On a un notebook un peu monolithique, qui réalise les étapes classiques d'un *pipeline* de *machine learning* :
+On a un _notebook_ un peu monolithique, qui réalise les étapes classiques d'un *pipeline* de *machine learning* :
 
 - Import de données ;
 - Statistiques descriptives et visualisations ;
 - *Feature engineering* ;
 - Entraînement d'un modèle ;
-- Evaluation du modèle
+- Evaluation du modèle.
 
 **L'objectif est d'améliorer le projet de manière incrémentale jusqu'à pouvoir le mettre en production, en le valorisant sous une forme adaptée.** 
-
-::: {.callout-important}
-Il est important de bien lire les consignes et d'y aller progressivement.
-Certaines étapes peuvent être rapides, d'autres plus fastidieuses ;
-certaines être assez guidées, d'autres vous laisser plus de liberté.
-Si vous n'effectuez pas une étape, vous risquez de ne pas pouvoir passer à
-l'étape suivante qui en dépend.
-
-Bien que l'exercice soit applicable sur toute configuration bien faite, nous 
-recommandons de privilégier l'utilisation du [SSP Cloud](https://datalab.sspcloud.fr/home), où tous les 
-outils nécessaires sont pré-installés et pré-configurés. 
-:::
 
 
 <details>
@@ -63,22 +51,62 @@ Illustration de l'horizon vers lequel on se dirige
 ![](/workflow2.png)
 </details>
 
+::: {.callout-important}
+Il est important de bien lire les consignes et d'y aller progressivement.
+Certaines étapes peuvent être rapides, d'autres plus fastidieuses ;
+certaines être assez guidées, d'autres vous laisser plus de liberté.
+Si vous n'effectuez pas une étape, vous risquez de ne pas pouvoir passer à
+l'étape suivante qui en dépend.
+
+Bien que l'exercice soit applicable sur toute configuration bien faite, nous 
+recommandons de privilégier l'utilisation du [SSP Cloud](https://datalab.sspcloud.fr/home), où tous les 
+outils nécessaires sont pré-installés et pré-configurés. Le service `VSCode`
+ne sera en effet que le point d'entrée pour l'utilisation d'outils plus exigeants
+sur le plan de l'infrastructure: _Argo_, _MLFLow_, etc.
+:::
+
 
 # Partie 0 : initialisation du projet
 
-## Etape 1 : forker le dépôt d'exemple et créer une branche de travail
+::: {.callout-tip}
+## Application préliminaire: forker le dépôt d'exemple
+
+Les premières étapes consistent à mettre en place son environnement de travail sur `Github`:
+
+- Générer un jeton d'accès (*token*) sur `GitHub` afin de permettre l'authentification en ligne de commande à votre compte.
+La procédure est décrite [ici](https://docs.sspcloud.fr/onyxia-guide/controle-de-version#creer-un-jeton-dacces-token). 
+__Vous ne voyez ce jeton qu'une fois, ne fermez pas la page de suite__. 
+
+- Mettez de côté ce jeton en l'enregistrant dans un gestionnaire de mot de passe ou dans 
+l'espace _["Mon compte"](https://datalab.sspcloud.fr/account/third-party-integration)_
+du `SSP Cloud`. 
+
+- Forker le dépôt `Github` : [https://github.com/ensae-reproductibilite/application-correction](https://github.com/ensae-reproductibilite/application-correction) en faisant attention à deux choses:
+    + Renommer le dépôt en `ensae-reproductibilite-application-correction.git` ;
+    + Décocher la case _"Copy the `main` branch only"_ afin de copier également les _tags_ `Git` qui nous permettront de faire les _checkpoint_
+
+
+<details>
+
+<summary>
+Ce que vous devriez voir sur la page de création du _fork_
+</summary>
+
+![](fork-example.png)
+
+</details>
+
+Il est maintenant possible de ce lancer dans la création de l'environnement de travail:
 
 - Ouvrir un service `VSCode` sur le [SSP Cloud](https://datalab.sspcloud.fr/home). Vous pouvez aller
 dans la page `My Services` et cliquer sur `New service`. Sinon, vous
-pouvez lancer le service en cliquant directement [ici](https://datalab.sspcloud.fr/launcher/ide/vscode-python?autoLaunch=false).
-
-- Générer un jeton d'accès (*token*) sur `GitHub` afin de permettre l'authentification en ligne de commande à votre compte.
-La procédure est décrite [ici](https://docs.sspcloud.fr/onyxia-guide/controle-de-version#creer-un-jeton-dacces-token). Garder le jeton généré de côté.
-
-- Forker le dépôt `Github` : [https://github.com/ensae-reproductibilite/application-correction](https://github.com/ensae-reproductibilite/application-correction)
+pouvez initialiser la création du service en cliquant directement [ici](https://datalab.sspcloud.fr/launcher/ide/vscode-python?autoLaunch=false). __Modifier les options suivantes__:
+    + Dans l'onglet `Kubernetes`, sélectionner le rôle `Admin` ;
+    + Dans l'onglet `Networking`, cliquer sur "Enable a custom service port" et laisser la valeur par défaut 5000 pour le numéro du port
 
 - Clôner __votre__ dépôt `Github` en utilisant le
-terminal depuis `Visual Studio` (`Terminal > New Terminal`) :
+terminal depuis `Visual Studio` (`Terminal > New Terminal`) et
+en passant directement le token dans l'URL selon cette structure:
 
 ```shell
 $ git clone https://<TOKEN>@github.com/<USERNAME>/ensae-reproductibilite-application-correction.git
@@ -93,6 +121,13 @@ par le jeton que vous avez généré précédemment et votre nom d'utilisateur.
 $ cd ensae-reproductibilite-application-correction
 ```
 
+- Se placer sur une branche de travail en faisant:
+
+```shell
+$ git checkout -b dev
+```
+
+:::
 
 
 # Partie 1 : qualité du script
@@ -109,28 +144,17 @@ Elle fait intervenir les notions suivantes :
 
 Le plan de la partie est le suivant :
 
-<!----
-0. :zero: _Forker_ le dépôt et créer une branche de travail
-1. :one: S'assurer que le _notebook_ s'exécute correctement
-2. :two: Modularisation : mise en fonctions et mise en module
-3. :three: Utiliser un `main` script
-4. :four:  Appliquer les standards de qualité de code
-5. :five: Adopter une architecture standardisée de projet
-6. :six: Fixer l'environnement d'exécution
-7. :seven: Stocker les données de manière externe
-8. :eight: Nettoyer le projet `Git`
-9. :nine: Ouvrir une *pull request* sur le dépôt du projet.
-------------->
+1. S'assurer que le script fonctionne ;
+2. Nettoyer le code des scories formelles avec un _linter_ et un _formatter_ ;
+3. Paramétrisation du script ;
+4. Utilisation de fonctions.
 
 Nous allons partir de ce _Notebook_ `Jupyter`,
 que vous pouvez prévisualiser voire tester
 en cliquant sur l'un des liens suivants:
 
-
-
-
-<a href="https://datalab.sspcloud.fr/launcher/ide/jupyter-python?autoLaunch=false&init.personalInit=%C2%ABhttps%3A%2F%2Fraw.githubusercontent.com%2Flinogaliana%2Fensae-reproductibilite-website%2Fmaster%2Fpreview-notebook.sh%C2%BB" target="_blank" rel="noopener"><img src="https://img.shields.io/badge/SSPcloud-Tester%20notebook%20sur%20SSP--cloud-informational&amp;color=yellow?logo=Python" alt="Onyxia"></a>
-<a href="http://colab.research.google.com/github/linogaliana/ensae-reproductibilite-application/blob/main/titanic.ipynb" target="_blank" rel="noopener"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a>
+_to do bouton onyxia_
+<a href="https://github.com/ensae-reproductibilite/application-correction/blob/main/titanic.ipynb" target="_blank" rel="noopener"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a>
 
 
 ## Etape 1 : s'assurer que le script s'exécute correctement
@@ -139,9 +163,9 @@ On va partir du fichier `notebook.py` qui reprend le contenu
 du _notebook_[^jupytext] mais dans un script classique.
 
 [^jupytext]: L'export dans un script `.py` a été fait
-        avec [`Jupytext`](https://jupytext.readthedocs.io/en/latest/index.html). Comme
+        directement depuis `VSCode`. Comme
         cela n'est pas vraiment l'objet du cours, nous passons cette étape et fournissons
-        directement le script. Mais n'oubliez
+        directement le script expurgé du texte intermédiaire. Mais n'oubliez
         pas que cette démarche, fréquente quand on a démarré sur un _notebook_ et
         qu'on désire consolider en faisant la transition vers des 
         scripts, nécessite d'être attentif pour ne pas risquer de faire une erreur. 
@@ -153,13 +177,25 @@ La première étape est simple, mais souvent oubliée : **vérifier que le code 
 ## Application 1: corriger les erreurs
 
 - Ouvrir dans `VSCode` le script `titanic.py` ;
-- Exécuter le script ligne à ligne pour détecter les erreurs ;
+- Exécuter le script en ligne de commande (`python titanic.py`) ou de manière interactive ligne à ligne (<kbd>MAJ</kbd>+<kbd>ENTER</kbd>)pour détecter les erreurs ;
 - Corriger les deux erreurs qui empêchent la bonne exécution ;
-- Vérifier le fonctionnement du script en utilisant la ligne de commande
+- Vérifier le fonctionnement du script en utilisant la ligne de commande:
 
 ```shell
 python titanic.py
 ```
+
+Le code devrait afficher des sorties.
+
+<details>
+<summary>
+Aide sur les erreurs rencontrées
+</summary>
+
+La première erreur rencontrée est une alerte `FileNotFoundError`,
+la seconde est liée à un _package_. 
+
+<details>
 
 :::
 
@@ -190,18 +226,8 @@ ou
 ## Etape 2: utiliser un _linter_ puis un _formatter_
 
 On va maintenant améliorer la qualité de notre code en appliquant les standards communautaires.
-Pour cela, on va utiliser le *linter* classique [`PyLint`](https://pylint.readthedocs.io/en/latest/). 
-
-::: {.callout-note}
-N'hésitez pas à taper un code d'erreur sur un moteur de recherche pour obtenir plus d'informations si jamais le message n'est pas clair !
-:::
-
-Pour appliquer le _linter_ à un script `.py`,
-la syntaxe à entrer dans le terminal est la suivante : 
-
-```shell
-$ pylint mon_script.py
-```
+Pour cela, on va utiliser le *linter* classique [`PyLint`](https://pylint.readthedocs.io/en/latest/)
+et le _formatter_ [`Black`](https://github.com/psf/black).
 
 ::: {.callout-important}
 [`PyLint`](https://pylint.readthedocs.io/en/latest/) et [`Black`](https://black.readthedocs.io/en/stable/)

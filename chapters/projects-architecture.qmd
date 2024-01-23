@@ -41,7 +41,7 @@ s'enchainent de manière distincte et claire que lorsque tout est mélangé
 :::
 
 Comme dans le chapitre précédent, l'objectif d'une bonne 
-structure de projets est de favoriser la __lisibilité_
+structure de projets est de favoriser la __lisibilité__
 et la __maintenabilité__ du code. Comme dans le chapitre
 précédent, l'organisation
 d'un projet est l'association de règles formelles
@@ -74,7 +74,7 @@ de _data science_
 3. Adopter les standards communautaires de structure de projets
 4. (Auto)-documenter son projet
 
-Il s'agit donc de la continuité des principes évoqués dans le projet précédent. 
+Il s'agit donc de la continuité des principes évoqués dans le chapitre précédent. 
 
 
 ## Démonstration par l'exemple
@@ -178,7 +178,7 @@ les scripts, les données intermédiaires et les _output_ est assez
 transparent. 
 
 
-# 1️⃣ _Notebooks_
+# 1️⃣ Les _notebooks_ montrent leur limite pour la mise en production
 
 Les _notebooks_ Jupyter sont très pratiques pour tâtonner,
 expérimenter et communiquer. Ils sont donc un point d'entrée
@@ -188,7 +188,7 @@ et en fin de projet (pour la communication).
 Cependant, ils présentent un certain
 nombre d'inconvénients à long terme qui peuvent 
 rendre difficile voire impossible à maintenir le code écrit
-avec dans un notebook:
+dans un _notebook_. Pour les citer, en vrac: 
 
 - tous les objets (fonctions, classes et données)
 sont définis et disponibles dans le même fichier.
@@ -225,11 +225,35 @@ manière:
 - Pas adaptés pour l’automatisation ;
 - Mal gérés par le contrôle de version.
 
+En fait, ces problèmes sont liés à plusieurs enjeux
+spécifiques liés à la _data science_:
+
+* Le début du cycle de vie d'un projet de _data science_
+revêt un aspect expérimental où l'interactivité d'un _notebook_
+est un réel avantage. Cependant, dans une phase ultérieure du cycle
+de vie, la stabilité devient plus importante ;
+* Le développement d'un code de traitement des données est souvent
+non linéaire: on lit les données, on effectue des opérations sur celles-ci,
+produits des sorties (par exemple des tableaux descriptifs)
+avant de revienir en arrière pour compléter la source avec d'autres bases
+et adapter le _pipeline_. Si cette phase exploratoire est non linéaire, renouer
+le fil pour rendre le _pipeline_ linéaire et reproductible nécessite
+une autodiscipline importante. 
+
 
 Les
 recommandations de ce cours visent à rendre le plus léger possible
-la maintenance à long terme de projets _data-science_ en favorisant
+la maintenance à long terme de projets _data science_ en favorisant
 la reprise par d'autres (ou par soi dans le futur).
+La bonne pratique est de privilégier des projets utilisant des
+scripts `Python` autosuffisants (du point de vue des dépendances) qui
+vont être encapsulés dans une chaine de traitement
+plus ou moins formalisée. Selon les projets et l'infrastructure disponible,
+cette dernière pourra
+être un simple script `Python` ou un _pipeline_ plus formel. L'arbitrage
+sur le formalisme à adopter dépend du temps de d
+
+
 
 
 # 2️⃣ Favoriser une structure modulaire
