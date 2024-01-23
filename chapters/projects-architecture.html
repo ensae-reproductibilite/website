@@ -117,22 +117,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
-  <li class="nav-item">
-    <a class="nav-link" href="../index.html" rel="" target="">
- <span class="menu-text">Home</span></a>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-les-bases" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+ <span class="menu-text">Les bases</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-les-bases">    
+        <li>
+    <a class="dropdown-item" href="../chapters/introduction.html" rel="" target="">
+ <span class="dropdown-text">Introduction</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../chapters/introduction.html" rel="" target="">
- <span class="menu-text">Introduction</span></a>
+        <li>
+    <a class="dropdown-item" href="../chapters/linux-101.html" rel="" target="">
+ <span class="dropdown-text">Linux 101</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../chapters/linux-101.html" rel="" target="">
- <span class="menu-text">Linux 101</span></a>
+        <li>
+    <a class="dropdown-item" href="../chapters/git.html" rel="" target="">
+ <span class="dropdown-text">Versionner son code et travailler collaborativement avec Git</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="../chapters/git.html" rel="" target="">
- <span class="menu-text">Git</span></a>
-  </li>  
+    </ul>
+  </li>
   <li class="nav-item">
     <a class="nav-link" href="../chapters/code-quality.html" rel="" target="">
  <span class="menu-text">Qualité du code</span></a>
@@ -205,12 +208,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#tests-unitaires" id="toc-tests-unitaires" class="nav-link" data-scroll-target="#tests-unitaires">Tests unitaires</a></li>
   </ul></li>
   <li><a href="#template-de-projet-data-science" id="toc-template-de-projet-data-science" class="nav-link" data-scroll-target="#template-de-projet-data-science"><em>Template</em> de projet <em>data science</em></a></li>
-  <li><a href="#transformer-son-projet-en-package-python" id="toc-transformer-son-projet-en-package-python" class="nav-link" data-scroll-target="#transformer-son-projet-en-package-python">Transformer son projet en <em>package</em> <code>Python</code></a></li>
-  <li><a href="#vers-la-séparation-du-stockage-du-code-et-des-données-et-de-lenvironnement-dexécution" id="toc-vers-la-séparation-du-stockage-du-code-et-des-données-et-de-lenvironnement-dexécution" class="nav-link" data-scroll-target="#vers-la-séparation-du-stockage-du-code-et-des-données-et-de-lenvironnement-dexécution">Vers la séparation du stockage du code et des données et de l’environnement d’exécution</a>
-  <ul class="collapse">
-  <li><a href="#publication" id="toc-publication" class="nav-link" data-scroll-target="#publication">Publication</a></li>
-  <li><a href="#maintenance" id="toc-maintenance" class="nav-link" data-scroll-target="#maintenance">Maintenance</a></li>
-  </ul></li>
   <li><a href="#références" id="toc-références" class="nav-link" data-scroll-target="#références">Références</a></li>
   </ul>
 </nav>
@@ -439,57 +436,164 @@ $ cookiecutter https://github.com/drivendata/cookiecutter-data-science</code></p
 <summary>
 Structure complète générée par le cookiecutter data science
 </summary>
-<p>├── LICENSE ├── Makefile &lt;- Makefile with commands like <code>make data</code> or <code>make train</code> ├── README.md &lt;- The top-level README for developers using this project. ├── data │ ├── external &lt;- Data from third party sources. │ ├── interim &lt;- Intermediate data that has been transformed. │ ├── processed &lt;- The final, canonical data sets for modeling. │ └── raw &lt;- The original, immutable data dump. │ ├── docs &lt;- A default Sphinx project; see sphinx-doc.org for details │ ├── models &lt;- Trained and serialized models, model predictions, or model summaries │ ├── notebooks &lt;- Jupyter notebooks. Naming convention is a number (for ordering), │ the creator’s initials, and a short <code>-</code> delimited description, e.g. │ <code>1.0-jqp-initial-data-exploration</code>. │ ├── references &lt;- Data dictionaries, manuals, and all other explanatory materials. │ ├── reports &lt;- Generated analysis as HTML, PDF, LaTeX, etc. │ └── figures &lt;- Generated graphics and figures to be used in reporting │ ├── requirements.txt &lt;- The requirements file for reproducing the analysis environment, e.g. │ generated with <code>pip freeze &gt; requirements.txt</code> │ ├── setup.py &lt;- Make this project pip installable with <code>pip install -e</code> ├── src &lt;- Source code for use in this project. │ ├── <strong>init</strong>.py &lt;- Makes src a Python module │ │ │ ├── data &lt;- Scripts to download or generate data │ │ └── make_dataset.py │ │ │ ├── features &lt;- Scripts to turn raw data into features for modeling │ │ └── build_features.py │ │ │ ├── models &lt;- Scripts to train models and then use trained models to make │ │ │ predictions │ │ ├── predict_model.py │ │ └── train_model.py │ │ │ └── visualization &lt;- Scripts to create exploratory and results oriented visualizations │ └── visualize.py │ └── tox.ini &lt;- tox file with settings for running tox; see tox.readthedocs.io ```</p>
-</details>
-</section>
-<section id="transformer-son-projet-en-package-python" class="level1">
-<h1>Transformer son projet en <em>package</em> <code>Python</code></h1>
-<p>Le <em>package</em> est la structure aboutie d’un projet <code>Python</code> autosuffisant. Il s’agit d’une manière formelle de contrôler la reproductibilité d’un projet car:</p>
-<ul>
-<li>le <em>package</em> assure une gestion cohérente des dépendances</li>
-<li>le <em>package</em> offre une certaine structure pour la documentation</li>
-<li>le <em>package</em> facilite la réutilisation du code</li>
-<li>le <em>package</em> permet des économies d’échelle car on peut réutiliser l’un des packages pour un autre projet</li>
-<li>le <em>package</em> facilite le debuggage car il est plus facile d’identifier une erreur quand elle est dans un package</li>
-<li>…</li>
-</ul>
-<p>En <code>Python</code>, le <em>package</em> est une structure peu contraignante si on a adopté les bonnes pratiques de structuration de projet. A partir de la structure modulaire précédemment évoquée, il n’y a qu’un pas vers le package: l’ajout d’un fichier <code>pyproject.toml</code> qui contrôle la construction du <em>package</em> (<a href="https://py-pkgs.org/03-how-to-package-a-python">voir ici</a>).</p>
-<p>Il existe plusieurs outils pour installer un package dans le système à partir d’une structure de fichiers locale[^devtools]. Les deux principaux sont</p>
-<ul>
-<li><a href="https://pypi.org/project/setuptools/"><code>setuptools</code></a></li>
-<li><a href="https://python-poetry.org/"><code>poetry</code></a></li>
-</ul>
-<p>[^devtools] L’équivalent <code>R</code> de ces packages est <a href="https://devtools.r-lib.org/"><code>devtools</code></a></p>
-<p>Le package fait la transition entre un code modulaire et un code portable, concept sur lequel nous reviendrons dans le prochain chapitre.</p>
-</section>
-<section id="vers-la-séparation-du-stockage-du-code-et-des-données-et-de-lenvironnement-dexécution" class="level1">
-<h1>Vers la séparation du stockage du code et des données et de l’environnement d’exécution</h1>
-<p>La séparation du stockage du code et des données ainsi que de l’environnement d’exécution est importante pour plusieurs raisons.</p>
-<p>Tout d’abord, cela permet de garantir la sécurité et l’intégrité des données. En séparant les données du code, il devient plus difficile pour n’importe qui d’accéder aux informations sensibles stockées dans les données.</p>
-<p>En séparant l’environnement d’exécution, il est possible de s’assurer que le code fonctionne de manière cohérente et sans conflit avec d’autres programmes exécutés sur le même système ou n’est pas altéré par des configurations systèmes difficiles à reproduire. Cette séparation facilite également la portabilité et l’adaptation de l’application à différentes plateformes, en permettant de modifier l’environnement d’exécution sans avoir à modifier le code ou les données.</p>
-<p>Le prochain chapitre sera consacré à la gestion des dépendances. Il illustrera la manière dont environnement d’exécution et code d’un projet peuvent être reliés afin de créer de la portabilité.</p>
-<section id="publication" class="level3">
-<h3 class="anchored" data-anchor-id="publication">Publication</h3>
-<p>Quand on débute, on est souvent timide et on désire ne rendre public son code que lorsque celui-ci est propre. C’est une erreur classique:</p>
-<p></p>
-<p>Comme pour nettoyer un appartement, les petits gestes en continu sont beaucoup plus efficace qu’un grand ménage de printemps. Prendre l’habitude de mettre son code immédiatement sur <code>Github</code> vous amènera à adopter de bons gestes.</p>
-</section>
-<section id="maintenance" class="level2">
-<h2 class="anchored" data-anchor-id="maintenance">Maintenance</h2>
-<p>L’objectif des conseils de ce cours est de réduire le coût de la maintenance à long terme en adoptant les structures les plus légères, automatisées et réutilisables.</p>
-<p>Les <em>notebooks</em> Jupyter sont très pratiques pour tâtonner et expérimenter. Cependant, ils présentent un certain nombre d’inconvénients à long terme qui peuvent rendre impossible à maintenir le code écrit avec dans un notebook:</p>
-<ul>
-<li>tous les objets (fonctions, classes et données) sont définis et disponibles dans le même fichier. Le moindre changement à une fonction nécessite de retrouver l’emplacement dans le code, écrire et faire tourner à nouveau une ou plusieurs cellules.</li>
-<li>quand on tâtonne, on écrit du code dans des cellules. Dans un cahier, on utiliserait la marge mais cela n’existe pas avec un notebook. On créé donc de nouvelles cellules, pas nécessairement dans l’ordre. Quand il est nécessaire de faire tourner à nouveau le notebook, cela provoque des erreurs difficile à debugger (il est nécessaire de retrouver l’ordre logique du code, ce qui n’est pas évident).</li>
-<li>les notebooks incitent à faire des copier-coller de cellules et modifier marginalement le code plutôt qu’à utiliser des fonctions.</li>
-<li>il est quasi-impossible d’avoir un versioning avec Git des notebooks qui fonctionne. Les notebooks étant, en arrière plan, de gros fichiers JSON, ils ressemblent plus à des données que des codes sources. Git ne parvient pas à identifier les blocs de code qui ont changé</li>
-<li>passage en production des notebooks coûteux alors qu’un script bien fait est beaucoup plus facile à passer en prod (voir suite cours)</li>
-<li>Jupyter manque d’extensions pour mettre en oeuvre les bonnes pratiques (linters, etc.). VSCode au contraire est très bien</li>
-<li>Risques de révélation de données confidentielles puisque les outputs des blocs de code, par exemple les <code>head</code>, sont écrits en dur dans le code source.</li>
-</ul>
-<p>Globalement, les <em>notebooks</em> sont un bon outil pour tâtonner ou pour faire communiquer. Mais pour maintenir un projet à long terme, il vaut mieux privilégier les scripts. Les recommandations de ce cours visent à rendre le plus léger possible la maintenance à long terme de projets <em>data-science</em> en favorisant la reprise par d’autres (ou par soi dans le futur).</p>
-</section>
-</section>
+<p>├── LICENSE ├── Makefile &lt;- Makefile with commands like <code>make data</code> or <code>make train</code> ├── README.md &lt;- The top-level README for developers using this project. ├── data │ ├── external &lt;- Data from third party sources. │ ├── interim &lt;- Intermediate data that has been transformed. │ ├── processed &lt;- The final, canonical data sets for modeling. │ └── raw &lt;- The original, immutable data dump. │ ├── docs &lt;- A default Sphinx project; see sphinx-doc.org for details │ ├── models &lt;- Trained and serialized models, model predictions, or model summaries │ ├── notebooks &lt;- Jupyter notebooks. Naming convention is a number (for ordering), │ the creator’s initials, and a short <code>-</code> delimited description, e.g. │ <code>1.0-jqp-initial-data-exploration</code>. │ ├── references &lt;- Data dictionaries, manuals, and all other explanatory materials. │ ├── reports &lt;- Generated analysis as HTML, PDF, LaTeX, etc. │ └── figures &lt;- Generated graphics and figures to be used in reporting │ ├── requirements.txt &lt;- The requirements file for reproducing the analysis environment, e.g. │ generated with <code>pip freeze &gt; requirements.txt</code> │ ├── setup.py &lt;- Make this project pip installable with <code>pip install -e</code> ├── src &lt;- Source code for use in this project. │ ├── <strong>init</strong>.py &lt;- Makes src a Python module │ │ │ ├── data &lt;- Scripts to download or generate data │ │ └── make_dataset.py │ │ │ ├── features &lt;- Scripts to turn raw data into features for modeling │ │ └── build_features.py │ │ │ ├── models &lt;- Scripts to train models and then use trained models to make │ │ │ predictions │ │ ├── predict_model.py │ │ └── train_model.py │ │ │ └── visualization &lt;- Scripts to create exploratory and results oriented visualizations │ └── visualize.py │ └── tox.ini &lt;- tox file with settings for running tox; see tox.readthedocs.io</p>
+<pre><code>
+&lt;/details&gt;
+
+# Transformer son projet en _package_ `Python`
+
+Le _package_ est la structure aboutie d'un projet `Python`
+autosuffisant. Il s'agit d'une manière 
+formelle de contrôler 
+la reproductibilité d'un projet car:
+
+- le _package_ assure une gestion cohérente des dépendances
+- le _package_ offre une certaine structure pour la documentation
+- le _package_ facilite la réutilisation du code
+- le _package_ permet des économies d'échelle car on peut réutiliser
+l'un des packages pour un autre projet
+- le _package_ facilite le debuggage car il est
+plus facile d'identifier une erreur quand elle est dans un package
+- ...
+
+En `Python`, le _package_ est une structure peu contraignante si on
+a adopté les bonnes pratiques de structuration de projet. 
+A partir de la structure modulaire précédemment évoquée, il n'y a qu'un pas
+vers le package: l'ajout d'un fichier `pyproject.toml` qui contrôle
+la construction du _package_ ([voir ici](https://py-pkgs.org/03-how-to-package-a-python)).
+
+Il existe plusieurs outils pour installer un package dans le système à
+partir d'une structure de fichiers locale[^devtools]. Les deux principaux sont
+
+- [`setuptools`](https://pypi.org/project/setuptools/)
+- [`poetry`](https://python-poetry.org/)
+
+[^devtools] L'équivalent `R` de ces packages est [`devtools`](https://devtools.r-lib.org/)
+
+Le package fait la transition entre un code modulaire et un code portable, 
+concept sur lequel nous reviendrons dans le prochain chapitre. 
+
+
+# Vers la séparation du stockage du code et des données et de l'environnement d'exécution
+
+La séparation du stockage du code et des données ainsi que de l'environnement d'exécution est importante pour plusieurs raisons.
+
+Tout d'abord, cela permet de garantir la sécurité et l'intégrité des données. En séparant les données du code, il devient plus difficile pour n'importe qui d'accéder aux informations sensibles stockées dans les données. 
+
+En séparant l'environnement d'exécution, il est possible de s'assurer que le code fonctionne de manière cohérente et sans conflit avec d'autres programmes exécutés sur le même système ou n'est pas altéré par des configurations
+systèmes difficiles à reproduire.
+Cette séparation facilite également la portabilité et l'adaptation de
+l'application à différentes plateformes, en permettant de modifier
+l'environnement d'exécution sans avoir à modifier le code ou les données.
+
+Le prochain chapitre sera consacré à la gestion des dépendances. Il illustrera
+la manière dont environnement d'exécution et code d'un projet peuvent
+être reliés afin de créer de la portabilité. 
+
+
+
+### Publication
+
+Quand on débute, on est souvent timide et on désire ne rendre public
+son code que lorsque celui-ci est propre. C'est une erreur classique:
+
+{{&lt; tweet 589068687669243905 &gt;}}
+
+Comme pour nettoyer un appartement, les petits gestes en continu
+sont beaucoup plus efficace qu'un grand ménage de printemps.
+Prendre l'habitude de mettre son code immédiatement sur `Github`
+vous amènera à adopter de bons gestes. 
+
+## Maintenance
+
+
+L'objectif des conseils de ce cours est
+de réduire le coût de la
+maintenance à long terme en adoptant les structures
+les plus légères, automatisées et 
+réutilisables. 
+
+Les _notebooks_ Jupyter sont très pratiques pour tâtonner
+et expérimenter. Cependant, ils présentent un certain
+nombre d'inconvénients à long terme qui peuvent 
+rendre impossible à maintenir le code écrit
+avec dans un notebook:
+
+- tous les objets (fonctions, classes et données)
+sont définis et disponibles dans le même fichier.
+Le moindre changement à une fonction nécessite de retrouver
+l'emplacement dans le code, écrire et faire tourner à nouveau
+une ou plusieurs cellules. 
+- quand on tâtonne, on écrit du code dans des cellules. 
+Dans un cahier, on utiliserait la marge mais cela n'existe
+pas avec un notebook. On créé donc de nouvelles cellules, 
+pas nécessairement dans l'ordre. Quand il est
+nécessaire de faire tourner à nouveau le notebook, cela
+provoque des erreurs difficile à debugger (il est nécessaire
+de retrouver l'ordre logique du code, ce qui n'est pas
+évident). 
+- les notebooks incitent à faire des copier-coller de cellules
+et modifier marginalement le code plutôt qu'à utiliser
+des fonctions. 
+- il est quasi-impossible d'avoir un versioning avec Git des notebooks
+qui fonctionne. Les notebooks étant, en arrière plan, de gros fichiers
+JSON, ils ressemblent plus à des données que des codes sources. Git ne
+parvient pas à identifier les blocs de code qui ont changé
+- passage en production des notebooks coûteux alors qu'un script bien
+fait est beaucoup plus facile à passer en prod (voir suite cours)
+- Jupyter manque d'extensions pour mettre en oeuvre les bonnes pratiques
+(linters, etc.). VSCode au contraire est très bien 
+- Risques de révélation de données confidentielles puisque les outputs
+des blocs de code, par exemple les `head`, sont écrits en dur dans
+le code source. 
+
+Globalement, les _notebooks_ sont un bon outil pour tâtonner ou pour
+faire communiquer. Mais pour maintenir un projet à long terme, 
+il vaut mieux privilégier les scripts. Les
+recommandations de ce cours visent à rendre le plus léger possible
+la maintenance à long terme de projets _data-science_ en favorisant
+la reprise par d'autres (ou par soi dans le futur).
+
+# Isoler la configuration du code
+
+L'exécution d'un code peut dépendre d'éléments de configuration
+comme des jetons
+d'authentification ou des mots de passe
+de connexion à des services qui sont personnels. 
+Ces éléments de configuration n'ont pas vocation à être partagés
+par du code et il est recommandé de les exclure du code. 
+La meilleure manière de transformer ces configurations en paramètre
+est de les isoler dans un script séparé, qui n'est pas partagé,
+et utiliser les variables créées à cette occasion dans le reste
+du programme. 
+
+La manière privilégiée de conserver ce type d'information
+est le format `YAML`. Ce format de fichier
+permet de stocker des informations de manière hiérarchisée
+et flexible
+mais de manière plus lisible que le `JSON`. 
+Ce format sera transformé en dictionnaire `Python` ce
+qui permet des recherches facilitées.
+
+
+Prenons le YAML suivant:
+
+```yaml
+# secrets.yaml
+token:
+    api_insee: "toto"
+    api_github: "tokengh"
+pwd:
+    base_pg: "monmotdepasse"</code></pre>
+<p>L’import de ce fichier se fait avec le package <code>yaml</code> de la manière suivante:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yaml</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">'secrets.yaml'</span>) <span class="im">as</span> f:</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    secrets <span class="op">=</span> yaml.safe_load(f)</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>jeton_insee <span class="op">=</span> secrets[<span class="st">'token'</span>][<span class="st">'api_insee'</span>]</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># utilisation du secret</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details></section>
 <section id="références" class="level1">
 <h1>Références</h1>
 <ul>
