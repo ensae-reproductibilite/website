@@ -201,7 +201,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#démonstration-par-lexemple" id="toc-démonstration-par-lexemple" class="nav-link" data-scroll-target="#démonstration-par-lexemple">Démonstration par l’exemple</a></li>
   </ul></li>
-  <li><a href="#notebooks" id="toc-notebooks" class="nav-link" data-scroll-target="#notebooks">1️⃣ <em>Notebooks</em></a></li>
+  <li><a href="#les-notebooks-montrent-leur-limite-pour-la-mise-en-production" id="toc-les-notebooks-montrent-leur-limite-pour-la-mise-en-production" class="nav-link" data-scroll-target="#les-notebooks-montrent-leur-limite-pour-la-mise-en-production">1️⃣ Les <em>notebooks</em> montrent leur limite pour la mise en production</a></li>
   <li><a href="#favoriser-une-structure-modulaire" id="toc-favoriser-une-structure-modulaire" class="nav-link" data-scroll-target="#favoriser-une-structure-modulaire">2️⃣ Favoriser une structure modulaire</a>
   <ul class="collapse">
   <li><a href="#vers-la-séparation-du-stockage-du-code-et-des-données-et-de-lenvironnement-dexécution" id="toc-vers-la-séparation-du-stockage-du-code-et-des-données-et-de-lenvironnement-dexécution" class="nav-link" data-scroll-target="#vers-la-séparation-du-stockage-du-code-et-des-données-et-de-lenvironnement-dexécution">Vers la séparation du stockage du code et des données et de l’environnement d’exécution</a></li>
@@ -280,7 +280,7 @@ Dérouler les <em>slides</em> ci-dessous ou <a href="https://ensae-reproductibil
 </div>
 </div>
 </div>
-<p>Comme dans le chapitre précédent, l’objectif d’une bonne structure de projets est de favoriser la __lisibilité_ et la <strong>maintenabilité</strong> du code. Comme dans le chapitre précédent, l’organisation d’un projet est l’association de règles formelles liées à la nature d’un langage (manière dont le langage gère l’interdépendance entre plusieurs scripts par exemple) et de conventions arbitraires qui peuvent être amenées à évoluer.</p>
+<p>Comme dans le chapitre précédent, l’objectif d’une bonne structure de projets est de favoriser la <strong>lisibilité</strong> et la <strong>maintenabilité</strong> du code. Comme dans le chapitre précédent, l’organisation d’un projet est l’association de règles formelles liées à la nature d’un langage (manière dont le langage gère l’interdépendance entre plusieurs scripts par exemple) et de conventions arbitraires qui peuvent être amenées à évoluer.</p>
 <p>L’objectif est d’être pragmatique dans la structure du projet et d’adapter celle-ci aux finalités de celui-ci. Selon que le livrable du modèle est une API ou un site web la solution technique mise en oeuvre attendra une structure différente de scripts. Néanmoins, certains principes universels peuvent s’appliquer et rien n’empêche de se laisser une marge d’adaptation si les <em>output</em> du projet sont amenés à évoluer.</p>
 <p>Le premier geste à mettre en oeuvre, qui est non-négociable, est d’utiliser <code>Git</code> (<a href="../chapters/application.html">voir chapitre dédié</a>). Avec <code>Git</code>, les mauvaises pratiques qui risquent de pénaliser le développement ultérieur du projet vont être particulièrement criantes et pourront être corrigées de manière très précoce.</p>
 <p>Les principes généraux sont les suivants:</p>
@@ -290,7 +290,7 @@ Dérouler les <em>slides</em> ci-dessous ou <a href="https://ensae-reproductibil
 <li>Adopter les standards communautaires de structure de projets</li>
 <li>(Auto)-documenter son projet</li>
 </ol>
-<p>Il s’agit donc de la continuité des principes évoqués dans le projet précédent.</p>
+<p>Il s’agit donc de la continuité des principes évoqués dans le chapitre précédent.</p>
 <section id="démonstration-par-lexemple" class="level2">
 <h2 class="anchored" data-anchor-id="démonstration-par-lexemple">Démonstration par l’exemple</h2>
 <p>Voici un exemple d’organisation de projet, qui vous rappelera peut-être des souvenirs :</p>
@@ -371,10 +371,10 @@ Note
 <p>Maintenant, le type de données en entrée de chaine est clair, le lien entre les scripts, les données intermédiaires et les <em>output</em> est assez transparent.</p>
 </section>
 </section>
-<section id="notebooks" class="level1">
-<h1>1️⃣ <em>Notebooks</em></h1>
+<section id="les-notebooks-montrent-leur-limite-pour-la-mise-en-production" class="level1">
+<h1>1️⃣ Les <em>notebooks</em> montrent leur limite pour la mise en production</h1>
 <p>Les <em>notebooks</em> Jupyter sont très pratiques pour tâtonner, expérimenter et communiquer. Ils sont donc un point d’entrée intéressant en début de projet (pour l’expérimentation) et en fin de projet (pour la communication).</p>
-<p>Cependant, ils présentent un certain nombre d’inconvénients à long terme qui peuvent rendre difficile voire impossible à maintenir le code écrit avec dans un notebook:</p>
+<p>Cependant, ils présentent un certain nombre d’inconvénients à long terme qui peuvent rendre difficile voire impossible à maintenir le code écrit dans un <em>notebook</em>. Pour les citer, en vrac:</p>
 <ul>
 <li>tous les objets (fonctions, classes et données) sont définis et disponibles dans le même fichier. Le moindre changement à une fonction nécessite de retrouver l’emplacement dans le code, écrire et faire tourner à nouveau une ou plusieurs cellules.</li>
 <li>quand on tâtonne, on écrit du code dans des cellules. Dans un cahier, on utiliserait la marge mais cela n’existe pas avec un notebook. On créé donc de nouvelles cellules, pas nécessairement dans l’ordre. Quand il est nécessaire de faire tourner à nouveau le notebook, cela provoque des erreurs difficile à debugger (il est nécessaire de retrouver l’ordre logique du code, ce qui n’est pas évident).</li>
@@ -390,7 +390,12 @@ Note
 <li>Pas adaptés pour l’automatisation ;</li>
 <li>Mal gérés par le contrôle de version.</li>
 </ul>
-<p>Les recommandations de ce cours visent à rendre le plus léger possible la maintenance à long terme de projets <em>data-science</em> en favorisant la reprise par d’autres (ou par soi dans le futur).</p>
+<p>En fait, ces problèmes sont liés à plusieurs enjeux spécifiques liés à la <em>data science</em>:</p>
+<ul>
+<li>Le début du cycle de vie d’un projet de <em>data science</em> revêt un aspect expérimental où l’interactivité d’un <em>notebook</em> est un réel avantage. Cependant, dans une phase ultérieure du cycle de vie, la stabilité devient plus importante ;</li>
+<li>Le développement d’un code de traitement des données est souvent non linéaire: on lit les données, on effectue des opérations sur celles-ci, produits des sorties (par exemple des tableaux descriptifs) avant de revienir en arrière pour compléter la source avec d’autres bases et adapter le <em>pipeline</em>. Si cette phase exploratoire est non linéaire, renouer le fil pour rendre le <em>pipeline</em> linéaire et reproductible nécessite une autodiscipline importante.</li>
+</ul>
+<p>Les recommandations de ce cours visent à rendre le plus léger possible la maintenance à long terme de projets <em>data science</em> en favorisant la reprise par d’autres (ou par soi dans le futur). La bonne pratique est de privilégier des projets utilisant des scripts <code>Python</code> autosuffisants (du point de vue des dépendances) qui vont être encapsulés dans une chaine de traitement plus ou moins formalisée. Selon les projets et l’infrastructure disponible, cette dernière pourra être un simple script <code>Python</code> ou un <em>pipeline</em> plus formel. L’arbitrage sur le formalisme à adopter dépend du temps de d</p>
 </section>
 <section id="favoriser-une-structure-modulaire" class="level1">
 <h1>2️⃣ Favoriser une structure modulaire</h1>

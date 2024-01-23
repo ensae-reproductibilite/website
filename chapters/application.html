@@ -197,10 +197,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#partie-0-initialisation-du-projet" id="toc-partie-0-initialisation-du-projet" class="nav-link active" data-scroll-target="#partie-0-initialisation-du-projet">Partie 0 : initialisation du projet</a>
-  <ul class="collapse">
-  <li><a href="#etape-1-forker-le-dépôt-dexemple-et-créer-une-branche-de-travail" id="toc-etape-1-forker-le-dépôt-dexemple-et-créer-une-branche-de-travail" class="nav-link" data-scroll-target="#etape-1-forker-le-dépôt-dexemple-et-créer-une-branche-de-travail">Etape 1 : forker le dépôt d’exemple et créer une branche de travail</a></li>
-  </ul></li>
+  <li><a href="#partie-0-initialisation-du-projet" id="toc-partie-0-initialisation-du-projet" class="nav-link active" data-scroll-target="#partie-0-initialisation-du-projet">Partie 0 : initialisation du projet</a></li>
   <li><a href="#partie-1-qualité-du-script" id="toc-partie-1-qualité-du-script" class="nav-link" data-scroll-target="#partie-1-qualité-du-script">Partie 1 : qualité du script</a>
   <ul class="collapse">
   <li><a href="#etape-1-sassurer-que-le-script-sexécute-correctement" id="toc-etape-1-sassurer-que-le-script-sexécute-correctement" class="nav-link" data-scroll-target="#etape-1-sassurer-que-le-script-sexécute-correctement">Etape 1 : s’assurer que le script s’exécute correctement</a></li>
@@ -288,29 +285,15 @@ Dérouler les <em>slides</em> ci-dessous ou <a href="https://ensae-reproductibil
 </details>
 <p>L’objectif de cette mise en application est d’<strong>illustrer les différentes étapes qui séparent la phase de développement d’un projet de celle de la mise en production</strong>. Elle permettra de mettre en pratique les différents concepts présentés tout au long du cours.</p>
 <p>Celle-ci est un tutoriel pas à pas pour avoir un projet reproductible et disponible sous plusieurs livrables. Toutes les étapes ne sont pas indispensables à tous les projets de <em>data science</em>.</p>
-<p>Nous nous plaçons dans une situation initiale correspondant à la fin de la phase de développement d’un projet de data science. On a un notebook un peu monolithique, qui réalise les étapes classiques d’un <em>pipeline</em> de <em>machine learning</em> :</p>
+<p>Nous nous plaçons dans une situation initiale correspondant à la fin de la phase de développement d’un projet de data science. On a un <em>notebook</em> un peu monolithique, qui réalise les étapes classiques d’un <em>pipeline</em> de <em>machine learning</em> :</p>
 <ul>
 <li>Import de données ;</li>
 <li>Statistiques descriptives et visualisations ;</li>
 <li><em>Feature engineering</em> ;</li>
 <li>Entraînement d’un modèle ;</li>
-<li>Evaluation du modèle</li>
+<li>Evaluation du modèle.</li>
 </ul>
 <p><strong>L’objectif est d’améliorer le projet de manière incrémentale jusqu’à pouvoir le mettre en production, en le valorisant sous une forme adaptée.</strong></p>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Important
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Il est important de bien lire les consignes et d’y aller progressivement. Certaines étapes peuvent être rapides, d’autres plus fastidieuses ; certaines être assez guidées, d’autres vous laisser plus de liberté. Si vous n’effectuez pas une étape, vous risquez de ne pas pouvoir passer à l’étape suivante qui en dépend.</p>
-<p>Bien que l’exercice soit applicable sur toute configuration bien faite, nous recommandons de privilégier l’utilisation du <a href="https://datalab.sspcloud.fr/home">SSP Cloud</a>, où tous les outils nécessaires sont pré-installés et pré-configurés.</p>
-</div>
-</div>
 <details>
 <summary>
 Illustration de notre point de départ
@@ -323,15 +306,56 @@ Illustration de l’horizon vers lequel on se dirige
 </summary>
 <img src="../workflow2.png" class="img-fluid">
 </details>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Il est important de bien lire les consignes et d’y aller progressivement. Certaines étapes peuvent être rapides, d’autres plus fastidieuses ; certaines être assez guidées, d’autres vous laisser plus de liberté. Si vous n’effectuez pas une étape, vous risquez de ne pas pouvoir passer à l’étape suivante qui en dépend.</p>
+<p>Bien que l’exercice soit applicable sur toute configuration bien faite, nous recommandons de privilégier l’utilisation du <a href="https://datalab.sspcloud.fr/home">SSP Cloud</a>, où tous les outils nécessaires sont pré-installés et pré-configurés. Le service <code>VSCode</code> ne sera en effet que le point d’entrée pour l’utilisation d’outils plus exigeants sur le plan de l’infrastructure: <em>Argo</em>, <em>MLFLow</em>, etc.</p>
+</div>
+</div>
 <section id="partie-0-initialisation-du-projet" class="level1">
 <h1>Partie 0 : initialisation du projet</h1>
-<section id="etape-1-forker-le-dépôt-dexemple-et-créer-une-branche-de-travail" class="level2">
-<h2 class="anchored" data-anchor-id="etape-1-forker-le-dépôt-dexemple-et-créer-une-branche-de-travail">Etape 1 : forker le dépôt d’exemple et créer une branche de travail</h2>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Application préliminaire: forker le dépôt d’exemple
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Les premières étapes consistent à mettre en place son environnement de travail sur <code>Github</code>:</p>
 <ul>
-<li><p>Ouvrir un service <code>VSCode</code> sur le <a href="https://datalab.sspcloud.fr/home">SSP Cloud</a>. Vous pouvez aller dans la page <code>My Services</code> et cliquer sur <code>New service</code>. Sinon, vous pouvez lancer le service en cliquant directement <a href="https://datalab.sspcloud.fr/launcher/ide/vscode-python?autoLaunch=false">ici</a>.</p></li>
-<li><p>Générer un jeton d’accès (<em>token</em>) sur <code>GitHub</code> afin de permettre l’authentification en ligne de commande à votre compte. La procédure est décrite <a href="https://docs.sspcloud.fr/onyxia-guide/controle-de-version#creer-un-jeton-dacces-token">ici</a>. Garder le jeton généré de côté.</p></li>
-<li><p>Forker le dépôt <code>Github</code> : <a href="https://github.com/ensae-reproductibilite/application-correction">https://github.com/ensae-reproductibilite/application-correction</a></p></li>
-<li><p>Clôner <strong>votre</strong> dépôt <code>Github</code> en utilisant le terminal depuis <code>Visual Studio</code> (<code>Terminal &gt; New Terminal</code>) :</p></li>
+<li><p>Générer un jeton d’accès (<em>token</em>) sur <code>GitHub</code> afin de permettre l’authentification en ligne de commande à votre compte. La procédure est décrite <a href="https://docs.sspcloud.fr/onyxia-guide/controle-de-version#creer-un-jeton-dacces-token">ici</a>. <strong>Vous ne voyez ce jeton qu’une fois, ne fermez pas la page de suite</strong>.</p></li>
+<li><p>Mettez de côté ce jeton en l’enregistrant dans un gestionnaire de mot de passe ou dans l’espace <em><a href="https://datalab.sspcloud.fr/account/third-party-integration">“Mon compte”</a></em> du <code>SSP Cloud</code>.</p></li>
+<li><p>Forker le dépôt <code>Github</code> : <a href="https://github.com/ensae-reproductibilite/application-correction">https://github.com/ensae-reproductibilite/application-correction</a> en faisant attention à deux choses:</p>
+<ul>
+<li>Renommer le dépôt en <code>ensae-reproductibilite-application-correction.git</code> ;</li>
+<li>Décocher la case <em>“Copy the <code>main</code> branch only”</em> afin de copier également les <em>tags</em> <code>Git</code> qui nous permettront de faire les <em>checkpoint</em></li>
+</ul></li>
+</ul>
+<details>
+<summary>
+Ce que vous devriez voir sur la page de création du <em>fork</em>
+</summary>
+<p><img src="fork-example.png" class="img-fluid"></p>
+</details>
+<p>Il est maintenant possible de ce lancer dans la création de l’environnement de travail:</p>
+<ul>
+<li>Ouvrir un service <code>VSCode</code> sur le <a href="https://datalab.sspcloud.fr/home">SSP Cloud</a>. Vous pouvez aller dans la page <code>My Services</code> et cliquer sur <code>New service</code>. Sinon, vous pouvez initialiser la création du service en cliquant directement <a href="https://datalab.sspcloud.fr/launcher/ide/vscode-python?autoLaunch=false">ici</a>. <strong>Modifier les options suivantes</strong>:
+<ul>
+<li>Dans l’onglet <code>Kubernetes</code>, sélectionner le rôle <code>Admin</code> ;</li>
+<li>Dans l’onglet <code>Networking</code>, cliquer sur “Enable a custom service port” et laisser la valeur par défaut 5000 pour le numéro du port</li>
+</ul></li>
+<li>Clôner <strong>votre</strong> dépôt <code>Github</code> en utilisant le terminal depuis <code>Visual Studio</code> (<code>Terminal &gt; New Terminal</code>) et en passant directement le token dans l’URL selon cette structure:</li>
 </ul>
 <pre class="shell"><code>$ git clone https://&lt;TOKEN&gt;@github.com/&lt;USERNAME&gt;/ensae-reproductibilite-application-correction.git</code></pre>
 <p>où <code>&lt;TOKEN&gt;</code> et <code>&lt;USERNAME&gt;</code> sont à remplacer, respectivement, par le jeton que vous avez généré précédemment et votre nom d’utilisateur.</p>
@@ -339,7 +363,12 @@ Illustration de l’horizon vers lequel on se dirige
 <li>Se placer avec le terminal dans le dossier en question :</li>
 </ul>
 <pre class="shell"><code>$ cd ensae-reproductibilite-application-correction</code></pre>
-</section>
+<ul>
+<li>Se placer sur une branche de travail en faisant:</li>
+</ul>
+<pre class="shell"><code>$ git checkout -b dev</code></pre>
+</div>
+</div>
 </section>
 <section id="partie-1-qualité-du-script" class="level1">
 <h1>Partie 1 : qualité du script</h1>
@@ -353,43 +382,34 @@ Illustration de l’horizon vers lequel on se dirige
 <li><strong>Travail collaboratif</strong> avec <code>Git</code> et <code>GitHub</code> (voir <a href="../chapters/git.html">Rappels <code>Git</code></a>).</li>
 </ul>
 <p>Le plan de la partie est le suivant :</p>
-<!----
-0. :zero: _Forker_ le dépôt et créer une branche de travail
-1. :one: S'assurer que le _notebook_ s'exécute correctement
-2. :two: Modularisation : mise en fonctions et mise en module
-3. :three: Utiliser un `main` script
-4. :four:  Appliquer les standards de qualité de code
-5. :five: Adopter une architecture standardisée de projet
-6. :six: Fixer l'environnement d'exécution
-7. :seven: Stocker les données de manière externe
-8. :eight: Nettoyer le projet `Git`
-9. :nine: Ouvrir une *pull request* sur le dépôt du projet.
-------------->
+<ol type="1">
+<li>S’assurer que le script fonctionne ;</li>
+<li>Nettoyer le code des scories formelles avec un <em>linter</em> et un <em>formatter</em> ;</li>
+<li>Paramétrisation du script ;</li>
+<li>Utilisation de fonctions.</li>
+</ol>
 <p>Nous allons partir de ce <em>Notebook</em> <code>Jupyter</code>, que vous pouvez prévisualiser voire tester en cliquant sur l’un des liens suivants:</p>
-<p><a href="https://datalab.sspcloud.fr/launcher/ide/jupyter-python?autoLaunch=false&amp;init.personalInit=%C2%ABhttps%3A%2F%2Fraw.githubusercontent.com%2Flinogaliana%2Fensae-reproductibilite-website%2Fmaster%2Fpreview-notebook.sh%C2%BB" target="_blank" rel="noopener"><img src="https://img.shields.io/badge/SSPcloud-Tester%20notebook%20sur%20SSP--cloud-informational&amp;color=yellow?logo=Python" alt="Onyxia"></a> <a href="http://colab.research.google.com/github/linogaliana/ensae-reproductibilite-application/blob/main/titanic.ipynb" target="_blank" rel="noopener"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
+<p><em>to do bouton onyxia</em> <a href="https://github.com/ensae-reproductibilite/application-correction/blob/main/titanic.ipynb" target="_blank" rel="noopener"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a></p>
 <section id="etape-1-sassurer-que-le-script-sexécute-correctement" class="level2">
 <h2 class="anchored" data-anchor-id="etape-1-sassurer-que-le-script-sexécute-correctement">Etape 1 : s’assurer que le script s’exécute correctement</h2>
 <p>On va partir du fichier <code>notebook.py</code> qui reprend le contenu du <em>notebook</em><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> mais dans un script classique.</p>
 <p>La première étape est simple, mais souvent oubliée : <strong>vérifier que le code fonctionne correctement</strong>.</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Application 1: corriger les erreurs
-</div>
-</div>
-<div class="callout-body-container callout-body">
+<p>::: {.callout-tip} ## Application 1: corriger les erreurs</p>
 <ul>
 <li>Ouvrir dans <code>VSCode</code> le script <code>titanic.py</code> ;</li>
-<li>Exécuter le script ligne à ligne pour détecter les erreurs ;</li>
+<li>Exécuter le script en ligne de commande (<code>python titanic.py</code>) ou de manière interactive ligne à ligne (<kbd>MAJ</kbd>+<kbd>ENTER</kbd>)pour détecter les erreurs ;</li>
 <li>Corriger les deux erreurs qui empêchent la bonne exécution ;</li>
-<li>Vérifier le fonctionnement du script en utilisant la ligne de commande</li>
+<li>Vérifier le fonctionnement du script en utilisant la ligne de commande:</li>
 </ul>
 <pre class="shell"><code>python titanic.py</code></pre>
-</div>
-</div>
+<p>Le code devrait afficher des sorties.</p>
+<details>
+<summary>
+Aide sur les erreurs rencontrées
+</summary>
+<p>La première erreur rencontrée est une alerte <code>FileNotFoundError</code>, la seconde est liée à un <em>package</em>.</p>
+<details>
+<p>:::</p>
 <p>Il est maintenant temps de <em>commit</em> les changements effectués avec <code>Git</code><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> :</p>
 <pre class="shell"><code>$ git add titanic.py
 $ git commit -m "Corrige l'erreur qui empêchait l'exécution"
@@ -412,25 +432,10 @@ Checkpoint
 </div>
 </div>
 </div>
-</section>
+</details></details></section>
 <section id="etape-2-utiliser-un-linter-puis-un-formatter" class="level2">
 <h2 class="anchored" data-anchor-id="etape-2-utiliser-un-linter-puis-un-formatter">Etape 2: utiliser un <em>linter</em> puis un <em>formatter</em></h2>
-<p>On va maintenant améliorer la qualité de notre code en appliquant les standards communautaires. Pour cela, on va utiliser le <em>linter</em> classique <a href="https://pylint.readthedocs.io/en/latest/"><code>PyLint</code></a>.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>N’hésitez pas à taper un code d’erreur sur un moteur de recherche pour obtenir plus d’informations si jamais le message n’est pas clair !</p>
-</div>
-</div>
-<p>Pour appliquer le <em>linter</em> à un script <code>.py</code>, la syntaxe à entrer dans le terminal est la suivante :</p>
-<pre class="shell"><code>$ pylint mon_script.py</code></pre>
+<p>On va maintenant améliorer la qualité de notre code en appliquant les standards communautaires. Pour cela, on va utiliser le <em>linter</em> classique <a href="https://pylint.readthedocs.io/en/latest/"><code>PyLint</code></a> et le <em>formatter</em> <a href="https://github.com/psf/black"><code>Black</code></a>.</p>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -474,7 +479,7 @@ Application 2: rendre lisible le script
 </div>
 <p>Le code est maintenant lisible, il obtient à ce stade une note formelle proche de 10. Mais il n’est pas encore totalement intelligible ou fiable. Il y a notamment beaucoup de redondance de code auxquelles nous allons nous attaquer par la suite. Néanmoins, avant cela, occupons-nous de mieux gérer certains paramètres du script: jetons d’API et chemin des fichiers.</p>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -483,7 +488,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli2</code></pre>
 <p>ou</p>
@@ -533,7 +538,7 @@ Indice si vous ne trouvez pas comment lire un fichier <code>YAML</code>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -542,7 +547,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli3</code></pre>
 <p>ou</p>
@@ -601,7 +606,7 @@ Important
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -610,7 +615,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli4</code></pre>
 <p>ou</p>
@@ -686,7 +691,7 @@ Etat actuel du projet 🙈
 <p>Comme cela est expliqué dans la partie <a href="../chapters/projects-architecture.html">Structure des projets</a>, on va adopter une structure certes arbitraire mais qui va faciliter l’autodocumentation de notre projet.</p>
 <p>De plus, une telle structure va faciliter des évolutions optionnelles comme la packagisation du projet. Passer d’une structure modulaire bien faite à un <em>package</em> est quasi-immédiat en <code>Python</code>.</p>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -695,7 +700,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-14" class="callout-14-contents callout-collapse collapse">
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli5</code></pre>
 <p>ou</p>
@@ -775,7 +780,7 @@ Application 6: adopter une structure lisible
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -784,7 +789,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-17" class="callout-17-contents callout-collapse collapse">
+<div id="callout-16" class="callout-16-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli6</code></pre>
 <p>ou</p>
@@ -820,7 +825,7 @@ Application 7: création du <code>requirements.txt</code>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -829,7 +834,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-19" class="callout-19-contents callout-collapse collapse">
+<div id="callout-18" class="callout-18-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli7</code></pre>
 <p>ou</p>
@@ -892,7 +897,7 @@ en modifiant l’emplacement de votre bucket personnel
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -901,7 +906,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-22" class="callout-22-contents callout-collapse collapse">
+<div id="callout-21" class="callout-21-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli8</code></pre>
 <p>ou</p>
@@ -987,7 +992,7 @@ TOTAL                              36      7    81%</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-25-contents" aria-controls="callout-25" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-24-contents" aria-controls="callout-24" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -996,7 +1001,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-25" class="callout-25-contents callout-collapse collapse">
+<div id="callout-24" class="callout-24-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli9</code></pre>
 <p>ou</p>
@@ -1120,7 +1125,7 @@ Choose from 1, 2, 3 [1]:</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-28-contents" aria-controls="callout-28" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-27-contents" aria-controls="callout-27" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1129,7 +1134,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-28" class="callout-28-contents callout-collapse collapse">
+<div id="callout-27" class="callout-27-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli10</code></pre>
 </div>
@@ -1195,7 +1200,7 @@ Application 11a: environnement virtuel <code>venv</code>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-30-contents" aria-controls="callout-30" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-29-contents" aria-controls="callout-29" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1204,7 +1209,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-30" class="callout-30-contents callout-collapse collapse">
+<div id="callout-29" class="callout-29-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli11a</code></pre>
 </div>
@@ -1243,7 +1248,7 @@ Application 11b: environnement <code>conda</code>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-32-contents" aria-controls="callout-32" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-31-contents" aria-controls="callout-31" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1252,7 +1257,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-32" class="callout-32-contents callout-collapse collapse">
+<div id="callout-31" class="callout-31-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli11b</code></pre>
 </div>
@@ -1325,7 +1330,7 @@ python3 main.py</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-34-contents" aria-controls="callout-34" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-33-contents" aria-controls="callout-33" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1334,7 +1339,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-34" class="callout-34-contents callout-collapse collapse">
+<div id="callout-33" class="callout-33-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli12a</code></pre>
 </div>
@@ -1393,7 +1398,7 @@ python main.py</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-36-contents" aria-controls="callout-36" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-35-contents" aria-controls="callout-35" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1402,7 +1407,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-36" class="callout-36-contents callout-collapse collapse">
+<div id="callout-35" class="callout-35-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli12b</code></pre>
 </div>
@@ -1545,7 +1550,7 @@ Note
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-40-contents" aria-controls="callout-40" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-39-contents" aria-controls="callout-39" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1554,7 +1559,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-40" class="callout-40-contents callout-collapse collapse">
+<div id="callout-39" class="callout-39-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli13</code></pre>
 </div>
@@ -1634,7 +1639,7 @@ Fichier <code>.github/workflows/ci.yaml</code> obtenu
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-42-contents" aria-controls="callout-42" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-41-contents" aria-controls="callout-41" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1643,7 +1648,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-42" class="callout-42-contents callout-collapse collapse">
+<div id="callout-41" class="callout-41-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli14</code></pre>
 </div>
@@ -1791,7 +1796,7 @@ Application 15d: Tester l’application
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-47-contents" aria-controls="callout-47" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-46-contents" aria-controls="callout-46" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1800,7 +1805,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-47" class="callout-47-contents callout-collapse collapse">
+<div id="callout-46" class="callout-46-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli15</code></pre>
 </div>
@@ -1833,7 +1838,7 @@ Application 16: Un <em>pipeline</em> de <em>machine learning</em>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-49-contents" aria-controls="callout-49" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-48-contents" aria-controls="callout-48" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1842,7 +1847,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-49" class="callout-49-contents callout-collapse collapse">
+<div id="callout-48" class="callout-48-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli16</code></pre>
 </div>
@@ -1896,7 +1901,7 @@ Récupérer le contenu sur <a href="https://raw.githubusercontent.com/ensae-repr
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-51-contents" aria-controls="callout-51" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-50-contents" aria-controls="callout-50" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1905,7 +1910,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-51" class="callout-51-contents callout-collapse collapse">
+<div id="callout-50" class="callout-50-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli17</code></pre>
 </div>
@@ -1947,7 +1952,7 @@ uvicorn api:app --reload --host "0.0.0.0" --port 5000</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-53-contents" aria-controls="callout-53" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-52-contents" aria-controls="callout-52" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1956,7 +1961,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-53" class="callout-53-contents callout-collapse collapse">
+<div id="callout-52" class="callout-52-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli18</code></pre>
 </div>
@@ -2058,7 +2063,7 @@ Fichier <code>deployment/ingress.yaml</code>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-55-contents" aria-controls="callout-55" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-54-contents" aria-controls="callout-54" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2067,7 +2072,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-55" class="callout-55-contents callout-collapse collapse">
+<div id="callout-54" class="callout-54-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli19</code></pre>
 </div>
@@ -2130,7 +2135,7 @@ Note
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-58-contents" aria-controls="callout-58" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-57-contents" aria-controls="callout-57" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2139,7 +2144,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-58" class="callout-58-contents callout-collapse collapse">
+<div id="callout-57" class="callout-57-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli20</code></pre>
 </div>
@@ -2153,7 +2158,7 @@ Checkpoint
 <div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
 
 <ol>
-<li id="fn1"><p>L’export dans un script <code>.py</code> a été fait avec <a href="https://jupytext.readthedocs.io/en/latest/index.html"><code>Jupytext</code></a>. Comme cela n’est pas vraiment l’objet du cours, nous passons cette étape et fournissons directement le script. Mais n’oubliez pas que cette démarche, fréquente quand on a démarré sur un <em>notebook</em> et qu’on désire consolider en faisant la transition vers des scripts, nécessite d’être attentif pour ne pas risquer de faire une erreur.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>L’export dans un script <code>.py</code> a été fait directement depuis <code>VSCode</code>. Comme cela n’est pas vraiment l’objet du cours, nous passons cette étape et fournissons directement le script expurgé du texte intermédiaire. Mais n’oubliez pas que cette démarche, fréquente quand on a démarré sur un <em>notebook</em> et qu’on désire consolider en faisant la transition vers des scripts, nécessite d’être attentif pour ne pas risquer de faire une erreur.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p>Essayez de <em>commit</em> vos changements à chaque étape de l’exercice, c’est une bonne habitude à prendre.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn3"><p>Nous le verrons lorsque nous mettrons en oeuvre l’intégration continue.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn4"><p>Ici, le jeton d’API n’est pas indispensable pour que le code fonctionne. Afin d’éviter une erreur non nécessaire lorsqu’on automatisera le processus, on peut créer une condition qui vérifie la présence ou non de ce fichier.</p>
