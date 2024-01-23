@@ -303,8 +303,7 @@ pour la revue de code: discussions, suggestions de modifications...
 
 # Principe 2️⃣: favoriser une structure modulaire
 
-Les premières conventions à évoquer ont trait à la syntaxe du code et
-ont les objectifs suivants, qui seront détaillés par la suite :
+## Objectifs
 
 - Favoriser la __concision__ pour réduire le risque d'erreur
 et rendre la démarche plus claire ;
@@ -315,163 +314,46 @@ reprend un code écrit il y a quelques temps ;
 un code (paradigme du _don't repeat yourself_) ;
 - Limite les risques d’__erreurs liées aux copier/coller__
 
-Un certain nombre de conseils sont présents dans le [Hitchhiker's Guide to Python](https://docs.python-guide.org/writing/style/)
-qui vise à faire connaître les préceptes du _"Zen of Python"_ (PEP 20).
-[Ce post de blog](https://towardsdatascience.com/the-zen-of-python-a-guide-to-pythons-design-principles-93f3f76d088a) illustre quelques uns
-de ces principes avec des exemples.
+## Avantages des fonctions
 
-::: {.callout-note collapse="true"}
-## Le _Zen de Python_
+Les fonctions ont de nombreux avantages par rapport à de longs
+scripts:
 
-Le _"Zen de Python"_ est une collection de principes pour la programmation en `Python`, écrite par Tim Peters en 2004
-sous la forme d'aphorismes. Ceux-ci
-mettent en lumière la philosophie de conception du langage `Python`.
+- Limite les risques d'erreurs liés aux copier/coller
+- Rend le code plus lisible et plus compact
+- Un seul endroit du code à modifier lorsqu'on souhaite modifier le traitement
+- Facilite la réutilisation et la documentation du code !
 
-Vous pouvez retrouver ces conseils dans `Python` en 
-tapant le code suivant:
+::: {.callout-important}
+## Règle d'or
 
-:::: {.python}
-
-```python
-import this
-```
-
-```
-The Zen of Python, by Tim Peters
-
-Beautiful is better than ugly.
-Explicit is better than implicit.
-Simple is better than complex.
-Complex is better than complicated.
-Flat is better than nested.
-Sparse is better than dense.
-Readability counts.
-Special cases aren't special enough to break the rules.
-Although practicality beats purity.
-Errors should never pass silently.
-Unless explicitly silenced.
-In the face of ambiguity, refuse the temptation to guess.
-There should be one-- and preferably only one --obvious way to do it.
-Although that way may not be obvious at first unless you're Dutch.
-Now is better than never.
-Although never is often better than *right* now.
-If the implementation is hard to explain, it's a bad idea.
-If the implementation is easy to explain, it may be a good idea.
-Namespaces are one honking great idea -- let's do more of those!
-```
-
-::::
-
-:::
-
-### Conseils pour la programmation
-
-Il est conseillé
-de suivre ces deux principes lorsqu'on commence à programmer
-des fonctions (ce qui, comme cela est évoqué par la suite, est
-toujours recommandé).
-
-- Faire attention au type d'objet renvoyé par `Python`.
-Ce langage ne propose pas de typage
-fort,
-il est donc possible qu'une fonction renvoie des objets de nature différente
-selon les cas[^if]. Cela peut amener à des surprises lorsqu'on utilise une 
-telle fonction dans un code. Il est recommandé d'éviter ce comportement
-en proposant des fonctions différentes si l'_output_ d'une fonction
-est de nature différente. Ce principe de précaution (mais aussi d'information)
-renvoie au paradigme de
-la [programmation défensive](https://en.wikipedia.org/wiki/Defensive_programming). 
-
-
-[^if]: Par exemple, à la suite d'une série de
-        conditions `if` (selon les cas une liste, un vecteur,
-        un `DataFrame`, etc.)
-
-- Privilégier la programmation orientée objet lorsqu'une fonction doit
-s'adapter au type d'objet en entrée (par exemple aller chercher des
-éléments différents pour un objet `lm` ou un objet `glm`).
-Cela évite les codes _spaghetti_ 🍝 inutilement complexes qui sont impossibles à débugger.
-
-Néanmoins, il convient d'être pragmatique. La programmation orientée objet peut être
-plus complexe à mettre en oeuvre que la programmation fonctionnelle. Dans de 
-nombreuses situations, cette dernière, si elle est bien faite, suffit largement. 
-
-::: {.callout-note}
-
-## Le code spaghetti
-
-Le code `spaghetti` est un style d'écriture qui favorise l'apparition du syndrome du plat de spaghettis : 
-un code impossible à déméler parce qu'il fait un usage excessif de conditions, d'exceptions en tous sens, de gestion des événements complexes. Il devient quasi-impossible de savoir quelles ont été les conditions à l'origine de telle ou telle erreur sans exécuter ligne à ligne (et celles-ci sont excessivement nombreuses du fait de mauvaises pratiques de programmation) le programme. 
-
-En fait, la programmation spaghetti qualifie tout ce qui ne permet pas de déterminer le qui, le quoi et le comment. Le code est donc plus long à mettre à jour car cela nécessite de remonter un à un le fil des renvois.
-
+Il faut utiliser une [**fonction**]{.red2} dès qu'on utilise une même
+portion de code plus de deux fois ([**_don't repeat yourself_ (DRY)**]{.red2})
 :::
 
 
-# Principe 3️⃣: (auto)documenter son code
+::: {.callout-tip}
+## Règles pour écrire des fonctions **pertinentes**
 
-- Améliorer la __lisibilité__ du code en permettant aux lecteurs
-de comprendre le lien entre les objets créés dans le code
-ainsi que la manière dont un bloc de code s'inscrit
-dans la démarche plus globale ;
-- [Documenter un code](#documentation) ce qui facilite son acquisition
-par d'autres (à condition de ne pas aller dans l'excès de documentation).
+- Une tâche = une fonction
+- Une tâche complexe = un enchaînement de fonctions réalisant chacune une tâche simple
+- Limiter l'utilisation de variables globales.
 
-Un code écrit avec des noms de variables et de fonctions explicites est autant,
-voire plus, informatif que les commentaires qui l’accompagnent.
-C’est pourquoi il est essentiel de respecter des conventions, et de s'y tenir,
-pour le
-choix des noms des objets afin d’assurer la lisibilité des programmes.
-
-Il est recommandé de privilégier l'__autodocumentation__
-à la multiplication de commentaires dans un document. Trop de commentaires fait que
-ceux-ci ne seront
-jamais lus. Ils risquent d'ailleurs de ne pas être actualisés en même temps que le code
-qu'ils accompagnent, ce qui est une source d'erreur potentielle.  
-
-
-::: {.callout-tip collapse="true"}
-## Le _type hinting_, un élément d'autodocumentation
-
-`Python` propose une fonctionalité assez plaisante qui est
-le _`type hinting`_
-([doc officielle](https://docs.python.org/3/library/typing.html)
-et [tutoriel sur realpython.com](https://realpython.com/lessons/type-hinting/)).
-
-Cette approche permet d'indiquer le type d'argument attendu par une fonction
-et celui qui sera renvoyé par la fonction.
-Par exemple, la personne ayant écrit la fonction suivante 
-
-```python
-def calcul_moyenne(df: pd.DataFrame, col : str = "y") -> pd.DataFrame:
-    return df[col].mean()
-```
-
-propose d'utiliser deux types d'inputs (un `DataFrame Pandas` et une chaine de caractère)
-et indique qu'elle renverra un `DataFrame Pandas`.
-A noter que c'est indicatif, non contraignant.
-En effet, le code ci-dessus fonctionnera si on fournit en argument `col` une liste puisque `Pandas` sait gérer cela à l'étape `df[col].mean()`.
-
-Le _type hinting_ est un élément d'autodocumentation puisque grâce à ces _hints_ le code
-suffit à faire comprendre la volonté de la personne l'ayant écrit. 
 :::
 
-# OLD
+En ce qui concerne l'installation des packages, nous allons voir
+dans les parties [Structure de code](/chapters/projects-architecture.html) et [Portabilité](/chapters/portability.qmd)
+qu'il ne faut pas
+gérer ceci dans le script mais dans un élément à part, relatif à l'environnement 
+d'exécution du projet[^environnement]. De même, ces parties présenteront
+des conseils pratiques sur la gestion des jetons d'accès à des API ou bases de données
+qui ne __doivent jamais être inscrites dans un code__. 
 
+[^environnement]: Nous présenterons les deux approches principales en `Python`,
+        leurs points commun et les points par lesquels ils diffèrent : 
+        les environnements virtuels (gérés par un fichier `requirements.txt`)
+        et les environnements conda (gérés par un fichier `environment.yml`)
 
-
-
-
-
-## Concision  {#concision}
-
-
-Un code reproductible doit pouvoir s'exécuter de manière linéaire.
-S'il provoque une erreur, il est important de pouvoir identifier
-l'instruction responsable pour pouvoir _debugger_.
-Comme une démonstration mathématique, un code intelligible 
-doit viser la concision et la simplicité. Les codes très longs
-sont souvent signes de répétitions et sont difficiles à débugger. 
 
 Les scripts trop longs ne sont pas une bonne pratique. Il est préférable
 de diviser l'ensemble des scripts exécutant une
@@ -507,114 +389,84 @@ y = [x*x for x in liste_nombres if x % 2 == 0]
 
 :::
 
-::: {.callout-important}
-## Règle d'or
 
-Il faut utiliser une [**fonction**]{.red2} dès qu'on utilise une même
-portion de code plus de deux fois ([**_don't repeat yourself_ (DRY)**]{.red2})
-:::
+### Conseils pour la programmation
 
+Dans le monde de la programmation en `Python`, il existe deux paradigmes
+différentes:
 
-Les fonctions ont de nombreux avantages par rapport à de longs
-scripts:
-
-- Limite les risques d'erreurs liés aux copier/coller
-- Rend le code plus lisible et plus compact
-- Un seul endroit du code à modifier lorsqu'on souhaite modifier le traitement
-- Facilite la réutilisation et la documentation du code !
-
-::: {.callout-tip}
-## Règles pour écrire des fonctions **pertinentes**
-
-- Une tâche = une fonction
-- Une tâche complexe = un enchaînement de fonctions réalisant chacune une tâche simple
-- Limiter l'utilisation de variables globales.
-
-:::
+* La __programmation fonctionnelle__ est une approche qui construit un 
+code en enchaînant des fonctions, c'est-à-dire des opérations plus ou
+moins standardisées ; 
+* La __programmation orientée objet (POO)__ consiste
+à construire son code en définissant des objets
+d'une certaine _classe_ ayant des
+_attributs_ (les caractéristiques intrinsèques de l'objet)
+et sur lequel on effectue des opérations _ad hoc_ par le biais
+de _méthodes_ qui encapsulent des opérations propres à
+chaque classe. 
 
 
-## Cohérence du script {#coherence}
+<details>
 
-Lister les dépendances est important: 
+<summary>
+Exemple de comparaison des deux paradigmes
+</summary>
 
-- pour des raisons techniques: le logiciel doit savoir où aller
-chercher les fonctions utilisées dans un script pour avoir un code fonctionnel ;
-- pour des raisons conventionnelles: les utilisateurs doivent comprendre les
-dépendances à installer pour être en mesure de réutiliser le code. 
+Merci _ChatGPT_ pour l'exemple:
 
-Les imports se mettent conventionnellement en début de script,
-qu'il s'agisse d'import de packages dans leur ensemble ou seulement de certaines fonctions:
+```{python}
+#| eval: true
+class AverageCalculator:
+    def __init__(self, numbers):
+        self.numbers = numbers
 
-```python
-import pandas as pd
-from sklearn.model_selection import cross_val_score
+    def calculate_average(self):
+        return sum(self.numbers) / len(self.numbers)
+
+# Utilisation
+calculator = AverageCalculator([1, 2, 3, 4, 5])
+print("Moyenne (POO):", calculator.calculate_average())
+
+def calculate_average(numbers):
+    return sum(numbers) / len(numbers)
+
+# Utilisation
+numbers = [1, 2, 3, 4, 5]
+print("Moyenne (PF):", calculate_average(numbers))
 ```
 
-Dans le premier cas, on fait ensuite référence aux fonctions en les faisant 
-précéder du nom du package :
+</details>
 
-```python
-pd.DataFrame([0,1])
-```
+La programmation fonctionnelle est plus intuitive que la
+POO et permet souvent de développer du code plus
+rapidement. La POO est une approche plus formaliste.
+Celle-ci est intéressante lorsqu'une fonction doit
+s'adapter au type d'objet en entrée (par exemple aller chercher des
+poids différents selon le type de modèle [`Pytorch`](https://pytorch.org/vision/0.9/models.html)).
+Cela évite les codes _spaghetti_ 🍝 inutilement complexes qui sont impossibles à débugger.
 
-Cela permet de dire à `Python` d'aller chercher dans le _namespace_ `pd` (alias pour `pandas` qui est lui-même un ensemble de scripts enregistrés sur le disque) la fonction `DataFrame`.
+Néanmoins, il convient d'être pragmatique. La programmation orientée objet peut être
+plus complexe à mettre en oeuvre que la programmation fonctionnelle. Dans de 
+nombreuses situations, cette dernière, si elle est bien faite, suffit largement. 
+Il est utile lorsqu'on développe dans le cadre d'un projet important d'adopter
+une approche dite de __programmation défensive__. Il s'agit d'un principe
+de précaution dans le paradigme de la programmation fonctionnelle qui vise
+à limiter les
+situations imprévues en étant capable
+de gérer, par exemple, un argument d'une fonction inattendu ou un objet
+à la structure différente de celle pour lequel le code a été pensé. 
 
+::: {.callout-note}
 
-::: {.callout-tip collapse="true"}
+## Le code spaghetti
 
-## Quelques conseils complémentaires. 
+Le code `spaghetti` est un style d'écriture qui favorise l'apparition du syndrome du plat de spaghettis : 
+un code impossible à déméler parce qu'il fait un usage excessif de conditions, d'exceptions en tous sens, de gestion des événements complexes. Il devient quasi-impossible de savoir quelles ont été les conditions à l'origine de telle ou telle erreur sans exécuter ligne à ligne (et celles-ci sont excessivement nombreuses du fait de mauvaises pratiques de programmation) le programme. 
 
-En premier lieu, il convient d'adopter
-les mêmes standards que la communauté pour les noms de package. 
-
-```python
-# bien
-import numpy as np
-
-# trompeur
-import numpy as pd
-```
-
-Il faut également
-faire attention aux _namespaces_ pour éviter les conflits entre fonctions.
-Cela implique de ne pas importer l'ensemble des fonctions d'un package de
-la manière suivante:
-
-```python
-from numpy import *
-from math import *
-```
-
-Dans ce cas, on va se retrouver avec des conflits potentiels entre les
-fonctions du package `numpy` et du package `math` qui portent le même
-nom (`floor` par exemple). 
+En fait, la programmation spaghetti qualifie tout ce qui ne permet pas de déterminer le qui, le quoi et le comment. Le code est donc plus long à mettre à jour car cela nécessite de remonter un à un le fil des renvois.
 
 :::
-
-
-En ce qui concerne l'installation des packages, nous allons voir
-dans les parties [Structure de code](/chapters/projects-architecture.html) et [Portabilité](/chapters/portability.qmd)
-qu'il ne faut pas
-gérer ceci dans le script mais dans un élément à part, relatif à l'environnement 
-d'exécution du projet[^environnement].
-
-[^environnement]: Nous présenterons les deux approches principales en `Python`,
-        leurs points commun et les points par lesquels ils diffèrent : 
-        les environnements virtuels (gérés par un fichier `requirements.txt`)
-        et les environnements conda (gérés par un fichier `environment.yml`)
-
-
-
-## Limiter la redondance {#redondance}
-
-Un bon principe à suivre est _"don't repeat yourself !"_ (DRY).
-Celui-ci réduit la charge de code à écrire, à comprendre et à 
-tenir à jour. 
-
-{{< tweet 598532170160873472 >}}
-
-Ce [post](https://www.earthdatascience.org/courses/intro-to-earth-data-science/write-efficient-python-code/intro-to-clean-code/dry-modular-code/) donne quelques bonnes pratiques
-pour réduire la redondance des codes. 
 
 ::: {.callout-tip collapse="true"}
 
@@ -732,20 +584,125 @@ df2[['a','b','e']] = df2[['a','b','e']].apply(fix_missing)
 ```
 :::
 
-## (Auto)documentation {#documentation}
+Un certain nombre de conseils sont présents dans le [Hitchhiker's Guide to Python](https://docs.python-guide.org/writing/style/)
+qui vise à faire connaître les préceptes du _"Zen of Python"_ (PEP 20).
+[Ce post de blog](https://towardsdatascience.com/the-zen-of-python-a-guide-to-pythons-design-principles-93f3f76d088a) illustre quelques uns
+de ces principes avec des exemples.
 
-Un code sans aucun commentaire est très difficile à s'approprier (y compris
-pour la personne qui l'a rédigé et qui y revient quelques semaines plus tard).
-Cependant, un code présentant trop de commentaires est également illisible et
-reflète généralement un défaut de conception du code qui n'est pas assez
-explicite. 
+::: {.callout-note collapse="true"}
+## Le _Zen de Python_
+
+Le _"Zen de Python"_ est une collection de principes pour la programmation en `Python`, écrite par Tim Peters en 2004
+sous la forme d'aphorismes. Ceux-ci
+mettent en lumière la philosophie de conception du langage `Python`.
+
+Vous pouvez retrouver ces conseils dans `Python` en 
+tapant le code suivant:
+
+:::: {.python}
+
+```python
+import this
+```
+
+```
+The Zen of Python, by Tim Peters
+
+Beautiful is better than ugly.
+Explicit is better than implicit.
+Simple is better than complex.
+Complex is better than complicated.
+Flat is better than nested.
+Sparse is better than dense.
+Readability counts.
+Special cases aren't special enough to break the rules.
+Although practicality beats purity.
+Errors should never pass silently.
+Unless explicitly silenced.
+In the face of ambiguity, refuse the temptation to guess.
+There should be one-- and preferably only one --obvious way to do it.
+Although that way may not be obvious at first unless you're Dutch.
+Now is better than never.
+Although never is often better than *right* now.
+If the implementation is hard to explain, it's a bad idea.
+If the implementation is easy to explain, it may be a good idea.
+Namespaces are one honking great idea -- let's do more of those!
+```
+
+::::
+
+:::
+
+
+
+# Principe 3️⃣: (auto)documenter son code
+
+Un code écrit avec des __noms de variables et de fonctions explicites__ est autant,
+voire plus, informatif que les commentaires qui l’accompagnent.
+C’est pourquoi il est essentiel de respecter des conventions, et de s'y tenir,
+pour le
+choix des noms des objets afin d’assurer la lisibilité des programmes.
+
+Il est recommandé de privilégier l'__autodocumentation__
+à la multiplication de commentaires dans un document. Trop de commentaires fait que
+ceux-ci ne seront
+jamais lus. Ils risquent d'ailleurs de ne pas être actualisés en même temps que le code
+qu'ils accompagnent, ce qui est une source d'erreur potentielle.  
+Une documentation est inutile si elle décrit ce qui est intelligible
+par ailleurs en lisant le code: il est donc important
+de documenter le pourquoi plutôt que le comment. 
+
+En résumé,
+les deux grands principes de la documentation au sein d'un script sont les suivants:
+
+- Il est préférable de __documenter le pourquoi plutôt que le comment__. Le _"comment"_ devrait
+être compréhensible à la lecture du code ;
+- Privilégier l'autodocumentation via des __nommages pertinents__.
+
+
+::: {.callout-tip}
+## Comment bien documenter un script ?
+
+- **Minimum** 🚦 : commentaire au début du script pour décrire ce qu'il fait
+- **Bien** 👍 : commenter les parties "délicates" du code
+- **Idéal** 💪 : documenter ses fonctions avec la syntaxe des `docstrings`.
+
+:::
+
+
+::: {.callout-tip collapse="true"}
+## Le _type hinting_, un élément d'autodocumentation
+
+`Python` propose une fonctionalité assez plaisante qui est
+le _`type hinting`_
+([doc officielle](https://docs.python.org/3/library/typing.html)
+et [tutoriel sur realpython.com](https://realpython.com/lessons/type-hinting/)).
+
+Cette approche permet d'indiquer le type d'argument attendu par une fonction
+et celui qui sera renvoyé par la fonction.
+Par exemple, la personne ayant écrit la fonction suivante 
+
+```python
+def calcul_moyenne(df: pd.DataFrame, col : str = "y") -> pd.DataFrame:
+    return df[col].mean()
+```
+
+propose d'utiliser deux types d'inputs (un `DataFrame Pandas` et une chaine de caractère)
+et indique qu'elle renverra un `DataFrame Pandas`.
+A noter que c'est indicatif, non contraignant.
+En effet, le code ci-dessus fonctionnera si on fournit en argument `col` une liste puisque `Pandas` sait gérer cela à l'étape `df[col].mean()`.
+
+Le _type hinting_ est un élément d'autodocumentation puisque grâce à ces _hints_ le code
+suffit à faire comprendre la volonté de la personne l'ayant écrit. 
+:::
+
 
 La documentation vise à présenter la démarche générale, éventuellement
 à travers des exemples, mais aussi à expliciter certains éléments
 du code (une opération qui n'est pas évidente, des arguments de fonction, etc.). 
 La documentation se mélange donc aux instructions visant à être exécutées
 mais s'en distingue. Ces principes sont hérités du paradigme de la 
-_"programmation lettrée"_ (_Literate programming_) dont l'un des 
+**"programmation lettrée"** (_Literate programming_) dont l'un des 
 avocats était Donald Knuth. 
 
 
@@ -766,72 +723,7 @@ une démarche ou des résultats ;
 exemples sont les _docstrings_ `Python` (ou son équivalent `R`, la documentation `Roxygen`).
 
 
-Les deux grands principes de la documentation au sein d'un script sont les suivants:
 
-- Il est préférable de __documenter le pourquoi plutôt que le comment__. Le _"comment"_ devrait
-être compréhensible à la lecture du code ;
-- Privilégier l'autodocumentation via des __nommages pertinents__
-
-
-::: {.callout-tip}
-## Comment bien documenter un script ?
-
-- **Minimum** 🚦 : commentaire au début du script pour décrire ce qu'il fait
-- **Bien** 👍 : commenter les parties "délicates" du code
-- **Idéal** 💪 : documenter ses fonctions avec la syntaxe des `docstrings`.
-
-:::
-
-
-# Isoler la configuration du code
-
-L'exécution d'un code peut dépendre d'éléments de configuration
-comme des jetons
-d'authentification ou des mots de passe
-de connexion à des services qui sont personnels. 
-Ces éléments de configuration n'ont pas vocation à être partagés
-par du code et il est recommandé de les exclure du code. 
-La meilleure manière de transformer ces configurations en paramètre
-est de les isoler dans un script séparé, qui n'est pas partagé,
-et utiliser les variables créées à cette occasion dans le reste
-du programme. 
-
-La manière privilégiée de conserver ce type d'information
-est le format `YAML`. Ce format de fichier
-permet de stocker des informations de manière hiérarchisée
-et flexible
-mais de manière plus lisible que le `JSON`. 
-Ce format sera transformé en dictionnaire `Python` ce
-qui permet des recherches facilitées.
-
-
-Prenons le YAML suivant:
-
-```yaml
-# secrets.yaml
-token:
-    api_insee: "toto"
-    api_github: "tokengh"
-pwd:
-    base_pg: "monmotdepasse"
-```
-
-L'import de ce fichier se fait 
-avec le package `yaml` de la
-manière suivante:
-
-```python
-import yaml
-
-with open('secrets.yaml') as f:
-    secrets = yaml.safe_load(f)
-
-jeton_insee = secrets['token']['api_insee']
-# utilisation du secret
-```
-
-
-# Méthodes complémentaires pour favoriser la qualité d'un script
 
 
 

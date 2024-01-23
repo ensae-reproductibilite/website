@@ -443,6 +443,53 @@ recommandations de ce cours visent à rendre le plus léger possible
 la maintenance à long terme de projets _data-science_ en favorisant
 la reprise par d'autres (ou par soi dans le futur).
 
+# Isoler la configuration du code
+
+L'exécution d'un code peut dépendre d'éléments de configuration
+comme des jetons
+d'authentification ou des mots de passe
+de connexion à des services qui sont personnels. 
+Ces éléments de configuration n'ont pas vocation à être partagés
+par du code et il est recommandé de les exclure du code. 
+La meilleure manière de transformer ces configurations en paramètre
+est de les isoler dans un script séparé, qui n'est pas partagé,
+et utiliser les variables créées à cette occasion dans le reste
+du programme. 
+
+La manière privilégiée de conserver ce type d'information
+est le format `YAML`. Ce format de fichier
+permet de stocker des informations de manière hiérarchisée
+et flexible
+mais de manière plus lisible que le `JSON`. 
+Ce format sera transformé en dictionnaire `Python` ce
+qui permet des recherches facilitées.
+
+
+Prenons le YAML suivant:
+
+```yaml
+# secrets.yaml
+token:
+    api_insee: "toto"
+    api_github: "tokengh"
+pwd:
+    base_pg: "monmotdepasse"
+```
+
+L'import de ce fichier se fait 
+avec le package `yaml` de la
+manière suivante:
+
+```python
+import yaml
+
+with open('secrets.yaml') as f:
+    secrets = yaml.safe_load(f)
+
+jeton_insee = secrets['token']['api_insee']
+# utilisation du secret
+```
+
 
 
 # Références
