@@ -484,59 +484,7 @@ environnements de stockage du code et
 des données seront bien plus efficaces pour vous éviter ces problèmes que tout les conseils de 
 vigilance que vous pourrez trouver ailleurs. 
 
-
-::: {.callout-tip}
-
-## Application 8: utilisation d'un système de stockage distant
-
-A partir de la ligne de commande,
-utiliser l'utilitaire [MinIO](https://min.io/docs/minio/linux/reference/minio-mc.html)
-pour copier les données `data/raw/train.csv` et `data/raw/test.csv` vers votre
-bucket personnel, respectivement dans les dossiers `ensae-reproductibilite/data/raw/train.csv`
-et `ensae-reproductibilite/data/raw/test.csv`. 
-
-<details>
-<summary>Indice</summary>
-
-Structure à adopter:
-
-```shell
-$ mc cp data/raw/train.csv s3/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/train.csv
-$ mc cp data/raw/test.csv s3/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/test.csv
-```
-
-en modifiant l'emplacement de votre bucket personnel
-</details>
-
-- Pour se simplifier la vie, on va utiliser des URL de téléchargement des fichiers
-(comme si ceux-ci étaient sur n'importe quel espace de stockage) plutôt que d'utiliser
-une librairie `S3` compatible comme `boto3` ou `s3fs`. Pour cela, en ligne de
-commande, faire:
-
-```shell
-mc anonymous set download s3/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/
-```
-
-en modifiant `<BUCKET_PERSONNEL>`. Les URL de téléchargement seront de la forme 
-`https://minio.lab.sspcloud.fr/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/test.csv`
-et `https://minio.lab.sspcloud.fr/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/train.csv`
-
-- Modifier `configuration/config.yaml` pour utiliser directement les URL dans l'import ;
-- Modifier les valeurs par défaut dans votre code ; 
-- Supprimer les fichiers `.csv` du dossier `data` de votre projet, on n'en a plus besoin vu qu'on les importe de l'extérieur ;
-- Vérifier le bon fonctionnement de votre application.
-:::
-
-::: {.callout-caution collapse="true"}
-## Checkpoint
-
-```shell
-git checkout appli8
-```
-
-![](/checkpoint.jpg){width=80% fig-align="center"}
-
-:::
+{{< include "./applications/_appli8.qmd" >}}
 
 # Partie 2bis: packagisation de son projet (optionnel)
 
@@ -555,72 +503,30 @@ prend plus de sens dans un _package_, nous pouvons proposer
 dans le projet des exemples d'utilisation de la fonction, ceci peut être pédagogique. 
 
 Nous allons utiliser [`unittest`](https://docs.python.org/3/library/unittest.html)
-pour effectuer des tests unitaires. Cette approche nécessite une maîtrise 
-de la programmation orientée objet.
+pour effectuer des tests unitaires. Cette approche nécessite quelques notions
+de programmation orientée objet ou une bonne discussion avec `ChatGPT`.
 
-::: {.callout-tip}
-
-## Application 9: test unitaire _(optionnel)_
-
-Dans le dossier `src/data/`, créer un fichier `test_create_variable_title.py`[^emplacement].
-
-En s'inspirant de l'[exemple de base](https://docs.python.org/3/library/unittest.html#basic-example),
-créer une classe `TestCreateVariableTitle` qui effectue les opérations suivantes:
-
-- Création d'une fonction `test_create_variable_title_default_variable_name` qui permet 
-de comparer les objets suivants:
-
-    + Création d'un `DataFrame` de test :  
-
-    ```python
-    df = pd.DataFrame({
-                'Name': ['Braund, Mr. Owen Harris', 'Cumings, Mrs. John Bradley (Florence Briggs Thayer)',
-                        'Heikkinen, Miss. Laina', 'Futrelle, Mrs. Jacques Heath (Lily May Peel)',
-                        'Allen, Mr. William Henry', 'Moran, Mr. James',
-                        'McCarthy, Mr. Timothy J', 'Palsson, Master. Gosta Leonard',
-                        'Johnson, Mrs. Oscar W (Elisabeth Vilhelmina Berg)',
-                        'Nasser, Mrs. Nicholas (Adele Achem)'],
-                'Age': [22, 38, 26, 35, 35, 27, 54, 2, 27, 14],
-                'Survived': [0, 1, 1, 1, 0, 0, 0, 0, 1, 1]
-            })
-    ```
-
-    + Utilisation de la fonction `create_variable_title` sur ce `DataFrame`
-    + Comparaison au `DataFrame` attendu:
-
-    ```python
-    expected_result = pd.DataFrame({
-                'Title': ['Mr.', 'Mrs.', 'Miss.', 'Mrs.', 'Mr.', 'Mr.', 'Mr.', 'Master.', 'Mrs.', 'Mrs.'],
-                'Age': [22, 38, 26, 35, 35, 27, 54, 2, 27, 14],
-                'Survived': [0, 1, 1, 1, 0, 0, 0, 0, 1, 1]
-            })
-    ```
-
-- Effectuer le test unitaire en ligne de commande avec `unittest`. Corriger le test unitaire en cas d'erreur. 
-- Si le temps le permet, proposer des variantes pour tenir compte de paramètres (comme la variable `variable_name`)
-ou d'exceptions (comme la gestion du cas _"Dona"_)
-:::
 
 ::: {.callout-note}
 
 Lorsqu'on effectue des tests unitaires, on cherche généralement
 à tester le plus de lignes possibles de son code. On parle de
-taux de couverture (_coverage rate_) pour désigner
+__taux de couverture__ (_coverage rate_) pour désigner
 la statistique mesurant cela. 
 
 Cela peut s'effectuer de la manière suivante avec le package
 [`coverage`](https://coverage.readthedocs.io/en/7.2.2/):
 
 ```shell
-$ coverage run -m pytest test_create_variable_title.py
+$ coverage run -m unittest tests/test_create_variable_title.py
 $ coverage report -m
 
-Name                            Stmts   Miss  Cover   Missing
--------------------------------------------------------------
-import_data.py                     15      6    60%   16-19, 31-34
-test_create_variable_title.py      21      1    95%   54
--------------------------------------------------------------
-TOTAL                              36      7    81%
+Name                                  Stmts   Miss  Cover   Missing
+-------------------------------------------------------------------
+src/features/build_features.py           34     21    38%   35-36, 48-58, 71-74, 85-89, 99-101, 111-113
+tests/test_create_variable_title.py      21      1    95%   54
+-------------------------------------------------------------------
+TOTAL                                    55     22    60%
 ```
 
 Le taux de couverture est souvent mis en avant par les gros
@@ -628,34 +534,19 @@ projets comme indicateur de leur qualité. Il existe d'ailleurs
 des badges `Github` dédiés. 
 :::
 
-[^emplacement]: L'emplacement de ce fichier est amené à évoluer dans le cadre
-    d'une packagisation. Dans un package, ces tests seront dans un dossier
-    spécifique `/tests` car `Python` sait gérer de manière plus formelle
-    les imports de fonctions depuis des modules. Ici, on est dans une 
-    situation transitoire, raison pour laquelle les tests
-    sont dans les mêmes dossiers que les fonctions. 
 
-::: {.callout-caution collapse="true"}
-## Checkpoint
-
-```shell
-git checkout appli9
-```
-
-ou
-
-- [`test_create_variable_title.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application9/test_create_variable_title.py)
-
-Les autres fichiers sont inchangés.
-
-:::
 
 
 ## Étape 2 : transformer son projet en package (optionnel)
 
 Notre projet est modulaire, ce qui le rend assez simple à transformer
-en package, en s'inspirant du `cookiecutter` adapté, issu
+en _package_, en s'inspirant de la structure du `cookiecutter` adapté, issu
 de [cet ouvrage](https://py-pkgs.org/03-how-to-package-a-python#package-structure).
+
+On va créer un _package_ nommé `titanicml` qui encapsule
+tout notre code et qui sera appelé
+par notre script `main.py`. La structure attendue
+est la suivante:
 
 <details>
 <summary>Structure visée</summary>
@@ -665,17 +556,18 @@ ensae-reproductibilite-application
 ├── docs                                    ┐ 
 │   ├── main.py                             │ 
 │   └── notebooks                           │ Package documentation and examples
-│       ├── titanic.ipynb                   │ 
-├── README.md                               ┘ 
+│       └── titanic.ipynb                   │ 
+├── configuration                           ┐ Configuration (pas à partager avec Git)
+│   └── config.yaml                         ┘ 
+├── README.md                                
 ├── pyproject.toml                          ┐ 
 ├── requirements.txt                        │
-├── src                                     │
-│   └── titanicml                           │ Package source code, metadata,
-│       ├── __init__.py                     │ and build instructions 
-│       ├── config.yaml                     │
-│       ├── import_data.py                  │
-│       ├── build_features.py               │ 
-│       └── train_evaluate.py               ┘
+├── titanicml                               │                
+│   ├── __init__.py                         │ Package source code, metadata
+│   ├── config.yaml                         │ and build instructions 
+│   ├── import_data.py                      │
+│   ├── build_features.py                   │ 
+│   └── train_evaluate.py                   ┘
 └── tests                                   ┐
     └── test_create_variable_title.py       ┘ Package tests
 ```
@@ -704,41 +596,11 @@ ensae-reproductibilite-application
 ```
 </details>
 
-::: {.callout-tip}
-
-## Application 10: packagisation _(optionnel)_
-
-- Déplacer les fichiers dans le dossier `src` pour respecter la nouvelle
-arborescence ;
-- Dans `src/titanicml`, créer un fichier vide `__init__.py`[^init] ;
-- Déplacer le fichier de configuration dans le _package_ (nécessaire à la reproductibilité) ;
-- Créer le dossier `docs` et mettre les fichiers indiqués dedans
-- Modifier `src/titanicml/import_data.py` :
-    + Ajouter la variable `config_file = os.path.join(os.path.dirname(__file__), "config.yaml")`. Cela permettra d'utiliser directement le fichier ;
-    + Proposer un argument par défaut à la fonction `import_config_yaml` égal à `config_file`
-- Créer un fichier `pyproject.toml` à partir du contenu de [ce modèle de `pyproject`](https://github.com/linogaliana/ensae-reproductibilite-application/blob/main/checkpoints/application10/pyproject.toml)[^setuptools]
-- Installer le package en local avec `pip install .`
-- Modifier le contenu de `docs/main.py` pour importer les fonctions de notre _package_ `titanicml` et tester en 
-ligne de commande notre fichier `main.py`
-:::
-
-[^init]: Le fichier `__init__.py` indique à `Python` que le dossier
-est un _package_. Il permet de proposer certaines configurations
-lors de l'import du _package_. Il permet également de contrôler
-les objets exportés (c'est-à-dire mis à disposition de l'utilisateur)
-par le _package_ par rapport aux objets internes au _package_. 
-En le laissant vide, nous allons utiliser ce fichier 
-pour importer l'ensemble des fonctions de nos sous-modules. 
-Ce n'est pas la meilleure pratique mais un contrôle plus fin des
-objets exportés demanderait un investissement qui ne vaut, ici, pas
-le coût. 
-
-
-[^setuptools]: Ce `pyproject.toml` est un modèle qui utilise `setuptools`
-    pour _build_ le _package_. C'est l'outil classique. 
-    Néanmoins, pour des usages plus raffinés, 
-    il peut être utile d'utiliser [`poetry`](https://python-poetry.org/)
-    qui propose des fonctionnalités plus complètes.  
+Il existe plusieurs 
+_frameworks_ pour
+construire un _package_. Nous
+allons privilégier [`Poetry`](https://python-poetry.org/)
+à [`Setuptools`](https://pypi.org/project/setuptools/). 
 
 
 ::: {.callout-note}
@@ -782,16 +644,7 @@ Choose from 1, 2, 3 [1]:
 
 :::
 
-::: {.callout-caution collapse="true"}
-## Checkpoint
-
-```shell
-git checkout appli10
-```
-
-:::
-
-
+{{< include "./applications/_appli10.qmd" >}}
 
 # Partie 3 : construction d'un projet portable et reproductible {#partie3}
 

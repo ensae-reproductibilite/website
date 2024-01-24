@@ -1,0 +1,89 @@
+::: {.callout-tip}
+
+## Application 10: packagisation _(optionnel)_
+
+- Renommer le dossier `titanicml` pour respecter la nouvelle
+arborescence ;
+- Dans `titanicml/`, créer un fichier `__init__.py`[^init] ;
+
+```{python}
+#| eval: false
+#| code-summary: "pyproject.toml"
+#| filename: "pyproject.toml"
+[tool.poetry]
+name = "titanicml"
+version = "0.0.1"
+description = "Awesome Machine Learning project"
+authors = ["Daffy Duck <daffy.duck@fauxmail.fr>", "Mickey Mouse"]
+license = "MIT"
+readme = "README.md"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "WARNING"
+log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+```
+
+- Créer le dossier `docs` et mettre les fichiers indiqués dedans
+- Créer un fichier `pyproject.toml` sur cette base
+
+```{python}
+#| eval: false
+#| code-summary: "__init__.py"
+#| filename: "__init__.py"
+from .import_data import (
+    import_data, import_yaml_config
+)
+from .build_features import (
+    create_variable_title,
+    fill_na_titanic,
+    label_encoder_titanic,
+    check_has_cabin,
+    ticket_length
+)
+from .train_evaluate import random_forest_titanic
+
+__all__ = [
+    "import_data", "import_yaml_config",
+    "create_variable_title",
+    "fill_na_titanic",
+    "label_encoder_titanic",
+    "check_has_cabin",
+    "ticket_length",
+    "random_forest_titanic"
+]
+```
+
+- Installer le package en local avec `pip install -e .`
+- Modifier le contenu de `docs/main.py` pour importer les fonctions de notre _package_ `titanicml` et tester en 
+ligne de commande notre fichier `main.py`
+:::
+
+[^init]: Le fichier `__init__.py` indique à `Python` que le dossier
+est un _package_. Il permet de proposer certaines configurations
+lors de l'import du _package_. Il permet également de contrôler
+les objets exportés (c'est-à-dire mis à disposition de l'utilisateur)
+par le _package_ par rapport aux objets internes au _package_. 
+En le laissant vide, nous allons utiliser ce fichier 
+pour importer l'ensemble des fonctions de nos sous-modules. 
+Ce n'est pas la meilleure pratique mais un contrôle plus fin des
+objets exportés demanderait un investissement qui ne vaut, ici, pas
+le coût. 
+
+
+::: {.callout-caution collapse="true"}
+## Checkpoint
+
+```shell
+git checkout appli10
+```
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
+
+:::

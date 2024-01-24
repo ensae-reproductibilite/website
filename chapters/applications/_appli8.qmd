@@ -1,0 +1,52 @@
+::: {.callout-tip}
+
+## Application 8: utilisation d'un système de stockage distant
+
+A partir de la ligne de commande,
+utiliser l'utilitaire [MinIO](https://min.io/docs/minio/linux/reference/minio-mc.html)
+pour copier les données `data/raw/train.csv` et `data/raw/test.csv` vers votre
+bucket personnel, respectivement dans les dossiers `ensae-reproductibilite/data/raw/train.csv`
+et `ensae-reproductibilite/data/raw/test.csv`. 
+
+<details>
+<summary>Indice</summary>
+
+Structure à adopter:
+
+```shell
+$ mc cp data/raw/train.csv s3/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/train.csv
+$ mc cp data/raw/test.csv s3/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/test.csv
+```
+
+en modifiant l'emplacement de votre bucket personnel
+</details>
+
+- Pour se simplifier la vie, on va utiliser des URL de téléchargement des fichiers
+(comme si ceux-ci étaient sur n'importe quel espace de stockage) plutôt que d'utiliser
+une librairie `S3` compatible comme `boto3` ou `s3fs`. Pour cela, en ligne de
+commande, faire:
+
+```shell
+mc anonymous set download s3/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/
+```
+
+en modifiant `<BUCKET_PERSONNEL>`. Les URL de téléchargement seront de la forme 
+`https://minio.lab.sspcloud.fr/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/test.csv`
+et `https://minio.lab.sspcloud.fr/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/train.csv`
+
+- Modifier `configuration/config.yaml` pour utiliser directement les URL dans l'import ;
+- Modifier les valeurs par défaut dans votre code ; 
+- Supprimer les fichiers `.csv` du dossier `data` de votre projet, on n'en a plus besoin vu qu'on les importe de l'extérieur ;
+- Vérifier le bon fonctionnement de votre application.
+:::
+
+::: {.callout-caution collapse="true"}
+## Checkpoint
+
+```shell
+git checkout appli8
+```
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
+:::
