@@ -92,7 +92,7 @@ du `SSP Cloud`.
 Ce que vous devriez voir sur la page de création du _fork_
 </summary>
 
-![](fork-example.png)
+![](/fork-example.png)
 
 </details>
 
@@ -142,13 +142,6 @@ Elle fait intervenir les notions suivantes :
 - **Contrôle de version** avec `Git` (voir [Rappels `Git`](/chapters/git.qmd)) ;
 - **Travail collaboratif** avec `Git` et `GitHub` (voir [Rappels `Git`](/chapters/git.qmd)).
 
-Le plan de la partie est le suivant :
-
-1. S'assurer que le script fonctionne ;
-2. Nettoyer le code des scories formelles avec un _linter_ et un _formatter_ ;
-3. Paramétrisation du script ;
-4. Utilisation de fonctions.
-
 Nous allons partir de ce _Notebook_ `Jupyter`,
 que vous pouvez prévisualiser voire tester
 en cliquant sur l'un des liens suivants:
@@ -156,11 +149,19 @@ en cliquant sur l'un des liens suivants:
 _to do bouton onyxia_
 <a href="https://github.com/ensae-reproductibilite/application-correction/blob/main/titanic.ipynb" target="_blank" rel="noopener"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a>
 
+Le plan de la partie est le suivant :
+
+1. S'assurer que le script fonctionne ;
+2. Nettoyer le code des scories formelles avec un _linter_ et un _formatter_ ;
+3. Paramétrisation du script ;
+4. Utilisation de fonctions.
+
 
 ## Etape 1 : s'assurer que le script s'exécute correctement
 
 On va partir du fichier `notebook.py` qui reprend le contenu 
 du _notebook_[^jupytext] mais dans un script classique.
+Le travail de nettoyage en sera facilité. 
 
 [^jupytext]: L'export dans un script `.py` a été fait
         directement depuis `VSCode`. Comme
@@ -195,9 +196,7 @@ Aide sur les erreurs rencontrées
 La première erreur rencontrée est une alerte `FileNotFoundError`,
 la seconde est liée à un _package_. 
 
-<details>
-
-:::
+</details>
 
 
 Il est maintenant temps de *commit* les changements effectués avec `Git`[^2] :
@@ -209,6 +208,7 @@ $ git add titanic.py
 $ git commit -m "Corrige l'erreur qui empêchait l'exécution"
 $ git push
 ```
+:::
 
 ::: {.callout-caution collapse="true"}
 ## Checkpoint
@@ -220,6 +220,10 @@ git checkout appli1
 ou
 
 [Script _checkpoint_](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application1/titanic.py)
+
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
 :::
 
 
@@ -281,14 +285,17 @@ git checkout appli2
 ou
 
 [`titanic.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application2/titanic.py)
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
 :::
 
 ## Etape 3: gestion des paramètres
 
 L'exécution du code et les résultats obtenus
-dépendent de certains paramètres. L'étude de résultats
+dépendent de certains paramètres définis dans le code. L'étude de résultats
 alternatifs, en jouant sur 
-des variantes des paramètres, est à ce stade compliquée
+des variantes des (hyper)paramètres, est à ce stade compliquée
 car il est nécessaire de parcourir le code pour trouver
 ces paramètres. De plus, certains paramètres personnels
 comme des jetons
@@ -299,35 +306,100 @@ Il est plus judicieux de considérer ces paramètres comme des
 variables d'entrée du script. Cela peut être fait de deux
 manières:
 
-1. Avec des arguments optionnels appelés depuis la ligne de commande.
+1. Avec des arguments optionnels appelés depuis la ligne de commande _(Application 3a)_.
 Cela peut être pratique pour mettre en oeuvre des tests automatisés[^noteCI] mais
 n'est pas forcément pertinent pour toutes les variables. Nous allons montrer
 cet usage avec le nombre d'arbres de notre _random forest_ ;
 2. En utilisant un fichier de configuration dont les valeurs sont importées dans
-le script principal. Nous allons le mettre en oeuvre pour deux types de fichiers:
+le script principal _(Application 3b)_. Nous allons le mettre en oeuvre pour deux types de fichiers:
 les éléments de configuration à partager et ceux à conserver pour soi mais 
 pouvant servir.
 
 [^noteCI]: Nous le verrons lorsque nous mettrons en oeuvre l'intégration continue.
 
-::: {.callout-tip}
-## Application 3: Paramétrisation du script
+<details>
+<summary>
+Un exemple de définition d'un argument pour l'utilisation en ligne de commande
+</summary>
 
-1. En s'inspirant de [cette réponse](https://stackoverflow.com/a/69377311/9197726), 
+```{python}
+#| eval: false
+#| file: prenom.py
+#| filename: prenom.py
+#| code-summary: prenom.py
+import argparse
+parser = argparse.ArgumentParser(description="Qui êtes-vous?")
+parser.add_argument(
+    "--prenom", type=str, default="Toto", help="Un prénom à afficher"
+)
+args = parser.parse_args()
+print(args.prenom)
+```
+
+Exemples d'utilisations en ligne de commande
+
+```shell
+python prenom.py
+python prenom.py --prenom "Zinedine"
+```
+
+</details>
+
+::: {.callout-tip}
+## Application 3a: Paramétrisation du script
+
+1. En s'inspirant de l'exemple ci-dessus 👆️,
 créer une variable `n_trees` qui peut éventuellement être paramétrée en ligne de commande
-et dont la valeur par défaut est 20.
+et dont la valeur par défaut est 20 ;
 2. Tester cette paramétrisation en ligne de commande avec la valeur par défaut
-puis 2, 10 et 50 arbres
-3. Repérer le jeton d’API dans le code. Retirer le jeton d’API du code
-et créer à la racine du projet un fichier YAML nommé `secrets.yaml`
-où vous écrivez ce secret sous la forme `key: value`
-4. Pour éviter d'avoir à le faire plus tard,
+puis 2, 10 et 50 arbres.
+:::
+
+L'exercice suivant permet de mettre en application le fait de paramétriser
+un script en utilisant des variables définies dans un fichier YAML. 
+
+
+::: {.callout-tip}
+## Application 3b: Extraction des secrets
+
+Nous allons mettre 4 paramètres dans notre YAML. Celui-ci prendra la forme suivante:
+
+```{.yaml filename="config.yaml"}
+jeton_api: ####
+train_path: ####
+test_path: ####
+test_fraction: ####
+```
+
+Avec `####` des valeurs à remplacer.
+
+1. Créer à la racine du projet un fichier `config.yaml` à partir du
+modèle 👆️
+2. Repérer les valeurs dans le code associées et compléter
+
+Maintenant, nous allons exploiter ce fichier:
+
+3. Pour éviter d'avoir à le faire plus tard,
 créer une fonction `import_yaml_config` qui prend en argument le
 chemin d'un fichier `YAML`
 et renvoie le contenu de celui-ci en _output_. Vous pouvez suivre
 le conseil du chapitre sur la [Qualité du code](/chapters/code-quality.html)
 en adoptant le _type hinting_.
-5. Créer la variable `API_TOKEN` ayant la valeur stockée dans `secrets.yaml`[^fileexist].
+4. Créer une condition logique pour tenir compte du fait que `config.yaml`
+peut ne pas exister[^fileexist]
+5. Utiliser le canevas de code suivant pour créer les variables adéquates
+
+```{python}
+#| eval: false
+API_TOKEN = config.get("jeton_api")
+TRAIN_PATH = config.get("train_path", "train.csv")
+TEST_PATH = config.get("test_path", "test.csv")
+TEST_FRACTION = config.get("test_fraction", .1)
+```
+
+et remplacer dans le code
+
+5. Créer la variable `API_TOKEN` ayant la valeur stockée dans `secrets.yaml`.
 5. Tester en ligne de commande que l'exécution du fichier est toujours
 sans erreur
 6. Refaire un diagnostic avec [`PyLint`](https://pylint.readthedocs.io/en/latest/)
@@ -343,24 +415,37 @@ pouvoir utiliser l'API.
 [^fileexist]: Ici, le jeton d'API n'est pas indispensable pour que le code
     fonctionne. Afin d'éviter une erreur non nécessaire
     lorsqu'on automatisera le processus, on peut
-    créer une condition qui vérifie la présence ou non de ce fichier. 
-    
-    Cela peut être fait avec la fonction `os.path.exists` :
-
-        if os.path.exists('secrets.yaml'):
-            secrets = import_yaml_config("secrets.yaml")
-
-    La variable `secrets` n'existera que dans le cas où un fichier `secrets.yaml` existe. 
+    créer une condition qui vérifie la présence ou non de ce fichier.
     Le script reste donc reproductible même pour un utilisateur n'ayant pas le fichier
     `secrets.yaml`. 
 
 <details>
 <summary>Indice si vous ne trouvez pas comment lire un fichier `YAML`</summary>
+
 Si le fichier s'appelle `toto.yaml`, vous pouvez l'importer de cette manière:
-```python
+
+```{python}
+#| eval: false
 with open("toto.yaml", "r", encoding="utf-8") as stream:
     dict_config = yaml.safe_load(stream)
 ```
+
+</details>
+
+<details>
+<summary>Indice si vous ne savez comment conditionner la création de la configuration à l'existence du fichier</summary>
+
+Voici la ligne qui peut vous aider. L'idéal
+est d'insérer ceci dans `import_yaml_config`:
+
+```{python}
+#| eval: false
+CONFIG_PATH = 'config.yaml'
+config = {}
+if os.path.exists(CONFIG_PATH):
+    # lecture du fichier
+```
+
 </details>
 
 :::
