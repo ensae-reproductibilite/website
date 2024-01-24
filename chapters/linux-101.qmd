@@ -15,17 +15,22 @@ href: chapters/linux-101.html
 
 ## Pourquoi s'intéresser au terminal Linux ?
 
-Le terminal (ou ligne de commande) est une console interactive qui permet de lancer des commandes. Il existe dans la plupart des systèmes d'exploitation. Mais comme il a la réputation d'être austère et complexe, on utilise plutôt des interfaces graphiques pour effectuer nos opérations informatiques quotidiennes.
+Le terminal (ou ligne de commande) est une console interactive qui permet de lancer des commandes. Il existe dans la plupart des systèmes d'exploitation (y compris avec Windows !). Mais comme il a la réputation d'être austère et complexe, on utilise plutôt des interfaces graphiques pour effectuer nos opérations informatiques quotidiennes.
 
-Pourtant, avoir des notions quant à l'utilisation d'un terminal est une vraie source d'autonomie, dans la mesure où celui-ci permet de gérer bien plus finement les commandes que l'on réalise. Pour le data scientist qui s'intéresse aux bonnes pratiques et à la mise en production, sa maîtrise est essentielle. Les raisons sont multiples :
+Pourtant, avoir des notions quant à l'utilisation d'un terminal est une vraie source d'autonomie, dans la mesure où celui-ci permet de gérer bien plus finement les commandes que l'on réalise. Pour les data scientists qui s'intéressent aux bonnes pratiques et à la mise en production, sa maîtrise est essentielle. Les raisons sont multiples :
 
-- les interfaces graphiques des logiciels sont généralement limitées par rapport à l'utilisation du programme en ligne de commande. C'est par exemple le cas de **Git** et de **Docker**. Dans les deux cas, seul le client en ligne de commande permet de réaliser toutes les opérations permises par le logiciel ;
+- les interfaces graphiques des logiciels sont généralement limitées par rapport à l'utilisation du programme en ligne de commande. C'est par exemple le cas de `Git` et de `Docker`. Dans les deux cas, seul le client en ligne de commande permet de réaliser toutes les opérations permises par le logiciel ;
 
-- mettre un projet de data science en production nécessite d'utiliser un serveur, qui le rend disponible en permanence à son public potentiel. Or là où Windows domine le monde des ordinateurs personnels, une large majorité des serveurs et des infrastructures cloud fonctionnent sous Linux.
+- mettre un projet de _data science_ en production nécessite d'utiliser un serveur, qui le rend disponible en permanence à son public potentiel. Or là où Windows domine le monde des ordinateurs personnels, une large majorité des serveurs et des infrastructures _cloud_ fonctionnent sous `Linux` ;
 
-- plus généralement, une utilisation régulière du terminal est source d'une meilleure compréhension du fonctionnement d'un système de fichiers et de l'exécution des processus sur un ordinateur. Ces connaissances s'avèrent très utiles dans la pratique quotidienne du data scientist, qui nécessite de plus en plus de développer dans différents environnements d'exécution.
+- les principaux langages de programmation des _data scientists_ ({{< fa brands python >}}, {{< fa brands r-project >}}, etc. )
+visent à simplifier l'exécution d'opérations complexes par le biais de la ligne de commande mais héritent néanmoins de
+sa logique. Utiliser la ligne de commande permet de gagner en aisance dans son travail de programmation ;
 
-Dans le cadre de ce cours, on s'intéressera donc particulièrement au terminal Linux.
+- plus généralement, une utilisation régulière du terminal est source d'une meilleure compréhension du fonctionnement d'un système de fichiers et de l'exécution des processus sur un ordinateur. Ces connaissances s'avèrent très utiles dans la pratique quotidienne du _data scientist_, qui nécessite de plus en plus de développer dans différents environnements d'exécution.
+
+Dans le cadre de ce cours, on s'intéressera particulièrement au terminal Linux puisque l'écrasante majorité, si ce n'est
+l'ensemble, des serveurs de mise en production s'appuient sur un système Linux. 
 
 ## Environnement de travail
 
@@ -35,7 +40,7 @@ Différents environnements de travail peuvent être utilisés pour apprendre à 
 
 - [Katacoda](https://katacoda.com/scenario-examples/courses/environment-usages/ubuntu-2004), un bac à sable dans un système Ubuntu, la distribution Linux la plus populaire ;
 
-- sur Windows : Git Bash (émulation minimaliste d'un terminal Linux), qui est installée par défaut avec Git.
+- sur Windows : Git Bash (émulation minimaliste d'un terminal Linux), qui est installée par défaut avec `Git`.
 
 ## Introduction au terminal
 
@@ -44,6 +49,7 @@ Lançons un terminal pour présenter son fonctionnement basique. On prend pour e
 ![](/terminal.png)
 
 Décrivons d'abord les différentes inscriptions qui arrivent à l'initialisation :
+
 - `(base)` : cette inscription n'est pas directement liée au terminal, elle provient du fait que l'on utilise un environnement `conda`. Nous verrons le fonctionnement des environnements virtuels en détail dans le chapitre sur la [portabilité](XXXXXXXX) ;
 - `coder@vscode-824991-64744dd6d8-zbgv5` : le nom de l'utilisateur (ici `coder`) et le nom de la machine (ici, un conteneur, notion que l'on verra là encore dans le chapitre sur la [portabilité](XXXXXX)
 - `~/work` : le chemin du répertoire courant, i.e. à partir duquel va être lancée toute commande. On comprendra mieux la signification de ce chemin dans la section suivante.
@@ -58,6 +64,7 @@ une petite illustration
 ## Notions de *filesystem*
 
 Le terme *filesystem* (système de fichiers) désigne la manière dont sont organisés les fichiers au sein d'un système d'exploitation. Cette structure est hiérarchique, en forme d'arbre :
+
 - elle part d'un répertoire racine (le dossier qui contient tous les autres) ;
 - contient des dossiers ;
 - les dossiers peuvent contenir à leur tout des dossiers (sous-dossiers) ou des fichiers.
@@ -69,6 +76,7 @@ Intéressons nous à la structure du *filesystem* Linux standard.
 Source : [commons.wikimedia.org](https://commons.wikimedia.org/wiki/File:Linux_file_system_foto_no_exif_(1).jpg)
 
 Quelques observations :
+
 - la racine (*root*) sur Linux s'appelle `/`, là où elle s'appelle `C:\` par défaut sur Windows ;
 - le répertoire racine contient un ensemble de sous-dossiers, dont la plupart ont un rôle essentiellement technique. Il est tout de même utile d'en décrire les principaux :
   - `/bin` : contient les binaires, i.e. les programmes exécutables ;
@@ -76,6 +84,7 @@ Quelques observations :
   - `/home` : contient l'ensemble des dossiers et fichiers personnels des différents utilisateurs. Chaque utilisateur a un répertoire dit "HOME" qui a pour chemin `/home/<username>` Ce répertoire est souvent représenté par le symbole `~`. C'était notamment le cas dans l'illustration du terminal VSCode ci-dessus, ce qui signifie qu'on se trouvait formellement dans le répertoire `/home/coder/work`, `coder` étant l'utilisateur par défaut du service VSCode sur le SSP Cloud.
 
 Chaque dossier ou fichier est représenté par un chemin d'accès, qui correspond simplement à sa position dans le *filesystem*. Il existe deux moyens de spécifier un chemin :
+
 - en utilisant un chemin **absolu**, c'est à dire en indiquant le chemin complet du dossier ou fichier depuis la racine. En Linux, on reconnaît donc un chemin absolu par le fait qu'il commence forcément par `/`.
 - en utilisant un chemin **relatif**, c'est à dire en indiquant le chemin du dossier ou fichier *relativement* au répertoire courant.
 
@@ -84,6 +93,7 @@ Comme tout ce qui touche de près ou de loin au terminal, la seule manière de b
 ## Lancer des commandes
 
 Le rôle d'un terminal est de lancer des commandes. Ces commandes peuvent être classées en trois grandes catégories : 
+
 - navigation au sein du *filesystem* 
 - manipulations de fichiers (créer, lire, modifier des dossiers/fichiers)
 - lancement de programmes
@@ -108,6 +118,7 @@ La commande `cd` accepte aussi bien des chemins absolus que des chemins relatifs
 | **cd ~**                       | revenir dans le répertoire HOME de l'utilisateur courant               |
 
 La première commande est l'occasion de revenir sur une convention d'écriture importante pour les chemins relatifs :
+
 - `.` représente le répertoire courant. Ainsi, `cd .` revient à changer de répertoire courant... pour le répertoire courant, ce qui bien sûr ne change rien. Mais le `.` est très utile pour la copie de fichiers (cf. [section suivante](#manipulation)) ou encore lorsque l'on doit passer des paramètres à un programme (cf. section [Lancement de programmes](#lancement)) ;
 - `..` représente le répertoire parent du répertoire courant.
 
@@ -127,6 +138,7 @@ Les commandes suivantes permettent de manipuler le *filesystem*. Il en existe be
 | `touch nomdufichier`              | créer un fichier vide             |
 
 Dans la mesure où il est généralement possible de réaliser toutes ces opérations à l'aide d'interfaces graphiques (notamment, l'explorateur de fichiers), celles-ci sont moins essentielles que celles permettant de se déplacer dans le *filesystem*. Nous vous recommandons malgré tout de les pratiquer également, et ce pour plusieurs raisons :
+
 - effectuer un maximum d'opérations via le terminal permet de bien comprendre son fonctionnement et donc de gagner en autonomie ;
 - en devenant efficient sur ces commandes, vous vous rendrez compte que manipuler le *filesystem* via le terminal est en fait plus rapide que via une interface graphique ;
 - lorsque l'on est amené à manipuler un terminal pour interagir avec un serveur, il n'y a souvent pas la moindre interface graphique, auquel cas il n'y a pas d'autre choix que d'opérer uniquement à partir du terminal.
@@ -134,6 +146,7 @@ Dans la mesure où il est généralement possible de réaliser toutes ces opéra
 ### Lancement de programmes {#lancement}
 
 Le rôle du terminal est de lancer des programmes. Lancer un programme se fait à partir d'un fichier dit exécutable, qui peut être de deux formes :
+
 - un **binaire**, i.e. un programme dont le code n'est pas lisible par l'humain ;
 - un **script**, i.e. un fichier texte contenant une série d'instructions à exécuter. Le langage du terminal Linux est le `shell`, et les scripts associés ont pour extension `.sh`.
 
@@ -152,6 +165,7 @@ toto
 ```
 
 Quelques remarques importantes :
+
 - la syntaxe pour la création de variable est précise : aucun espace d'un côté comme de l'autre du `=` ;
 - en `Shell`, on ne manipule que du texte. Dans notre exemple, on aurait donc pu écrire `MY_VAR=toto` pour le même résultat. Par contre, si l'on veut assigner à une variable une valeur contenant des espaces, les guillemets deviennent indispensables pour ne pas obtenir un message d'erreur ;
 - pour accéder à la valeur d'une variable, on la préfixe d'un `$`.
@@ -223,7 +237,7 @@ $ ./test.sh # Exécuter le script test.sh
 
 ## Les scripts shell
 
-Maintenant que nous avons vu les variables et les permissions, revenons sur les scripts `shell` précédemment évoqués. A l'instar d'un script `Python`, un script `shell` permet d'automatiser une série de commandes lancées dans un terminal. Le but de ce tutoriel n'est pas de savoir écrire des scripts `shell` complexes, travail généralement dévolu aux les *data engineers* ou les *sysadmin* (administrateurs système), mais de comprendre leur structure, leur fonctionnement, et de savoir lancer des scripts simples. Ces compétences sont essentielles lorsque l'on se préoccupe de mise en production. A titre d'exemple, comme nous le verrons dans le chapitre sur la [portabilité](XXXXXXX), il est fréquent d'utiliser un script `shell` comme *entrypoint* d'une image `docker`, afin de spécifier les commandes que doit lancer le conteneur lors de son initialisation.
+Maintenant que nous avons vu les variables et les permissions, revenons sur les scripts `shell` précédemment évoqués. A l'instar d'un script `Python`, un script `shell` permet d'automatiser une série de commandes lancées dans un terminal. Le but de ce tutoriel n'est pas de savoir écrire des scripts `shell` complexes, travail généralement dévolu aux les *data engineers* ou les *sysadmin* (administrateurs système), mais de comprendre leur structure, leur fonctionnement, et de savoir lancer des scripts simples. Ces compétences sont essentielles lorsque l'on se préoccupe de mise en production. A titre d'exemple, comme nous le verrons dans le chapitre sur la [portabilité](/chapters/portability.qmd), il est fréquent d'utiliser un script `shell` comme *entrypoint* d'une image `docker`, afin de spécifier les commandes que doit lancer le conteneur lors de son initialisation.
 
 Illustrons leur structure ainsi que leur fonctionnement à l'aide d'un script simple. Considérons les commandes suivantes, que l'on met dans un fichier `monscript.sh` dans le répertoire courant.
 
@@ -237,6 +251,7 @@ touch $FORMATION_DIR/$SECTION/$CHAPTER/test.txt
 ```
 
 Analysons la structure de ce script :
+
 - la première ligne est classique, elle se nomme le *shebang* : elle indique au système quel interpréteur utiliser pour exécuter ce script. Dans notre cas, et de manière générale, on utilise `bash` (Bourne-Again SHell, l'implémentation moderne du `shell`) ;
 - les lignes 2 et 3 assignent à des variables les arguments passés au script dans la commande. Par défaut, ceux-ci sont assignés à des variables `n` où `n` est la position de l'argument, en commençant à 1 ;
 - la ligne 4 assigne un chemin à une variable
@@ -301,7 +316,7 @@ Reading state information... Done
 All packages are up to date.
 ```
 
-## Tricks
+## _Tricks_
 
 On l'a dit et redit : devenir à l'aise avec le terminal Linux est essentiel et demande de la pratique. Il existe néanmoins quelques astuces qui peuvent grandement simplifier la vie et donc faciliter la prise de bonnes habitudes.
 
