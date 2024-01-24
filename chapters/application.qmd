@@ -266,9 +266,10 @@ python prenom.py --prenom "Zinedine"
 {{< include "./applications/_appli3.qmd" >}}
 
 
-## Étape 4 : Adopter la programmation fonctionnelle
+## Étape 4 : Privilégier la programmation fonctionnelle
 
-Nous allons **mettre en fonctions les parties importantes de l'analyse, et les mettre dans un module afin de pouvoir les importer directement depuis le notebook**.
+Nous allons **mettre en fonctions les parties importantes de l'analyse**. 
+Ceci facilitera l'étape ultérieure de modularisation de notre projet. 
 
 Cet exercice étant chronophage, il n'est __pas obligatoire de le réaliser en entier__. L'important est de
 comprendre la démarche et d'adopter fréquemment une approche fonctionnelle[^POO]. Pour obtenir 
@@ -280,59 +281,14 @@ plus rebutante et demande plus de temps au développeur. L'arbitrage coût-avant
 exemple, nous proposons donc de nous en passer. Néanmoins, pour une mise en production réelle d'un modèle,
 il est recommandé de l'adopter. C'est d'ailleurs obligatoire avec des [_pipelines_ `scikit`](https://pythonds.linogaliana.fr/pipeline-scikit/). 
 
-::: {.callout-tip}
-## Application 4: adoption des standards de programmation fonctionnelle 
+{{< include "./applications/_appli4.qmd" >}}
 
-- Créer une fonction qui importe les données d'entraînement (`train.csv`) et de test (`test.csv`) et renvoie des `DataFrames` `Pandas` ;
-- En fonction du temps disponible, créer plusieurs fonctions pour réaliser les étapes de *feature engineering*:
-    + La création de la variable _"Title"_ peut être automatisée en vertu du principe _"do not repeat yourself"_[^notepandas].
-    + Regrouper ensemble les `fillna` et essayer de créer une fonction généralisant l'opération. 
-    + Les _label encoders_ peuvent être transformés en deux fonctions: une première pour encoder une colonne puis une seconde qui utilise
-    la première de manière répétée pour encoder plusieurs colonnes. _Remarquez les erreurs de copier-coller que cela corrige_
-    + Finaliser les dernières transformations avec des fonctions
-- Créer une fonction qui réalise le *split train/test* de validation en fonction d'un paramètre représentant la proportion de l'échantillon de test.
-- Créer une fonction qui entraîne et évalue un classifieur `RandomForest`, et qui prend en paramètre le nombre d'arbres (`n_estimators`). La fonction doit imprimer à la fin la performance obtenue et la matrice de confusion.
-- Déplacer toutes les fonctions ensemble, en début de script.
-:::
-
-[^notepandas]: Au passage vous pouvez noter que mauvaises pratiques discutables,
-    peuvent
-    être corrigées, notamment l'utilisation excessive de `apply` là où
-    il serait possible d'utiliser des méthodes embarquées par `Pandas`.
-    Cela est plutôt de l'ordre du bon style de programmation que de la
-    qualité formelle du script. Ce n'est donc pas obligatoire mais c'est mieux. 
-
-
-::: {.callout-important}
-Le fait d'appliquer des fonctions a déjà amélioré la fiabilité du processus
-en réduisant le nombre d'erreurs de copier-coller. Néanmoins, pour vraiment
-fiabiliser le processus, il faudrait utiliser un _pipeline_ de transformations
-de données. 
-
-Ceci n'est pas encore au programme du cours mais le sera dans une prochaine 
-version. 
-:::
-
-::: {.callout-caution collapse="true"}
-## Checkpoint
-
-```shell
-git checkout appli4
-```
-
-ou
-
-- [`titanic.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application4/titanic.py)
-
-Les autres fichiers inchangés:
-
-- [`README.md`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/readme.md)
-- [`config.yaml`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/config.yaml)
-- [`secrets.yaml`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/secrets.yaml)
-- [`.gitignore`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/.gitignore)
-
-:::
-
+Cela ne se remarque pas encore vraiment car nous avons de nombreuses définitions de fonctions
+mais notre chaine de production est beaucoup plus
+concise (le script fait environ 300 lignes dont 250 de définitions de fonctions génériques).
+Cette auto-discipline facilitera grandement
+les étapes ultérieures. Cela aurait été néanmoins beaucoup moins coûteux en temps d'adopter
+ces bons gestes de manière plus précoce. 
 
 
 # Partie 2 : adoption d'une structure modulaire {#partie2}
@@ -343,6 +299,11 @@ Ce faisant, on s'est déjà considérablement rapprochés d'un
 possible partage du code : celui-ci est lisible et intelligible. 
 Le code est proprement versionné sur un
 dépôt `GitHub`.
+Cependant, le projet est encore perfectible: il est encore difficile de rentrer
+dedans si on ne sait pas exactement ce qu'on recherche. L'objectif de cette partie
+est d'isoler les différentes étapes de notre _pipeline_. 
+Outre le gain de clarté pour notre projet, nous économiserons beaucoup de peines
+pour la mise en production ultérieure de notre modèle. 
 
 <details>
 <summary>
@@ -351,37 +312,30 @@ Illustration de l'état actuel du projet
 ![](/schema_post_appli4.png)
 </details>
 
+Dans cette partie nous allons continuer les améliorations
+incrémentales de notre projet avec les étapes suivantes:
 
-Néanmoins,
-la structure du projet n'est pas encore normalisée. 
-De plus, 
-l'adoption d'une structure plus modulaire facilitera
-la compréhension de la chaine de traitement.
+1. Modularisation du code `Python` pour séparer les différentes
+étapes de notre _pipeline_ ; 
+2. Adopter une structure standardisée pour notre projet afin
+d'autodocumenter l'organisation de celui-ci ; 
+3. Documenter les _packages_ indispensables à l'exécution du code ;
+4. Stocker les données dans un environnement adéquat
+afin de continuer la démarche de séparer conceptuellement les données du code en de la configuration.
 
 
 ## Étape 1 : modularisation
 
-Fini le temps de l'expérimentation : on va maintenant essayer de se passer complètement du _notebook_.
-Pour cela, on va utiliser un `main` script, c'est à dire un script qui reproduit l'analyse en important et en exécutant les différentes fonctions dans l'ordre attendu.
+Nous allons profiter de la modularisation pour adopter une structure
+applicative pour notre code. Celui-ci n'étant en effet plus lancé
+que la ligne de commande, on peut considérer qu'on construit
+une application générique où un script principal (`main.py`)
+encapsule des éléments issus d'autres scripts. 
+
+{{< include "./applications/_appli5.qmd" >}}
 
 
-::: {.callout-tip}
-## Application 5: modularisation
-
-- Déplacer les fonctions dans une série de fichiers dédiés:
-    +  `import_data.py`: fonctions d'import de données 
-    +  `build_features.py`: fonctions regroupant les étapes de _feature engineering_ 
-    +  `train_evaluate.py`: fonctions d'entrainement et d'évaluation du modèle
-- Spécifier les dépendances (i.e. les packages à importer)
-dans les modules pour que ceux-ci puissent s'exécuter indépendamment ;
-- Renommer `titanic.py` en `main.py` pour suivre la convention de nommage des projets `Python` ;
-- Importer les fonctions nécessaires à partir des modules. ⚠️ Ne pas utiliser `from XXX import *`, ce n'est pas une bonne pratique ! 
-- Vérifier que tout fonctionne bien en exécutant le _script_ `main` à partir de la ligne de commande :
-
-```shell
-$ python main.py
-```
-:::
+## Étape 2 : adopter une architecture standardisée de projet
 
 On dispose maintenant d'une application `Python` fonctionnelle. 
 Néanmoins, le projet est certes plus fiable mais sa structuration
@@ -401,7 +355,7 @@ dans le projet dans quelques temps.
 ├── import_data.py
 ├── build_features.py
 ├── train_evaluate.py
-└──main.py
+└── main.py
 ```
 
 </details>
@@ -409,44 +363,16 @@ dans le projet dans quelques temps.
 Comme cela est expliqué dans la
 partie [Structure des projets](/chapters/projects-architecture.html),
 on va adopter une structure certes arbitraire mais qui va 
-faciliter l'autodocumentation de notre projet.  
-
-De plus, une telle structure va faciliter des évolutions optionnelles
-comme la packagisation du projet. Passer d'une structure modulaire
+faciliter l'autodocumentation de notre projet. De plus, une telle structure va faciliter des évolutions optionnelles
+comme la _packagisation_ du projet. Passer d'une structure modulaire
 bien faite à un _package_ est quasi-immédiat en `Python`. 
 
-::: {.callout-caution collapse="true"}
-## Checkpoint
-
-```shell
-git checkout appli5
-```
-
-ou
-
-- [`build_features.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/build_features.py)
-- [`import_data.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/import_data.py)
-- [`train_evaluate.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/train_evaluate.py)
-- [`main.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/main.py)
-
-Les autres fichiers inchangés:
-
-- [`README.md`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/readme.md)
-- [`config.yaml`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/config.yaml)
-- [`secrets.yaml`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/secrets.yaml)
-- [`.gitignore`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/.gitignore)
-
-:::
-
-## Étape 2 : adopter une architecture standardisée de projet
-
-On va maintenant modifier l'architecture de notre projet pour la rendre plus standardisée.
+On va donc modifier l'architecture de notre projet pour la rendre plus standardisée.
 Pour cela, on va s'inspirer des structures
 [`cookiecutter`](https://cookiecutter.readthedocs.io/en/stable/)
-qui génèrent des _templates_ de projet.
-
-On va s'inspirer de la structure du [_template datascience_](https://drivendata.github.io/cookiecutter-data-science/)
-développé par la communauté.
+qui génèrent des _templates_ de projet. En l'occurrence
+notre source d'inspiration sera le [_template datascience_](https://drivendata.github.io/cookiecutter-data-science/)
+issu d'un effort communautaire.
 
 ::: {.callout-note}
 L'idée de [`cookiecutter`](https://cookiecutter.readthedocs.io/en/stable/) est de proposer des _templates_ que l'on utilise pour __initialiser__ un projet, afin de bâtir à l'avance une structure évolutive. La syntaxe à utiliser dans ce cas est la suivante : 
@@ -462,6 +388,11 @@ Ici, on a déjà un projet, on va donc faire les choses dans l'autre sens : on v
 En s'inspirant du _cookiecutter data science_
 on va adopter la structure suivante:
 
+<details>
+<summary>
+Structure recommandée
+</summary>
+
 ```shell
 ensae-reproductibilite-application
 ├── main.py
@@ -471,7 +402,6 @@ ensae-reproductibilite-application
 │       ├── test.csv
 │       └── train.csv
 ├── configuration
-│   ├── secrets.yaml
 │   └── config.yaml
 ├── notebooks
 │   └── titanic.ipynb
@@ -484,35 +414,10 @@ ensae-reproductibilite-application
         └── train_evaluate.py
 ```
 
-::: {.callout-tip}
+</details>
 
-## Application 6: adopter une structure lisible
+{{< include "./applications/_appli6.qmd" >}}
 
-- _(optionnel)_ Analyser et comprendre la [structure de projet](https://drivendata.github.io/cookiecutter-data-science/#directory-structure) proposée par le template
-- Modifier l'arborescence du projet selon le modèle
-- Adapter les scripts et les fichiers de configuration à la nouvelle arborescence
-- Ajouter le dossier __pycache__ au `.gitignore`[^pycache] et le dossier `data`
-:::
-
-[^pycache]: Il est normal d'avoir des dossiers `__pycache__` qui traînent : ils se créent automatiquement à l'exécution d'un script en `Python`.
-
-::: {.callout-caution collapse="true"}
-## Checkpoint
-
-```shell
-git checkout appli6
-```
-
-ou
-
-- [`build_features.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/build_features.py)
-- [`import_data.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/import_data.py)
-- [`train_evaluate.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/train_evaluate.py)
-- [`main.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/main.py)
-
-Les autres fichiers sont inchangés, à l'exception de leur emplacement.
-
-:::
 
 ### Étape 3: indiquer l'environnement minimal de reproductibilité
 
@@ -528,45 +433,57 @@ Nous proposons de créer un fichier `requirements.txt` minimal, sur lequel nous 
 dans la partie consacrée aux environnements reproductibles. 
 
 Le fichier `requirements.txt` est conventionnellement localisé à la racine du projet.
-Ici on ne va pas fixer les versions, on raffinera ce fichier plus tard.
+Ici on ne va pas fixer les versions, on raffinera ce fichier ultérieurement.
 
-::: {.callout-tip}
+{{< include "./applications/_appli7.qmd" >}}
 
-## Application 7: création du `requirements.txt`
+## Étape 4 : stocker les données de manière externe {#stockageS3}
 
-- Créer un fichier `requirements.txt` avec la liste des packages nécessaires
-- Ajouter une indication dans `README.md` sur l'installation des _packages_ grâce au fichier `requirements.txt` 
-:::
+::: {.callout-warning collapse="true"}
+## Pour en savoir plus sur le système de stockage `S3`
 
-::: {.callout-caution collapse="true"}
-## Checkpoint
-
-```shell
-git checkout appli7
-```
-
-ou
-
-- [`requirements.txt`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application7/requirements.txt)
-- [`README.md`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application7/README.md)
-
-:::
-
-## Étape 3 : stocker les données de manière externe {#stockageS3}
-
-
-::: {.callout-warning}
 Pour mettre en oeuvre cette étape, il peut être utile de
 comprendre un peu comme fonctionne le SSP Cloud.
-Vous devrez suivre la [documentation du SSP Cloud](https://docs.sspcloud.fr/onyxia-guide/stockage-de-donnees) pour la réaliser. Une aide-mémoire est également disponible dans le cours
-de 2e année de l'ENSAE [Python pour la data science](https://linogaliana-teaching.netlify.app/reads3/#)
+Vous devrez suivre la [documentation du SSP Cloud](https://inseefrlab.github.io/docs.sspcloud.fr/docs/fr/storage.html) pour la réaliser. Une aide-mémoire est également disponible dans le cours
+de 2e année de l'ENSAE [Python pour la data science](https://linogaliana-teaching.netlify.app/reads3/#).
 :::
 
-Comme on l'a vu dans le cours ([partie structure des projets](/chapters/project-structure.html)),
-les données ne sont pas censées être versionnées sur un projet `Git`.
 
-L'idéal pour éviter cela tout en maintenant la reproductibilité est d'utiliser une solution de stockage externe.
+Le chapitre sur la [structure des projets](/chapters/project-structure.qmd)
+développe l'idée qu'il est recommandé de converger vers un modèle
+où environnements d'exécution, de stockage du code et des données sont conceptuellement
+séparés. Ce haut niveau d'exigence est un gain de temps important 
+lors de la mise en production car au cours de cette dernière, le projet
+est amené à être exécuté sur une infrastructure informatique dédiée
+qu'il est bon d'anticiper. 
+
+A l'heure actuelle, les données sont stockées dans le dépôt. C'est une
+mauvaise pratique. En premier lieu, `Git` n'est techniquement
+pas bien adapté au stockage de données. Ici ce n'est pas très grave
+car il ne s'agit pas de données volumineuses et ces dernières ne sont
+pas modifiées au cours de notre chaine de traitement. 
+La raison principale
+est que les données traitées par les _data scientists_ 
+sont généralement soumises à des clauses de
+confidentialités ([RGPD](https://www.cnil.fr/fr/rgpd-de-quoi-parle-t-on), [secret statistique](https://www.insee.fr/fr/information/1300624)...). Mettre ces données sous contrôle de version
+c'est prendre le risque de les divulguer à un public non habilité. 
+Il est donc recommandé de privilégier des outils techniques adaptés au
+stockage de données.
+
+L'idéal, dans notre cas, est d'utiliser une solution de stockage externe. 
 On va utiliser pour cela `MinIO`, la solution de stockage de type `S3` offerte par le SSP Cloud. 
+Cela nous permettra de supprimer les données de `Github` tout en maintenant la reproductibilité 
+de notre projet [^history].
+
+[^history]: Attention, les données ont été _committées_ au moins une fois. Les supprimer
+du dépôt ne les efface pas de l'historique. Si cette erreur arrive, le mieux est de supprimer
+le dépôt en ligne, créer un nouvel historique `Git` et partir de celui-ci pour des publications
+ultérieures sur `Github`. Néanmoins l'idéal serait de ne pas s'exposer à cela. C'est justement
+l'objet des bonnes pratiques de ce cours: un `.gitignore` bien construit et une séparation des
+environnements de stockage du code et
+des données seront bien plus efficaces pour vous éviter ces problèmes que tout les conseils de 
+vigilance que vous pourrez trouver ailleurs. 
+
 
 ::: {.callout-tip}
 
@@ -604,9 +521,10 @@ en modifiant `<BUCKET_PERSONNEL>`. Les URL de téléchargement seront de la form
 `https://minio.lab.sspcloud.fr/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/test.csv`
 et `https://minio.lab.sspcloud.fr/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/train.csv`
 
-- Modifier `configuration.yaml` pour utiliser directement les URL dans l'import 
-- Supprimer les fichiers `.csv` du dossier `data` de votre projet, on n'en a plus besoin vu qu'on les importe de l'extérieur
-- Vérifier le bon fonctionnement de votre application
+- Modifier `configuration/config.yaml` pour utiliser directement les URL dans l'import ;
+- Modifier les valeurs par défaut dans votre code ; 
+- Supprimer les fichiers `.csv` du dossier `data` de votre projet, on n'en a plus besoin vu qu'on les importe de l'extérieur ;
+- Vérifier le bon fonctionnement de votre application.
 :::
 
 ::: {.callout-caution collapse="true"}
@@ -616,9 +534,7 @@ et `https://minio.lab.sspcloud.fr/<BUCKET_PERSONNEL>/ensae-reproductibilite/data
 git checkout appli8
 ```
 
-ou
-
-- [`config.yaml`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application8/config.yaml)
+![](/checkpoint.jpg){width=80% fig-align="center"}
 
 :::
 
