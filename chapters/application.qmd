@@ -157,7 +157,7 @@ Le plan de la partie est le suivant :
 4. Utilisation de fonctions.
 
 
-## Etape 1 : s'assurer que le script s'exécute correctement
+## Étape 1 : s'assurer que le script s'exécute correctement
 
 On va partir du fichier `notebook.py` qui reprend le contenu 
 du _notebook_[^jupytext] mais dans un script classique.
@@ -174,60 +174,10 @@ Le travail de nettoyage en sera facilité.
 La première étape est simple, mais souvent oubliée : **vérifier que le code fonctionne correctement**. 
 
 
-::: {.callout-tip}
-## Application 1: corriger les erreurs
-
-- Ouvrir dans `VSCode` le script `titanic.py` ;
-- Exécuter le script en ligne de commande (`python titanic.py`) ou de manière interactive ligne à ligne (<kbd>MAJ</kbd>+<kbd>ENTER</kbd>)pour détecter les erreurs ;
-- Corriger les deux erreurs qui empêchent la bonne exécution ;
-- Vérifier le fonctionnement du script en utilisant la ligne de commande:
-
-```shell
-python titanic.py
-```
-
-Le code devrait afficher des sorties.
-
-<details>
-<summary>
-Aide sur les erreurs rencontrées
-</summary>
-
-La première erreur rencontrée est une alerte `FileNotFoundError`,
-la seconde est liée à un _package_. 
-
-</details>
+{{< include "./applications/_appli1.qmd" >}}
 
 
-Il est maintenant temps de *commit* les changements effectués avec `Git`[^2] :
-
-[^2]: Essayez de *commit* vos changements à chaque étape de l'exercice, c'est une bonne habitude à prendre.
-
-```shell
-$ git add titanic.py
-$ git commit -m "Corrige l'erreur qui empêchait l'exécution"
-$ git push
-```
-:::
-
-::: {.callout-caution collapse="true"}
-## Checkpoint
-
-```shell
-git checkout appli1
-```
-
-ou
-
-[Script _checkpoint_](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application1/titanic.py)
-
-
-![](/checkpoint.jpg){width=80% fig-align="center"}
-
-:::
-
-
-## Etape 2: utiliser un _linter_ puis un _formatter_
+## Étape 2: utiliser un _linter_ puis un _formatter_
 
 On va maintenant améliorer la qualité de notre code en appliquant les standards communautaires.
 Pour cela, on va utiliser le *linter* classique [`PyLint`](https://pylint.readthedocs.io/en/latest/)
@@ -251,21 +201,7 @@ Il renvoie finalement une note sur 10,
 qui estime la qualité du code à l'aune des standards communautaires évoqués
 dans la partie [Qualité du code](/chapters/code-quality.html).
 
-
-::: {.callout-tip}
-## Application 2: rendre lisible le script
-
-- Diagnostiquer et évaluer la qualité de `titanic.py` avec [`PyLint`](https://pylint.readthedocs.io/en/latest/). Regarder la note obtenue.
-- Utiliser `black titanic.py --diff --color` pour observer les changements de forme que va induire l'utilisation du _formatter_ [`Black`](https://black.readthedocs.io/en/stable/)
-- Appliquer le _formatter_ [`Black`](https://black.readthedocs.io/en/stable/)
-- Réutiliser [`PyLint`](https://pylint.readthedocs.io/en/latest/) pour diagnostiquer l'amélioration de la qualité du script et le travail qui reste à faire. 
-- Comme la majorité du travail restant est à consacrer aux imports:
-    - Mettre tous les _imports_ ensemble en début de script
-    - Retirer les _imports_ redondants en s'aidant des diagnostics de votre éditeur
-    - Réordonner les _imports_ si [`PyLint`](https://pylint.readthedocs.io/en/latest/) vous indique de le faire
-    - Corriger les dernières fautes formelles suggérées par [`PyLint`](https://pylint.readthedocs.io/en/latest/)
-- Délimiter des parties dans votre code pour rendre sa structure plus lisible 
-:::
+{{< include "./applications/_appli2.qmd" >}}
 
 Le code est maintenant lisible, il obtient à ce stade une note formelle proche de 10.
 Mais il n'est pas encore totalement intelligible ou fiable.
@@ -275,22 +211,7 @@ Néanmoins, avant cela, occupons-nous de mieux gérer certains paramètres du sc
 jetons d'API et chemin des fichiers.
 
 
-::: {.callout-caution collapse="true"}
-## Checkpoint
-
-```shell
-git checkout appli2
-```
-
-ou
-
-[`titanic.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application2/titanic.py)
-
-![](/checkpoint.jpg){width=80% fig-align="center"}
-
-:::
-
-## Etape 3: gestion des paramètres
+## Étape 3: gestion des paramètres
 
 L'exécution du code et les résultats obtenus
 dépendent de certains paramètres définis dans le code. L'étude de résultats
@@ -306,16 +227,13 @@ Il est plus judicieux de considérer ces paramètres comme des
 variables d'entrée du script. Cela peut être fait de deux
 manières:
 
-1. Avec des arguments optionnels appelés depuis la ligne de commande _(Application 3a)_.
+1. Avec des __arguments optionnels__ appelés depuis la ligne de commande _(Application 3a)_.
 Cela peut être pratique pour mettre en oeuvre des tests automatisés[^noteCI] mais
 n'est pas forcément pertinent pour toutes les variables. Nous allons montrer
 cet usage avec le nombre d'arbres de notre _random forest_ ;
-2. En utilisant un fichier de configuration dont les valeurs sont importées dans
-le script principal _(Application 3b)_. Nous allons le mettre en oeuvre pour deux types de fichiers:
-les éléments de configuration à partager et ceux à conserver pour soi mais 
-pouvant servir.
+2. En utilisant un __fichier de configuration__ dont les valeurs sont importées dans
+le script principal _(Application 3b)_. 
 
-[^noteCI]: Nous le verrons lorsque nous mettrons en oeuvre l'intégration continue.
 
 <details>
 <summary>
@@ -338,139 +256,17 @@ print(args.prenom)
 
 Exemples d'utilisations en ligne de commande
 
-```shell
+```bash
 python prenom.py
 python prenom.py --prenom "Zinedine"
 ```
 
 </details>
 
-::: {.callout-tip}
-## Application 3a: Paramétrisation du script
-
-1. En s'inspirant de l'exemple ci-dessus 👆️,
-créer une variable `n_trees` qui peut éventuellement être paramétrée en ligne de commande
-et dont la valeur par défaut est 20 ;
-2. Tester cette paramétrisation en ligne de commande avec la valeur par défaut
-puis 2, 10 et 50 arbres.
-:::
-
-L'exercice suivant permet de mettre en application le fait de paramétriser
-un script en utilisant des variables définies dans un fichier YAML. 
+{{< include "./applications/_appli3.qmd" >}}
 
 
-::: {.callout-tip}
-## Application 3b: Extraction des secrets
-
-Nous allons mettre 4 paramètres dans notre YAML. Celui-ci prendra la forme suivante:
-
-```{.yaml filename="config.yaml"}
-jeton_api: ####
-train_path: ####
-test_path: ####
-test_fraction: ####
-```
-
-Avec `####` des valeurs à remplacer.
-
-1. Créer à la racine du projet un fichier `config.yaml` à partir du
-modèle 👆️
-2. Repérer les valeurs dans le code associées et compléter
-
-Maintenant, nous allons exploiter ce fichier:
-
-3. Pour éviter d'avoir à le faire plus tard,
-créer une fonction `import_yaml_config` qui prend en argument le
-chemin d'un fichier `YAML`
-et renvoie le contenu de celui-ci en _output_. Vous pouvez suivre
-le conseil du chapitre sur la [Qualité du code](/chapters/code-quality.html)
-en adoptant le _type hinting_.
-4. Créer une condition logique pour tenir compte du fait que `config.yaml`
-peut ne pas exister[^fileexist]
-5. Utiliser le canevas de code suivant pour créer les variables adéquates
-
-```{python}
-#| eval: false
-API_TOKEN = config.get("jeton_api")
-TRAIN_PATH = config.get("train_path", "train.csv")
-TEST_PATH = config.get("test_path", "test.csv")
-TEST_FRACTION = config.get("test_fraction", .1)
-```
-
-et remplacer dans le code
-
-5. Créer la variable `API_TOKEN` ayant la valeur stockée dans `secrets.yaml`.
-5. Tester en ligne de commande que l'exécution du fichier est toujours
-sans erreur
-6. Refaire un diagnostic avec [`PyLint`](https://pylint.readthedocs.io/en/latest/)
-et corriger les éventuels messages. 
-7. Créer un fichier `config.yaml` stockant trois informations: le chemin des données
-d'entraînement, des données de test et la répartition train/test utilisée dans le code. 
-Créer les variables correspondantes dans le code après avoir utilisé `import_yaml_config`
-8. Créer un fichier `.gitignore`. Ajouter dans ce fichier `secrets.yaml`
-car il ne faut pas committer ce fichier.
-8. Créer un fichier `README.md` où vous indiquez qu'il faut créer un fichier `secrets.yaml` pour
-pouvoir utiliser l'API. 
-
-[^fileexist]: Ici, le jeton d'API n'est pas indispensable pour que le code
-    fonctionne. Afin d'éviter une erreur non nécessaire
-    lorsqu'on automatisera le processus, on peut
-    créer une condition qui vérifie la présence ou non de ce fichier.
-    Le script reste donc reproductible même pour un utilisateur n'ayant pas le fichier
-    `secrets.yaml`. 
-
-<details>
-<summary>Indice si vous ne trouvez pas comment lire un fichier `YAML`</summary>
-
-Si le fichier s'appelle `toto.yaml`, vous pouvez l'importer de cette manière:
-
-```{python}
-#| eval: false
-with open("toto.yaml", "r", encoding="utf-8") as stream:
-    dict_config = yaml.safe_load(stream)
-```
-
-</details>
-
-<details>
-<summary>Indice si vous ne savez comment conditionner la création de la configuration à l'existence du fichier</summary>
-
-Voici la ligne qui peut vous aider. L'idéal
-est d'insérer ceci dans `import_yaml_config`:
-
-```{python}
-#| eval: false
-CONFIG_PATH = 'config.yaml'
-config = {}
-if os.path.exists(CONFIG_PATH):
-    # lecture du fichier
-```
-
-</details>
-
-:::
-
-
-::: {.callout-caution collapse="true"}
-## Checkpoint
-
-```shell
-git checkout appli3
-```
-
-ou
-
-- [`titanic.py`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/titanic.py)
-- [`README.md`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/readme.md)
-- [`config.yaml`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/config.yaml)
-- [`secrets.yaml`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/secrets.yaml)
-- [`.gitignore`](https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/.gitignore)
-
-
-:::
-
-
-## Etape 4 : Adopter la programmation fonctionnelle
+## Étape 4 : Adopter la programmation fonctionnelle
 
 Nous allons **mettre en fonctions les parties importantes de l'analyse, et les mettre dans un module afin de pouvoir les importer directement depuis le notebook**.
 
@@ -563,7 +359,7 @@ l'adoption d'une structure plus modulaire facilitera
 la compréhension de la chaine de traitement.
 
 
-## Etape 1 : modularisation
+## Étape 1 : modularisation
 
 Fini le temps de l'expérimentation : on va maintenant essayer de se passer complètement du _notebook_.
 Pour cela, on va utiliser un `main` script, c'est à dire un script qui reproduit l'analyse en important et en exécutant les différentes fonctions dans l'ordre attendu.
@@ -642,7 +438,7 @@ Les autres fichiers inchangés:
 
 :::
 
-## Etape 2 : adopter une architecture standardisée de projet
+## Étape 2 : adopter une architecture standardisée de projet
 
 On va maintenant modifier l'architecture de notre projet pour la rendre plus standardisée.
 Pour cela, on va s'inspirer des structures
@@ -718,7 +514,7 @@ Les autres fichiers sont inchangés, à l'exception de leur emplacement.
 
 :::
 
-### Etape 3: indiquer l'environnement minimal de reproductibilité
+### Étape 3: indiquer l'environnement minimal de reproductibilité
 
 Le script `main.py` nécessite un certain nombre de packages pour
 être fonctionnel. Chez vous les packages nécessaires sont
@@ -756,7 +552,7 @@ ou
 
 :::
 
-## Etape 3 : stocker les données de manière externe {#stockageS3}
+## Étape 3 : stocker les données de manière externe {#stockageS3}
 
 
 ::: {.callout-warning}
@@ -832,7 +628,7 @@ Cette série d'actions n'est pas forcément pertinente pour tous
 les projets. Elle fait un peu la transition entre la modularité
 et la portabilité. 
 
-## Etape 1 : proposer des tests unitaires (optionnel)
+## Étape 1 : proposer des tests unitaires (optionnel)
 
 Notre code comporte un certain nombre de fonctions génériques.
 On peut vouloir tester leur usage sur des données standardisées,
@@ -939,7 +735,7 @@ Les autres fichiers sont inchangés.
 :::
 
 
-## Etape 2 : transformer son projet en package (optionnel)
+## Étape 2 : transformer son projet en package (optionnel)
 
 Notre projet est modulaire, ce qui le rend assez simple à transformer
 en package, en s'inspirant du `cookiecutter` adapté, issu
@@ -1135,7 +931,7 @@ git checkout appli8
 ```
 
 
-## Etape 1 : un environnement pour rendre le projet portable {#anaconda}
+## Étape 1 : un environnement pour rendre le projet portable {#anaconda}
 
 Pour qu'un projet soit portable, il doit remplir deux conditions:
 
@@ -1259,7 +1055,7 @@ git checkout appli11b
 
 :::
 
-## Etape 2: construire l'environnement de notre application via un script `shell`
+## Étape 2: construire l'environnement de notre application via un script `shell`
 
 Les environnements virtuels permettent de mieux spécifier les dépendances de notre projet, mais ne permettent pas de garantir une portabilité optimale. Pour cela, il faut recourir à la technologie des conteneurs. L'idée est de construire une machine, en partant d'une base quasi-vierge, qui permette de construire étape par étape l'environnement nécessaire au bon fonctionnement de notre projet. C'est le principe des conteneurs `Docker`.
 
@@ -1393,7 +1189,7 @@ git checkout appli12b
 :::
 
 
-## Etape 3: conteneuriser l'application avec `Docker` {#docker}
+## Étape 3: conteneuriser l'application avec `Docker` {#docker}
 
 
 ::: {.callout-note}
@@ -1569,7 +1365,7 @@ sur le modèle de notre `linter` précédent
 Nous allons utiliser `Github Actions` pour cela. 
 
 
-## Etape 1: mise en place de tests automatisés
+## Étape 1: mise en place de tests automatisés
 
 Avant d'essayer de mettre en oeuvre la création de notre image
 `Docker` de manière automatisée, nous allons présenter la logique
@@ -1659,7 +1455,7 @@ afin de la rétablir immédiatemment.
 
 
 
-## Etape 2: Automatisation de la livraison de l'image `Docker`
+## Étape 2: Automatisation de la livraison de l'image `Docker`
 
 Maintenant, nous allons automatiser la mise à disposition de notre image
 sur `DockerHub`. Cela facilitera sa réutilisation mais aussi des
@@ -1812,7 +1608,7 @@ git checkout appli15
 
 # Partie 5: mise en production d'une API servant un modèle de machine learning
 
-## Etape 1: création d'un pipeline `scikit`
+## Étape 1: création d'un pipeline `scikit`
 
 
 Notre code respecte des bonnes pratiques formelles. Cependant, la mise en
@@ -1857,7 +1653,7 @@ git checkout appli16
 
 :::
 
-## Etape 2: développer une API en local
+## Étape 2: développer une API en local
 
 ::: {.callout-tip}
 
@@ -1910,7 +1706,7 @@ git checkout appli17
 
 :::
 
-## Etape 3: déployer l'API
+## Étape 3: déployer l'API
 
 A ce stade, nous avons déployé l'API seulement localement, dans le cadre d'un service. Ce mode de déploiement est très pratique pour la phase de développement, afin de s'assurer que l'API fonctionne comme attendu. A présent, il est temps de passer à l'étape de déploiement, qui permettra à notre API d'être accessible via une URL sur le web, et donc aux utilisateurs potentiels de la requêter. Pour se faire, on va utiliser les possibilités offertes par `Kubernetes`, sur lequel est basé le [SSP Cloud](https://datalab.sspcloud.fr).
 

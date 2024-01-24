@@ -1,0 +1,113 @@
+::: {.callout-tip}
+## Application 3a: Paramétrisation du script
+
+1. En s'inspirant de l'exemple ci-dessus 👆️,
+créer une variable `n_trees` qui peut éventuellement être paramétrée en ligne de commande
+et dont la valeur par défaut est 20 ;
+2. Tester cette paramétrisation en ligne de commande avec la valeur par défaut
+puis 2, 10 et 50 arbres.
+:::
+
+L'exercice suivant permet de mettre en application le fait de paramétriser
+un script en utilisant des variables définies dans un fichier YAML. 
+
+
+::: {.callout-tip}
+## Application 3b: La configuration dans un fichier YAML
+
+Nous allons mettre 4 paramètres dans notre YAML. Celui-ci prendra la forme suivante:
+
+```{.yaml filename="config.yaml"}
+jeton_api: ####
+train_path: ####
+test_path: ####
+test_fraction: ####
+```
+
+Avec `####` des valeurs à remplacer.
+
+1. Créer à la racine du projet un fichier `config.yaml` à partir du
+modèle 👆️ ;
+2. Repérer les valeurs dans le code associées et compléter.
+
+Maintenant, nous allons exploiter ce fichier:
+
+3. Pour éviter d'avoir à le faire plus tard,
+créer une fonction `import_yaml_config` qui prend en argument le
+chemin d'un fichier `YAML`
+et renvoie le contenu de celui-ci en _output_. Vous pouvez suivre
+le conseil du chapitre sur la [Qualité du code](/chapters/code-quality.html)
+en adoptant le _type hinting_ ;
+4. Dans la fonction `import_yaml_config`,
+créer une condition logique pour tenir compte du fait que le YAML de configuration
+peut ne pas exister[^fileexist] ;
+5. Utiliser le canevas de code suivant pour créer les variables adéquates
+
+```{python}
+#| eval: false
+API_TOKEN = config.get("jeton_api")
+TRAIN_PATH = config.get("train_path", "train.csv")
+TEST_PATH = config.get("test_path", "test.csv")
+TEST_FRACTION = config.get("test_fraction", .1)
+```
+
+et remplacer dans le code
+
+5. Tester en ligne de commande que l'exécution du fichier est toujours
+sans erreur et sinon corriger.
+6. Refaire un diagnostic avec [`PyLint`](https://pylint.readthedocs.io/en/latest/)
+et corriger les éventuels messages. 
+7. Créer un fichier `.gitignore` (cf. [Chapitre `Git`](/chapters/git.qmd)). Ajouter dans ce fichier `config.yaml`
+car il ne faut pas committer ce fichier.
+9. Créer un fichier `README.md` où vous indiquez qu'il faut créer un fichier `config.yaml` pour
+pouvoir utiliser l'API. 
+
+[^fileexist]: Ici, le jeton d'API n'est pas indispensable pour que le code
+    fonctionne. Afin d'éviter une erreur non nécessaire
+    lorsqu'on automatisera le processus, on peut
+    créer une condition qui vérifie la présence ou non de ce fichier.
+    Le script reste donc reproductible même pour un utilisateur n'ayant pas le fichier
+    `secrets.yaml`. 
+
+<details>
+<summary>Indice si vous ne trouvez pas comment lire un fichier `YAML`</summary>
+
+Si le fichier s'appelle `toto.yaml`, vous pouvez l'importer de cette manière:
+
+```{python}
+#| eval: false
+with open("toto.yaml", "r", encoding="utf-8") as stream:
+    dict_config = yaml.safe_load(stream)
+```
+
+</details>
+
+<details>
+<summary>Indice si vous ne savez comment conditionner la création de la configuration à l'existence du fichier</summary>
+
+Voici la ligne qui peut vous aider. L'idéal
+est d'insérer ceci dans `import_yaml_config`:
+
+```{python}
+#| eval: false
+CONFIG_PATH = 'config.yaml'
+config = {}
+if os.path.exists(CONFIG_PATH):
+    # lecture du fichier
+```
+
+</details>
+
+:::
+
+
+::: {.callout-caution collapse="true"}
+## Checkpoint
+
+```shell
+git checkout appli3
+```
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
+:::
