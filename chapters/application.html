@@ -75,6 +75,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/quarto-contrib/fontawesome6-0.1.0/all.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/fontawesome6-0.1.0/latex-fontsize.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -203,7 +205,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#étape-1-sassurer-que-le-script-sexécute-correctement" id="toc-étape-1-sassurer-que-le-script-sexécute-correctement" class="nav-link" data-scroll-target="#étape-1-sassurer-que-le-script-sexécute-correctement">Étape 1 : s’assurer que le script s’exécute correctement</a></li>
   <li><a href="#étape-2-utiliser-un-linter-puis-un-formatter" id="toc-étape-2-utiliser-un-linter-puis-un-formatter" class="nav-link" data-scroll-target="#étape-2-utiliser-un-linter-puis-un-formatter">Étape 2: utiliser un <em>linter</em> puis un <em>formatter</em></a></li>
   <li><a href="#étape-3-gestion-des-paramètres" id="toc-étape-3-gestion-des-paramètres" class="nav-link" data-scroll-target="#étape-3-gestion-des-paramètres">Étape 3: gestion des paramètres</a></li>
-  <li><a href="#étape-4-adopter-la-programmation-fonctionnelle" id="toc-étape-4-adopter-la-programmation-fonctionnelle" class="nav-link" data-scroll-target="#étape-4-adopter-la-programmation-fonctionnelle">Étape 4 : Adopter la programmation fonctionnelle</a></li>
+  <li><a href="#étape-4-privilégier-la-programmation-fonctionnelle" id="toc-étape-4-privilégier-la-programmation-fonctionnelle" class="nav-link" data-scroll-target="#étape-4-privilégier-la-programmation-fonctionnelle">Étape 4 : Privilégier la programmation fonctionnelle</a></li>
   </ul></li>
   <li><a href="#partie2" id="toc-partie2" class="nav-link" data-scroll-target="#partie2">Partie 2 : adoption d’une structure modulaire</a>
   <ul class="collapse">
@@ -212,7 +214,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#étape-3-indiquer-lenvironnement-minimal-de-reproductibilité" id="toc-étape-3-indiquer-lenvironnement-minimal-de-reproductibilité" class="nav-link" data-scroll-target="#étape-3-indiquer-lenvironnement-minimal-de-reproductibilité">Étape 3: indiquer l’environnement minimal de reproductibilité</a></li>
   </ul></li>
-  <li><a href="#stockageS3" id="toc-stockageS3" class="nav-link" data-scroll-target="#stockageS3">Étape 3 : stocker les données de manière externe</a></li>
+  <li><a href="#stockageS3" id="toc-stockageS3" class="nav-link" data-scroll-target="#stockageS3">Étape 4 : stocker les données de manière externe</a></li>
   </ul></li>
   <li><a href="#partie-2bis-packagisation-de-son-projet-optionnel" id="toc-partie-2bis-packagisation-de-son-projet-optionnel" class="nav-link" data-scroll-target="#partie-2bis-packagisation-de-son-projet-optionnel">Partie 2bis: packagisation de son projet (optionnel)</a>
   <ul class="collapse">
@@ -597,11 +599,11 @@ Application 3b: La configuration dans un fichier YAML
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>TEST_PATH <span class="op">=</span> config.get(<span class="st">"test_path"</span>, <span class="st">"test.csv"</span>)</span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>TEST_FRACTION <span class="op">=</span> config.get(<span class="st">"test_fraction"</span>, <span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>et remplacer dans le code</p>
+<p>et remplacer dans le code ;</p>
 <ol start="5" type="1">
-<li>Tester en ligne de commande que l’exécution du fichier est toujours sans erreur et sinon corriger.</li>
-<li>Refaire un diagnostic avec <a href="https://pylint.readthedocs.io/en/latest/"><code>PyLint</code></a> et corriger les éventuels messages.</li>
-<li>Créer un fichier <code>.gitignore</code> (cf.&nbsp;<a href="../chapters/git.html">Chapitre <code>Git</code></a>). Ajouter dans ce fichier <code>config.yaml</code> car il ne faut pas committer ce fichier.</li>
+<li>Tester en ligne de commande que l’exécution du fichier est toujours sans erreur et sinon corriger ;</li>
+<li>Refaire un diagnostic avec <a href="https://pylint.readthedocs.io/en/latest/"><code>PyLint</code></a> et corriger les éventuels messages ;</li>
+<li>Créer un fichier <code>.gitignore</code> (cf.&nbsp;<a href="../chapters/git.html">Chapitre <code>Git</code></a>). Ajouter dans ce fichier <code>config.yaml</code> car il ne faut pas committer ce fichier. Au passage ajouter <code>__pycache__/</code> au <code>.gitignore</code><a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>, cela évitera d’avoir à le faire ultérieurement ;</li>
 <li>Créer un fichier <code>README.md</code> où vous indiquez qu’il faut créer un fichier <code>config.yaml</code> pour pouvoir utiliser l’API.</li>
 </ol>
 <details>
@@ -650,10 +652,10 @@ Checkpoint
 </div>
 </div>
 </section>
-<section id="étape-4-adopter-la-programmation-fonctionnelle" class="level2">
-<h2 class="anchored" data-anchor-id="étape-4-adopter-la-programmation-fonctionnelle">Étape 4 : Adopter la programmation fonctionnelle</h2>
-<p>Nous allons <strong>mettre en fonctions les parties importantes de l’analyse, et les mettre dans un module afin de pouvoir les importer directement depuis le notebook</strong>.</p>
-<p>Cet exercice étant chronophage, il n’est <strong>pas obligatoire de le réaliser en entier</strong>. L’important est de comprendre la démarche et d’adopter fréquemment une approche fonctionnelle<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>. Pour obtenir une chaine entièrement fonctionnalisée, vous pouvez reprendre le <em>checkpoint</em>.</p>
+<section id="étape-4-privilégier-la-programmation-fonctionnelle" class="level2">
+<h2 class="anchored" data-anchor-id="étape-4-privilégier-la-programmation-fonctionnelle">Étape 4 : Privilégier la programmation fonctionnelle</h2>
+<p>Nous allons <strong>mettre en fonctions les parties importantes de l’analyse</strong>. Ceci facilitera l’étape ultérieure de modularisation de notre projet.</p>
+<p>Cet exercice étant chronophage, il n’est <strong>pas obligatoire de le réaliser en entier</strong>. L’important est de comprendre la démarche et d’adopter fréquemment une approche fonctionnelle<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>. Pour obtenir une chaine entièrement fonctionnalisée, vous pouvez reprendre le <em>checkpoint</em>.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -668,7 +670,7 @@ Application 4: adoption des standards de programmation fonctionnelle
 <li>Créer une fonction qui importe les données d’entraînement (<code>train.csv</code>) et de test (<code>test.csv</code>) et renvoie des <code>DataFrames</code> <code>Pandas</code> ;</li>
 <li>En fonction du temps disponible, créer plusieurs fonctions pour réaliser les étapes de <em>feature engineering</em>:
 <ul>
-<li>La création de la variable <em>“Title”</em> peut être automatisée en vertu du principe <em>“do not repeat yourself”</em><a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>.</li>
+<li>La création de la variable <em>“Title”</em> peut être automatisée en vertu du principe <em>“do not repeat yourself”</em><a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>.</li>
 <li>Regrouper ensemble les <code>fillna</code> et essayer de créer une fonction généralisant l’opération.</li>
 <li>Les <em>label encoders</em> peuvent être transformés en deux fonctions: une première pour encoder une colonne puis une seconde qui utilise la première de manière répétée pour encoder plusieurs colonnes. <em>Remarquez les erreurs de copier-coller que cela corrige</em></li>
 <li>Finaliser les dernières transformations avec des fonctions</li>
@@ -706,35 +708,36 @@ Checkpoint
 <div id="callout-13" class="callout-13-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli4</code></pre>
-<p>ou</p>
-<ul>
-<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application4/titanic.py"><code>titanic.py</code></a></li>
-</ul>
-<p>Les autres fichiers inchangés:</p>
-<ul>
-<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/readme.md"><code>README.md</code></a></li>
-<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/config.yaml"><code>config.yaml</code></a></li>
-<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/secrets.yaml"><code>secrets.yaml</code></a></li>
-<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/.gitignore"><code>.gitignore</code></a></li>
-</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../checkpoint.jpg" class="img-fluid figure-img" style="width:80.0%"></p>
+</figure>
 </div>
 </div>
 </div>
+</div>
+<p>Cela ne se remarque pas encore vraiment car nous avons de nombreuses définitions de fonctions mais notre chaine de production est beaucoup plus concise (le script fait environ 300 lignes dont 250 de définitions de fonctions génériques). Cette auto-discipline facilitera grandement les étapes ultérieures. Cela aurait été néanmoins beaucoup moins coûteux en temps d’adopter ces bons gestes de manière plus précoce.</p>
 </section>
 </section>
 <section id="partie2" class="level1">
 <h1>Partie 2 : adoption d’une structure modulaire</h1>
-<p>Dans la partie précédente, on a appliqué de manière incrémentale de nombreuses bonnes pratiques vues tout au long du cours. Ce faisant, on s’est déjà considérablement rapprochés d’un possible partage du code : celui-ci est lisible et intelligible. Le code est proprement versionné sur un dépôt <code>GitHub</code>.</p>
+<p>Dans la partie précédente, on a appliqué de manière incrémentale de nombreuses bonnes pratiques vues tout au long du cours. Ce faisant, on s’est déjà considérablement rapprochés d’un possible partage du code : celui-ci est lisible et intelligible. Le code est proprement versionné sur un dépôt <code>GitHub</code>. Cependant, le projet est encore perfectible: il est encore difficile de rentrer dedans si on ne sait pas exactement ce qu’on recherche. L’objectif de cette partie est d’isoler les différentes étapes de notre <em>pipeline</em>. Outre le gain de clarté pour notre projet, nous économiserons beaucoup de peines pour la mise en production ultérieure de notre modèle.</p>
 <details>
 <summary>
 Illustration de l’état actuel du projet
 </summary>
 <img src="../schema_post_appli4.png" class="img-fluid">
 </details>
-<p>Néanmoins, la structure du projet n’est pas encore normalisée. De plus, l’adoption d’une structure plus modulaire facilitera la compréhension de la chaine de traitement.</p>
+<p>Dans cette partie nous allons continuer les améliorations incrémentales de notre projet avec les étapes suivantes:</p>
+<ol type="1">
+<li>Modularisation du code <code>Python</code> pour séparer les différentes étapes de notre <em>pipeline</em> ;</li>
+<li>Adopter une structure standardisée pour notre projet afin d’autodocumenter l’organisation de celui-ci ;</li>
+<li>Documenter les <em>packages</em> indispensables à l’exécution du code ;</li>
+<li>Stocker les données dans un environnement adéquat afin de continuer la démarche de séparer conceptuellement les données du code en de la configuration.</li>
+</ol>
 <section id="étape-1-modularisation" class="level2">
 <h2 class="anchored" data-anchor-id="étape-1-modularisation">Étape 1 : modularisation</h2>
-<p>Fini le temps de l’expérimentation : on va maintenant essayer de se passer complètement du <em>notebook</em>. Pour cela, on va utiliser un <code>main</code> script, c’est à dire un script qui reproduit l’analyse en important et en exécutant les différentes fonctions dans l’ordre attendu.</p>
+<p>Nous allons profiter de la modularisation pour adopter une structure applicative pour notre code. Celui-ci n’étant en effet plus lancé que la ligne de commande, on peut considérer qu’on construit une application générique où un script principal (<code>main.py</code>) encapsule des éléments issus d’autres scripts.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -754,12 +757,36 @@ Application 5: modularisation
 </ul></li>
 <li>Spécifier les dépendances (i.e.&nbsp;les packages à importer) dans les modules pour que ceux-ci puissent s’exécuter indépendamment ;</li>
 <li>Renommer <code>titanic.py</code> en <code>main.py</code> pour suivre la convention de nommage des projets <code>Python</code> ;</li>
-<li>Importer les fonctions nécessaires à partir des modules. ⚠️ Ne pas utiliser <code>from XXX import *</code>, ce n’est pas une bonne pratique !</li>
+<li>Importer les fonctions nécessaires à partir des modules.</li>
 <li>Vérifier que tout fonctionne bien en exécutant le <em>script</em> <code>main</code> à partir de la ligne de commande :</li>
 </ul>
 <pre class="shell"><code>$ python main.py</code></pre>
 </div>
 </div>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Checkpoint
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-15" class="callout-15-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<pre class="shell"><code>git checkout appli5</code></pre>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../checkpoint.jpg" class="img-fluid figure-img" style="width:80.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="étape-2-adopter-une-architecture-standardisée-de-projet" class="level2">
+<h2 class="anchored" data-anchor-id="étape-2-adopter-une-architecture-standardisée-de-projet">Étape 2 : adopter une architecture standardisée de projet</h2>
 <p>On dispose maintenant d’une application <code>Python</code> fonctionnelle. Néanmoins, le projet est certes plus fiable mais sa structuration laisse à désirer et il serait difficile de rentrer à nouveau dans le projet dans quelques temps.</p>
 <details>
 <summary>
@@ -774,45 +801,10 @@ Etat actuel du projet 🙈
 ├── import_data.py
 ├── build_features.py
 ├── train_evaluate.py
-└──main.py</code></pre>
+└── main.py</code></pre>
 </details>
-<p>Comme cela est expliqué dans la partie <a href="../chapters/projects-architecture.html">Structure des projets</a>, on va adopter une structure certes arbitraire mais qui va faciliter l’autodocumentation de notre projet.</p>
-<p>De plus, une telle structure va faciliter des évolutions optionnelles comme la packagisation du projet. Passer d’une structure modulaire bien faite à un <em>package</em> est quasi-immédiat en <code>Python</code>.</p>
-<div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Checkpoint
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-15" class="callout-15-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<pre class="shell"><code>git checkout appli5</code></pre>
-<p>ou</p>
-<ul>
-<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/build_features.py"><code>build_features.py</code></a></li>
-<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/import_data.py"><code>import_data.py</code></a></li>
-<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/train_evaluate.py"><code>train_evaluate.py</code></a></li>
-<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/main.py"><code>main.py</code></a></li>
-</ul>
-<p>Les autres fichiers inchangés:</p>
-<ul>
-<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/readme.md"><code>README.md</code></a></li>
-<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/config.yaml"><code>config.yaml</code></a></li>
-<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/secrets.yaml"><code>secrets.yaml</code></a></li>
-<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application3/.gitignore"><code>.gitignore</code></a></li>
-</ul>
-</div>
-</div>
-</div>
-</section>
-<section id="étape-2-adopter-une-architecture-standardisée-de-projet" class="level2">
-<h2 class="anchored" data-anchor-id="étape-2-adopter-une-architecture-standardisée-de-projet">Étape 2 : adopter une architecture standardisée de projet</h2>
-<p>On va maintenant modifier l’architecture de notre projet pour la rendre plus standardisée. Pour cela, on va s’inspirer des structures <a href="https://cookiecutter.readthedocs.io/en/stable/"><code>cookiecutter</code></a> qui génèrent des <em>templates</em> de projet.</p>
-<p>On va s’inspirer de la structure du <a href="https://drivendata.github.io/cookiecutter-data-science/"><em>template datascience</em></a> développé par la communauté.</p>
+<p>Comme cela est expliqué dans la partie <a href="../chapters/projects-architecture.html">Structure des projets</a>, on va adopter une structure certes arbitraire mais qui va faciliter l’autodocumentation de notre projet. De plus, une telle structure va faciliter des évolutions optionnelles comme la <em>packagisation</em> du projet. Passer d’une structure modulaire bien faite à un <em>package</em> est quasi-immédiat en <code>Python</code>.</p>
+<p>On va donc modifier l’architecture de notre projet pour la rendre plus standardisée. Pour cela, on va s’inspirer des structures <a href="https://cookiecutter.readthedocs.io/en/stable/"><code>cookiecutter</code></a> qui génèrent des <em>templates</em> de projet. En l’occurrence notre source d’inspiration sera le <a href="https://drivendata.github.io/cookiecutter-data-science/"><em>template datascience</em></a> issu d’un effort communautaire.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -830,6 +822,10 @@ $ cookiecutter https://github.com/drivendata/cookiecutter-data-science</code></p
 </div>
 </div>
 <p>En s’inspirant du <em>cookiecutter data science</em> on va adopter la structure suivante:</p>
+<details>
+<summary>
+Structure recommandée
+</summary>
 <pre class="shell"><code>ensae-reproductibilite-application
 ├── main.py
 ├── README.md
@@ -838,7 +834,6 @@ $ cookiecutter https://github.com/drivendata/cookiecutter-data-science</code></p
 │       ├── test.csv
 │       └── train.csv
 ├── configuration
-│   ├── secrets.yaml
 │   └── config.yaml
 ├── notebooks
 │   └── titanic.ipynb
@@ -849,6 +844,7 @@ $ cookiecutter https://github.com/drivendata/cookiecutter-data-science</code></p
     │   └── build_features.py
     └── models
         └── train_evaluate.py</code></pre>
+</details>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -860,10 +856,9 @@ Application 6: adopter une structure lisible
 </div>
 <div class="callout-body-container callout-body">
 <ul>
-<li><em>(optionnel)</em> Analyser et comprendre la <a href="https://drivendata.github.io/cookiecutter-data-science/#directory-structure">structure de projet</a> proposée par le template</li>
-<li>Modifier l’arborescence du projet selon le modèle</li>
-<li>Adapter les scripts et les fichiers de configuration à la nouvelle arborescence</li>
-<li>Ajouter le dossier <strong>pycache</strong> au <code>.gitignore</code><a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a> et le dossier <code>data</code></li>
+<li><em>(optionnel)</em> Analyser et comprendre la <a href="https://drivendata.github.io/cookiecutter-data-science/#directory-structure">structure de projet</a> proposée par le template ;</li>
+<li>Modifier l’arborescence du projet selon le modèle ;</li>
+<li>Mettre à jour l’import des dépendances et le fichier de configuration avec les nouveaux chemins ;</li>
 </ul>
 </div>
 </div>
@@ -880,14 +875,11 @@ Checkpoint
 <div id="callout-18" class="callout-18-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli6</code></pre>
-<p>ou</p>
-<ul>
-<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/build_features.py"><code>build_features.py</code></a></li>
-<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/import_data.py"><code>import_data.py</code></a></li>
-<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/train_evaluate.py"><code>train_evaluate.py</code></a></li>
-<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application5/main.py"><code>main.py</code></a></li>
-</ul>
-<p>Les autres fichiers sont inchangés, à l’exception de leur emplacement.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../checkpoint.jpg" class="img-fluid figure-img" style="width:80.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 </div>
@@ -895,7 +887,7 @@ Checkpoint
 <h3 class="anchored" data-anchor-id="étape-3-indiquer-lenvironnement-minimal-de-reproductibilité">Étape 3: indiquer l’environnement minimal de reproductibilité</h3>
 <p>Le script <code>main.py</code> nécessite un certain nombre de packages pour être fonctionnel. Chez vous les packages nécessaires sont bien sûr installés mais êtes-vous assuré que c’est le cas chez la personne qui testera votre code ?</p>
 <p>Afin de favoriser la portabilité du projet, il est d’usage de <em>“fixer l’environnement”</em>, c’est-à-dire d’indiquer dans un fichier toutes les dépendances utilisées ainsi que leurs version. Nous proposons de créer un fichier <code>requirements.txt</code> minimal, sur lequel nous reviendrons dans la partie consacrée aux environnements reproductibles.</p>
-<p>Le fichier <code>requirements.txt</code> est conventionnellement localisé à la racine du projet. Ici on ne va pas fixer les versions, on raffinera ce fichier plus tard.</p>
+<p>Le fichier <code>requirements.txt</code> est conventionnellement localisé à la racine du projet. Ici on ne va pas fixer les versions, on raffinera ce fichier ultérieurement.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -925,33 +917,37 @@ Checkpoint
 <div id="callout-20" class="callout-20-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli7</code></pre>
-<p>ou</p>
-<ul>
-<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application7/requirements.txt"><code>requirements.txt</code></a></li>
-<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application7/README.md"><code>README.md</code></a></li>
-</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../checkpoint.jpg" class="img-fluid figure-img" style="width:80.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 </div>
 </section>
 </section>
 <section id="stockageS3" class="level2">
-<h2 class="anchored" data-anchor-id="stockageS3">Étape 3 : stocker les données de manière externe</h2>
+<h2 class="anchored" data-anchor-id="stockageS3">Étape 4 : stocker les données de manière externe</h2>
 <div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Warning
+Pour en savoir plus sur le système de stockage <code>S3</code>
 </div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
+<div id="callout-21" class="callout-21-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>Pour mettre en oeuvre cette étape, il peut être utile de comprendre un peu comme fonctionne le SSP Cloud. Vous devrez suivre la <a href="https://docs.sspcloud.fr/onyxia-guide/stockage-de-donnees">documentation du SSP Cloud</a> pour la réaliser. Une aide-mémoire est également disponible dans le cours de 2e année de l’ENSAE <a href="https://linogaliana-teaching.netlify.app/reads3/#">Python pour la data science</a></p>
+<p>Pour mettre en oeuvre cette étape, il peut être utile de comprendre un peu comme fonctionne le SSP Cloud. Vous devrez suivre la <a href="https://inseefrlab.github.io/docs.sspcloud.fr/docs/fr/storage.html">documentation du SSP Cloud</a> pour la réaliser. Une aide-mémoire est également disponible dans le cours de 2e année de l’ENSAE <a href="https://linogaliana-teaching.netlify.app/reads3/#">Python pour la data science</a>.</p>
 </div>
 </div>
-<p>Comme on l’a vu dans le cours (<a href="../chapters/project-structure.html">partie structure des projets</a>), les données ne sont pas censées être versionnées sur un projet <code>Git</code>.</p>
-<p>L’idéal pour éviter cela tout en maintenant la reproductibilité est d’utiliser une solution de stockage externe. On va utiliser pour cela <code>MinIO</code>, la solution de stockage de type <code>S3</code> offerte par le SSP Cloud.</p>
+</div>
+<p>Le chapitre sur la <a href="../chapters/project-structure.qmd">structure des projets</a> développe l’idée qu’il est recommandé de converger vers un modèle où environnements d’exécution, de stockage du code et des données sont conceptuellement séparés. Ce haut niveau d’exigence est un gain de temps important lors de la mise en production car au cours de cette dernière, le projet est amené à être exécuté sur une infrastructure informatique dédiée qu’il est bon d’anticiper.</p>
+<p>A l’heure actuelle, les données sont stockées dans le dépôt. C’est une mauvaise pratique. En premier lieu, <code>Git</code> n’est techniquement pas bien adapté au stockage de données. Ici ce n’est pas très grave car il ne s’agit pas de données volumineuses et ces dernières ne sont pas modifiées au cours de notre chaine de traitement. La raison principale est que les données traitées par les <em>data scientists</em> sont généralement soumises à des clauses de confidentialités (<a href="https://www.cnil.fr/fr/rgpd-de-quoi-parle-t-on">RGPD</a>, <a href="https://www.insee.fr/fr/information/1300624">secret statistique</a>…). Mettre ces données sous contrôle de version c’est prendre le risque de les divulguer à un public non habilité. Il est donc recommandé de privilégier des outils techniques adaptés au stockage de données.</p>
+<p>L’idéal, dans notre cas, est d’utiliser une solution de stockage externe. On va utiliser pour cela <code>MinIO</code>, la solution de stockage de type <code>S3</code> offerte par le SSP Cloud. Cela nous permettra de supprimer les données de <code>Github</code> tout en maintenant la reproductibilité de notre projet <a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a>.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -978,9 +974,10 @@ en modifiant l’emplacement de votre bucket personnel
 <pre class="shell"><code>mc anonymous set download s3/&lt;BUCKET_PERSONNEL&gt;/ensae-reproductibilite/data/raw/</code></pre>
 <p>en modifiant <code>&lt;BUCKET_PERSONNEL&gt;</code>. Les URL de téléchargement seront de la forme <code>https://minio.lab.sspcloud.fr/&lt;BUCKET_PERSONNEL&gt;/ensae-reproductibilite/data/raw/test.csv</code> et <code>https://minio.lab.sspcloud.fr/&lt;BUCKET_PERSONNEL&gt;/ensae-reproductibilite/data/raw/train.csv</code></p>
 <ul>
-<li>Modifier <code>configuration.yaml</code> pour utiliser directement les URL dans l’import</li>
-<li>Supprimer les fichiers <code>.csv</code> du dossier <code>data</code> de votre projet, on n’en a plus besoin vu qu’on les importe de l’extérieur</li>
-<li>Vérifier le bon fonctionnement de votre application</li>
+<li>Modifier <code>configuration/config.yaml</code> pour utiliser directement les URL dans l’import ;</li>
+<li>Modifier les valeurs par défaut dans votre code ;</li>
+<li>Supprimer les fichiers <code>.csv</code> du dossier <code>data</code> de votre projet, on n’en a plus besoin vu qu’on les importe de l’extérieur ;</li>
+<li>Vérifier le bon fonctionnement de votre application.</li>
 </ul>
 </div>
 </div>
@@ -997,10 +994,11 @@ Checkpoint
 <div id="callout-23" class="callout-23-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli8</code></pre>
-<p>ou</p>
-<ul>
-<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application8/config.yaml"><code>config.yaml</code></a></li>
-</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../checkpoint.jpg" class="img-fluid figure-img" style="width:80.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 </div>
@@ -1013,48 +1011,7 @@ Checkpoint
 <h2 class="anchored" data-anchor-id="étape-1-proposer-des-tests-unitaires-optionnel">Étape 1 : proposer des tests unitaires (optionnel)</h2>
 <p>Notre code comporte un certain nombre de fonctions génériques. On peut vouloir tester leur usage sur des données standardisées, différentes de celles du Titanic.</p>
 <p>Même si la notion de tests unitaires prend plus de sens dans un <em>package</em>, nous pouvons proposer dans le projet des exemples d’utilisation de la fonction, ceci peut être pédagogique.</p>
-<p>Nous allons utiliser <a href="https://docs.python.org/3/library/unittest.html"><code>unittest</code></a> pour effectuer des tests unitaires. Cette approche nécessite une maîtrise de la programmation orientée objet.</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Application 9: test unitaire <em>(optionnel)</em>
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Dans le dossier <code>src/data/</code>, créer un fichier <code>test_create_variable_title.py</code><a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a>.</p>
-<p>En s’inspirant de l’<a href="https://docs.python.org/3/library/unittest.html#basic-example">exemple de base</a>, créer une classe <code>TestCreateVariableTitle</code> qui effectue les opérations suivantes:</p>
-<ul>
-<li><p>Création d’une fonction <code>test_create_variable_title_default_variable_name</code> qui permet de comparer les objets suivants:</p>
-<ul>
-<li>Création d’un <code>DataFrame</code> de test :</li>
-</ul>
-<div class="sourceCode" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>            <span class="st">'Name'</span>: [<span class="st">'Braund, Mr. Owen Harris'</span>, <span class="st">'Cumings, Mrs. John Bradley (Florence Briggs Thayer)'</span>,</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>                    <span class="st">'Heikkinen, Miss. Laina'</span>, <span class="st">'Futrelle, Mrs. Jacques Heath (Lily May Peel)'</span>,</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>                    <span class="st">'Allen, Mr. William Henry'</span>, <span class="st">'Moran, Mr. James'</span>,</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>                    <span class="st">'McCarthy, Mr. Timothy J'</span>, <span class="st">'Palsson, Master. Gosta Leonard'</span>,</span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>                    <span class="st">'Johnson, Mrs. Oscar W (Elisabeth Vilhelmina Berg)'</span>,</span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>                    <span class="st">'Nasser, Mrs. Nicholas (Adele Achem)'</span>],</span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">'Age'</span>: [<span class="dv">22</span>, <span class="dv">38</span>, <span class="dv">26</span>, <span class="dv">35</span>, <span class="dv">35</span>, <span class="dv">27</span>, <span class="dv">54</span>, <span class="dv">2</span>, <span class="dv">27</span>, <span class="dv">14</span>],</span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>            <span class="st">'Survived'</span>: [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>]</span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>        })</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<ul>
-<li>Utilisation de la fonction <code>create_variable_title</code> sur ce <code>DataFrame</code></li>
-<li>Comparaison au <code>DataFrame</code> attendu:</li>
-</ul>
-<div class="sourceCode" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>expected_result <span class="op">=</span> pd.DataFrame({</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>            <span class="st">'Title'</span>: [<span class="st">'Mr.'</span>, <span class="st">'Mrs.'</span>, <span class="st">'Miss.'</span>, <span class="st">'Mrs.'</span>, <span class="st">'Mr.'</span>, <span class="st">'Mr.'</span>, <span class="st">'Mr.'</span>, <span class="st">'Master.'</span>, <span class="st">'Mrs.'</span>, <span class="st">'Mrs.'</span>],</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>            <span class="st">'Age'</span>: [<span class="dv">22</span>, <span class="dv">38</span>, <span class="dv">26</span>, <span class="dv">35</span>, <span class="dv">35</span>, <span class="dv">27</span>, <span class="dv">54</span>, <span class="dv">2</span>, <span class="dv">27</span>, <span class="dv">14</span>],</span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>            <span class="st">'Survived'</span>: [<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>]</span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>        })</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
-<li><p>Effectuer le test unitaire en ligne de commande avec <code>unittest</code>. Corriger le test unitaire en cas d’erreur.</p></li>
-<li><p>Si le temps le permet, proposer des variantes pour tenir compte de paramètres (comme la variable <code>variable_name</code>) ou d’exceptions (comme la gestion du cas <em>“Dona”</em>)</p></li>
-</ul>
-</div>
-</div>
+<p>Nous allons utiliser <a href="https://docs.python.org/3/library/unittest.html"><code>unittest</code></a> pour effectuer des tests unitaires. Cette approche nécessite quelques notions de programmation orientée objet ou une bonne discussion avec <code>ChatGPT</code>.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1065,45 +1022,25 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Lorsqu’on effectue des tests unitaires, on cherche généralement à tester le plus de lignes possibles de son code. On parle de taux de couverture (<em>coverage rate</em>) pour désigner la statistique mesurant cela.</p>
+<p>Lorsqu’on effectue des tests unitaires, on cherche généralement à tester le plus de lignes possibles de son code. On parle de <strong>taux de couverture</strong> (<em>coverage rate</em>) pour désigner la statistique mesurant cela.</p>
 <p>Cela peut s’effectuer de la manière suivante avec le package <a href="https://coverage.readthedocs.io/en/7.2.2/"><code>coverage</code></a>:</p>
-<pre class="shell"><code>$ coverage run -m pytest test_create_variable_title.py
+<pre class="shell"><code>$ coverage run -m unittest tests/test_create_variable_title.py
 $ coverage report -m
 
-Name                            Stmts   Miss  Cover   Missing
--------------------------------------------------------------
-import_data.py                     15      6    60%   16-19, 31-34
-test_create_variable_title.py      21      1    95%   54
--------------------------------------------------------------
-TOTAL                              36      7    81%</code></pre>
+Name                                  Stmts   Miss  Cover   Missing
+-------------------------------------------------------------------
+src/features/build_features.py           34     21    38%   35-36, 48-58, 71-74, 85-89, 99-101, 111-113
+tests/test_create_variable_title.py      21      1    95%   54
+-------------------------------------------------------------------
+TOTAL                                    55     22    60%</code></pre>
 <p>Le taux de couverture est souvent mis en avant par les gros projets comme indicateur de leur qualité. Il existe d’ailleurs des badges <code>Github</code> dédiés.</p>
-</div>
-</div>
-<div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-26-contents" aria-controls="callout-26" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Checkpoint
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-26" class="callout-26-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<pre class="shell"><code>git checkout appli9</code></pre>
-<p>ou</p>
-<ul>
-<li><a href="https://raw.githubusercontent.com/linogaliana/ensae-reproductibilite-application/main/checkpoints/application9/test_create_variable_title.py"><code>test_create_variable_title.py</code></a></li>
-</ul>
-<p>Les autres fichiers sont inchangés.</p>
-</div>
 </div>
 </div>
 </section>
 <section id="étape-2-transformer-son-projet-en-package-optionnel" class="level2">
 <h2 class="anchored" data-anchor-id="étape-2-transformer-son-projet-en-package-optionnel">Étape 2 : transformer son projet en package (optionnel)</h2>
-<p>Notre projet est modulaire, ce qui le rend assez simple à transformer en package, en s’inspirant du <code>cookiecutter</code> adapté, issu de <a href="https://py-pkgs.org/03-how-to-package-a-python#package-structure">cet ouvrage</a>.</p>
+<p>Notre projet est modulaire, ce qui le rend assez simple à transformer en <em>package</em>, en s’inspirant de la structure du <code>cookiecutter</code> adapté, issu de <a href="https://py-pkgs.org/03-how-to-package-a-python#package-structure">cet ouvrage</a>.</p>
+<p>On va créer un <em>package</em> nommé <code>titanicml</code> qui encapsule tout notre code et qui sera appelé par notre script <code>main.py</code>. La structure attendue est la suivante:</p>
 <details>
 <summary>
 Structure visée
@@ -1112,17 +1049,18 @@ Structure visée
 ├── docs                                    ┐ 
 │   ├── main.py                             │ 
 │   └── notebooks                           │ Package documentation and examples
-│       ├── titanic.ipynb                   │ 
-├── README.md                               ┘ 
+│       └── titanic.ipynb                   │ 
+├── configuration                           ┐ Configuration (pas à partager avec Git)
+│   └── config.yaml                         ┘ 
+├── README.md                                
 ├── pyproject.toml                          ┐ 
 ├── requirements.txt                        │
-├── src                                     │
-│   └── titanicml                           │ Package source code, metadata,
-│       ├── __init__.py                     │ and build instructions 
-│       ├── config.yaml                     │
-│       ├── import_data.py                  │
-│       ├── build_features.py               │ 
-│       └── train_evaluate.py               ┘
+├── titanicml                               │                
+│   ├── __init__.py                         │ Package source code, metadata
+│   ├── config.yaml                         │ and build instructions 
+│   ├── import_data.py                      │
+│   ├── build_features.py                   │ 
+│   └── train_evaluate.py                   ┘
 └── tests                                   ┐
     └── test_create_variable_title.py       ┘ Package tests</code></pre>
 </details>
@@ -1147,32 +1085,7 @@ Rappel: structure actuelle
     └── models                          
         └── train_evaluate.py              </code></pre>
 </details>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Application 10: packagisation <em>(optionnel)</em>
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<ul>
-<li>Déplacer les fichiers dans le dossier <code>src</code> pour respecter la nouvelle arborescence ;</li>
-<li>Dans <code>src/titanicml</code>, créer un fichier vide <code>__init__.py</code><a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a> ;</li>
-<li>Déplacer le fichier de configuration dans le <em>package</em> (nécessaire à la reproductibilité) ;</li>
-<li>Créer le dossier <code>docs</code> et mettre les fichiers indiqués dedans</li>
-<li>Modifier <code>src/titanicml/import_data.py</code> :
-<ul>
-<li>Ajouter la variable <code>config_file = os.path.join(os.path.dirname(__file__), "config.yaml")</code>. Cela permettra d’utiliser directement le fichier ;</li>
-<li>Proposer un argument par défaut à la fonction <code>import_config_yaml</code> égal à <code>config_file</code></li>
-</ul></li>
-<li>Créer un fichier <code>pyproject.toml</code> à partir du contenu de <a href="https://github.com/linogaliana/ensae-reproductibilite-application/blob/main/checkpoints/application10/pyproject.toml">ce modèle de <code>pyproject</code></a><a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a></li>
-<li>Installer le package en local avec <code>pip install .</code></li>
-<li>Modifier le contenu de <code>docs/main.py</code> pour importer les fonctions de notre <em>package</em> <code>titanicml</code> et tester en ligne de commande notre fichier <code>main.py</code></li>
-</ul>
-</div>
-</div>
+<p>Il existe plusieurs <em>frameworks</em> pour construire un <em>package</em>. Nous allons privilégier <a href="https://python-poetry.org/"><code>Poetry</code></a> à <a href="https://pypi.org/project/setuptools/"><code>Setuptools</code></a>.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1212,8 +1125,84 @@ Choose from 1, 2, 3 [1]:</code></pre>
 </details>
 </div>
 </div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Application 10: packagisation <em>(optionnel)</em>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Renommer le dossier <code>titanicml</code> pour respecter la nouvelle arborescence ;</li>
+<li>Dans <code>titanicml/</code>, créer un fichier <code>__init__.py</code><a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a> ;</li>
+</ul>
+<div class="cell" data-execution_count="5">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>pyproject.toml</strong></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31" data-code-summary="pyproject.toml"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>[tool.poetry]</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>name <span class="op">=</span> <span class="st">"titanicml"</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>version <span class="op">=</span> <span class="st">"0.0.1"</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>description <span class="op">=</span> <span class="st">"Awesome Machine Learning project"</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>authors <span class="op">=</span> [<span class="st">"Daffy Duck &lt;daffy.duck@fauxmail.fr&gt;"</span>, <span class="st">"Mickey Mouse"</span>]</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>license <span class="op">=</span> <span class="st">"MIT"</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>readme <span class="op">=</span> <span class="st">"README.md"</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>[build<span class="op">-</span>system]</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>requires <span class="op">=</span> [<span class="st">"poetry-core"</span>]</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>build<span class="op">-</span>backend <span class="op">=</span> <span class="st">"poetry.core.masonry.api"</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>[tool.pytest.ini_options]</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>log_cli <span class="op">=</span> true</span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>log_cli_level <span class="op">=</span> <span class="st">"WARNING"</span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>log_cli_format <span class="op">=</span> <span class="st">"</span><span class="sc">%(asctime)s</span><span class="st"> [</span><span class="sc">%(levelname)8s</span><span class="st">] </span><span class="sc">%(message)s</span><span class="st"> (</span><span class="sc">%(filename)s</span><span class="st">:</span><span class="sc">%(lineno)s</span><span class="st">)"</span></span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>log_cli_date_format <span class="op">=</span> <span class="st">"%Y-%m-</span><span class="sc">%d</span><span class="st"> %H:%M:%S"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<ul>
+<li>Créer le dossier <code>docs</code> et mettre les fichiers indiqués dedans</li>
+<li>Créer un fichier <code>pyproject.toml</code> sur cette base</li>
+</ul>
+<div class="cell" data-execution_count="6">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>__init__.py</strong></pre>
+</div>
+<div class="sourceCode cell-code" id="cb32" data-code-summary="__init__.py"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> .import_data <span class="im">import</span> (</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>    import_data, import_yaml_config</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> .build_features <span class="im">import</span> (</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    create_variable_title,</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    fill_na_titanic,</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    label_encoder_titanic,</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    check_has_cabin,</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    ticket_length</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> .train_evaluate <span class="im">import</span> random_forest_titanic</span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>__all__ <span class="op">=</span> [</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>    <span class="st">"import_data"</span>, <span class="st">"import_yaml_config"</span>,</span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">"create_variable_title"</span>,</span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>    <span class="st">"fill_na_titanic"</span>,</span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>    <span class="st">"label_encoder_titanic"</span>,</span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>    <span class="st">"check_has_cabin"</span>,</span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>    <span class="st">"ticket_length"</span>,</span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"random_forest_titanic"</span></span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+<ul>
+<li>Installer le package en local avec <code>pip install -e .</code></li>
+<li>Modifier le contenu de <code>docs/main.py</code> pour importer les fonctions de notre <em>package</em> <code>titanicml</code> et tester en ligne de commande notre fichier <code>main.py</code></li>
+</ul>
+</div>
+</div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-29-contents" aria-controls="callout-29" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-27-contents" aria-controls="callout-27" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1222,9 +1211,14 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-29" class="callout-29-contents callout-collapse collapse">
+<div id="callout-27" class="callout-27-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli10</code></pre>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../checkpoint.jpg" class="img-fluid figure-img" style="width:80.0%"></p>
+</figure>
+</div>
 </div>
 </div>
 </div>
@@ -1233,7 +1227,7 @@ Checkpoint
 <section id="partie3" class="level1">
 <h1>Partie 3 : construction d’un projet portable et reproductible</h1>
 <p>Dans la partie précédente, on a appliqué de manière incrémentale de nombreuses bonnes pratiques vues dans les chapitres <a href="../chapters/code-quality.html">Qualité du code</a> et <a href="../chapters/projects-architecture.html">Structure des projets</a> tout au long du cours.</p>
-<p>Ce faisant, on s’est déjà considérablement rapprochés d’une possible mise en production : le code est lisible, la structure du projet est normalisée et évolutive, et le code est proprement versionné sur un dépôt <code>GitHub</code>.</p>
+<p>Ce faisant, on s’est déjà considérablement rapprochés d’une possible mise en production : le code est lisible, la structure du projet est normalisée et évolutive, et le code est proprement versionné sur un dépôt <code>GitHub</code> <i class="fa-brands fa-github" aria-label="github"></i>.</p>
 <details>
 <summary>
 Illustration de l’état actuel du projet
@@ -1274,7 +1268,7 @@ Application 11a: environnement virtuel <code>venv</code>
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p>Exécuter <code>pip freeze</code> en ligne de commande et observer la (très) longue liste de package</p></li>
-<li><p>Créer l’environnement virtuel <code>titanic</code> en s’inspirant de <a href="https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/">la documentation officielle</a><a href="#fn10" class="footnote-ref" id="fnref10" role="doc-noteref"><sup>10</sup></a></p></li>
+<li><p>Créer l’environnement virtuel <code>titanic</code> en s’inspirant de <a href="https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/">la documentation officielle</a><a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a></p></li>
 <li><p>Utiliser <code>ls</code> pour observer et comprendre le contenu du dossier <code>titanic/bin</code> installé</p></li>
 <li><p>Activer l’environnement et vérifier l’installation de <code>Python</code> maintenant utilisée par votre machine <!---source titanic/bin/activate && which python----></p></li>
 <li><p>Vérifier directement depuis la ligne de commande que <code>Python</code> exécute bien une commande avec:</p>
@@ -1288,7 +1282,7 @@ Application 11a: environnement virtuel <code>venv</code>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-31-contents" aria-controls="callout-31" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-29-contents" aria-controls="callout-29" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1297,7 +1291,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-31" class="callout-31-contents callout-collapse collapse">
+<div id="callout-29" class="callout-29-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli11a</code></pre>
 </div>
@@ -1327,7 +1321,7 @@ Application 11b: environnement <code>conda</code>
 <li><p><em>(optionnel)</em> Utiliser <code>ls</code> dans le dossier parent de <code>Python</code> pour observer et comprendre le contenu de celui-ci</p></li>
 <li><p>Vérifier que cette fois <code>seaborn</code> n’est pas installé dans l’environnement :</p>
 <pre class="shell"><code>python -c "import seaborn as sns"</code></pre></li>
-<li><p>Exécuter à nouveau <code>conda env export</code> et comprendre la différence avec la situation précédente<a href="#fn11" class="footnote-ref" id="fnref11" role="doc-noteref"><sup>11</sup></a>.</p></li>
+<li><p>Exécuter à nouveau <code>conda env export</code> et comprendre la différence avec la situation précédente<a href="#fn10" class="footnote-ref" id="fnref10" role="doc-noteref"><sup>10</sup></a>.</p></li>
 <li><p>Vérifier que le script <code>main.py</code> fonctionne bien. Sinon utiliser <code>mamba install</code> avec les <em>packages</em> manquants jusqu’à ce que la chaine de production fonctionne</p></li>
 <li><p>Créer le fichier <code>environment.yaml</code> à partir de <code>conda env export</code>:</p>
 <pre class="shell"><code>conda env export &gt; environment.yaml</code></pre></li>
@@ -1336,7 +1330,7 @@ Application 11b: environnement <code>conda</code>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-33-contents" aria-controls="callout-33" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-31-contents" aria-controls="callout-31" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1345,7 +1339,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-33" class="callout-33-contents callout-collapse collapse">
+<div id="callout-31" class="callout-31-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli11b</code></pre>
 </div>
@@ -1418,7 +1412,7 @@ python3 main.py</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-35-contents" aria-controls="callout-35" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-33-contents" aria-controls="callout-33" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1427,7 +1421,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-35" class="callout-35-contents callout-collapse collapse">
+<div id="callout-33" class="callout-33-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli12a</code></pre>
 </div>
@@ -1486,7 +1480,7 @@ python main.py</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-37-contents" aria-controls="callout-37" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-35-contents" aria-controls="callout-35" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1495,7 +1489,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-37" class="callout-37-contents callout-collapse collapse">
+<div id="callout-35" class="callout-35-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli12b</code></pre>
 </div>
@@ -1638,7 +1632,7 @@ Note
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-41-contents" aria-controls="callout-41" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-39-contents" aria-controls="callout-39" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1647,7 +1641,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-41" class="callout-41-contents callout-collapse collapse">
+<div id="callout-39" class="callout-39-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli13</code></pre>
 </div>
@@ -1692,42 +1686,42 @@ Application 14: premier script d’intégration continue
 <li>Créer un fichier <code>.github/workflows/ci.yaml</code> avec le contenu de l’exemple de la documentation</li>
 <li>Retirer la <code>strategy matrix</code> et ne tester qu’avec la version <code>3.10</code> de <code>Python</code></li>
 <li>Utiliser le fichier <code>requirements.txt</code> pour installer les dépendances.</li>
-<li>Remplacer <code>russ</code> par <code>pylint</code> pour vérifier la qualité du code. Ajouter l’argument <code>--fail-under=6</code> pour renvoyer une erreur en cas de note trop basse<a href="#fn12" class="footnote-ref" id="fnref12" role="doc-noteref"><sup>12</sup></a></li>
+<li>Remplacer <code>russ</code> par <code>pylint</code> pour vérifier la qualité du code. Ajouter l’argument <code>--fail-under=6</code> pour renvoyer une erreur en cas de note trop basse<a href="#fn11" class="footnote-ref" id="fnref11" role="doc-noteref"><sup>11</sup></a></li>
 <li>Plutôt que <code>pytest</code>, utiliser <code>python main.py</code> pour tester que la matrice de confusion s’affiche bien.</li>
 </ol>
 <details>
 <summary>
 Fichier <code>.github/workflows/ci.yaml</code> obtenu
 </summary>
-<div class="sourceCode" id="cb58"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> Build, test and push</span></span>
-<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">push</span><span class="kw">]</span></span>
-<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a><span class="fu">jobs</span><span class="kw">:</span></span>
-<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">test</span><span class="kw">:</span></span>
-<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">runs-on</span><span class="kw">:</span><span class="at"> ubuntu-latest</span></span>
-<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
-<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/checkout@v3</span></span>
-<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Set up Python</span></span>
-<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/setup-python@v4</span></span>
-<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
-<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">python-version</span><span class="kw">:</span><span class="at"> </span><span class="st">'3.10'</span></span>
-<span id="cb58-14"><a href="#cb58-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Install dependencies</span></span>
-<span id="cb58-15"><a href="#cb58-15" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb58-16"><a href="#cb58-16" aria-hidden="true" tabindex="-1"></a>          python -m pip install --upgrade pip</span>
-<span id="cb58-17"><a href="#cb58-17" aria-hidden="true" tabindex="-1"></a>          pip install pylint</span>
-<span id="cb58-18"><a href="#cb58-18" aria-hidden="true" tabindex="-1"></a>          pip install -r requirements.txt</span>
-<span id="cb58-19"><a href="#cb58-19" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Lint</span></span>
-<span id="cb58-20"><a href="#cb58-20" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb58-21"><a href="#cb58-21" aria-hidden="true" tabindex="-1"></a>          pylint src --fail-under=6</span>
-<span id="cb58-22"><a href="#cb58-22" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Test workflow</span></span>
-<span id="cb58-23"><a href="#cb58-23" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb58-24"><a href="#cb58-24" aria-hidden="true" tabindex="-1"></a>          python main.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb57"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> Build, test and push</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">push</span><span class="kw">]</span></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a><span class="fu">jobs</span><span class="kw">:</span></span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">test</span><span class="kw">:</span></span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">runs-on</span><span class="kw">:</span><span class="at"> ubuntu-latest</span></span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/checkout@v3</span></span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Set up Python</span></span>
+<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/setup-python@v4</span></span>
+<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
+<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">python-version</span><span class="kw">:</span><span class="at"> </span><span class="st">'3.10'</span></span>
+<span id="cb57-14"><a href="#cb57-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Install dependencies</span></span>
+<span id="cb57-15"><a href="#cb57-15" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb57-16"><a href="#cb57-16" aria-hidden="true" tabindex="-1"></a>          python -m pip install --upgrade pip</span>
+<span id="cb57-17"><a href="#cb57-17" aria-hidden="true" tabindex="-1"></a>          pip install pylint</span>
+<span id="cb57-18"><a href="#cb57-18" aria-hidden="true" tabindex="-1"></a>          pip install -r requirements.txt</span>
+<span id="cb57-19"><a href="#cb57-19" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Lint</span></span>
+<span id="cb57-20"><a href="#cb57-20" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb57-21"><a href="#cb57-21" aria-hidden="true" tabindex="-1"></a>          pylint src --fail-under=6</span>
+<span id="cb57-22"><a href="#cb57-22" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Test workflow</span></span>
+<span id="cb57-23"><a href="#cb57-23" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb57-24"><a href="#cb57-24" aria-hidden="true" tabindex="-1"></a>          python main.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-43-contents" aria-controls="callout-43" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-41-contents" aria-controls="callout-41" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1736,7 +1730,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-43" class="callout-43-contents callout-collapse collapse">
+<div id="callout-41" class="callout-41-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli14</code></pre>
 </div>
@@ -1791,48 +1785,48 @@ Application 15b: automatisation de l’image <code>Docker</code>
 <summary>
 Fichier <code>.github/workflows/ci.yaml</code> obtenu
 </summary>
-<div class="sourceCode" id="cb60"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> Build, test and push</span></span>
-<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">push</span><span class="kw">]</span></span>
-<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a><span class="fu">jobs</span><span class="kw">:</span></span>
-<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">test</span><span class="kw">:</span></span>
-<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">runs-on</span><span class="kw">:</span><span class="at"> ubuntu-latest</span></span>
-<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
-<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/checkout@v3</span></span>
-<span id="cb60-10"><a href="#cb60-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Set up Python</span></span>
-<span id="cb60-11"><a href="#cb60-11" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/setup-python@v4</span></span>
-<span id="cb60-12"><a href="#cb60-12" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
-<span id="cb60-13"><a href="#cb60-13" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">python-version</span><span class="kw">:</span><span class="at"> </span><span class="st">'3.10'</span></span>
-<span id="cb60-14"><a href="#cb60-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Install dependencies</span></span>
-<span id="cb60-15"><a href="#cb60-15" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb60-16"><a href="#cb60-16" aria-hidden="true" tabindex="-1"></a>          python -m pip install --upgrade pip</span>
-<span id="cb60-17"><a href="#cb60-17" aria-hidden="true" tabindex="-1"></a>          pip install pylint</span>
-<span id="cb60-18"><a href="#cb60-18" aria-hidden="true" tabindex="-1"></a>          pip install -r requirements.txt</span>
-<span id="cb60-19"><a href="#cb60-19" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Lint</span></span>
-<span id="cb60-20"><a href="#cb60-20" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb60-21"><a href="#cb60-21" aria-hidden="true" tabindex="-1"></a>          pylint src --fail-under=6</span>
-<span id="cb60-22"><a href="#cb60-22" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Test workflow</span></span>
-<span id="cb60-23"><a href="#cb60-23" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb60-24"><a href="#cb60-24" aria-hidden="true" tabindex="-1"></a>          python main.py</span>
-<span id="cb60-25"><a href="#cb60-25" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">docker</span><span class="kw">:</span></span>
-<span id="cb60-26"><a href="#cb60-26" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">runs-on</span><span class="kw">:</span><span class="at"> ubuntu-latest</span></span>
-<span id="cb60-27"><a href="#cb60-27" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">needs</span><span class="kw">:</span><span class="at"> test</span></span>
-<span id="cb60-28"><a href="#cb60-28" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
-<span id="cb60-29"><a href="#cb60-29" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Set up QEMU</span></span>
-<span id="cb60-30"><a href="#cb60-30" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> docker/setup-qemu-action@v2</span></span>
-<span id="cb60-31"><a href="#cb60-31" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Set up Docker Buildx</span></span>
-<span id="cb60-32"><a href="#cb60-32" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> docker/setup-buildx-action@v2</span></span>
-<span id="cb60-33"><a href="#cb60-33" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Login to Docker Hub</span></span>
-<span id="cb60-34"><a href="#cb60-34" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> docker/login-action@v2</span></span>
-<span id="cb60-35"><a href="#cb60-35" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
-<span id="cb60-36"><a href="#cb60-36" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">username</span><span class="kw">:</span><span class="at"> ${{ secrets.DOCKERHUB_USERNAME }}</span></span>
-<span id="cb60-37"><a href="#cb60-37" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">password</span><span class="kw">:</span><span class="at"> ${{ secrets.DOCKERHUB_TOKEN }}</span></span>
-<span id="cb60-38"><a href="#cb60-38" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Build and push</span></span>
-<span id="cb60-39"><a href="#cb60-39" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> docker/build-push-action@v4</span></span>
-<span id="cb60-40"><a href="#cb60-40" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
-<span id="cb60-41"><a href="#cb60-41" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">push</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
-<span id="cb60-42"><a href="#cb60-42" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">tags</span><span class="kw">:</span><span class="at"> linogaliana/application-correction:latest</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb59"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> Build, test and push</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">push</span><span class="kw">]</span></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a><span class="fu">jobs</span><span class="kw">:</span></span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">test</span><span class="kw">:</span></span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">runs-on</span><span class="kw">:</span><span class="at"> ubuntu-latest</span></span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/checkout@v3</span></span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Set up Python</span></span>
+<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/setup-python@v4</span></span>
+<span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
+<span id="cb59-13"><a href="#cb59-13" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">python-version</span><span class="kw">:</span><span class="at"> </span><span class="st">'3.10'</span></span>
+<span id="cb59-14"><a href="#cb59-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Install dependencies</span></span>
+<span id="cb59-15"><a href="#cb59-15" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb59-16"><a href="#cb59-16" aria-hidden="true" tabindex="-1"></a>          python -m pip install --upgrade pip</span>
+<span id="cb59-17"><a href="#cb59-17" aria-hidden="true" tabindex="-1"></a>          pip install pylint</span>
+<span id="cb59-18"><a href="#cb59-18" aria-hidden="true" tabindex="-1"></a>          pip install -r requirements.txt</span>
+<span id="cb59-19"><a href="#cb59-19" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Lint</span></span>
+<span id="cb59-20"><a href="#cb59-20" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb59-21"><a href="#cb59-21" aria-hidden="true" tabindex="-1"></a>          pylint src --fail-under=6</span>
+<span id="cb59-22"><a href="#cb59-22" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Test workflow</span></span>
+<span id="cb59-23"><a href="#cb59-23" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb59-24"><a href="#cb59-24" aria-hidden="true" tabindex="-1"></a>          python main.py</span>
+<span id="cb59-25"><a href="#cb59-25" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">docker</span><span class="kw">:</span></span>
+<span id="cb59-26"><a href="#cb59-26" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">runs-on</span><span class="kw">:</span><span class="at"> ubuntu-latest</span></span>
+<span id="cb59-27"><a href="#cb59-27" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">needs</span><span class="kw">:</span><span class="at"> test</span></span>
+<span id="cb59-28"><a href="#cb59-28" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
+<span id="cb59-29"><a href="#cb59-29" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Set up QEMU</span></span>
+<span id="cb59-30"><a href="#cb59-30" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> docker/setup-qemu-action@v2</span></span>
+<span id="cb59-31"><a href="#cb59-31" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Set up Docker Buildx</span></span>
+<span id="cb59-32"><a href="#cb59-32" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> docker/setup-buildx-action@v2</span></span>
+<span id="cb59-33"><a href="#cb59-33" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Login to Docker Hub</span></span>
+<span id="cb59-34"><a href="#cb59-34" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> docker/login-action@v2</span></span>
+<span id="cb59-35"><a href="#cb59-35" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
+<span id="cb59-36"><a href="#cb59-36" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">username</span><span class="kw">:</span><span class="at"> ${{ secrets.DOCKERHUB_USERNAME }}</span></span>
+<span id="cb59-37"><a href="#cb59-37" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">password</span><span class="kw">:</span><span class="at"> ${{ secrets.DOCKERHUB_TOKEN }}</span></span>
+<span id="cb59-38"><a href="#cb59-38" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Build and push</span></span>
+<span id="cb59-39"><a href="#cb59-39" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> docker/build-push-action@v4</span></span>
+<span id="cb59-40"><a href="#cb59-40" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
+<span id="cb59-41"><a href="#cb59-41" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">push</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb59-42"><a href="#cb59-42" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">tags</span><span class="kw">:</span><span class="at"> linogaliana/application-correction:latest</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <ul>
 <li>Faire un <code>commit</code> et un <code>push</code> de ces fichiers</li>
@@ -1875,16 +1869,16 @@ Application 15d: Tester l’application
 <li>Se rendre sur l’environnement bac à sable <em><a href="https://labs.play-with-docker.com">Play with Docker</a></em></li>
 <li>Récupérer l’image :</li>
 </ul>
-<div class="sourceCode" id="cb61"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="at">docker pull &lt;username_dockerhub&gt;/application-correction:latest</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb60"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="at">docker pull &lt;username_dockerhub&gt;/application-correction:latest</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <ul>
 <li>Tester le bon fonctionnement de l’image</li>
 </ul>
-<div class="sourceCode" id="cb62"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="at">docker run -it &lt;username_dockerhub&gt;/application-correction:latest</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb61"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="at">docker run -it &lt;username_dockerhub&gt;/application-correction:latest</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>:tada: La matrice de confusion doit s’afficher ! Vous avez grandement facilité la réutilisation de votre image.</p>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-48-contents" aria-controls="callout-48" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-46-contents" aria-controls="callout-46" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1893,7 +1887,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-48" class="callout-48-contents callout-collapse collapse">
+<div id="callout-46" class="callout-46-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli15</code></pre>
 </div>
@@ -1926,7 +1920,7 @@ Application 16: Un <em>pipeline</em> de <em>machine learning</em>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-50-contents" aria-controls="callout-50" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-48-contents" aria-controls="callout-48" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1935,7 +1929,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-50" class="callout-50-contents callout-collapse collapse">
+<div id="callout-48" class="callout-48-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli16</code></pre>
 </div>
@@ -1989,7 +1983,7 @@ Récupérer le contenu sur <a href="https://raw.githubusercontent.com/ensae-repr
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-52-contents" aria-controls="callout-52" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-50-contents" aria-controls="callout-50" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1998,7 +1992,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-52" class="callout-52-contents callout-collapse collapse">
+<div id="callout-50" class="callout-50-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli17</code></pre>
 </div>
@@ -2040,7 +2034,7 @@ uvicorn api:app --reload --host "0.0.0.0" --port 5000</code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-54-contents" aria-controls="callout-54" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-52-contents" aria-controls="callout-52" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2049,7 +2043,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-54" class="callout-54-contents callout-collapse collapse">
+<div id="callout-52" class="callout-52-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli18</code></pre>
 </div>
@@ -2073,27 +2067,27 @@ Application 19: Déployer l’API
 <summary>
 Fichier <code>deployment/deployment.yaml</code>
 </summary>
-<div class="sourceCode" id="cb69"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> apps/v1</span></span>
-<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Deployment</span></span>
-<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
-<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> titanic-deployment</span></span>
-<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">labels</span><span class="kw">:</span></span>
-<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">app</span><span class="kw">:</span><span class="at"> titanic</span></span>
-<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
-<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">replicas</span><span class="kw">:</span><span class="at"> </span><span class="dv">1</span></span>
-<span id="cb69-9"><a href="#cb69-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">selector</span><span class="kw">:</span></span>
-<span id="cb69-10"><a href="#cb69-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">matchLabels</span><span class="kw">:</span></span>
-<span id="cb69-11"><a href="#cb69-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">app</span><span class="kw">:</span><span class="at"> titanic</span></span>
-<span id="cb69-12"><a href="#cb69-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">template</span><span class="kw">:</span></span>
-<span id="cb69-13"><a href="#cb69-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">metadata</span><span class="kw">:</span></span>
-<span id="cb69-14"><a href="#cb69-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">labels</span><span class="kw">:</span></span>
-<span id="cb69-15"><a href="#cb69-15" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">app</span><span class="kw">:</span><span class="at"> titanic</span></span>
-<span id="cb69-16"><a href="#cb69-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">spec</span><span class="kw">:</span></span>
-<span id="cb69-17"><a href="#cb69-17" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">containers</span><span class="kw">:</span></span>
-<span id="cb69-18"><a href="#cb69-18" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> titanic</span></span>
-<span id="cb69-19"><a href="#cb69-19" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">image</span><span class="kw">:</span><span class="at"> linogaliana/application-correction:latest</span></span>
-<span id="cb69-20"><a href="#cb69-20" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">ports</span><span class="kw">:</span></span>
-<span id="cb69-21"><a href="#cb69-21" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">containerPort</span><span class="kw">:</span><span class="at"> </span><span class="dv">5000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb68"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> apps/v1</span></span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Deployment</span></span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> titanic-deployment</span></span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">labels</span><span class="kw">:</span></span>
+<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">app</span><span class="kw">:</span><span class="at"> titanic</span></span>
+<span id="cb68-7"><a href="#cb68-7" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb68-8"><a href="#cb68-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">replicas</span><span class="kw">:</span><span class="at"> </span><span class="dv">1</span></span>
+<span id="cb68-9"><a href="#cb68-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">selector</span><span class="kw">:</span></span>
+<span id="cb68-10"><a href="#cb68-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">matchLabels</span><span class="kw">:</span></span>
+<span id="cb68-11"><a href="#cb68-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">app</span><span class="kw">:</span><span class="at"> titanic</span></span>
+<span id="cb68-12"><a href="#cb68-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">template</span><span class="kw">:</span></span>
+<span id="cb68-13"><a href="#cb68-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb68-14"><a href="#cb68-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">labels</span><span class="kw">:</span></span>
+<span id="cb68-15"><a href="#cb68-15" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">app</span><span class="kw">:</span><span class="at"> titanic</span></span>
+<span id="cb68-16"><a href="#cb68-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb68-17"><a href="#cb68-17" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">containers</span><span class="kw">:</span></span>
+<span id="cb68-18"><a href="#cb68-18" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> titanic</span></span>
+<span id="cb68-19"><a href="#cb68-19" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">image</span><span class="kw">:</span><span class="at"> linogaliana/application-correction:latest</span></span>
+<span id="cb68-20"><a href="#cb68-20" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">ports</span><span class="kw">:</span></span>
+<span id="cb68-21"><a href="#cb68-21" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">containerPort</span><span class="kw">:</span><span class="at"> </span><span class="dv">5000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <ul>
 <li>En vous inspirant de la <a href="https://kubernetes.io/fr/docs/concepts/services-networking/service/#d%C3%A9finition-d-un-service">documentation</a>, y ajouter un second fichier <code>service.yaml</code> qui va créer une ressource <code>Service</code> permettant de donner une identité fixe au <code>Pod</code> précédemment créé au sein du cluster</li>
@@ -2102,17 +2096,17 @@ Fichier <code>deployment/deployment.yaml</code>
 <summary>
 Fichier <code>deployment/service.yaml</code>
 </summary>
-<div class="sourceCode" id="cb70"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> v1</span></span>
-<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Service</span></span>
-<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
-<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> titanic-service</span></span>
-<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
-<span id="cb70-6"><a href="#cb70-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">selector</span><span class="kw">:</span></span>
-<span id="cb70-7"><a href="#cb70-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">app</span><span class="kw">:</span><span class="at"> titanic</span></span>
-<span id="cb70-8"><a href="#cb70-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">ports</span><span class="kw">:</span></span>
-<span id="cb70-9"><a href="#cb70-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">protocol</span><span class="kw">:</span><span class="at"> TCP</span></span>
-<span id="cb70-10"><a href="#cb70-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">80</span></span>
-<span id="cb70-11"><a href="#cb70-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">targetPort</span><span class="kw">:</span><span class="at"> </span><span class="dv">5000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb69"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> v1</span></span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Service</span></span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> titanic-service</span></span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">selector</span><span class="kw">:</span></span>
+<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">app</span><span class="kw">:</span><span class="at"> titanic</span></span>
+<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">ports</span><span class="kw">:</span></span>
+<span id="cb69-9"><a href="#cb69-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">protocol</span><span class="kw">:</span><span class="at"> TCP</span></span>
+<span id="cb69-10"><a href="#cb69-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">80</span></span>
+<span id="cb69-11"><a href="#cb69-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">targetPort</span><span class="kw">:</span><span class="at"> </span><span class="dv">5000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <ul>
 <li>En vous inspirant de la <a href="https://kubernetes.io/docs/concepts/services-networking/ingress/#the-ingress-resource">documentation</a>, y ajouter un troisième fichier <code>ingress.yaml</code> qui va créer une ressource <code>Ingress</code> permettant d’exposer le service via une URL en dehors du cluster</li>
@@ -2121,28 +2115,28 @@ Fichier <code>deployment/service.yaml</code>
 <summary>
 Fichier <code>deployment/ingress.yaml</code>
 </summary>
-<div class="sourceCode" id="cb71"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> networking.k8s.io/v1</span></span>
-<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Ingress</span></span>
-<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
-<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> titanic-ingress</span></span>
-<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">annotations</span><span class="kw">:</span></span>
-<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">nginx.ingress.kubernetes.io/rewrite-target</span><span class="kw">:</span><span class="at"> /</span></span>
-<span id="cb71-7"><a href="#cb71-7" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
-<span id="cb71-8"><a href="#cb71-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">ingressClassName</span><span class="kw">:</span><span class="at"> nginx</span></span>
-<span id="cb71-9"><a href="#cb71-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">tls</span><span class="kw">:</span></span>
-<span id="cb71-10"><a href="#cb71-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">hosts</span><span class="kw">:</span></span>
-<span id="cb71-11"><a href="#cb71-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> titanic.kub.sspcloud.fr</span></span>
-<span id="cb71-12"><a href="#cb71-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">rules</span><span class="kw">:</span></span>
-<span id="cb71-13"><a href="#cb71-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">host</span><span class="kw">:</span><span class="at"> titanic.kub.sspcloud.fr</span></span>
-<span id="cb71-14"><a href="#cb71-14" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">http</span><span class="kw">:</span></span>
-<span id="cb71-15"><a href="#cb71-15" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">paths</span><span class="kw">:</span></span>
-<span id="cb71-16"><a href="#cb71-16" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">path</span><span class="kw">:</span><span class="at"> /</span></span>
-<span id="cb71-17"><a href="#cb71-17" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">pathType</span><span class="kw">:</span><span class="at"> Prefix</span></span>
-<span id="cb71-18"><a href="#cb71-18" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">backend</span><span class="kw">:</span></span>
-<span id="cb71-19"><a href="#cb71-19" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">service</span><span class="kw">:</span></span>
-<span id="cb71-20"><a href="#cb71-20" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">name</span><span class="kw">:</span><span class="at"> titanic-service</span></span>
-<span id="cb71-21"><a href="#cb71-21" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">port</span><span class="kw">:</span></span>
-<span id="cb71-22"><a href="#cb71-22" aria-hidden="true" tabindex="-1"></a><span class="at">              </span><span class="fu">number</span><span class="kw">:</span><span class="at"> </span><span class="dv">80</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb70"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> networking.k8s.io/v1</span></span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Ingress</span></span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> titanic-ingress</span></span>
+<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">annotations</span><span class="kw">:</span></span>
+<span id="cb70-6"><a href="#cb70-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">nginx.ingress.kubernetes.io/rewrite-target</span><span class="kw">:</span><span class="at"> /</span></span>
+<span id="cb70-7"><a href="#cb70-7" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb70-8"><a href="#cb70-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">ingressClassName</span><span class="kw">:</span><span class="at"> nginx</span></span>
+<span id="cb70-9"><a href="#cb70-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">tls</span><span class="kw">:</span></span>
+<span id="cb70-10"><a href="#cb70-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">hosts</span><span class="kw">:</span></span>
+<span id="cb70-11"><a href="#cb70-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> titanic.kub.sspcloud.fr</span></span>
+<span id="cb70-12"><a href="#cb70-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">rules</span><span class="kw">:</span></span>
+<span id="cb70-13"><a href="#cb70-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">host</span><span class="kw">:</span><span class="at"> titanic.kub.sspcloud.fr</span></span>
+<span id="cb70-14"><a href="#cb70-14" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">http</span><span class="kw">:</span></span>
+<span id="cb70-15"><a href="#cb70-15" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">paths</span><span class="kw">:</span></span>
+<span id="cb70-16"><a href="#cb70-16" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">path</span><span class="kw">:</span><span class="at"> /</span></span>
+<span id="cb70-17"><a href="#cb70-17" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">pathType</span><span class="kw">:</span><span class="at"> Prefix</span></span>
+<span id="cb70-18"><a href="#cb70-18" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">backend</span><span class="kw">:</span></span>
+<span id="cb70-19"><a href="#cb70-19" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">service</span><span class="kw">:</span></span>
+<span id="cb70-20"><a href="#cb70-20" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">name</span><span class="kw">:</span><span class="at"> titanic-service</span></span>
+<span id="cb70-21"><a href="#cb70-21" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">port</span><span class="kw">:</span></span>
+<span id="cb70-22"><a href="#cb70-22" aria-hidden="true" tabindex="-1"></a><span class="at">              </span><span class="fu">number</span><span class="kw">:</span><span class="at"> </span><span class="dv">80</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <ul>
 <li><p>Appliquer ces fichiers de configuration sur le cluster : <code>kubectl apply -f deployement/</code></p></li>
@@ -2151,7 +2145,7 @@ Fichier <code>deployment/ingress.yaml</code>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-56-contents" aria-controls="callout-56" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-54-contents" aria-controls="callout-54" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2160,7 +2154,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-56" class="callout-56-contents callout-collapse collapse">
+<div id="callout-54" class="callout-54-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli19</code></pre>
 </div>
@@ -2223,7 +2217,7 @@ Note
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-59-contents" aria-controls="callout-59" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-57-contents" aria-controls="callout-57" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2232,7 +2226,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-59" class="callout-59-contents callout-collapse collapse">
+<div id="callout-57" class="callout-57-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <pre class="shell"><code>git checkout appli20</code></pre>
 </div>
@@ -2249,16 +2243,15 @@ Checkpoint
 <li id="fn1"><p>L’export dans un script <code>.py</code> a été fait directement depuis <code>VSCode</code>. Comme cela n’est pas vraiment l’objet du cours, nous passons cette étape et fournissons directement le script expurgé du texte intermédiaire. Mais n’oubliez pas que cette démarche, fréquente quand on a démarré sur un <em>notebook</em> et qu’on désire consolider en faisant la transition vers des scripts, nécessite d’être attentif pour ne pas risquer de faire une erreur.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p>Essayez de <em>commit</em> vos changements à chaque étape de l’exercice, c’est une bonne habitude à prendre.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn3"><p>Ici, le jeton d’API n’est pas indispensable pour que le code fonctionne. Afin d’éviter une erreur non nécessaire lorsqu’on automatisera le processus, on peut créer une condition qui vérifie la présence ou non de ce fichier. Le script reste donc reproductible même pour un utilisateur n’ayant pas le fichier <code>secrets.yaml</code>.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4"><p>Nous proposons ici d’adopter le principe de la <strong>programmation fonctionnelle</strong>. Pour encore fiabiliser un processus, il serait possible d’adopter le paradigme de la <strong>programmation orientée objet (POO)</strong>. Celle-ci est plus rebutante et demande plus de temps au développeur. L’arbitrage coût-avantage est négatif pour notre exemple, nous proposons donc de nous en passer. Néanmoins, pour une mise en production réelle d’un modèle, il est recommandé de l’adopter. C’est d’ailleurs obligatoire avec des <a href="https://pythonds.linogaliana.fr/pipeline-scikit/"><em>pipelines</em> <code>scikit</code></a>.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn5"><p>Au passage vous pouvez noter que mauvaises pratiques discutables, peuvent être corrigées, notamment l’utilisation excessive de <code>apply</code> là où il serait possible d’utiliser des méthodes embarquées par <code>Pandas</code>. Cela est plutôt de l’ordre du bon style de programmation que de la qualité formelle du script. Ce n’est donc pas obligatoire mais c’est mieux.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn6"><p>Il est normal d’avoir des dossiers <code>__pycache__</code> qui traînent : ils se créent automatiquement à l’exécution d’un script en <code>Python</code>.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn7"><p>L’emplacement de ce fichier est amené à évoluer dans le cadre d’une packagisation. Dans un package, ces tests seront dans un dossier spécifique <code>/tests</code> car <code>Python</code> sait gérer de manière plus formelle les imports de fonctions depuis des modules. Ici, on est dans une situation transitoire, raison pour laquelle les tests sont dans les mêmes dossiers que les fonctions.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Il est normal d’avoir des dossiers <code>__pycache__</code> qui traînent en local : ils se créent automatiquement à l’exécution d’un script en <code>Python</code>. Néanmoins, il ne faut pas associer ces fichiers à <code>Git</code>, voilà pourquoi on les ajoute au <code>.gitignore</code>.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>Nous proposons ici d’adopter le principe de la <strong>programmation fonctionnelle</strong>. Pour encore fiabiliser un processus, il serait possible d’adopter le paradigme de la <strong>programmation orientée objet (POO)</strong>. Celle-ci est plus rebutante et demande plus de temps au développeur. L’arbitrage coût-avantage est négatif pour notre exemple, nous proposons donc de nous en passer. Néanmoins, pour une mise en production réelle d’un modèle, il est recommandé de l’adopter. C’est d’ailleurs obligatoire avec des <a href="https://pythonds.linogaliana.fr/pipeline-scikit/"><em>pipelines</em> <code>scikit</code></a>.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>Au passage vous pouvez noter que mauvaises pratiques discutables, peuvent être corrigées, notamment l’utilisation excessive de <code>apply</code> là où il serait possible d’utiliser des méthodes embarquées par <code>Pandas</code>. Cela est plutôt de l’ordre du bon style de programmation que de la qualité formelle du script. Ce n’est donc pas obligatoire mais c’est mieux.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>Attention, les données ont été <em>committées</em> au moins une fois. Les supprimer du dépôt ne les efface pas de l’historique. Si cette erreur arrive, le mieux est de supprimer le dépôt en ligne, créer un nouvel historique <code>Git</code> et partir de celui-ci pour des publications ultérieures sur <code>Github</code>. Néanmoins l’idéal serait de ne pas s’exposer à cela. C’est justement l’objet des bonnes pratiques de ce cours: un <code>.gitignore</code> bien construit et une séparation des environnements de stockage du code et des données seront bien plus efficaces pour vous éviter ces problèmes que tout les conseils de vigilance que vous pourrez trouver ailleurs.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn8"><p>Le fichier <code>__init__.py</code> indique à <code>Python</code> que le dossier est un <em>package</em>. Il permet de proposer certaines configurations lors de l’import du <em>package</em>. Il permet également de contrôler les objets exportés (c’est-à-dire mis à disposition de l’utilisateur) par le <em>package</em> par rapport aux objets internes au <em>package</em>. En le laissant vide, nous allons utiliser ce fichier pour importer l’ensemble des fonctions de nos sous-modules. Ce n’est pas la meilleure pratique mais un contrôle plus fin des objets exportés demanderait un investissement qui ne vaut, ici, pas le coût.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn9"><p>Ce <code>pyproject.toml</code> est un modèle qui utilise <code>setuptools</code> pour <em>build</em> le <em>package</em>. C’est l’outil classique. Néanmoins, pour des usages plus raffinés, il peut être utile d’utiliser <a href="https://python-poetry.org/"><code>poetry</code></a> qui propose des fonctionnalités plus complètes.<a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn10"><p>Si vous désirez aussi contrôler la version de <code>Python</code>, ce qui peut être important dans une perspective de portabilité, vous pouvez ajouter une option, par exemple <code>-p python3.9</code>.<a href="#fnref10" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn11"><p>Pour comparer les deux listes, vous pouvez utiliser la fonctionnalité de <em>split</em> du terminal sur <code>VSCode</code> pour comparer les outputs de <code>conda env export</code> en les mettant en face à face.<a href="#fnref11" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn12"><p>Il existe une approche alternative pour faire des tests réguliers: les <em>hooks</em> <code>Git</code>. Il s’agit de règles qui doivent être satisfaites pour que le fichier puisse être committé. Cela assurera que chaque <code>commit</code> remplisse des critères de qualité afin d’éviter le problème de la procrastination.</p>
-<p>La <a href="https://pylint.pycqa.org/en/latest/user_guide/pre-commit-integration.html">documentation de pylint</a> offre des explications supplémentaires.<a href="#fnref12" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn9"><p>Si vous désirez aussi contrôler la version de <code>Python</code>, ce qui peut être important dans une perspective de portabilité, vous pouvez ajouter une option, par exemple <code>-p python3.9</code>.<a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn10"><p>Pour comparer les deux listes, vous pouvez utiliser la fonctionnalité de <em>split</em> du terminal sur <code>VSCode</code> pour comparer les outputs de <code>conda env export</code> en les mettant en face à face.<a href="#fnref10" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn11"><p>Il existe une approche alternative pour faire des tests réguliers: les <em>hooks</em> <code>Git</code>. Il s’agit de règles qui doivent être satisfaites pour que le fichier puisse être committé. Cela assurera que chaque <code>commit</code> remplisse des critères de qualité afin d’éviter le problème de la procrastination.</p>
+<p>La <a href="https://pylint.pycqa.org/en/latest/user_guide/pre-commit-integration.html">documentation de pylint</a> offre des explications supplémentaires.<a href="#fnref11" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

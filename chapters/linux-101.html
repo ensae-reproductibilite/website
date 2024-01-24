@@ -75,6 +75,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/quarto-contrib/fontawesome6-0.1.0/all.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/fontawesome6-0.1.0/latex-fontsize.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -213,7 +215,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#permissions" id="toc-permissions" class="nav-link" data-scroll-target="#permissions">Permissions</a></li>
   <li><a href="#les-scripts-shell" id="toc-les-scripts-shell" class="nav-link" data-scroll-target="#les-scripts-shell">Les scripts shell</a></li>
   <li><a href="#gestionnaire-de-paquets" id="toc-gestionnaire-de-paquets" class="nav-link" data-scroll-target="#gestionnaire-de-paquets">Gestionnaire de paquets</a></li>
-  <li><a href="#tricks" id="toc-tricks" class="nav-link" data-scroll-target="#tricks">Tricks</a></li>
+  <li><a href="#tricks" id="toc-tricks" class="nav-link" data-scroll-target="#tricks"><em>Tricks</em></a></li>
   </ul></li>
   </ul>
 </nav>
@@ -254,14 +256,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>Le terminal Linux</h1>
 <section id="pourquoi-sintéresser-au-terminal-linux" class="level2">
 <h2 class="anchored" data-anchor-id="pourquoi-sintéresser-au-terminal-linux">Pourquoi s’intéresser au terminal Linux ?</h2>
-<p>Le terminal (ou ligne de commande) est une console interactive qui permet de lancer des commandes. Il existe dans la plupart des systèmes d’exploitation. Mais comme il a la réputation d’être austère et complexe, on utilise plutôt des interfaces graphiques pour effectuer nos opérations informatiques quotidiennes.</p>
-<p>Pourtant, avoir des notions quant à l’utilisation d’un terminal est une vraie source d’autonomie, dans la mesure où celui-ci permet de gérer bien plus finement les commandes que l’on réalise. Pour le data scientist qui s’intéresse aux bonnes pratiques et à la mise en production, sa maîtrise est essentielle. Les raisons sont multiples :</p>
+<p>Le terminal (ou ligne de commande) est une console interactive qui permet de lancer des commandes. Il existe dans la plupart des systèmes d’exploitation (y compris avec Windows !). Mais comme il a la réputation d’être austère et complexe, on utilise plutôt des interfaces graphiques pour effectuer nos opérations informatiques quotidiennes.</p>
+<p>Pourtant, avoir des notions quant à l’utilisation d’un terminal est une vraie source d’autonomie, dans la mesure où celui-ci permet de gérer bien plus finement les commandes que l’on réalise. Pour les data scientists qui s’intéressent aux bonnes pratiques et à la mise en production, sa maîtrise est essentielle. Les raisons sont multiples :</p>
 <ul>
-<li><p>les interfaces graphiques des logiciels sont généralement limitées par rapport à l’utilisation du programme en ligne de commande. C’est par exemple le cas de <strong>Git</strong> et de <strong>Docker</strong>. Dans les deux cas, seul le client en ligne de commande permet de réaliser toutes les opérations permises par le logiciel ;</p></li>
-<li><p>mettre un projet de data science en production nécessite d’utiliser un serveur, qui le rend disponible en permanence à son public potentiel. Or là où Windows domine le monde des ordinateurs personnels, une large majorité des serveurs et des infrastructures cloud fonctionnent sous Linux.</p></li>
-<li><p>plus généralement, une utilisation régulière du terminal est source d’une meilleure compréhension du fonctionnement d’un système de fichiers et de l’exécution des processus sur un ordinateur. Ces connaissances s’avèrent très utiles dans la pratique quotidienne du data scientist, qui nécessite de plus en plus de développer dans différents environnements d’exécution.</p></li>
+<li><p>les interfaces graphiques des logiciels sont généralement limitées par rapport à l’utilisation du programme en ligne de commande. C’est par exemple le cas de <code>Git</code> et de <code>Docker</code>. Dans les deux cas, seul le client en ligne de commande permet de réaliser toutes les opérations permises par le logiciel ;</p></li>
+<li><p>mettre un projet de <em>data science</em> en production nécessite d’utiliser un serveur, qui le rend disponible en permanence à son public potentiel. Or là où Windows domine le monde des ordinateurs personnels, une large majorité des serveurs et des infrastructures <em>cloud</em> fonctionnent sous <code>Linux</code> ;</p></li>
+<li><p>les principaux langages de programmation des <em>data scientists</em> (<i class="fa-brands fa-python" aria-label="python"></i>, <i class="fa-brands fa-r-project" aria-label="r-project"></i>, etc. ) visent à simplifier l’exécution d’opérations complexes par le biais de la ligne de commande mais héritent néanmoins de sa logique. Utiliser la ligne de commande permet de gagner en aisance dans son travail de programmation ;</p></li>
+<li><p>plus généralement, une utilisation régulière du terminal est source d’une meilleure compréhension du fonctionnement d’un système de fichiers et de l’exécution des processus sur un ordinateur. Ces connaissances s’avèrent très utiles dans la pratique quotidienne du <em>data scientist</em>, qui nécessite de plus en plus de développer dans différents environnements d’exécution.</p></li>
 </ul>
-<p>Dans le cadre de ce cours, on s’intéressera donc particulièrement au terminal Linux.</p>
+<p>Dans le cadre de ce cours, on s’intéressera particulièrement au terminal Linux puisque l’écrasante majorité, si ce n’est l’ensemble, des serveurs de mise en production s’appuient sur un système Linux.</p>
 </section>
 <section id="environnement-de-travail" class="level2">
 <h2 class="anchored" data-anchor-id="environnement-de-travail">Environnement de travail</h2>
@@ -269,31 +272,59 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul>
 <li><p>le <a href="https://datalab.sspcloud.fr">SSP Cloud</a>. Dans la mesure où les exemples de mise en production du cours seront illustrées sur cet environnement, nous recommandons de l’utiliser dès à présent pour se familiariser. Le terminal est accessible à partir de différents services (RStudio, Jupyter, etc.), mais nous recommandons d’utiliser le terminal d’un service VSCode, dans la mesure où se servir d’un <a href="https://fr.wikipedia.org/wiki/Environnement_de_d%C3%A9veloppement">IDE</a> pour organiser notre code est en soi déjà une bonne pratique ;</p></li>
 <li><p><a href="https://katacoda.com/scenario-examples/courses/environment-usages/ubuntu-2004">Katacoda</a>, un bac à sable dans un système Ubuntu, la distribution Linux la plus populaire ;</p></li>
-<li><p>sur Windows : Git Bash (émulation minimaliste d’un terminal Linux), qui est installée par défaut avec Git.</p></li>
+<li><p>sur Windows : Git Bash (émulation minimaliste d’un terminal Linux), qui est installée par défaut avec <code>Git</code>.</p></li>
 </ul>
 </section>
 <section id="introduction-au-terminal" class="level2">
 <h2 class="anchored" data-anchor-id="introduction-au-terminal">Introduction au terminal</h2>
 <p>Lançons un terminal pour présenter son fonctionnement basique. On prend pour exemple le terminal d’un service VSCode lancé via le SSP Cloud (<em>Application Menu</em> tout en haut à gauche de VSCode -&gt; <em>Terminal</em> -&gt; <em>New Terminal</em>). Voici à quoi ressemble le terminal en question.</p>
 <p><img src="../terminal.png" class="img-fluid"></p>
-<p>Décrivons d’abord les différentes inscriptions qui arrivent à l’initialisation : - <code>(base)</code> : cette inscription n’est pas directement liée au terminal, elle provient du fait que l’on utilise un environnement <code>conda</code>. Nous verrons le fonctionnement des environnements virtuels en détail dans le chapitre sur la <a href="XXXXXXXX">portabilité</a> ; - <code>coder@vscode-824991-64744dd6d8-zbgv5</code> : le nom de l’utilisateur (ici <code>coder</code>) et le nom de la machine (ici, un conteneur, notion que l’on verra là encore dans le chapitre sur la <a href="XXXXXX">portabilité</a> - <code>~/work</code> : le chemin du répertoire courant, i.e.&nbsp;à partir duquel va être lancée toute commande. On comprendra mieux la signification de ce chemin dans la section suivante.</p>
+<p>Décrivons d’abord les différentes inscriptions qui arrivent à l’initialisation :</p>
+<ul>
+<li><code>(base)</code> : cette inscription n’est pas directement liée au terminal, elle provient du fait que l’on utilise un environnement <code>conda</code>. Nous verrons le fonctionnement des environnements virtuels en détail dans le chapitre sur la <a href="XXXXXXXX">portabilité</a> ;</li>
+<li><code>coder@vscode-824991-64744dd6d8-zbgv5</code> : le nom de l’utilisateur (ici <code>coder</code>) et le nom de la machine (ici, un conteneur, notion que l’on verra là encore dans le chapitre sur la <a href="XXXXXX">portabilité</a></li>
+<li><code>~/work</code> : le chemin du répertoire courant, i.e.&nbsp;à partir duquel va être lancée toute commande. On comprendra mieux la signification de ce chemin dans la section suivante.</li>
+</ul>
 <p>Pour éviter la lourdeur des images et permettre de copier/coller facilement les commandes, on représentera dans la suite du tutoriel (et du cours) le terminal du service VSCode par des bandes de texte sur fond noir, comme dans l’exemple suivant. Les lignes commençant par un <code>$</code> sont celles avec lesquelles une commande est lancée, et les lignes sans <code>$</code> représentent le résultat d’une commande. Attention à ne pas inclure le <code>$</code> lorsque vous lancez les commandes, il sert simplement à différencier celles-ci des résultats.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> echo <span class="st">"une petite illustration"</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">une</span> petite illustration</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="notions-de-filesystem" class="level2">
 <h2 class="anchored" data-anchor-id="notions-de-filesystem">Notions de <em>filesystem</em></h2>
-<p>Le terme <em>filesystem</em> (système de fichiers) désigne la manière dont sont organisés les fichiers au sein d’un système d’exploitation. Cette structure est hiérarchique, en forme d’arbre : - elle part d’un répertoire racine (le dossier qui contient tous les autres) ; - contient des dossiers ; - les dossiers peuvent contenir à leur tout des dossiers (sous-dossiers) ou des fichiers.</p>
+<p>Le terme <em>filesystem</em> (système de fichiers) désigne la manière dont sont organisés les fichiers au sein d’un système d’exploitation. Cette structure est hiérarchique, en forme d’arbre :</p>
+<ul>
+<li>elle part d’un répertoire racine (le dossier qui contient tous les autres) ;</li>
+<li>contient des dossiers ;</li>
+<li>les dossiers peuvent contenir à leur tout des dossiers (sous-dossiers) ou des fichiers.</li>
+</ul>
 <p>Intéressons nous à la structure du <em>filesystem</em> Linux standard.</p>
 <p><a href="../linux_fs.jpg"><img src="../linux_fs.jpg" height="300"></a></p>
 <p>Source : <a href="https://commons.wikimedia.org/wiki/File:Linux_file_system_foto_no_exif_(1).jpg">commons.wikimedia.org</a></p>
-<p>Quelques observations : - la racine (<em>root</em>) sur Linux s’appelle <code>/</code>, là où elle s’appelle <code>C:\</code> par défaut sur Windows ; - le répertoire racine contient un ensemble de sous-dossiers, dont la plupart ont un rôle essentiellement technique. Il est tout de même utile d’en décrire les principaux : - <code>/bin</code> : contient les binaires, i.e.&nbsp;les programmes exécutables ; - <code>/etc</code> : contient les fichiers de configuration ; - <code>/home</code> : contient l’ensemble des dossiers et fichiers personnels des différents utilisateurs. Chaque utilisateur a un répertoire dit “HOME” qui a pour chemin <code>/home/&lt;username&gt;</code> Ce répertoire est souvent représenté par le symbole <code>~</code>. C’était notamment le cas dans l’illustration du terminal VSCode ci-dessus, ce qui signifie qu’on se trouvait formellement dans le répertoire <code>/home/coder/work</code>, <code>coder</code> étant l’utilisateur par défaut du service VSCode sur le SSP Cloud.</p>
-<p>Chaque dossier ou fichier est représenté par un chemin d’accès, qui correspond simplement à sa position dans le <em>filesystem</em>. Il existe deux moyens de spécifier un chemin : - en utilisant un chemin <strong>absolu</strong>, c’est à dire en indiquant le chemin complet du dossier ou fichier depuis la racine. En Linux, on reconnaît donc un chemin absolu par le fait qu’il commence forcément par <code>/</code>. - en utilisant un chemin <strong>relatif</strong>, c’est à dire en indiquant le chemin du dossier ou fichier <em>relativement</em> au répertoire courant.</p>
+<p>Quelques observations :</p>
+<ul>
+<li>la racine (<em>root</em>) sur Linux s’appelle <code>/</code>, là où elle s’appelle <code>C:\</code> par défaut sur Windows ;</li>
+<li>le répertoire racine contient un ensemble de sous-dossiers, dont la plupart ont un rôle essentiellement technique. Il est tout de même utile d’en décrire les principaux :
+<ul>
+<li><code>/bin</code> : contient les binaires, i.e.&nbsp;les programmes exécutables ;</li>
+<li><code>/etc</code> : contient les fichiers de configuration ;</li>
+<li><code>/home</code> : contient l’ensemble des dossiers et fichiers personnels des différents utilisateurs. Chaque utilisateur a un répertoire dit “HOME” qui a pour chemin <code>/home/&lt;username&gt;</code> Ce répertoire est souvent représenté par le symbole <code>~</code>. C’était notamment le cas dans l’illustration du terminal VSCode ci-dessus, ce qui signifie qu’on se trouvait formellement dans le répertoire <code>/home/coder/work</code>, <code>coder</code> étant l’utilisateur par défaut du service VSCode sur le SSP Cloud.</li>
+</ul></li>
+</ul>
+<p>Chaque dossier ou fichier est représenté par un chemin d’accès, qui correspond simplement à sa position dans le <em>filesystem</em>. Il existe deux moyens de spécifier un chemin :</p>
+<ul>
+<li>en utilisant un chemin <strong>absolu</strong>, c’est à dire en indiquant le chemin complet du dossier ou fichier depuis la racine. En Linux, on reconnaît donc un chemin absolu par le fait qu’il commence forcément par <code>/</code>.</li>
+<li>en utilisant un chemin <strong>relatif</strong>, c’est à dire en indiquant le chemin du dossier ou fichier <em>relativement</em> au répertoire courant.</li>
+</ul>
 <p>Comme tout ce qui touche de près ou de loin au terminal, la seule manière de bien comprendre ces notions est de les appliquer. Les exercices de fin de chapitre vous permettront d’appliquer ces concepts à des cas pratiques.</p>
 </section>
 <section id="lancer-des-commandes" class="level2">
 <h2 class="anchored" data-anchor-id="lancer-des-commandes">Lancer des commandes</h2>
-<p>Le rôle d’un terminal est de lancer des commandes. Ces commandes peuvent être classées en trois grandes catégories : - navigation au sein du <em>filesystem</em> - manipulations de fichiers (créer, lire, modifier des dossiers/fichiers) - lancement de programmes</p>
+<p>Le rôle d’un terminal est de lancer des commandes. Ces commandes peuvent être classées en trois grandes catégories :</p>
+<ul>
+<li>navigation au sein du <em>filesystem</em></li>
+<li>manipulations de fichiers (créer, lire, modifier des dossiers/fichiers)</li>
+<li>lancement de programmes</li>
+</ul>
 <section id="navigation-au-sein-du-filesystem" class="level3">
 <h3 class="anchored" data-anchor-id="navigation-au-sein-du-filesystem">Navigation au sein du <em>filesystem</em></h3>
 <p>Lorsque l’on lance un programme à partir du terminal, celui-ci a pour référence le répertoire courant dans lequel on se trouve au moment du lancement. Par exemple, si l’on exécute un script Python en se trouvant dans un certain répertoire, tous les chemins des fichiers utilisés dans le script seront relatifs au répertoire courant d’exécution — à moins d’utiliser uniquement des chemins absolus, ce qui n’est pas une bonne pratique en termes de reproductibilité puisque cela lie votre projet à la structure de votre <em>filesystem</em> particulier.</p>
@@ -347,7 +378,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
-<p>La première commande est l’occasion de revenir sur une convention d’écriture importante pour les chemins relatifs : - <code>.</code> représente le répertoire courant. Ainsi, <code>cd .</code> revient à changer de répertoire courant… pour le répertoire courant, ce qui bien sûr ne change rien. Mais le <code>.</code> est très utile pour la copie de fichiers (cf.&nbsp;<a href="#manipulation">section suivante</a>) ou encore lorsque l’on doit passer des paramètres à un programme (cf.&nbsp;section <a href="#lancement">Lancement de programmes</a>) ; - <code>..</code> représente le répertoire parent du répertoire courant.</p>
+<p>La première commande est l’occasion de revenir sur une convention d’écriture importante pour les chemins relatifs :</p>
+<ul>
+<li><code>.</code> représente le répertoire courant. Ainsi, <code>cd .</code> revient à changer de répertoire courant… pour le répertoire courant, ce qui bien sûr ne change rien. Mais le <code>.</code> est très utile pour la copie de fichiers (cf.&nbsp;<a href="#manipulation">section suivante</a>) ou encore lorsque l’on doit passer des paramètres à un programme (cf.&nbsp;section <a href="#lancement">Lancement de programmes</a>) ;</li>
+<li><code>..</code> représente le répertoire parent du répertoire courant.</li>
+</ul>
 <p>Ces différentes commandes constituent la très grande majorité des usages dans un terminal. Il est essentiel de les pratiquer jusqu’à ce qu’elles deviennent une seconde nature.</p>
 </section>
 <section id="manipulation" class="level3">
@@ -391,11 +426,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
-<p>Dans la mesure où il est généralement possible de réaliser toutes ces opérations à l’aide d’interfaces graphiques (notamment, l’explorateur de fichiers), celles-ci sont moins essentielles que celles permettant de se déplacer dans le <em>filesystem</em>. Nous vous recommandons malgré tout de les pratiquer également, et ce pour plusieurs raisons : - effectuer un maximum d’opérations via le terminal permet de bien comprendre son fonctionnement et donc de gagner en autonomie ; - en devenant efficient sur ces commandes, vous vous rendrez compte que manipuler le <em>filesystem</em> via le terminal est en fait plus rapide que via une interface graphique ; - lorsque l’on est amené à manipuler un terminal pour interagir avec un serveur, il n’y a souvent pas la moindre interface graphique, auquel cas il n’y a pas d’autre choix que d’opérer uniquement à partir du terminal.</p>
+<p>Dans la mesure où il est généralement possible de réaliser toutes ces opérations à l’aide d’interfaces graphiques (notamment, l’explorateur de fichiers), celles-ci sont moins essentielles que celles permettant de se déplacer dans le <em>filesystem</em>. Nous vous recommandons malgré tout de les pratiquer également, et ce pour plusieurs raisons :</p>
+<ul>
+<li>effectuer un maximum d’opérations via le terminal permet de bien comprendre son fonctionnement et donc de gagner en autonomie ;</li>
+<li>en devenant efficient sur ces commandes, vous vous rendrez compte que manipuler le <em>filesystem</em> via le terminal est en fait plus rapide que via une interface graphique ;</li>
+<li>lorsque l’on est amené à manipuler un terminal pour interagir avec un serveur, il n’y a souvent pas la moindre interface graphique, auquel cas il n’y a pas d’autre choix que d’opérer uniquement à partir du terminal.</li>
+</ul>
 </section>
 <section id="lancement" class="level3">
 <h3 class="anchored" data-anchor-id="lancement">Lancement de programmes</h3>
-<p>Le rôle du terminal est de lancer des programmes. Lancer un programme se fait à partir d’un fichier dit exécutable, qui peut être de deux formes : - un <strong>binaire</strong>, i.e.&nbsp;un programme dont le code n’est pas lisible par l’humain ; - un <strong>script</strong>, i.e.&nbsp;un fichier texte contenant une série d’instructions à exécuter. Le langage du terminal Linux est le <code>shell</code>, et les scripts associés ont pour extension <code>.sh</code>.</p>
+<p>Le rôle du terminal est de lancer des programmes. Lancer un programme se fait à partir d’un fichier dit exécutable, qui peut être de deux formes :</p>
+<ul>
+<li>un <strong>binaire</strong>, i.e.&nbsp;un programme dont le code n’est pas lisible par l’humain ;</li>
+<li>un <strong>script</strong>, i.e.&nbsp;un fichier texte contenant une série d’instructions à exécuter. Le langage du terminal Linux est le <code>shell</code>, et les scripts associés ont pour extension <code>.sh</code>.</li>
+</ul>
 <p>Dans les deux cas, la syntaxe de lancement d’une commande est : le nom de l’exécutable, suivi d’éventuels paramètres, séparés par des espaces. Par exemple, la commande <code>python monscript.py</code> exécute le binaire <code>python</code> et lui passe comme unique argument le nom d’un script <code>.py</code> (contenu dans le répertoire courant), qui va donc être exécuté via <code>Python</code>. De la même manière, toutes les commandes vues précédemment pour se déplacer dans le <em>filesystem</em> ou manipuler des fichiers sont des exécutables et fonctionnent donc selon ce principe. Par exemple, <code>cp fichierdepart fichierarrivee</code> lance le binaire <code>cp</code> en lui passant deux arguments : le chemin du fichier à copier et le chemin d’arrivée.</p>
 <p>Dans les exemples de commandes précédents, les paramètres étaient passés en mode positionnel : l’exécutable attend des arguments dans un certain ordre, ce qui est clair dans le cas de <code>cp</code> par exemple. Mais le nombre des arguments n’est pas toujours fixé à l’avance, du fait de la présence de paramètres optionnels. Ainsi, la plupart des exécutables permettent le passage d’arguments optionnels, qui modifient le comportement de l’exécutable, via des <em>flags</em>. Par exemple, on a vu que <code>cp</code> permettait de copier un fichier à un autre endroit du <em>filesystem</em>, mais peut-on copier un dossier et l’ensemble de son contenu avec ? Nativement non, mais l’ajout d’un paramètre le permet : <code>cp -R dossierdepart dossierarrivee</code> permet de copier <em>récursivement</em> le dossier et tout son contenu. Notons que les <em>flags</em> ont très souvent un équivalent en toute lettre, qui s’écrit quant à lui avec deux tirers. Par exemple, la commande précédente peut s’écrire de manière équivalente <code>cp --recursive dossierdepart dossierarrivee</code>. Il est fréquent de voir les deux syntaxes en pratique, parfois même mélangées au sein d’une même commande.</p>
 </section>
@@ -406,7 +450,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> MY_VAR=<span class="st">"toto"</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> echo <span class="va">$MY_VAR</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">toto</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Quelques remarques importantes : - la syntaxe pour la création de variable est précise : aucun espace d’un côté comme de l’autre du <code>=</code> ; - en <code>Shell</code>, on ne manipule que du texte. Dans notre exemple, on aurait donc pu écrire <code>MY_VAR=toto</code> pour le même résultat. Par contre, si l’on veut assigner à une variable une valeur contenant des espaces, les guillemets deviennent indispensables pour ne pas obtenir un message d’erreur ; - pour accéder à la valeur d’une variable, on la préfixe d’un <code>$</code>.</p>
+<p>Quelques remarques importantes :</p>
+<ul>
+<li>la syntaxe pour la création de variable est précise : aucun espace d’un côté comme de l’autre du <code>=</code> ;</li>
+<li>en <code>Shell</code>, on ne manipule que du texte. Dans notre exemple, on aurait donc pu écrire <code>MY_VAR=toto</code> pour le même résultat. Par contre, si l’on veut assigner à une variable une valeur contenant des espaces, les guillemets deviennent indispensables pour ne pas obtenir un message d’erreur ;</li>
+<li>pour accéder à la valeur d’une variable, on la préfixe d’un <code>$</code>.</li>
+</ul>
 <p>Notre objectif avec ce tutoriel n’est pas de savoir coder en <code>shell</code>, on ne va donc pas s’attarder sur les propriétés des variables. En revanche, introduire ce concept était nécessaire pour en présenter un autre, essentiel quant à lui dans la pratique quotidienne du data scientist : les variables d’environnement. Pour faire une analogie — un peu simpliste — avec les langages de programmation, ce sont des sortes de variables “globales”, dans la mesure où elles vont être accessibles à tous les programmes lancés à partir d’un terminal, et vont modifier leur comportement.</p>
 <p>La liste des variables d’environnement peut être affichée à l’aide de la commande <code>env</code>. Il y a généralement un grand nombre de variables d’environnement prééxistantes ; en voici un échantillon obtenu à partir du terminal du service VSCode.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> env</span>
@@ -442,7 +491,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="les-scripts-shell" class="level2">
 <h2 class="anchored" data-anchor-id="les-scripts-shell">Les scripts shell</h2>
-<p>Maintenant que nous avons vu les variables et les permissions, revenons sur les scripts <code>shell</code> précédemment évoqués. A l’instar d’un script <code>Python</code>, un script <code>shell</code> permet d’automatiser une série de commandes lancées dans un terminal. Le but de ce tutoriel n’est pas de savoir écrire des scripts <code>shell</code> complexes, travail généralement dévolu aux les <em>data engineers</em> ou les <em>sysadmin</em> (administrateurs système), mais de comprendre leur structure, leur fonctionnement, et de savoir lancer des scripts simples. Ces compétences sont essentielles lorsque l’on se préoccupe de mise en production. A titre d’exemple, comme nous le verrons dans le chapitre sur la <a href="XXXXXXX">portabilité</a>, il est fréquent d’utiliser un script <code>shell</code> comme <em>entrypoint</em> d’une image <code>docker</code>, afin de spécifier les commandes que doit lancer le conteneur lors de son initialisation.</p>
+<p>Maintenant que nous avons vu les variables et les permissions, revenons sur les scripts <code>shell</code> précédemment évoqués. A l’instar d’un script <code>Python</code>, un script <code>shell</code> permet d’automatiser une série de commandes lancées dans un terminal. Le but de ce tutoriel n’est pas de savoir écrire des scripts <code>shell</code> complexes, travail généralement dévolu aux les <em>data engineers</em> ou les <em>sysadmin</em> (administrateurs système), mais de comprendre leur structure, leur fonctionnement, et de savoir lancer des scripts simples. Ces compétences sont essentielles lorsque l’on se préoccupe de mise en production. A titre d’exemple, comme nous le verrons dans le chapitre sur la <a href="../chapters/portability.html">portabilité</a>, il est fréquent d’utiliser un script <code>shell</code> comme <em>entrypoint</em> d’une image <code>docker</code>, afin de spécifier les commandes que doit lancer le conteneur lors de son initialisation.</p>
 <p>Illustrons leur structure ainsi que leur fonctionnement à l’aide d’un script simple. Considérons les commandes suivantes, que l’on met dans un fichier <code>monscript.sh</code> dans le répertoire courant.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="va">SECTION</span><span class="op">=</span><span class="va">$1</span></span>
@@ -450,7 +499,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="va">FORMATION_DIR</span><span class="op">=</span>/home/coder/work/formation</span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="va">$FORMATION_DIR</span>/<span class="va">$SECTION</span>/<span class="va">$CHAPTER</span></span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">touch</span> <span class="va">$FORMATION_DIR</span>/<span class="va">$SECTION</span>/<span class="va">$CHAPTER</span>/test.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Analysons la structure de ce script : - la première ligne est classique, elle se nomme le <em>shebang</em> : elle indique au système quel interpréteur utiliser pour exécuter ce script. Dans notre cas, et de manière générale, on utilise <code>bash</code> (Bourne-Again SHell, l’implémentation moderne du <code>shell</code>) ; - les lignes 2 et 3 assignent à des variables les arguments passés au script dans la commande. Par défaut, ceux-ci sont assignés à des variables <code>n</code> où <code>n</code> est la position de l’argument, en commençant à 1 ; - la ligne 4 assigne un chemin à une variable - la ligne 5 crée le chemin complet, défini à partir des variables créées précédemment. Le paramètre <code>-p</code> est important : il précise à <code>mkdir</code> d’agir de manière récursive, c’est à dire de créer les dossiers intermédiaires qui n’existent pas encore ; - la ligne 6 crée un fichier texte vide dans le dossier créé avec la commande précédente.</p>
+<p>Analysons la structure de ce script :</p>
+<ul>
+<li>la première ligne est classique, elle se nomme le <em>shebang</em> : elle indique au système quel interpréteur utiliser pour exécuter ce script. Dans notre cas, et de manière générale, on utilise <code>bash</code> (Bourne-Again SHell, l’implémentation moderne du <code>shell</code>) ;</li>
+<li>les lignes 2 et 3 assignent à des variables les arguments passés au script dans la commande. Par défaut, ceux-ci sont assignés à des variables <code>n</code> où <code>n</code> est la position de l’argument, en commençant à 1 ;</li>
+<li>la ligne 4 assigne un chemin à une variable</li>
+<li>la ligne 5 crée le chemin complet, défini à partir des variables créées précédemment. Le paramètre <code>-p</code> est important : il précise à <code>mkdir</code> d’agir de manière récursive, c’est à dire de créer les dossiers intermédiaires qui n’existent pas encore ;</li>
+<li>la ligne 6 crée un fichier texte vide dans le dossier créé avec la commande précédente.</li>
+</ul>
 <p>Exécutons maintenant ce script, en prenant soin de lui donner les permission adéquates au préalable.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> chmod +x monscript.sh</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> bash monscript.sh section2 chapitre3</span>
@@ -492,7 +548,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="ex">All</span> packages are up to date.</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="tricks" class="level2">
-<h2 class="anchored" data-anchor-id="tricks">Tricks</h2>
+<h2 class="anchored" data-anchor-id="tricks"><em>Tricks</em></h2>
 <p>On l’a dit et redit : devenir à l’aise avec le terminal Linux est essentiel et demande de la pratique. Il existe néanmoins quelques astuces qui peuvent grandement simplifier la vie et donc faciliter la prise de bonnes habitudes.</p>
 <p>La première est l’<strong>autocomplétion</strong>. Dès lors que vous écrivez une commande contenant un nom d’exécutable, un chemin sur le <em>filesystem</em>, ou autre, n’hésitez pas à utiliser la touche <code>TAB</code> (touche au-dessus de celle qui verrouille la majuscule) de votre clavier. Dans la majorité des cas, cela va vous faire gagner un temps précieux.</p>
 <p>Une seconde astuce, qui n’en est pas vraiment une, est de lire la <strong>documentation</strong> d’une commande lorsque l’on n’est pas sûr de sa syntaxe ou des paramètres admissibles. Via le terminal, la documentation d’une commande peut être affichée en exécutant <code>man</code> suivie de la commande en question, par exemple : <code>man cp</code>. Comme il n’est pas toujours très pratique de lire de longs textes dans un petit terminal, on peut également chercher la documentation d’une commande sur le site <a href="https://man7.org/linux/man-pages/index.html">man7</a>.</p>
