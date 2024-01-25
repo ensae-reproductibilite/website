@@ -32,7 +32,7 @@ Une organisation claire et méthodique du code et des données
 facilite la compréhension du projet et la capacité
 à reprendre et faire évoluer le code. Il est plus facile
 de faire évoluer une chaine de production dont les éléments 
-s'enchainent de manière distincte et claire que lorsque tout est mélangé
+s'enchainent de manière distincte et claire que lorsque tout est mélangé.
 
 ::: {layout-ncol=2}
 ![Un projet mal structuré](/workflow1.png)
@@ -53,20 +53,20 @@ qui peuvent être amenées à évoluer.
 L'objectif est d'être pragmatique dans la structure du projet
 et d'adapter celle-ci aux finalités de celui-ci.
 Selon que le livrable du modèle est une API ou un site web la 
-solution technique mise en oeuvre
+solution technique mise en œuvre
 attendra une structure différente de scripts. Néanmoins, 
 certains principes universels peuvent s'appliquer et rien 
 n'empêche de 
 se laisser
 une marge d'adaptation si les _output_ du projet sont amenés à évoluer. 
 
-Le premier geste à mettre en oeuvre, qui est non-négociable,
+Le premier geste à mettre en œuvre, qui est non négociable,
 est d'utiliser `Git` ([voir chapitre dédié](/chapters/application.qmd)). 
 Avec `Git`, les mauvaises pratiques qui risquent de pénaliser 
 le développement ultérieur du projet vont être particulièrement criantes
 et pourront être corrigées de manière très précoce. 
 
-Les principes généraux sont les suivants:
+Les principes généraux sont les suivants :
 
 1. Privilégier les scripts aux _notebooks_, un enjeu spécifique aux projets
 de _data science_
@@ -79,7 +79,7 @@ Il s'agit donc de la continuité des principes évoqués dans le chapitre préc�
 
 ## Démonstration par l'exemple
 
-Voici un exemple d'organisation de projet, qui vous rappelera peut-être des souvenirs :
+Voici un exemple d'organisation de projet, qui vous rappellera peut-être des souvenirs :
 
 ```
 ├── report.qmd
@@ -98,10 +98,10 @@ _Source : [eliocamp.github.io](https://eliocamp.github.io/reproducibility-with-r
 
 La structure du projet suivante rend compliquée 
 la compréhension du projet. Parmi les principales
-questions: 
+questions : 
 
 - Quelles sont les données en entrée de chaine ?
-- Dans quel ordre les données intermédiaires sont-elles crées ?
+- Dans quel ordre les données intermédiaires sont-elles créées ?
 - Quel est l'objet des productions graphiques ?
 - Tous les codes sont-ils utilisés dans ce projet ? 
 
@@ -134,14 +134,14 @@ on améliore déjà grandement la lisibilité du projet
 
 ::: {.callout-note}
 
-Comme `Git` est un pré-requis, tout projet présente un fichier `.gitignore`
+Comme `Git` est un prérequis, tout projet présente un fichier `.gitignore`
 (il est très important, surtout quand on manipule des données qui ne
-devraient pas se retrouver sur `Github` ou `Gitlab`).
+doivent pas se retrouver sur `Github` ou `Gitlab`).
 
 Un projet présente aussi un fichier `README.md` à la racine, nous 
 reviendrons dessus. 
 
-Un projet qui utilise l'intégration continue présentera également : 
+Un projet qui utilise l'intégration continue contiendra également des fichiers spécifiques : 
 
 - si vous utilisez `Gitlab`, les instructions sont stockées dans
 le fichier `gitlab-ci.yml`
@@ -149,8 +149,8 @@ le fichier `gitlab-ci.yml`
 
 :::
 
-Rien qu'en changeant le nom des fichiers, on rend
-la structure du projet très lisible:
+En changeant simplement le nom des fichiers, on rend
+la structure du projet très lisible :
 
 ```
 ├── README.md
@@ -174,11 +174,11 @@ la structure du projet très lisible:
 
 Maintenant, le type de données en entrée de chaine
 est clair, le lien entre
-les scripts, les données intermédiaires et les _output_ est assez
+les scripts, les données intermédiaires et les _output_ est
 transparent. 
 
 
-# 1️⃣ Les _notebooks_ montrent leur limite pour la mise en production
+# 1️⃣ Les _notebooks_ montrent leurs limites pour la mise en production
 
 Les _notebooks_ Jupyter sont très pratiques pour tâtonner,
 expérimenter et communiquer. Ils sont donc un point d'entrée
@@ -187,55 +187,55 @@ et en fin de projet (pour la communication).
 
 Cependant, ils présentent un certain
 nombre d'inconvénients à long terme qui peuvent 
-rendre difficile voire impossible à maintenir le code écrit
-dans un _notebook_. Pour les citer, en vrac: 
+rendre difficile, voire impossible à maintenir le code écrit
+dans un _notebook_. Pour les citer, en vrac : 
 
-- tous les objets (fonctions, classes et données)
+- Tous les objets (fonctions, classes et données)
 sont définis et disponibles dans le même fichier.
 Le moindre changement à une fonction nécessite de retrouver
 l'emplacement dans le code, écrire et faire tourner à nouveau
 une ou plusieurs cellules. 
-- quand on tâtonne, on écrit du code dans des cellules. 
+- Lorsque l'on tâtonne, on écrit du code dans des cellules. 
 Dans un cahier, on utiliserait la marge mais cela n'existe
-pas avec un notebook. On créé donc de nouvelles cellules, 
+pas avec un notebook. On crée donc de nouvelles cellules, 
 pas nécessairement dans l'ordre. Quand il est
 nécessaire de faire tourner à nouveau le notebook, cela
-provoque des erreurs difficile à debugger (il est nécessaire
+provoque des erreurs difficiles à debugger (il est nécessaire
 de retrouver l'ordre logique du code, ce qui n'est pas
 évident). 
-- les notebooks incitent à faire des copier-coller de cellules
+- Les notebooks incitent à faire des copier-coller de cellules
 et modifier marginalement le code plutôt qu'à utiliser
 des fonctions. 
-- il est quasi-impossible d'avoir un versioning avec Git des notebooks
-qui fonctionne. Les notebooks étant, en arrière plan, de gros fichiers
+- Il est quasi impossible d'avoir un versioning avec Git des notebooks
+qui fonctionne. Les notebooks étant, en arrière-plan, de gros fichiers
 JSON, ils ressemblent plus à des données que des codes sources. Git ne
-parvient pas à identifier les blocs de code qui ont changé
-- passage en production des notebooks coûteux alors qu'un script bien
-fait est beaucoup plus facile à passer en prod (voir suite cours)
-- Jupyter manque d'extensions pour mettre en oeuvre les bonnes pratiques
-(linters, etc.). VSCode au contraire est très bien 
+parvient pas bien à identifier les blocs de code qui ont changé.
+- Le passage en production des notebooks est coûteux alors qu'un script bien
+fait est beaucoup plus facile à passer en production (voir suite cours).
+- Jupyter manque d'extensions pour mettre en œuvre les bonnes pratiques
+(linters, etc.). VSCode, au contraire, est parfaitement adapté.
 - Risques de révélation de données confidentielles puisque les outputs
 des blocs de code, par exemple les `head`, sont écrits en dur dans
 le code source. 
 
 Plus synthétiquement, on peut résumer les inconvénients de cette
-manière:
+manière :
 
-- Reproductibilité limitée ;
-- Pas adaptés pour l’automatisation ;
-- Mal gérés par le contrôle de version.
+- **Reproductibilité** limitée ;
+- Pas adaptés pour **l’automatisation** ;
+- **Contrôle de version** difficile.
 
 En fait, ces problèmes sont liés à plusieurs enjeux
-spécifiques liés à la _data science_:
+spécifiques liés à la _data science_ :
 
 * Le début du cycle de vie d'un projet de _data science_
 revêt un aspect expérimental où l'interactivité d'un _notebook_
 est un réel avantage. Cependant, dans une phase ultérieure du cycle
 de vie, la stabilité devient plus importante ;
 * Le développement d'un code de traitement des données est souvent
-non linéaire: on lit les données, on effectue des opérations sur celles-ci,
+non linéaire : on lit les données, on effectue des opérations sur celles-ci,
 produits des sorties (par exemple des tableaux descriptifs)
-avant de revienir en arrière pour compléter la source avec d'autres bases
+avant de revenir en arrière pour compléter la source avec d'autres bases
 et adapter le _pipeline_. Si cette phase exploratoire est non linéaire, renouer
 le fil pour rendre le _pipeline_ linéaire et reproductible nécessite
 une autodiscipline importante. 
@@ -244,16 +244,14 @@ une autodiscipline importante.
 Les
 recommandations de ce cours visent à rendre le plus léger possible
 la maintenance à long terme de projets _data science_ en favorisant
-la reprise par d'autres (ou par soi dans le futur).
+la reprise par d'autres (ou par soi-même dans le futur).
 La bonne pratique est de privilégier des projets utilisant des
 scripts `Python` autosuffisants (du point de vue des dépendances) qui
 vont être encapsulés dans une chaine de traitement
 plus ou moins formalisée. Selon les projets et l'infrastructure disponible,
 cette dernière pourra
 être un simple script `Python` ou un _pipeline_ plus formel. L'arbitrage
-sur le formalisme à adopter dépend du temps de d
-
-
+sur le formalisme à adopter dépend du temps de disponible.
 
 
 # 2️⃣ Favoriser une structure modulaire
@@ -276,7 +274,7 @@ permet de rendre le code plus lisible, plus facile à maintenir et plus réutili
         chaque module sera importé comme un _package_
         en soi.
 
-## Vers la séparation du stockage du code et des données et de l'environnement d'exécution
+## Vers la séparation du stockage du code, des données et de l'environnement d'exécution
 
 La séparation du stockage du code et des données ainsi que de l'environnement d'exécution est importante pour plusieurs raisons.
 
@@ -306,16 +304,15 @@ du programme.
 La manière privilégiée de conserver ce type d'information
 est le format `YAML`. Ce format de fichier
 permet de stocker des informations de manière hiérarchisée
-et flexible
+et flexible,
 mais de manière plus lisible que le `JSON`. 
 Ce format sera transformé en dictionnaire `Python` ce
 qui permet des recherches facilitées.
 
 
-Prenons le YAML suivant:
+Prenons le YAML suivant :
 
-```yaml
-# secrets.yaml
+```{.yaml filename="secrets.yaml"}
 token:
     api_insee: "toto"
     api_github: "tokengh"
@@ -325,7 +322,7 @@ pwd:
 
 L'import de ce fichier se fait 
 avec le package `yaml` de la
-manière suivante:
+manière suivante :
 
 ```python
 import yaml
@@ -333,10 +330,9 @@ import yaml
 with open('secrets.yaml') as f:
     secrets = yaml.safe_load(f)
 
-jeton_insee = secrets['token']['api_insee']
 # utilisation du secret
+jeton_insee = secrets['token']['api_insee']
 ```
-
 
 
 # 3️⃣ Adopter les standards communautaires
@@ -345,7 +341,7 @@ jeton_insee = secrets['token']['api_insee']
 
 En `Python` il existe des modèles de structure de projets :
 les [`cookiecutters`](https://cookiecutter.readthedocs.io/en/stable/).
-Il s'agit de modèles d'aborescences de fichiers (fichiers `Python` mais également tout
+Il s'agit de modèles d'arborescences de fichiers (fichiers `Python` mais également tout
 type de fichiers) proposés par la communauté et téléchargeables comme point
 de départ d'un projet. 
 
@@ -360,7 +356,7 @@ $ cookiecutter https://github.com/drivendata/cookiecutter-data-science
 ```
 
 Le modèle est personnalisable, notamment pour faciliter l'interaction
-entre un système de stockage distant. L'aborescence générée
+entre un système de stockage distant. L'arborescence générée
 est assez massive pour permettre une grande diversité de projet. Il 
 n'est souvent pas nécessaire d'avoir toutes les composantes du `cookiecutter`.
 
@@ -460,8 +456,8 @@ if __name__ == '__main__':
     unittest.main()
 ```
 
-Pour vérifier que les tests fonctionnent, on execute ce
-script depuis la ligne de commande:
+Pour vérifier que les tests fonctionnent, on exécute ce
+script depuis la ligne de commande :
 
 ```python
 python3 test_str.py
@@ -477,7 +473,7 @@ Si on écrit des tests unitaires, il est important de les maintenir !
 
 Prendre
 du temps pour écrire des tests unitaires qui ne sont pas maintenus et donc
-ne renvoie plus de diagnostics pertinent est du temps perdu. 
+ne renvoie plus de diagnostics pertinents est du temps perdu. 
 :::
 
 
@@ -486,12 +482,12 @@ ne renvoie plus de diagnostics pertinent est du temps perdu.
 Le _package_ est la structure aboutie d'un projet `Python`
 autosuffisant. Il s'agit d'une manière 
 formelle de contrôler 
-la reproductibilité d'un projet car:
+la reproductibilité d'un projet car :
 
 - le _package_ assure une gestion cohérente des dépendances
 - le _package_ offre une certaine structure pour la documentation
 - le _package_ facilite la réutilisation du code
-- le _package_ permet des économies d'échelle car on peut réutiliser
+- le _package_ permet des économies d'échelle, car on peut réutiliser
 l'un des packages pour un autre projet
 - le _package_ facilite le debuggage car il est
 plus facile d'identifier une erreur quand elle est dans un package
@@ -499,8 +495,8 @@ plus facile d'identifier une erreur quand elle est dans un package
 
 En `Python`, le _package_ est une structure peu contraignante si on
 a adopté les bonnes pratiques de structuration de projet. 
-A partir de la structure modulaire précédemment évoquée, il n'y a qu'un pas
-vers le package: l'ajout d'un fichier `pyproject.toml` qui contrôle
+À partir de la structure modulaire précédemment évoquée, il n'y a qu'un pas
+vers le package : l'ajout d'un fichier `pyproject.toml` qui contrôle
 la construction du _package_ ([voir ici](https://py-pkgs.org/03-how-to-package-a-python)).
 
 Il existe plusieurs outils pour installer un package dans le système à
