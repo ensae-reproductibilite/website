@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.450">
+<meta name="generator" content="quarto-1.4.549">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -50,7 +50,13 @@ ul.task-list li input[type="checkbox"] {
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -59,6 +65,7 @@ ul.task-list li input[type="checkbox"] {
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
@@ -74,9 +81,9 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-project','listing-website','listing-format','listing-eval','listing-author','listing-sidebar','listing-language','listing-title','listing-subtitle','listing-image','listing-description','listing-order','listing-href','listing-path','listing-outputHref','listing-filename','listing-file-modified','listing-reading-time','listing-date','listing-date-modified',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-file-modified-sort'] },{ data: ['listing-reading-time-sort'] },{ data: ['listing-date-sort'] },{ data: ['listing-date-modified-sort'] }],
+      valueNames: ['listing-project','listing-website','listing-format','listing-eval','listing-author','listing-sidebar','listing-language','listing-title','listing-subtitle','listing-image','listing-description','listing-order','listing-href','listing-path','listing-outputHref','listing-filename','listing-file-modified','listing-reading-time','listing-word-count','listing-date','listing-date-modified',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-file-modified-sort'] },{ data: ['listing-reading-time-sort'] },{ data: ['listing-word-count-sort'] },{ data: ['listing-date-sort'] },{ data: ['listing-date-modified-sort'] }],
       
-      searchColumns: ["listing-project","listing-website","listing-format","listing-eval","listing-author","listing-sidebar","listing-language","listing-title","listing-subtitle","listing-image","listing-description","listing-order","listing-href","listing-path","listing-outputHref","listing-filename","listing-file-modified","listing-reading-time","listing-date","listing-date-modified"],
+      searchColumns: ["listing-project","listing-website","listing-format","listing-eval","listing-author","listing-sidebar","listing-language","listing-title","listing-subtitle","listing-image","listing-description","listing-order","listing-href","listing-path","listing-outputHref","listing-filename","listing-file-modified","listing-reading-time","listing-word-count","listing-date","listing-date-modified"],
     };
 
     window['quarto-listings'] = window['quarto-listings'] || {};
@@ -97,6 +104,33 @@ ul.task-list li input[type="checkbox"] {
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
 <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -104,9 +138,9 @@ ul.task-list li input[type="checkbox"] {
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container">
+      <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
     <span class="navbar-title">Mise en production des projets de data science</span>
     </a>
@@ -118,73 +152,73 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-les-bases" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-les-bases" role="button" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Les bases</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-les-bases">    
         <li>
-    <a class="dropdown-item" href="./chapters/introduction.html" rel="" target="">
+    <a class="dropdown-item" href="./chapters/introduction.html">
  <span class="dropdown-text">Introduction</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./chapters/linux-101.html" rel="" target="">
+    <a class="dropdown-item" href="./chapters/linux-101.html">
  <span class="dropdown-text">Linux 101</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./chapters/git.html" rel="" target="">
+    <a class="dropdown-item" href="./chapters/git.html">
  <span class="dropdown-text">Versionner son code et travailler collaborativement avec Git</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="./chapters/code-quality.html" rel="" target="">
- <span class="menu-text">Qualité du code</span></a>
+    <a class="nav-link" href="./chapters/code-quality.html"> 
+<span class="menu-text">Qualité du code</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./chapters/projects-architecture.html" rel="" target="">
- <span class="menu-text">Architecture des projets</span></a>
+    <a class="nav-link" href="./chapters/projects-architecture.html"> 
+<span class="menu-text">Architecture des projets</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./chapters/portability.html" rel="" target="">
- <span class="menu-text">Portabilité</span></a>
+    <a class="nav-link" href="./chapters/portability.html"> 
+<span class="menu-text">Portabilité</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./chapters/deployment.html" rel="" target="">
- <span class="menu-text">Mise en production</span></a>
+    <a class="nav-link" href="./chapters/deployment.html"> 
+<span class="menu-text">Mise en production</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./chapters/application.html" rel="" target="">
- <span class="menu-text">Application</span></a>
+    <a class="nav-link" href="./chapters/application.html"> 
+<span class="menu-text">Application</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./chapters/evaluation.qmd" rel="" target="">
- <span class="menu-text">Evaluation</span></a>
+    <a class="nav-link" href="./chapters/evaluation.qmd"> 
+<span class="menu-text">Evaluation</span></a>
   </li>  
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-github" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-github" role="button" data-bs-toggle="dropdown" aria-expanded="false">
       <i class="bi bi-github" role="img">
 </i> 
  <span class="menu-text"></span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-bi-github">    
         <li>
-    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/website" rel="" target="">
+    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/website">
  <span class="dropdown-text">Site web</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/slides" rel="" target="">
+    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/slides">
  <span class="dropdown-text">Slides</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/application-correction" rel="" target="">
+    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/application-correction">
  <span class="dropdown-text">Application fil rouge</span></a>
   </li>  
     </ul>
   </li>
 </ul>
-            <div class="quarto-navbar-tools ms-auto">
-</div>
           </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+</div>
       </div> <!-- /container-fluid -->
     </nav>
 </header>
@@ -196,6 +230,28 @@ ul.task-list li input[type="checkbox"] {
 <!-- main -->
 <main class="content column-page" id="quarto-document-content">
 
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+</div>
+
+
+
+<div class="quarto-title-meta column-page">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Romain Avouac et Lino Galiana </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
 
 
 <section id="mise-en-production-des-projets-de-data-science" class="level2">
@@ -214,23 +270,34 @@ ul.task-list li input[type="checkbox"] {
 <div class="quarto-listing quarto-listing-container-custom" id="listing-formations">
 
 <div class="list grid quarto-listing-cols-3">
-  <div class="g-col-1" data-index="0" data-listing-file-modified-sort="1706117249791" data-listing-reading-time-sort="15">
+
+  <div class="g-col-1" data-index="0" data-listing-file-modified-sort="1706191249860" data-listing-reading-time-sort="15" data-listing-word-count-sort="2912">
     <a href="chapters/introduction.html" target="_blank" rel="noopener" class="grid-item-link"> <!-- Added link wrapper -->
       <div class="quarto-grid-item card h-100 card-left">
+        
           <p class="card-img-top">
             <img src="./chapters/images/egg.jpg" class="thumbnail-image card-img" style="height: auto;" alt="">
           </p>
+         
+        
           <div class="card-body post-contents">
             <h5 class="no-anchor card-title listing-title">Introduction</h5>
             <div class="card-subtitle listing-subtitle"></div>
+
+            
               <div class="card-text listing-description delink">Présentation des principales notions développées dans ce cours,
 de la raison d'être des bonnes pratiques et des enjeux
 de la mise en production.
 </div>
+            
+
+            
+            
               <div class="card-attribution card-text-small justify">
                 <div class="listing-author">Romain Avouac et Lino Galiana</div>
                 <div class="listing-date"></div>
               </div>
+            
             <style>
               .listing-categories .listing-category .listing-href {
                 color: inherit; /* blue colors for links too */
@@ -238,32 +305,46 @@ de la mise en production.
               }
             </style>
           </div>
+        
+
         <!-- <div class="card-footer">
             <div class="card-filename listing-filename">
               introduction.qmd
             </div>
             <div class="card-file-modified listing-file-modified">
-              1/24/24, 5:27:29 PM
+              1/25/24, 2:00:49 PM
             </div>
         </div> -->
+
       </div>
     </a> <!-- Added link wrapper -->
   </div>
-  <div class="g-col-1" data-index="1" data-listing-file-modified-sort="1706117249791" data-listing-reading-time-sort="22">
+
+  <div class="g-col-1" data-index="1" data-listing-file-modified-sort="1706191249860" data-listing-reading-time-sort="22" data-listing-word-count-sort="4208">
     <a href="chapters/linux-101.html" target="_blank" rel="noopener" class="grid-item-link"> <!-- Added link wrapper -->
       <div class="quarto-grid-item card h-100 card-left">
+        
           <p class="card-img-top">
             <img src="./chapters/images/polar.png" class="thumbnail-image card-img" style="height: auto;" alt="">
           </p>
+         
+        
           <div class="card-body post-contents">
             <h5 class="no-anchor card-title listing-title">Linux 101</h5>
             <div class="card-subtitle listing-subtitle">Démystifier le terminal Linux pour gagner en autonomie</div>
+
+            
               <div class="card-text listing-description delink">Introduction à l'utilisation du terminal Linux, un outil essentiel pour le data scientist qui s'intéresse à la mise en production.
 </div>
+            
+
+            
+            
               <div class="card-attribution card-text-small justify">
                 <div class="listing-author">Romain Avouac et Lino Galiana</div>
                 <div class="listing-date"></div>
               </div>
+            
             <style>
               .listing-categories .listing-category .listing-href {
                 color: inherit; /* blue colors for links too */
@@ -271,32 +352,46 @@ de la mise en production.
               }
             </style>
           </div>
+        
+
         <!-- <div class="card-footer">
             <div class="card-filename listing-filename">
               linux-101.qmd
             </div>
             <div class="card-file-modified listing-file-modified">
-              1/24/24, 5:27:29 PM
+              1/25/24, 2:00:49 PM
             </div>
         </div> -->
+
       </div>
     </a> <!-- Added link wrapper -->
   </div>
-  <div class="g-col-1" data-index="2" data-listing-file-modified-sort="1706117249763" data-listing-reading-time-sort="25">
+
+  <div class="g-col-1" data-index="2" data-listing-file-modified-sort="1706191249828" data-listing-reading-time-sort="25" data-listing-word-count-sort="4906">
     <a href="chapters/git.html" target="_blank" rel="noopener" class="grid-item-link"> <!-- Added link wrapper -->
       <div class="quarto-grid-item card h-100 card-left">
+        
           <p class="card-img-top">
             <img src="./chapters/images/snakedolls.jpg" class="thumbnail-image card-img" style="height: auto;" alt="">
           </p>
+         
+        
           <div class="card-body post-contents">
             <h5 class="no-anchor card-title listing-title">Versionner son code et travailler collaborativement avec Git</h5>
             <div class="card-subtitle listing-subtitle"></div>
+
+            
               <div class="card-text listing-description delink">Présentation des principes du contrôle de version et du travail collaboratif avec Git et son écosystème.
 </div>
+            
+
+            
+            
               <div class="card-attribution card-text-small justify">
                 <div class="listing-author">Romain Avouac et Lino Galiana</div>
                 <div class="listing-date"></div>
               </div>
+            
             <style>
               .listing-categories .listing-category .listing-href {
                 color: inherit; /* blue colors for links too */
@@ -304,32 +399,46 @@ de la mise en production.
               }
             </style>
           </div>
+        
+
         <!-- <div class="card-footer">
             <div class="card-filename listing-filename">
               git.qmd
             </div>
             <div class="card-file-modified listing-file-modified">
-              1/24/24, 5:27:29 PM
+              1/25/24, 2:00:49 PM
             </div>
         </div> -->
+
       </div>
     </a> <!-- Added link wrapper -->
   </div>
-  <div class="g-col-1" data-index="3" data-listing-file-modified-sort="1706117249763" data-listing-reading-time-sort="22">
+
+  <div class="g-col-1" data-index="3" data-listing-file-modified-sort="1706191249828" data-listing-reading-time-sort="22" data-listing-word-count-sort="4271">
     <a href="chapters/code-quality.html" target="_blank" rel="noopener" class="grid-item-link"> <!-- Added link wrapper -->
       <div class="quarto-grid-item card h-100 card-left">
+        
           <p class="card-img-top">
             <img src="./chapters/images/snake.png" class="thumbnail-image card-img" style="height: auto;" alt="">
           </p>
+         
+        
           <div class="card-body post-contents">
             <h5 class="no-anchor card-title listing-title">Améliorer la qualité de son code</h5>
             <div class="card-subtitle listing-subtitle"></div>
+
+            
               <div class="card-text listing-description delink">Présentation des standards permettant de produire du code lisible et maintenable, et d'outils pour faciliter leur adoption.
 </div>
+            
+
+            
+            
               <div class="card-attribution card-text-small justify">
                 <div class="listing-author">Romain Avouac et Lino Galiana</div>
                 <div class="listing-date"></div>
               </div>
+            
             <style>
               .listing-categories .listing-category .listing-href {
                 color: inherit; /* blue colors for links too */
@@ -337,32 +446,46 @@ de la mise en production.
               }
             </style>
           </div>
+        
+
         <!-- <div class="card-footer">
             <div class="card-filename listing-filename">
               code-quality.qmd
             </div>
             <div class="card-file-modified listing-file-modified">
-              1/24/24, 5:27:29 PM
+              1/25/24, 2:00:49 PM
             </div>
         </div> -->
+
       </div>
     </a> <!-- Added link wrapper -->
   </div>
-  <div class="g-col-1" data-index="4" data-listing-file-modified-sort="1706117249791" data-listing-reading-time-sort="15">
+
+  <div class="g-col-1" data-index="4" data-listing-file-modified-sort="1706191249860" data-listing-reading-time-sort="15" data-listing-word-count-sort="2923">
     <a href="chapters/projects-architecture.html" target="_blank" rel="noopener" class="grid-item-link"> <!-- Added link wrapper -->
       <div class="quarto-grid-item card h-100 card-left">
+        
           <p class="card-img-top">
             <img src="./chapters/images/structure.png" class="thumbnail-image card-img" style="height: auto;" alt="">
           </p>
+         
+        
           <div class="card-body post-contents">
             <h5 class="no-anchor card-title listing-title">Améliorer l'architecture de ses projets</h5>
             <div class="card-subtitle listing-subtitle"></div>
+
+            
               <div class="card-text listing-description delink">Présentation des principes d'architecture permettant de produire des projets modulaires et maintenables, et d'outils pour faciliter leur adoption.
 </div>
+            
+
+            
+            
               <div class="card-attribution card-text-small justify">
                 <div class="listing-author">Romain Avouac et Lino Galiana</div>
                 <div class="listing-date"></div>
               </div>
+            
             <style>
               .listing-categories .listing-category .listing-href {
                 color: inherit; /* blue colors for links too */
@@ -370,32 +493,46 @@ de la mise en production.
               }
             </style>
           </div>
+        
+
         <!-- <div class="card-footer">
             <div class="card-filename listing-filename">
               projects-architecture.qmd
             </div>
             <div class="card-file-modified listing-file-modified">
-              1/24/24, 5:27:29 PM
+              1/25/24, 2:00:49 PM
             </div>
         </div> -->
+
       </div>
     </a> <!-- Added link wrapper -->
   </div>
-  <div class="g-col-1" data-index="5" data-listing-date-sort="1646265600000" data-listing-file-modified-sort="1706117249791" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="27">
+
+  <div class="g-col-1" data-index="5" data-listing-date-sort="1646265600000" data-listing-file-modified-sort="1706191249860" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="27" data-listing-word-count-sort="5306">
     <a href="chapters/portability.html" target="_blank" rel="noopener" class="grid-item-link"> <!-- Added link wrapper -->
       <div class="quarto-grid-item card h-100 card-left">
+        
           <p class="card-img-top">
             <img src="./chapters/images/box.png" class="thumbnail-image card-img" style="height: auto;" alt="">
           </p>
+         
+        
           <div class="card-body post-contents">
             <h5 class="no-anchor card-title listing-title">Rendre son projet de data science portable et reproductible</h5>
             <div class="card-subtitle listing-subtitle"></div>
+
+            
               <div class="card-text listing-description delink">Présentation des principes et des techniques permettant de rendre un projet exécutable sur différents environnements.
 </div>
+            
+
+            
+            
               <div class="card-attribution card-text-small justify">
                 <div class="listing-author">Romain Avouac et Lino Galiana</div>
                 <div class="listing-date">Mar 3, 2022</div>
               </div>
+            
             <style>
               .listing-categories .listing-category .listing-href {
                 color: inherit; /* blue colors for links too */
@@ -403,33 +540,47 @@ de la mise en production.
               }
             </style>
           </div>
+        
+
         <!-- <div class="card-footer">
             <div class="card-filename listing-filename">
               portability.qmd
             </div>
             <div class="card-file-modified listing-file-modified">
-              1/24/24, 5:27:29 PM
+              1/25/24, 2:00:49 PM
             </div>
         </div> -->
+
       </div>
     </a> <!-- Added link wrapper -->
   </div>
-  <div class="g-col-1" data-index="6" data-listing-file-modified-sort="1706117249763" data-listing-reading-time-sort="19">
+
+  <div class="g-col-1" data-index="6" data-listing-file-modified-sort="1706191249828" data-listing-reading-time-sort="19" data-listing-word-count-sort="3666">
     <a href="chapters/deployment.html" target="_blank" rel="noopener" class="grid-item-link"> <!-- Added link wrapper -->
       <div class="quarto-grid-item card h-100 card-left">
+        
           <p class="card-img-top">
             <img src="./chapters/images/whale.png" class="thumbnail-image card-img" style="height: auto;" alt="">
           </p>
+         
+        
           <div class="card-body post-contents">
             <h5 class="no-anchor card-title listing-title">Déployer et valoriser son projet de data science</h5>
             <div class="card-subtitle listing-subtitle"></div>
+
+            
               <div class="card-text listing-description delink"><br>
 Présentation des techniques de déploiement et de valorisation des projets de data science.
 </div>
+            
+
+            
+            
               <div class="card-attribution card-text-small justify">
                 <div class="listing-author">Romain Avouac et Lino Galiana</div>
                 <div class="listing-date"></div>
               </div>
+            
             <style>
               .listing-categories .listing-category .listing-href {
                 color: inherit; /* blue colors for links too */
@@ -437,32 +588,46 @@ Présentation des techniques de déploiement et de valorisation des projets de d
               }
             </style>
           </div>
+        
+
         <!-- <div class="card-footer">
             <div class="card-filename listing-filename">
               deployment.qmd
             </div>
             <div class="card-file-modified listing-file-modified">
-              1/24/24, 5:27:29 PM
+              1/25/24, 2:00:49 PM
             </div>
         </div> -->
+
       </div>
     </a> <!-- Added link wrapper -->
   </div>
-  <div class="g-col-1" data-index="7" data-listing-file-modified-sort="1706117249763" data-listing-reading-time-sort="42">
+
+  <div class="g-col-1" data-index="7" data-listing-file-modified-sort="1706191249824" data-listing-reading-time-sort="42" data-listing-word-count-sort="8362">
     <a href="chapters/application.html" target="_blank" rel="noopener" class="grid-item-link"> <!-- Added link wrapper -->
       <div class="quarto-grid-item card h-100 card-left">
+        
           <p class="card-img-top">
             <img src="./chapters/images/rocket.png" class="thumbnail-image card-img" style="height: auto;" alt="">
           </p>
+         
+        
           <div class="card-body post-contents">
             <h5 class="no-anchor card-title listing-title">Application</h5>
             <div class="card-subtitle listing-subtitle">Appliquer pas à pas les concepts étudiés à un projet de data science</div>
+
+            
               <div class="card-text listing-description delink">Une application fil rouge pour illustrer l'intérêt d'appliquer graduellement les bonnes pratiques dans une optique de mise en production d'une application de data science.
 </div>
+            
+
+            
+            
               <div class="card-attribution card-text-small justify">
                 <div class="listing-author">Romain Avouac et Lino Galiana</div>
                 <div class="listing-date"></div>
               </div>
+            
             <style>
               .listing-categories .listing-category .listing-href {
                 color: inherit; /* blue colors for links too */
@@ -470,18 +635,23 @@ Présentation des techniques de déploiement et de valorisation des projets de d
               }
             </style>
           </div>
+        
+
         <!-- <div class="card-footer">
             <div class="card-filename listing-filename">
               application.qmd
             </div>
             <div class="card-file-modified listing-file-modified">
-              1/24/24, 5:27:29 PM
+              1/25/24, 2:00:49 PM
             </div>
         </div> -->
+
       </div>
     </a> <!-- Added link wrapper -->
   </div>
+
 </div>
+
 <div class="listing-no-matching d-none">
 No matching items
 </div>
@@ -565,10 +735,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
-  function tippyHover(el, contentFn) {
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -578,8 +747,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -592,6 +770,125 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
       return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -635,6 +932,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -660,6 +958,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -720,6 +1044,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+
 
 
 
