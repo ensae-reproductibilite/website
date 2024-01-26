@@ -76,6 +76,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/quarto-contrib/fontawesome6-0.1.0/all.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/fontawesome6-0.1.0/latex-fontsize.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -205,7 +207,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#la-notion-de-portabilité" id="toc-la-notion-de-portabilité" class="nav-link active" data-scroll-target="#la-notion-de-portabilité">La notion de portabilité</a></li>
+  <li><a href="#introduction-la-notion-de-portabilité" id="toc-introduction-la-notion-de-portabilité" class="nav-link active" data-scroll-target="#introduction-la-notion-de-portabilité">Introduction : la notion de portabilité</a></li>
   <li><a href="#les-environnements-virtuels" id="toc-les-environnements-virtuels" class="nav-link" data-scroll-target="#les-environnements-virtuels">Les environnements virtuels 🐍</a>
   <ul class="collapse">
   <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a></li>
@@ -284,36 +286,45 @@ Dérouler les <em>slides</em> ci-dessous ou <a href="https://ensae-reproductibil
 </iframe>
 </div>
 </details>
-<section id="la-notion-de-portabilité" class="level1">
-<h1>La notion de portabilité</h1>
-<p>Dans les chapitres précédents, nous avons vu un ensemble de bonnes pratiques qui permettent de considérablement améliorer la qualité d’un projet : rendre le code plus lisible, adopter une structure du projet normalisée et évolutive, et versionner proprement son code sur un dépôt <code>GitHub</code>.</p>
-<p>Une fois ces bonnes pratiques appliquées à notre projet, ce dernier apparaît largement partageable. Du moins en théorie, car la pratique est souvent plus compliquée : il y a fort à parier que si vous essayez d’exécuter votre projet sur un autre environnement d’exécution (un autre ordinateur, un serveur, etc.), les choses ne se passent pas du tout comme attendu. Cela signifie que qu’<strong>en l’état, le projet n’est pas portable : il n’est pas possible, sans modifications coûteuses, de l’exécuter dans un environnement différent de celui dans lequel il a été développé</strong>.</p>
-<p>La principale raison est qu’un code ne vit pas dans une bulle isolée, il contient en général de nombreuses adhérences, plus ou moins visibles, au langage et à l’environnement dans lesquels il a été développé :</p>
+<section id="introduction-la-notion-de-portabilité" class="level1">
+<h1>Introduction : la notion de portabilité</h1>
+<p>Dans les chapitres précédents, nous avons vu un ensemble de bonnes pratiques qui permettent de considérablement améliorer la qualité d’un projet : rendre le code plus lisible, adopter une structure du projet normalisée et évolutive et versionner proprement son code sur un dépôt <code>GitHub</code>.</p>
+<p>Une fois ces bonnes pratiques appliquées à notre projet, ce dernier apparaît largement partageable. Du moins en théorie, car la pratique est souvent plus compliquée : il y a fort à parier que si vous essayez d’exécuter votre projet sur un autre environnement d’exécution (un autre ordinateur, un serveur, etc.), les choses ne se passent pas du tout comme attendu. Cela signifie que qu’<strong>en l’état, le projet n’est pas <span class="colorized">portable</span> : il n’est pas possible, sans modifications coûteuses, de l’exécuter dans un environnement différent de celui dans lequel il a été développé</strong>.</p>
+<p>La raison principale est qu’un code ne vit pas dans une bulle isolée, il contient en général de nombreuses adhérences, plus ou moins visibles, au langage et à l’environnement dans lesquels il a été développé :</p>
 <ul>
-<li>des dépendances dans le langage du projet ;</li>
-<li>des dépendances dans d’autres langages (ex : <code>NumPy</code> est écrit en <code>C</code> et nécessite donc un compilateur <code>C</code>) ;</li>
-<li>des librairies systèmes nécessaires pour installer certains <em>packages</em> (par exemple, les librairies de cartographie dynamique comme <code>Leaflet</code> ou <code>Folium</code> nécessitent la librairie système <code>GDAL</code>), qui ne seront pas les mêmes selon le système d’exploitation utilisé.</li>
+<li>des <strong>dépendances <code>Python</code></strong> propres au langage du projet. C’est l’environnement des <em>packages</em> nécessaires à exécuter le code ;</li>
+<li>des <strong>dépendances dans d’autres langages</strong> nécessaires au fonctionnement de certaines librairies <code>Python</code>. En effet, <code>Python</code> est un langage de haut niveau et certains <em>packages</em> nécessitent des librairies bas-niveau pour être efficaces. Par exemple, <code>NumPy</code> est écrit en <code>C</code> et nécessite donc un compilateur <code>C</code> et <code>Pytorch</code> a quant à lui besoin de <code>C++</code> ;</li>
+<li>des <strong>dépendances à des librairies systèmes</strong> nécessaires pour installer certains <em>packages</em> qui ne seront pas les mêmes selon le système d’exploitation utilisé et certains paramètres matériels (par exemple, selon que Windows utilise une version 32 ou 64 bits). Par exemple, les librairies de manipulation ou de visualisation de données spatiales (<code>GeoPandas</code>, <code>Folium</code>) reposent sur des librairies systèmes <code>GDAL</code> qui sont propres à chaque système d’exploitation<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</li>
 </ul>
-<p>Si le premier problème peut être géré relativement facilement en adoptant une <a href="XXXXXX">structure de projet</a> et en spécifiant bien les différentes dépendances utilisées, par exemple avec un fichier <code>requirements.txt</code>, les deux autres nécessitent en général des outils plus avancés.</p>
-<p>Ces outils vont nous permettre de <strong>normaliser l’environnement afin de produire un projet portable</strong>, i.e.&nbsp;exécutable sur une large variété d’environnements d’exécution. Cette étape est primordiale lorsque l’on se préoccupe de la mise en production d’un projet, car elle assure une transition relativement indolore entre l’environnement de développement et celui de production.</p>
+<p>Le premier problème peut être géré relativement facilement en adoptant une structure de projet (<a href="../chapters/projects-architecture.html">chapitre précédent</a>) avec un fichier <code>requirements.txt</code> bien structuré et versionné. Les deux autres nécessitent en général des outils plus avancés.</p>
+<p>Nous allons progresser dans la démarche de reproductibilité en visant un projet portable, c’est-à-dire qui peut être exécuté dans un environnement différent de celui dans lequel il a été développé.</p>
+<p>Nous allons avoir besoin de nouveaux outils qui seront, chacun, des avancées sur l’échelle de la reproductibilité:</p>
+<ul>
+<li>Les environnements virtuels ;</li>
+<li>Les conteneurs</li>
+</ul>
+<p>Ces outils vont nous permettre de <strong>normaliser l’environnement afin de produire un projet portable</strong>, Cette étape est primordiale lorsque l’on se préoccupe de la mise en production d’un projet, car elle assure une transition relativement indolore entre l’environnement de développement et celui de production.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://img.devrant.com/devrant/rant/r_174386_yx6zV.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+<figcaption>Image empruntée à <a href="https://devrant.com/rants/174386/when-i-say-but-it-works-on-my-machine">devrant.com</a></figcaption>
 </figure>
 </div>
-<p><em>Image empruntée à [devrant.com}(https://devrant.com/rants/174386/when-i-say-but-it-works-on-my-machine)</em></p>
+<p>Le choix de la méthode à privilégier dépend d’un arbitrage temps-opportunité. Tous les projets n’ont pas vocation à être mis à disposition par le biais de conteneurs. Néanmoins, l’intérêt d’adopter une démarche de bonnes pratiques est que si le projet gagne en ambition et que la conteneurisation s’avère adéquate, celle-ci sera peu coûteuse à mettre en oeuvre.</p>
 </section>
 <section id="les-environnements-virtuels" class="level1">
 <h1>Les environnements virtuels 🐍</h1>
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
 <p>Pour illustrer l’importance de travailler avec des environnements virtuels, mettons-nous à la place d’un.e aspirant.e <em>data scientist</em> qui commencerait ses premiers projets.</p>
-<p>Selon toute vraisemblance, on va commencer par installer une distribution de <code>Python</code> — souvent, via <code>Anaconda</code> — sur son poste et commencer à développer, projet après projet. Dans cette approche, les différents <em>packages</em> qu’on va être amené à utiliser vont être installés au même endroit. Cela pose plusieurs problèmes :</p>
+<p>Selon toute vraisemblance, on va commencer par installer une distribution de <code>Python</code> — souvent, via <code>Anaconda</code> — sur son poste et commencer à développer, projet après projet. S’il est nécessaire d’installer une librairie supplémentaire, on le fera sans trop se poser de question. Puis, on passera au projet suivant en adoptant la même démarche. Et ainsi de suite.</p>
+<p>Cette démarche naturelle présentera l’avantage de permettre d’aller vite dans les expérimentations. Néanmoins, elle deviendra problématique s’il devient nécessaire de partager son projet, ou de reprendre celui-ci dans le futur.</p>
+<p>Dans cette approche, les différents <em>packages</em> qu’on va être amené à utiliser vont être installés au même endroit. Ceci peut apparaître secondaire, après tout nous utilisons <code>Python</code> pour sa simplicité d’usage qui ne nécessite pas de passer des heures à se poser des questions avant d’écrire la moindre ligne de code, mais cela va finir par nous poser plusieurs problèmes :</p>
 <ul>
-<li><strong>conflits de version</strong> : une application A peut dépendre de la version 1 d’un package là où une application B peut dépendre de la version 2 de ce même package. Une seule application peut donc fonctionner dans cette configuration ;</li>
+<li><strong>conflits de version</strong> : une application A peut dépendre de la version 1 d’un package là où une application B peut dépendre de la version 2 de ce même package. Ces versions d’un même package peuvent avoir des incompatibilités<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. Une seule application peut donc fonctionner dans cette configuration ;</li>
 <li><strong>version de <code>Python</code> fixe</strong> — on ne peut avoir qu’une seule installation par système — là où on voudrait pouvoir avoir des versions différentes selon le projet ;</li>
 <li><strong>reproductiblité limitée</strong> : difficile de dire quel projet repose sur tel package, dans la mesure où ceux-ci s’accumulent en un même endroit au fil des projets ;</li>
-<li><strong>portabilité limitée</strong> : conséquence du point précédent, il est difficile de fixer dans un fichier les dépendances spécifiques à un projet.</li>
+<li><strong>portabilité limitée</strong> : conséquence du point précédent, il est difficile de fixer dans un fichier les dépendances spécifiques à un projet, et exclusivement celles-ci.</li>
 </ul>
 <p>Les environnements virtuels constituent une solution à ces différents problèmes.</p>
 </section>
@@ -330,11 +341,50 @@ Dérouler les <em>slides</em> ci-dessous ou <a href="https://ensae-reproductibil
 <p>Il existe différentes implémentations des environnements virtuels en <code>Python</code>, dont chacune ont leurs spécificités et leur communauté d’utilisateurs :</p>
 <ul>
 <li>L’implémentation standard en <code>Python</code> est <code>venv</code>.</li>
-<li>Dans le domaine de la <em>data science</em>, l’implémentation la plus courante est sans doute <code>conda</code>.</li>
+<li><code>conda</code> propose une implémentation plus complète.</li>
 </ul>
-<p>En pratique, ces implémentations sont relativement proches. La différence majeure est que <code>conda</code> est à la fois un <em>package manager</em> (comme <code>pip</code>) et un gestionnaire d’environnements virtuels (comme <code>venv</code>).</p>
-<p>Pendant longtemps, <code>conda</code> en tant que <em>package manager</em> s’est avéré très pratique en <em>data science</em>, dans la mesure où il gérait non seulement les dépendances <code>Python</code> mais aussi dans d’autres langages — comme des dépendances <code>C</code>. L’autre différence majeure avec <code>pip</code> est que Conda utilise une méthode plus avancée — et donc également plus coûteuse en temps — de résolution des dépendances<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. En effet, différents packages peuvent spécifier différentes versions d’un même package dont ils dépendent tous les deux, ce qui provoque un conflit de version. Conda va par défaut appliquer un algorithme qui vise à gérer au mieux ces conflits, là où <code>pip</code> va choisir une approche plus minimaliste. Enfin, la <em>distribution</em> <code>Anaconda</code>, qui contient à la fois <code>Python</code>, <code>conda</code> et beaucoup de <em>packages</em> utiles pour la <em>data science</em>, explique également cette popularité auprès des <em>data scientists</em>.</p>
-<p>Pour toutes ces raisons, nous allons présenter l’utilisation de <code>conda</code> comme gestionnaire d’environnements virtuels. Les principes présentés restent néanmoins valides pour les autres implémentations.</p>
+<p>En pratique pour les utilisateurs, ces implémentations sont relativement proches. La différence conceptuelle majeure est que <code>conda</code> est à la fois un <em>package manager</em> (comme <code>pip</code>) et un gestionnaire d’environnements virtuels (comme <code>venv</code>).</p>
+<p>Pendant longtemps, <code>conda</code> en tant que <em>package manager</em> s’est avéré très pratique en <em>data science</em>, dans la mesure où il gérait non seulement les dépendances <code>Python</code> mais aussi dans d’autres langages, comme des dépendances <code>C</code>, très utilisées par les principales librairies de <em>data science</em> et dont l’installation peut être complexe sur certains systèmes d’exploitation. Néanmoins, depuis quelques années, l’installation de <em>packages</em> par <code>pip</code> se fait de plus en plus par le biais de <a href="https://pythonwheels.com/"><em>wheels</em></a> qui sont des versions pré-compilées des librairies systèmes, propres à chaque configuration système.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Une différence conceptuelle entre <code>pip</code> et <code>conda</code>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>L’autre différence majeure avec <code>pip</code> est que <code>Conda</code> utilise une méthode plus avancée — et donc également plus coûteuse en temps — de résolution des dépendances.</p>
+<p>En effet, différents packages peuvent spécifier différentes versions d’un même package dont ils dépendent tous les deux, ce qui provoque un conflit de version. <code>Conda</code> va par défaut appliquer un algorithme qui vise à gérer au mieux ces conflits, là où <code>pip</code> va choisir une approche plus minimaliste<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>.</p>
+</div>
+</div>
+</div>
+<p><code>pip+venv</code> présente l’avantage de la simplicité, <code>conda</code> de la fiabilité. Selon les projets, on privilégiera l’un ou l’autre. Néanmoins, si le projet est amené à fonctionner de manière isolée dans un conteneur, <code>venv</code> suffira amplement car l’isolation sera fournie par le conteneur comme nous le verrons ultérieurement.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+C’est différent en <i class="fa-brands fa-r-project" aria-label="r-project"></i> ?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>On lit souvent, notamment chez les <em>afficionados</em> de <i class="fa-brands fa-r-project" aria-label="r-project"></i> que la gestion des environnements en <code>Python</code> est chaotique. C’était vrai au début des années 2010 mais c’est quelques peu exagéré aujourd’hui.</p>
+<p>La qualité supérieure des outils <i class="fa-brands fa-r-project" aria-label="r-project"></i> pour la gestion des dépendances ne saute pas aux yeux: <a href="https://rstudio.github.io/renv/articles/renv.html"><code>renv</code></a> est très intéressant mais <a href="https://rstudio.github.io/renv/articles/renv.html#caveats">ne permet pas de définir la version de <i class="fa-brands fa-r-project" aria-label="r-project"></i></a> :</p>
+<blockquote class="blockquote">
+<p>R version: renv tracks, but doesn’t help with, the version of R used with the packge. renv can’t easily help with this because it’s run inside of R, but you might find tools like rig helpful, as they make it easier to switch between multiple version of R on one computer.</p>
+</blockquote>
+<p>C’est, en fait, le problème principal des outils <i class="fa-brands fa-r-project" aria-label="r-project"></i> pour la reproductibilité. Pour les utiliser, il faut souvent se trouver dans une session <i class="fa-brands fa-r-project" aria-label="r-project"></i>, avec ses spécificités. Les outils <i class="fa-brands fa-python" aria-label="python"></i> qui s’utilisent pas le biais de la ligne de commande offrent une robstusse plus importante.</p>
+</div>
+</div>
+</div>
+<p>Puisqu’il n’y a pas de raison absolue d’imposer <code>pip+venv</code> ou <code>conda</code>, nous recommandons le pragmatisme. Personnellement, nous utilisons plutôt <code>venv</code> car nous travaillons principalement dans des microservices basés sur des conteneurs et non sur des postes personnels, ce qui est l’approche moderne dans le monde de la <em>data science</em>. Nous présentons néanmoins les deux approches par la suite.</p>
 </section>
 <section id="conda" class="level2">
 <h2 class="anchored" data-anchor-id="conda">Conda</h2>
@@ -407,7 +457,7 @@ Dérouler les <em>slides</em> ci-dessous ou <a href="https://ensae-reproductibil
 <h4 class="anchored" data-anchor-id="installer-un-package">Installer un package</h4>
 <p>La syntaxe pour installer un package avec Conda est très similaire à celle de <code>pip</code> :</p>
 <pre class="shell"><code>conda install nom_du_package</code></pre>
-<p>La différence est que là où <code>pip install</code> va installer un package à partir du répertoire <a href="https://pypi.org/">PyPI</a>, <code>conda install</code> va chercher le package sur les répertoires maintenus par les développeurs de Conda<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. Installons par exemple le package phare de <em>machine learning</em> <code>scikit-learn</code>.</p>
+<p>La différence est que là où <code>pip install</code> va installer un package à partir du répertoire <a href="https://pypi.org/">PyPI</a>, <code>conda install</code> va chercher le package sur les répertoires maintenus par les développeurs de Conda<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>. Installons par exemple le package phare de <em>machine learning</em> <code>scikit-learn</code>.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> conda install scikit-learn</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Collecting</span> package metadata <span class="er">(</span><span class="ex">current_repodata.json</span><span class="kw">)</span><span class="bu">:</span> done</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Solving</span> environment: done</span>
@@ -551,7 +601,7 @@ Note
 <h3 class="anchored" data-anchor-id="en-pratique-1">En pratique</h3>
 <section id="application" class="level4">
 <h4 class="anchored" data-anchor-id="application">Application</h4>
-<p>Afin de présenter l’utilisation de <code>Docker</code> en pratique, nous allons présenter les différentes étapes permettant de <em>“dockeriser”</em> une application web minimaliste construite avec le <em>framework</em> <code>Python</code> <a href="https://flask.palletsprojects.com/en/2.1.x/"><code>Flask</code></a><a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>.</p>
+<p>Afin de présenter l’utilisation de <code>Docker</code> en pratique, nous allons présenter les différentes étapes permettant de <em>“dockeriser”</em> une application web minimaliste construite avec le <em>framework</em> <code>Python</code> <a href="https://flask.palletsprojects.com/en/2.1.x/"><code>Flask</code></a><a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>.</p>
 <p>La structure de notre projet est la suivante.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">├──</span> myflaskapp</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span>   ├── Dockerfile</span>
@@ -589,7 +639,7 @@ Note
 <span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="ex">CMD</span> [<span class="st">"flask"</span>, <span class="st">"run"</span>, <span class="st">"--host=0.0.0.0"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <ul>
-<li><code>FROM</code> : spécifie l’image de base. Une image Docker hérite toujours d’une image de base. Ici, on choisit l’image <code>Ubuntu</code> version <code>20.04</code>, tout va donc se passer comme si l’on développait sur une machine virtuelle vierge ayant pour système d’exploitation <code>Ubuntu 20.04</code><a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> ;</li>
+<li><code>FROM</code> : spécifie l’image de base. Une image Docker hérite toujours d’une image de base. Ici, on choisit l’image <code>Ubuntu</code> version <code>20.04</code>, tout va donc se passer comme si l’on développait sur une machine virtuelle vierge ayant pour système d’exploitation <code>Ubuntu 20.04</code><a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a> ;</li>
 <li><code>RUN</code> : lance une commande Linux. Ici, on met d’abord à jour la liste des packages téléchargeables via <code>apt</code>, puis on installe <code>Python</code> ainsi que des librairies système nécessaires au bon fonctionnement de notre application ;</li>
 <li><code>WORKDIR</code> : spécifie le répertoire de travail de l’image. Ainsi, toutes les commandes suivantes seront exécutées depuis ce répertoire ;</li>
 <li><code>COPY</code> : copie un fichier local sur l’image <code>Docker</code>. Ici, on copie d’abord le fichier <code>requirements.txt</code> du projet, qui spécifie les dépendances <code>Python</code> de notre application, puis on les installe avec une commande <code>RUN</code>. La seconde instruction <code>COPY</code> copie le répertoire du projet sur l’image ;</li>
@@ -852,10 +902,12 @@ Note
 <div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
 
 <ol>
-<li id="fn1"><p>La lenteur de l’installation des packages dans les environnements <code>conda</code> par rapport à <code>pip</code> et l’accès de plus en plus fréquent à des <a href="https://pythonwheels.com/"><em>wheels</em></a> a permis un retour en grâce des environnements virtuels implémentés par <code>venv</code>. Une autre alternative populaire est <a href="https://mamba.readthedocs.io/en/latest/"><code>mamba</code></a>, une réimplémentation de <code>Conda</code> en <code>C++</code> qui utilise un <em>solver</em> bien plus efficace. En proposant celui-ci, le projet <code>mamba</code> vise à pallier l’un des irritants principaux de <code>conda</code>, à savoir la lenteur du <em>solver</em>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>Ces répertoires sont, dans le langage <code>conda</code> les <em>canaux</em>. Le canal par défaut est maintenu par les développeurs d<code>Anaconda</code>. Cependant, pour en assurer la stabilité, ce canal a une forte inertie. La <code>conda-forge</code> a émergé pour offrir plus de flexibilité aux développeurs de <em>package</em> qui peuvent ainsi mettre à disposition des versions plus récentes de leurs packages, comme sur <a href="https://pypi.org/">PyPI</a>.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p><a href="https://flask.palletsprojects.com/en/2.1.x/"><code>Flask</code></a> est un <em>framework</em> permettant de déployer, de manière légère, des applications reposant sur <code>Python</code>.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4"><p>Dans l’idéal, on essaie de partir d’une couche la plus petite possible pour limiter la taille de l’image finalement obtenue. Il n’est en effet pas nécessaire d’utiliser une image disposant de <code>R</code> si on n’utilise que du <code>Python</code>. En général, les différents langages proposent des images de petite taille dans lequel un interpréteur est déjà installé et proprement configuré. Dans cette application, on aurait par exemple pu utiliser l’image <a href="https://hub.docker.com/layers/python/library/python/3.9-slim-buster/images/sha256-e07b35c0c81c21995a43cefd64730ac0e57a5164cc440b6a5c94c118cfacd0ca?context=explore">python:3.9-slim-buster</a>.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>Nous reviendrons plus tard sur la manière dont la mise à disposition de <em>packages</em> sous forme précompilée par le biais de <em>wheels</em> offre une solution à ce problème.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>S’il est impossible de suivre les évolutions de tous les <em>packages</em> de la <em>data science</em>, il est recommandé de faire une veille sur les principaux comme <code>Pandas</code> ou <code>Scikit</code> en suivant les <em>release notes</em> des versions majeures qui introduisent généralement des non-compatibilités.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Le <em>solver</em> de <code>conda</code>, qui est un algorithme de recherche de chemin optimal dans des graphes pour gérer les (in)compatibilités de versions, est lourd à mettre en oeuvre. Le projet <a href="https://mamba.readthedocs.io/en/latest/"><code>mamba</code></a> a permis d’offrir une réimplémentation de <code>Conda</code> en <code>C++</code> par le biais d’un <em>solver</em> plus efficace. Cela a permis de franchement accélérer la vitesse d’installation des <em>packages</em> par le biais de <code>conda</code>. Néanmoins, l’accès de plus en plus fréquent à des <a href="https://pythonwheels.com/"><em>wheels</em></a> a permis un retour en grâce des environnements virtuels implémentés par <code>venv</code> au cours des dernières années.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Ces répertoires sont, dans le langage <code>conda</code> les <em>canaux</em>. Le canal par défaut est maintenu par les développeurs d<code>Anaconda</code>. Cependant, pour en assurer la stabilité, ce canal a une forte inertie. La <code>conda-forge</code> a émergé pour offrir plus de flexibilité aux développeurs de <em>package</em> qui peuvent ainsi mettre à disposition des versions plus récentes de leurs packages, comme sur <a href="https://pypi.org/">PyPI</a>.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p><a href="https://flask.palletsprojects.com/en/2.1.x/"><code>Flask</code></a> est un <em>framework</em> permettant de déployer, de manière légère, des applications reposant sur <code>Python</code>.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>Dans l’idéal, on essaie de partir d’une couche la plus petite possible pour limiter la taille de l’image finalement obtenue. Il n’est en effet pas nécessaire d’utiliser une image disposant de <code>R</code> si on n’utilise que du <code>Python</code>. En général, les différents langages proposent des images de petite taille dans lequel un interpréteur est déjà installé et proprement configuré. Dans cette application, on aurait par exemple pu utiliser l’image <a href="https://hub.docker.com/layers/python/library/python/3.9-slim-buster/images/sha256-e07b35c0c81c21995a43cefd64730ac0e57a5164cc440b6a5c94c118cfacd0ca?context=explore">python:3.9-slim-buster</a>.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
