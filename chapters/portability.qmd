@@ -147,38 +147,87 @@ La qualité supérieure des outils {{< fa brands r-project >}} pour la gestion d
 C'est, en fait, le problème principal des outils {{< fa brands r-project >}} pour la reproductibilité. Pour les utiliser, il faut souvent se trouver dans une session {{< fa brands r-project >}}, avec ses spécificités. Les outils {{< fa brands python >}} qui s'utilisent pas le biais de la ligne de commande offrent une robstusse plus importante. 
 :::
 
-Puisqu'il n'y a pas de raison absolue d'imposer `pip+venv` ou `conda`, nous recommandons le pragmatisme. Personnellement, nous utilisons plutôt `venv` car nous travaillons principalement dans des microservices basés sur des conteneurs et non sur des postes personnels, ce qui est l'approche moderne dans le monde de la _data science_. Nous présentons néanmoins les deux approches par la suite. 
+Puisqu'il n'y a pas de raison absolue d'imposer `pip+venv` ou `conda`, nous recommandons le pragmatisme. Personnellement, nous utilisons plutôt `venv` car nous travaillons principalement dans des microservices basés sur des conteneurs et non sur des postes personnels, ce qui est l'approche moderne dans le monde de la _data science_. Nous présentons néanmoins les deux approches par la suite. L'[application fil rouge](/chapters/application.qmd) propose les deux approches, à vous de choisir celle que vous désirez privilégier. 
 
+## Guide pratique d'utilisation d'un environnement virtuel
 
-## Conda
 
 ### Installation
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+Les instructions pour installer et utiliser `venv`, l'outil de création d'environnements virtuels intégré à Python, sont détaillées dans la [documentation officielle de Python](https://docs.python.org/fr/3/library/venv.html). `venv` est un module inclus par défaut dans `Python`, ce qui le rend facilement accessible pour la gestion d'environnements virtuels.
+
+![Illustration du principe (Source: [dataquest](https://www.dataquest.io/blog/a-complete-guide-to-python-virtual-environments/))](https://www.dataquest.io/wp-content/uploads/2022/01/python-virtual-envs1-1024x576.webp)
+
+## `conda`
 
 Les instructions à suivre pour installer `conda` sont détaillées dans la [documentation officielle](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html). `conda` seul étant peu utile en pratique, il est généralement installé dans le cadre de distributions. Les deux plus populaires sont :
 
 - `Miniconda` : une distribution minimaliste contenant `conda`, `Python` ainsi qu'un petit nombre de packages techniques très utiles ;
 - `Anaconda` : une distribution assez volumineuse contenant `conda`, `Python`, d'autres logiciels (`R`, `Spyder`, etc.) ainsi qu'un ensemble de packages utiles pour la *data science* (`SciPy`, `NumPy`, etc.).
 
-Le choix de la distribution importe assez peu en pratique, dans la mesure où nous allons de toute manière utiliser des environnements virtuels vierges pour développer nos projets.
-
-**L'écosystème Conda**
-
 ![](/conda-eco.png)
 
-### En pratique
+Le choix de la distribution importe assez peu en pratique, dans la mesure où nous allons de toute manière utiliser des environnements virtuels vierges pour développer nos projets.
 
-#### Créer un environnement
+:::
+
+### Créer un environnement
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+Pour commencer à utiliser `venv`, commençons par créer un environnement vierge, nommé `dev`. Pour créer
+un environnement virtuel, cela se fait en ligne de commande par le biais de 
+`Python`. Cela signifie que la version de `Python` utilisée
+par cet environnement sera celle utilisée lors de la création de celui-ci. 
+
+```{python}
+#| eval: false
+$ python -m venv dev #<1>
+```
+1. Sur un système `Windows`, ce sera `python.exe -m venv dev` 
+
+Cette commande crée un dossier nommé `dev/` contenant une installation Python isolée.
+
+<details>
+<summary>
+Exemple sur un système `Linux`
+</summary>
+![Exemple sur un système `Linux`](/venv_local.png)
+</details>
+
+Celle-ci est de la version de `Python` enregistrée par défaut dans le `PATH`, en l'occurrence
+`Python 3.11`. Pour créer un environnement virtuel avec une autre version de `Python`, il faudra
+définir le chemin de manière formelle, par exemple:
+
+```{python}
+#| eval: false
+$ /chemin_local/python3.8 -m venv dev-old #<1>
+```
+
+
+## `conda`
+
 
 Pour commencer à utiliser `conda`, commençons par créer un environnement vierge, nommé `dev`, en spécifiant la version de Python que l'on souhaite installer pour notre projet.
 
 ```bash
 $ conda create -n dev python=3.9.7
-Collecting package metadata (current_repodata.json): done
+Retrieving notices: ...working... done
+Channels:
+ - conda-forge
+Platform: linux-64
+Collecting package metadata (repodata.json): done
 Solving environment: done
 
 ## Package Plan ##
 
-  environment location: /home/coder/local/bin/conda/envs/dev
+  environment location: /opt/mamba/envs/dev
 
   added / updated specs:
     - python=3.9.7
@@ -193,7 +242,7 @@ Downloading and Extracting Packages
 ...
 ```
 
-Comme indiqué dans les logs,
+Comme indiqué dans les _logs_,
 `Conda` a créé notre environnement et nous indique son emplacement sur le *filesystem*.
 En réalité, l'environnement n'est jamais vraiment vierge :
 `Conda` nous demande — et il faut répondre oui en tapant _"y"_ — 
@@ -203,19 +252,43 @@ qui sont ceux qui viennent avec la distribution `Miniconda`.
 On peut vérifier que l'environnement a bien été créé en listant les environnements installés sur le système.
 
 ```bash
-conda info --envs
-# conda environments:
-#
-base                    * /home/coder/local/bin/conda
-basesspcloud              /home/coder/local/bin/conda/envs/basesspcloud
-dev                       /home/coder/local/bin/conda/envs/dev
+$ conda info --envs
 ```
 
-#### Activer un environnement
+```
+# conda environments:                                                                                                                             
+#                                                                                                                                                 
+base                  *  /opt/mamba                                                                                                               
+dev                      /opt/mamba/envs/dev
+```
+
+:::
+
+
+### Activer un environnement
 
 Comme plusieurs environnements peuvent coexister sur un même système,
-il faut spécifier à `Conda`
-que l'on souhaite utiliser cet environnement pour la session courante du terminal.
+il faut spécifier à notre gestionnaire d'environnement d'activer celui-ci.
+Dès lors, ce sera celui-ci qui sera utilisé implicitement lorsqu'on
+utilisera `python`, `pip`, etc. en ligne de commande.  
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+```bash
+$ source dev/bin/activate
+```
+
+`venv` active l'environnement virtuel `dev`, indiqué par le changement du nom de l'environnement qui apparaît au début de la ligne de commande dans le terminal. Une fois activé, `dev` devient temporairement notre environnement par défaut pour les opérations `Python`. Pour confirmer cela, nous pouvons utiliser la commande `which` pour déterminer l'emplacement de l'interpréteur Python qui sera utilisé pour exécuter des scripts comme `python mon-script.py`.
+
+```bash
+(dev) $ which python
+/home/onyxia/work/dev/bin/python
+```
+
+
+## `conda`
 
 ```bash
 $ conda activate dev
@@ -231,111 +304,452 @@ vérifions avec la commande `which` l'emplacement de l'interpréteur Python qui 
 /home/coder/local/bin/conda/envs/dev/bin/python
 ```
 
+:::
+
+
 On travaille bien dans l'environnement attendu : l'interpréteur qui se lance n'est pas celui du système global, mais bien celui spécifique à notre environnement virtuel.
 
-#### Lister les packages installés
+### Lister les packages installés
 
-Une fois l'environnement activé, on peut lister les packages installés et leur version. Cela confirme qu'un certain nombre de packages sont installés par défaut lors de la création d'un environnement virtuel.
+Une fois l'environnement activé, on peut lister les packages installés et leur version.
+Cela confirme qu'un certain nombre de packages sont installés par défaut lors de la création d'un environnement virtuel.
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+On part d'un environnement vraiment réduit à l'os:
+
+```python
+(dev) $ pip list
+
+Package    Version
+---------- -------
+pip        23.3.2
+setuptools 69.0.3
+wheel      0.42.0
+```
+
+
+## `conda`
+
+L'environnement est assez minimaliste, quoique plus garni que lors
+de la création d'un environnement virtuel par `venv`
 
 ```bash
 (dev) $ conda list
-# packages in environment at /home/coder/local/bin/conda/envs/dev:
+# packages in environment at /opt/mamba/envs/dev:
 #
 # Name                    Version                   Build  Channel
-_libgcc_mutex             0.1                        main  
-_openmp_mutex             4.5                       1_gnu  
-ca-certificates           2022.3.29            h06a4308_0  
+_libgcc_mutex             0.1                 conda_forge    conda-forge
+_openmp_mutex             4.5                       2_gnu    conda-forge
+ca-certificates           2023.11.17           hbcca054_0    conda-forge
 ...
 ```
 
-#### Installer un package
+:::
 
-La syntaxe pour installer un package avec Conda est très similaire à celle de `pip` : 
+Pour se convaincre, on peut vérifier que `Numpy` 
+est bien absent de notre environnement:
+
+```python
+(dev) $ python -c "import numpy as np"
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+ModuleNotFoundError: No module named 'numpy'
+```
+
+
+### Installer un package
+
+Notre environnement peut être enrichi, lorsque nécessaire,
+avec l'installation d'un _package_ par le biais de la ligne
+de commande. La procédure
+est très similaire entre `pip` (pour les environnements `venv`) et `conda`.
+
+::: {.callout-caution collapse="true"}
+## Mélanger `pip` et `conda`
+
+Il est techniquement possible d'installer des _packages_ par le biais de `pip` 
+en étant situé dans un environnement virtuel `conda`[^sspcloud-note].
+Ce n'est pas un problème pour de l'expérimentation et ça permet de développer
+rapidement.
+
+Néanmoins, dans un environnement
+de production c'est une [pratique à éviter](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#using-pip-in-an-environment). 
+
+- Soit on initialise un environnement
+`conda` autosuffisant avec un `env.yml` (voir plus bas) ;
+- Soit on crée un environnement `venv` et on fait exclusivement des `pip install`.
+:::
+
+[^sspcloud-note]: D'ailleurs, si vous utilisez `pip` sur le SSPCloud, 
+c'est ce que vous faites, sans vous en rendre compte. 
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+```shell
+pip install nom_du_package
+```
+
+## `conda` 
 
 ```shell
 conda install nom_du_package
 ```
 
-La différence est que là où `pip install` va installer un package à partir du répertoire [PyPI](https://pypi.org/), `conda install` va chercher le package sur les répertoires maintenus par les développeurs de Conda[^1]. Installons par exemple le package phare de *machine learning* `scikit-learn`.
+:::
 
-[^1]: Ces répertoires sont, dans le langage `conda` les _canaux_.
+La différence est que là où `pip install` va installer un package à partir du répertoire [PyPI](https://pypi.org/), `conda install` va chercher le package sur les répertoires maintenus par les développeurs de Conda[^1].
+
+Installons par exemple le package phare de *machine learning* `scikit-learn`.
+
+[^1]: Ces répertoires sont, dans le langage `conda`, les _canaux_.
 Le canal par défaut est maintenu par les développeurs d`Anaconda`. 
 Cependant, pour en assurer la stabilité, ce canal a une forte inertie. 
 La `conda-forge` a émergé pour offrir plus de flexibilité aux développeurs
 de _package_ qui peuvent ainsi mettre à disposition des versions plus
 récentes de leurs packages, comme sur  [PyPI](https://pypi.org/).
 
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+```shell
+(dev) $ conda install scikit-learn
+```
+
+```
+pip install scikit-learn
+Collecting scikit-learn
+  Obtaining dependency information for scikit-learn from https://files.pythonhosted.org/packages/5b/be/208f17ce87a5e55094b0e8ffd55b06919ab9b56e7e4ce2a64cd9095ec5d2/scikit_learn-1.4.0-1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata
+  Downloading scikit_learn-1.4.0-1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (11 kB)
+Collecting numpy<2.0,>=1.19.5 (from scikit-learn)
+  Obtaining dependency information for numpy<2.0,>=1.19.5 from https://files.pythonhosted.org/packages/5a/62/007b63f916aca1d27f5fede933fda3315d931
+...
+```
+
+Les dépendances nécessaires (par exemple `Numpy` sont automatiquement installées).
+L'environnement s'enrichit donc:
+
+```python
+(dev) $ pip list
+```
+
+```
+Package       Version
+------------- -------
+joblib        1.3.2
+numpy         1.26.3
+pip           23.2.1
+scikit-learn  1.4.0
+scipy         1.12.0
+setuptools    65.5.0
+threadpoolctl 3.2.0
+```
+
+
+## `conda`
+
 
 ```bash
 (dev) $ conda install scikit-learn
-Collecting package metadata (current_repodata.json): done
+```
+
+<details>
+<summary>
+Voir la sortie
+</summary>
+
+```
+Channels:
+ - conda-forge
+Platform: linux-64
+Collecting package metadata (repodata.json): done
 Solving environment: done
 
 ## Package Plan ##
 
-  environment location: /home/coder/local/bin/conda/envs/dev
+  environment location: /opt/mamba/envs/dev
 
   added / updated specs:
     - scikit-learn
-...
+
+
+The following packages will be downloaded:
+
+    package                    |            build
+    ---------------------------|-----------------
+    joblib-1.3.2               |     pyhd8ed1ab_0         216 KB  conda-forge
+    libblas-3.9.0              |21_linux64_openblas          14 KB  conda-forge
+    libcblas-3.9.0             |21_linux64_openblas          14 KB  conda-forge
+    libgfortran-ng-13.2.0      |       h69a702a_3          23 KB  conda-forge
+    libgfortran5-13.2.0        |       ha4646dd_3         1.4 MB  conda-forge
+    liblapack-3.9.0            |21_linux64_openblas          14 KB  conda-forge
+    libopenblas-0.3.26         |pthreads_h413a1c8_0         5.3 MB  conda-forge
+    libstdcxx-ng-13.2.0        |       h7e041cc_3         3.7 MB  conda-forge
+    numpy-1.26.3               |   py39h474f0d3_0         6.6 MB  conda-forge
+    python_abi-3.9             |           4_cp39           6 KB  conda-forge
+    scikit-learn-1.4.0         |   py39ha22ef79_0         8.7 MB  conda-forge
+    scipy-1.12.0               |   py39h474f0d3_2        15.6 MB  conda-forge
+    threadpoolctl-3.2.0        |     pyha21a80b_0          20 KB  conda-forge
+    ------------------------------------------------------------
+                                           Total:        41.6 MB
+
+The following NEW packages will be INSTALLED:
+
+  joblib             conda-forge/noarch::joblib-1.3.2-pyhd8ed1ab_0 
+  libblas            conda-forge/linux-64::libblas-3.9.0-21_linux64_openblas 
+  libcblas           conda-forge/linux-64::libcblas-3.9.0-21_linux64_openblas 
+  libgfortran-ng     conda-forge/linux-64::libgfortran-ng-13.2.0-h69a702a_3 
+  libgfortran5       conda-forge/linux-64::libgfortran5-13.2.0-ha4646dd_3 
+  liblapack          conda-forge/linux-64::liblapack-3.9.0-21_linux64_openblas 
+  libopenblas        conda-forge/linux-64::libopenblas-0.3.26-pthreads_h413a1c8_0 
+  libstdcxx-ng       conda-forge/linux-64::libstdcxx-ng-13.2.0-h7e041cc_3 
+  numpy              conda-forge/linux-64::numpy-1.26.3-py39h474f0d3_0 
+  python_abi         conda-forge/linux-64::python_abi-3.9-4_cp39 
+  scikit-learn       conda-forge/linux-64::scikit-learn-1.4.0-py39ha22ef79_0 
+  scipy              conda-forge/linux-64::scipy-1.12.0-py39h474f0d3_2 
+  threadpoolctl      conda-forge/noarch::threadpoolctl-3.2.0-pyha21a80b_0 
+
+
+
+Downloading and Extracting Packages:
+                                                                                                                                                  
+Preparing transaction: done                                                                                                                       
+Verifying transaction: done                                                                                                                       
+Executing transaction: done 
+```
+</details>
+
+Là encore, `conda` nous demande d'installer d'autres packages, qui sont des dépendances de `scikit-learn`. Par exemple, la librairie de calcul scientifique `NumPy`.
+
+
+```python
+(dev) $ conda list
 ```
 
-Là encore, Conda nous demande d'installer d'autres packages, qui sont des dépendances de `scikit-learn`. Par exemple, la librairie de calcul scientifique `NumPy`.
+```
+# packages in environment at /opt/mamba/envs/dev:
+#
+# Name                    Version                   Build  Channel
+_libgcc_mutex             0.1                 conda_forge    conda-forge
+_openmp_mutex             4.5                       2_gnu    conda-forge
+ca-certificates           2023.11.17           hbcca054_0    conda-forge
+joblib                    1.3.2              pyhd8ed1ab_0    conda-forge
+ld_impl_linux-64          2.40                 h41732ed_0    conda-forge
+libblas                   3.9.0           21_linux64_openblas    conda-forge
+libcblas                  3.9.0           21_linux64_openblas    conda-forge
+libffi                    3.4.2                h7f98852_5    conda-forge
+libgcc-ng                 13.2.0               h807b86a_3    conda-forge
+libgfortran-ng            13.2.0               h69a702a_3    conda-forge
+libgfortran5              13.2.0               ha4646dd_3    conda-forge
+libgomp                   13.2.0               h807b86a_3    conda-forge
+liblapack                 3.9.0           21_linux64_openblas    conda-forge
+libopenblas               0.3.26          pthreads_h413a1c8_0    conda-forge
+libsqlite                 3.44.2               h2797004_0    conda-forge
+libstdcxx-ng              13.2.0               h7e041cc_3    conda-forge
+libzlib                   1.2.13               hd590300_5    conda-forge
+ncurses                   6.4                  h59595ed_2    conda-forge
+numpy                     1.26.3           py39h474f0d3_0    conda-forge
+openssl                   3.2.0                hd590300_1    conda-forge
+pip                       23.3.2             pyhd8ed1ab_0    conda-forge
+python                    3.9.7           hf930737_3_cpython    conda-forge
+python_abi                3.9                      4_cp39    conda-forge
+readline                  8.2                  h8228510_1    conda-forge
+scikit-learn              1.4.0            py39ha22ef79_0    conda-forge
+scipy                     1.12.0           py39h474f0d3_2    conda-forge
+setuptools                69.0.3             pyhd8ed1ab_0    conda-forge
+sqlite                    3.44.2               h2c6b66d_0    conda-forge
+threadpoolctl             3.2.0              pyha21a80b_0    conda-forge
+tk                        8.6.13          noxft_h4845f30_101    conda-forge
+tzdata                    2023d                h0c530f3_0    conda-forge
+wheel                     0.42.0             pyhd8ed1ab_0    conda-forge
+xz                        5.2.6                h166bdaf_0    conda-forge
+zlib                      1.2.13               hd590300_5    conda-forge
+```
 
-Il arrive que des packages disponibles sur le répertoire `PyPI`
-ne soient pas disponible sur les canaux gérés par Conda.
-Dans ce cas, il est possible d'installer un package dans l'environnement via la commande `pip install`.
-Il est néanmonins toujours préférable de privilégier une installation via Conda si disponible.
+:::
 
-#### Exporter les spécifications de l'environnement
+
+
+### Exporter les spécifications de l'environnement
 
 Développer à partir d'un environnement vierge est une bonne pratique de reproductibilité :
 en partant d'une base minimale, on s'assure que seuls les packages effectivement nécessaires
 au bon fonctionnement de notre application ont été installés au fur et à mesure du projet. 
 
-Cela rend également notre projet plus portable : on peut exporter les spécifications de l'environnement (version de Python, canaux de téléchargement des packages, packages installés et leurs versions) dans un fichier, appelé par convention `environment.yml`.
+Cela rend également notre projet plus aisé à rendre portable. 
+On peut exporter les spécifications de l'environnement
+dans un fichier spécial qui peut permettre de créer un nouvel environnement similaire
+à celui ayant servi initialement.
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+```bash
+(dev) $ pip freeze > requirements.txt
+```
+
+<details>
+<summary>
+Voir le fichier `requirements.txt` généré
+</summary>
+
+joblib==1.3.2
+numpy==1.26.3
+scikit-learn==1.4.0
+scipy==1.12.0
+threadpoolctl==3.2.0
+
+</details>
+
+## `conda`
 
 ```bash
 (dev) $ conda env export > environment.yml
 ```
 
+<details>
+<summary>
+Voir le fichier `environment.yml` généré
+</summary>
+
+```{python}
+#| eval: false
+#| filename: "environment.yml"
+#| file: "environment.yml"
+name: dev
+channels:
+  - conda-forge
+dependencies:
+  - _libgcc_mutex=0.1=conda_forge
+  - _openmp_mutex=4.5=2_gnu
+  - ca-certificates=2023.11.17=hbcca054_0
+  - joblib=1.3.2=pyhd8ed1ab_0
+  - ld_impl_linux-64=2.40=h41732ed_0
+  - libblas=3.9.0=21_linux64_openblas
+  - libcblas=3.9.0=21_linux64_openblas
+  - libffi=3.4.2=h7f98852_5
+  - libgcc-ng=13.2.0=h807b86a_3
+  - libgfortran-ng=13.2.0=h69a702a_3
+  - libgfortran5=13.2.0=ha4646dd_3
+  - libgomp=13.2.0=h807b86a_3
+  - liblapack=3.9.0=21_linux64_openblas
+  - libopenblas=0.3.26=pthreads_h413a1c8_0
+  - libsqlite=3.44.2=h2797004_0
+  - libstdcxx-ng=13.2.0=h7e041cc_3
+  - libzlib=1.2.13=hd590300_5
+  - ncurses=6.4=h59595ed_2
+  - numpy=1.26.3=py39h474f0d3_0
+  - openssl=3.2.0=hd590300_1
+  - pip=23.3.2=pyhd8ed1ab_0
+  - python=3.9.7=hf930737_3_cpython
+  - python_abi=3.9=4_cp39
+  - readline=8.2=h8228510_1
+  - scikit-learn=1.4.0=py39ha22ef79_0
+  - scipy=1.12.0=py39h474f0d3_2
+  - setuptools=69.0.3=pyhd8ed1ab_0
+  - sqlite=3.44.2=h2c6b66d_0
+  - threadpoolctl=3.2.0=pyha21a80b_0
+  - tk=8.6.13=noxft_h4845f30_101
+  - tzdata=2023d=h0c530f3_0
+  - wheel=0.42.0=pyhd8ed1ab_0
+  - xz=5.2.6=h166bdaf_0
+  - zlib=1.2.13=hd590300_5
+prefix: /opt/mamba/envs/dev
+```
+
+</details>
+
+
+:::
+
 Ce fichier est mis par convention à la racine du dépôt `Git` du projet.
 Ainsi, les personnes souhaitant tester l'application peuvent recréer le même environnement Conda que celui qui a servi au développement via la commande suivante.
+
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+On refait la démarche précédente de création d'un 
+environnement vierge puis un `pip install -r requirements.txt`
+
+```bash
+$ python -m venv newenv
+$ source newenv/bin/activate
+(newenv) $ pip install -r requirements.txt
+```
+
+
+## `conda` 
+
 
 ```bash
 $ conda env create -f environment.yml
 ```
 
-#### Changer d'environnement
+:::
+
+### Changer d'environnement
+
+
+::: {.panel-tabset group="language"}
+
+## `venv` 
+
+Pour changer d'environnement virtuel, il suffit d'en activer un autre.
+
+```bash
+(myenv) $ deactivate
+$ source anotherenv/bin/activate
+(anotherenv) $ which python
+/chemin/vers/anotherenv/bin/python
+```
+
+Pour quitter l'environnement virtuel actif, on utilise simplement la commande `deactivate` :
+
+```bash
+(anotherenv) $ deactivate
+$ 
+```
+
+
+## `conda` 
 
 Pour changer d'environnement, il suffit d'en activer un autre.
 
 ```bash
-(dev) $ conda base
-(base) $ 
+(dev) $ conda activate base
+(base) $ which python
+/opt/mamba/bin/python
 ```
 
-Pour sortir de tout environnement Conda, on utilise la commande `conda deactivate` :
+Pour sortir de tout environnement conda, on utilise la commande `conda deactivate` :
 
 ```bash
 (base) $ conda deactivate
 $ 
 ```
 
-#### Supprimer un environnement
+:::
 
-Pour supprimer l'environnement `dev`, on utilise la commande `conda env remove -n dev`.
 
 ### Aide-mémoire
 
-| Commande | Principe |
-|----------|----------|
-| `conda create -n <env_name> python=<python_version>` | Création d'un environnement nommé `<env_name>` dont la version de Python est `<python_version>` |
-| `conda info --envs` | Lister les environnements |
-| `conda activate <env_name>` | Utiliser l'environnement `<env_name>` pour la session du terminal |
-| `conda list` | Lister les _packages_ dans l'environnement actif |
-| `conda install <pkg>` | Installer le _package_ `<pkg>` dans l'environnement actif |
-| `conda env export > environment.yml` | Exporter les spécifications de l’environnement dans un fichier `environment.yml` |
+| `venv` | `conda` | Principe |
+|------|----------|----------|
+| `python -m venv <env_name>` | `conda create -n <env_name> python=<python_version>` | Création d'un environnement nommé `<env_name>` dont la version de Python est `<python_version>` |
+|  | `conda info --envs` | Lister les environnements |
+| `source <env_name>/bin/activate` | `conda activate <env_name>` | Utiliser l'environnement `<env_name>` pour la session du terminal |
+| `pip list` | `conda list` | Lister les _packages_ dans l'environnement actif |
+| `pip install <pkg>` | `conda install <pkg>` | Installer le _package_ `<pkg>` dans l'environnement actif |
+| `pip freeze > requirements.txt` | `conda env export > environment.yml` | Exporter les spécifications de l’environnement dans un fichier `requirements.txt` |
+
 
 ## Limites
 
