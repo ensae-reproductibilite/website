@@ -764,68 +764,108 @@ La technologie des conteneurs permet de répondre à ces différents problèmes.
 
 # Les conteneurs 🐋
 
+![Image trouvée sur [reddit](https://www.reddit.com/r/ProgrammerHumor/comments/cw58z7/it_works_on_my_machine/)
+](https://external-preview.redd.it/aR6WdUcsrEgld5xUlglgKX_0sC_NlryCPTXIHk5qdu8.jpg?auto=webp&s=5fe64dd318eec71711d87805d43def2765dd83cd){fig-align="center"}
+
+
 ## Introduction
 
-Avec les environnements virtuels, l'idée était de permettre à chaque utilisateur potentiel de notre projet d'installer sur son environnement d'exécution les packages nécessaires à la bonne exécution du projet.
-Néanmoins, comme on l'a vu, cette approche ne garantit pas une reproductibilité parfaite et a l'inconvénient de nécessiter beaucoup de gestion manuelle.
+Avec les environnements virtuels,
+l'idée était de permettre à chaque utilisateur potentiel de notre projet d'installer sur son environnement d'exécution les packages nécessaires à la bonne exécution du projet.
+
+Néanmoins, comme on l'a vu, cette approche ne garantit pas une reproductibilité parfaite et a l'inconvénient de demander beaucoup de gestion manuelle.
 
 Changeons de perspective : _au lieu de distribuer une recette permettant à l'utilisateur de recréer l'environnement nécessaire sur sa machine, ne pourrait-on pas directement distribuer à l'utilisateur une machine contenant l'environnement pré-configuré ?_
 
 Bien entendu, on ve pas configurer et envoyer des ordinateurs portables à tous les utilisateurs potentiels d'un projet.
-Une autre solution serait de distribuer des machines virtuelles, qui tournent sur un serveur et simulent un véritable ordinateur.
-Ces machines ont cependant l'inconvénient d'être assez lourdes, et complexes à répliquer et distribuer. Pour pallier ces différentes limites, on va utiliser la technologie des conteneurs.
+On va donc essayer de livrer une version virtuelle
+de notre ordinateur. Il existe deux approches principales pour cela:
 
-![](https://external-preview.redd.it/aR6WdUcsrEgld5xUlglgKX_0sC_NlryCPTXIHk5qdu8.jpg?auto=webp&s=5fe64dd318eec71711d87805d43def2765dd83cd){fig-align="center"}
-
-_Image trouvée sur [reddit](https://www.reddit.com/r/ProgrammerHumor/comments/cw58z7/it_works_on_my_machine/)_
+- Les __machines virtuelles__. Cette approche n'est pas nouvelle.  Elle consiste à recréer, sur un serveur, un environnement informatique complet (matériel et système d'exploitation) qui réplique le comportement d'un véritable ordinateur. 
+- Les __conteneurs__, une solution plus légère pour empaqueter un environnement informatique afin de répliquer le comportement d'une machine réelle. 
 
 ## Fonctionnement
 
+Les machines virtuelles ont l'inconvénient d'être assez lourdes, et complexes à répliquer et distribuer. Pour pallier ces différentes limites, les conteneurs se sont imposés au cours de la dernière décennie. Toutes les infrastructures _cloud_ modernes ont progressivement abandonné les machines virtuelles pour privilégier des conteneurs pour les raisons que nous allons évoquer ultérieurement. 
+
 Comme les machines virtuelles, les conteneurs permettent d'empaqueter complètement l'environnement (librairies systèmes, application, configuration) qui permet de faire tourner l'application.
-Mais à l'inverse d'une machine virtuelle, le conteneur n'inclut pas de système d'exploitation propre, il utilise celui de la machine hôte qui l'exécute. La technologie des conteneurs permet ainsi de garantir une très forte reproductibilité tout en restant suffisamment légère pour permettre une distribution et un déploiement simple aux utilisateurs.
+Mais à l'inverse d'une machine virtuelle, le conteneur n'inclut pas de système d'exploitation propre, il utilise celui de la machine hôte qui l'exécute.
+Cela signifie que si on désire reproduire le comportement d'une machine Windows, il n'est pas nécessaire d'avoir un gros serveur avec Windows. Il est tout à fait possible d'avoir un serveur Linux, ce qui est la norme, et de répliquer le comportement d'une machine Windows à l'intérieur. A l'inverse, cela peut permettre de tester des configurations Linux ou Mac sur un ordinateur Windows. C'est le rôle du logiciel de conteneurisation qui fera la traduction entre les instructions voulues par le _software_ et le système d'exploitation du _hardware_. 
 
-**Différences entre l'approche conteneurs (gauche) et l'approche machines virtuelles (droite)**
+La technologie des conteneurs permet ainsi de garantir une très forte reproductibilité tout en restant suffisamment légère pour permettre une distribution et un déploiement simple aux utilisateurs. En effet, l'adhérence forte entre un système d'exploitation et un logiciel dans l'approche des machines virtuelles rend plus complexe la montée en charge d'un serveur. Si plus d'utilisateurs commencent à utiliser l'application, il est nécessaire de s'assurer que des serveurs correspondant aux besoins de l'application (système d'exploitation, configurations techniques, etc.) soient disponibles. Avec les conteneurs, la montée en charge est plus simple puisque les restrictions matérielles sont moins fortes: ajouter un serveur Linux avec les logiciels adéquats peut être suffisant. 
 
-![](/docker-vm.png)
+![Différences entre l'approche conteneurs (gauche) et l'approche machines virtuelles (droite) (Source : [docker.com](https://www.docker.com/resources/what-container/)
+)](/docker-vm.png)
 
-Source : [docker.com](https://www.docker.com/resources/what-container/)
+Du point de vue de l'utilisateur, la différence n'est pas toujours perceptible pour des besoins standards. 
+L'utilisateur accédera à son application par une application dédiée (un navigateur, un logiciel spécialisé...) et les calculs issus des opérations effectuées seront déportés sur les serveurs où est hébergée cette application. Néanmoins, pour l'organisation qui gère cette application, les conteneurs offriront plus de liberté et de flexibilité comme nous l'avons évoqué. 
 
-## Implémentations
+
+## `Docker` {{< fa brands docker >}}, l'implémentation standard
+
+Comme nous l'avons évoqué, le logiciel de conteneurisation fait office de couche tampon entre les applications et le système d'exploitation du serveur. 
 
 Comme pour les environnements virtuels, il existe différentes implémentations de la technologie des conteneurs. En pratique, l'implémentation offerte par `Docker` est devenue largement prédominante, au point qu'il est devenu courant d'utiliser de manière interchangeable les termes _"conteneuriser"_ et _"Dockeriser"_ une application. C'est donc cette implémentation que nous allons étudier et utiliser dans ce cours.
 
-## Docker <i class="fab fa-docker"></i>
+### Installation et environnements bacs à sable
 
-### Installation
+`Docker` {{< fa brands docker >}} est un logiciel qui peut s'installer sur différents système d'exploitation. 
+Les instructions sont détaillées dans la [documentation officielle](https://docs.docker.com/get-docker/).
+Il est nécessaire d'avoir des droits administrateurs sur son poste pour pouvoir faire cette installation. 
 
-Les instructions à suivre pour installer `Docker` <i class="fab fa-docker"></i>
-selon son système d'exploiration sont détaillées dans la [documentation officielle](https://docs.docker.com/get-docker/).
-Il existe également des environnements bacs à sable en ligne comme
-[Play with Docker](https://labs.play-with-docker.com).
+::: {.callout-warning collapse="true"}
+## Besoins en espace disque
 
+Il est également recommandé d'avoir de l'espace disque libre car certaines images (concept sur lequel nous reviendrons), une fois décompressées et construites, peuvent être lourdes selon la richesse des librairies installées dessus. Elles peuvent rapidement prendre quelques Gigas d'espace disque. 
+
+Ceci est néanmoins à comparer à l'espace disque monstrueux que peut prendre un système d'exploitation complet (autour de 15GB pour Ubuntu ou Mac OS, 20GB par exemple pour Windows...). La distribution Linux la plus minimaliste ([Alpine](https://hub.docker.com/_/alpine/tags)) ne fait que 3Mo compressée et 5Mo une fois décompressée. 
+:::
+
+Il existe également des environnements en ligne gratuits pouvant servir de bacs à sable s'il n'est pas possible pour vous d'installer `Docker`.  
+_[Play with Docker](https://labs.play-with-docker.com)_ permet de tester en ligne `Docker` comme on pourrait le faire sur une installation personnelle. Néanmoins, ces services sont limités: la taille maximale des images décompressées est limitée à 2Go, les services connaissent des coupures en cas d'utilisation massive...
+
+Comme nous le verrons ultérieurement, l'utilisation de `Docker` en interactif est pratique pour apprendre et expérimenter. Néanmoins, en pratique, on utilise principalement `Docker` par le biais de l'intégration continue via `Github Actions` ou `Gitlab CI`. 
 
 ### Principes
 
-Un conteneur Docker est mis à disposition sous la forme d'une **image**, c'est à dire d'un fichier binaire qui contient l'environnement nécessaire à l'exécution de l'application.
+![Source : [k21academy.com](https://k21academy.com/docker-kubernetes/docker-and-kubernetes/)](https://ensae-reproductibilite.github.io/slides/img/docker-workflow.png)
 
-Pour construire (*build*) l'image, on utilise un `Dockerfile`, un fichier texte qui contient la recette — sous forme de commandes Linux — de construction de l'environnement. L'image va être uploadée (*push*) sur un dépôt (*registry*), public ou privé, depuis lequel les utilisateurs vont pouvoir télécharger l'image (*pull*). Le moteur Docker permet ensuite de lancer (*run*) un **conteneur**, c'est à dire une instance vivante de l'image.
+Un conteneur Docker est mis à disposition sous la forme d'une **image**, c'est à dire d'un fichier binaire qui contient l'environnement nécessaire à l'exécution de l'application. Celui-ci est mis à disposition de tous sous une forme compressée sur un dépôt d'images publiques (le plus connu est `Dockerhub`). 
 
-::: {.callout-note}
+Avant de mettre à disposition une image, il est nécessaire de la construire (*build*). 
+Pour cela on utilise un `Dockerfile`, un fichier texte qui contient la recette — sous forme de commandes Linux — de construction de l'environnement. 
+
+Une fois l'image construite, il est possible de faire deux actions:
+
+- La lancer (*run*) en local. Cela permet de tester l'application, éventuellement de la corriger en cas de mauvais fonctionnement. Le lancement de l'application permet de faire tourner l'image dans un environnement isolé qu'on appelle le conteneur (*container*), une instance vivante de l'image en quelques sortes[^assimilation]. 
+- La mettre à disposition sur un dépôt public pour permettre à d'autres (ou à soi-même) de la tester.
+L'image va être uploadée (*push*) sur un dépôt (*registry*), public ou privé, depuis lequel les utilisateurs vont pouvoir télécharger l'image (*pull*). 
+
+[^assimilation]: Par abus de langage, on mélange souvent les termes _"image"_ et _"conteneur"_. En pratique ces deux concepts sont très proches. 
+Le second correspond à la version vivante du premier.  
+
+::: {.callout-note collapse="true"}
+## Mettre à disposition son image `Docker`
+
 Le répertoire d'images publiques le plus connu est [`DockerHub`](https://hub.docker.com/). Il s'agit d'un répertoire où n'importe qui peut proposer une image `Docker`, associée ou non à un projet disponible sur `Github` ou `Gitlab`. Il est possible de mettre à disposition de manière manuelle des images mais, comme nous le montrerons dans le chapitre sur la [mise en production](/chapters/deployment.html), il est beaucoup plus pratique d'utiliser des fonctionalités d'interaction automatique entre `DockerHub` et un dépôt `GitHub`.
 :::
 
 
+# `Docker` en pratique: un exemple
 
-### En pratique
+[L'application fil rouge](/chapters/application.qmd)
+présente des exemples similaires sur notre cas d'usage
+qu'est une application visant à rendre public les résultats de notre modèle de _machine learning_. 
 
-#### Application
+
+## Application
 
 Afin de présenter l'utilisation de `Docker` en pratique, nous allons présenter les différentes étapes permettant de _"dockeriser"_ une application web minimaliste construite avec le _framework_ `Python` [`Flask`](https://flask.palletsprojects.com/en/2.1.x/)[^3].
 
 [^3]: [`Flask`](https://flask.palletsprojects.com/en/2.1.x/) est un 
 _framework_ permettant de déployer, de manière légère,
 des applications reposant sur 
-`Python`. 
+`Python`.
 
 La structure de notre projet est la suivante.
 
@@ -836,9 +876,13 @@ La structure de notre projet est la suivante.
 │   └── requirements.txt
 ```
 
+
 Le script `hello-world.py` contient le code d'une application minimaliste, qui affiche simplement _"Hello, World!"_ sur une page web.
 
-```python
+```{python}
+#| eval: false
+#| file: "hello-world.py"
+#| filename: "hello-world.py"
 from flask import Flask
 
 app = Flask(__name__)
@@ -849,58 +893,88 @@ def hello_world():
     return "<p>Hello, World!</p>"
 ```
 
-Pour faire tourner l'application, il nous faut donc à la fois `Python` et le package `Flask`. Ces installations doivent être spécifiées dans le `Dockerfile` (cf. [section suivante](#dockerfile)). L'installation de `Flask`
-se fait via un fichier `requirements.txt`, qui contient juste la ligne suivante :
+Pour faire tourner l'application, il nous faut donc à la fois `Python` et le package `Flask`.
+Il est donc nécessaire de contrôler l'environnement virtuel autour de `Python` ce qui va impliquer:
 
-```bash
+- Installer `Python` ;
+- Installer les _packages_ nécessaires à l'exécution de notre code. En l'occurrence, on n'a besoin que de `Flask`.
+
+Si la version de `Python` utilisée par notre application nous importe peu, il est plus simple d'adopter un environnement virtuel `venv` que `conda`. Nous allons donc proposer d'utiliser ceci ce qui tombe bien car nous avons déjà notre `requirements.txt` qui
+prend la forme suivante:
+
+```{python}
+#| eval: false
+#| file: "requirements.txt"
+#| filename: "requirements.txt"
 Flask==2.1.1
 ```
 
-#### Le `Dockerfile` {#dockerfile}
+Ces installations en deux temps (`Python` et packages nécessaires)  doivent être spécifiées dans le `Dockerfile` (cf. [section suivante](#dockerfile)). 
 
-A là base de chaque image `Docker` se trouve un `Dockerfile`. C'est un fichier texte qui contient une série de commandes qui permettent de construire l'image. Ces fichiers peuvent être plus ou moins complexes selon l'application que l'on cherche à conteneuriser, mais leur structure est assez normalisée. Pour s'en rendre compte, analysons ligne à ligne le `Dockerfile` nécessaire pour construire une image `Docker` de notre application `Flask.`
+## Le `Dockerfile` {#dockerfile}
 
-```bash
-FROM ubuntu:20.04
+Pour faire un plat, il faut une recette. Pour faire
+une image image `Docker`, il faut un `Dockerfile`. 
 
-RUN apt-get update -y && \
-    apt-get install -y python3-pip python3-dev
+Ce fichier texte contient une série de commandes qui permettent de construire l'image. Ces fichiers peuvent être plus ou moins complexes selon l'application que l'on cherche à conteneuriser, mais leur structure est assez normalisée. 
+
+L'idée est de partir d'une couche de base (une distribution Linux minimaliste) et y ajouter des couches en fonction des besoins de notre application. 
+
+Pour illustrer cela, analysons ligne à ligne le `Dockerfile` nécessaire pour construire une image `Docker` de notre application `Flask.`
+
+```{python}
+#| eval: false
+#| file: "Dockerfile"
+#| filename: "Dockerfile"
+
+FROM ubuntu:20.04 #<1>
+
+RUN apt-get update -y && \ 
+    apt-get install -y python3-pip python3-dev #<2>
     
-WORKDIR /app
+WORKDIR /app #<3>
 
-COPY requirements.txt /app/requirements.txt
-RUN pip install -r requirements.txt
+COPY requirements.txt /app/requirements.txt #<4>
+RUN pip install -r requirements.txt #<4>
 
-COPY . /app
+COPY . /app #<4>
 
-ENV FLASK_APP="hello-world.py"
-EXPOSE 5000
+ENV FLASK_APP="hello-world.py" #<5>
+EXPOSE 5000 #<6>
 
-CMD ["flask", "run", "--host=0.0.0.0"]
+CMD ["flask", "run", "--host=0.0.0.0"] #<7>
 ```
 
-- `FROM` : spécifie l'image de base. Une image Docker hérite toujours d'une image de base. Ici, on choisit l'image `Ubuntu` version `20.04`, tout va donc se passer comme si l'on développait sur une machine virtuelle vierge ayant pour système d'exploitation `Ubuntu 20.04`[^4] ;
-- `RUN` : lance une commande Linux. Ici, on met d'abord à jour la liste des packages téléchargeables via `apt`, puis on installe `Python` ainsi que des librairies système nécessaires au bon fonctionnement de notre application ;
-- `WORKDIR` : spécifie le répertoire de travail de l'image. Ainsi, toutes les commandes suivantes seront exécutées depuis ce répertoire ;
-- `COPY` : copie un fichier local sur l'image `Docker`. Ici, on copie d'abord le fichier `requirements.txt` du projet, qui spécifie les dépendances `Python` de notre application, puis on les installe avec une commande `RUN`. La seconde instruction `COPY` copie le répertoire du projet sur l'image ;
-- `ENV` : crée une variable d'environnement qui sera accessible à l'application dans le conteneur. Ici, on définit une variable d'environnement attendue par `Flask`, qui spécifie le nom du script permettant de lancer l'application ;
-- `EXPOSE` : informe `Docker` que le conteneur "écoute" sur le port 5000, qui est le port par défaut utilisé par le serveur web de `Flask` ;
-- `CMD` : spécifie la commande que doit exécuter le conteneur lors de son lancement. Il s'agit d'une liste, qui contient les différentes parties de la commande sous forme de chaînes de caractères. Ici, on lance `Flask`, qui sait automatiquement quelle application lancer du fait de la commande `ENV` spécifiée précédemment.
+1. `FROM` : spécifie l'image de base. Une image `Docker` hérite toujours d'une image de base. Ici, on choisit l'image `Ubuntu` version `20.04`, tout va donc se passer comme si l'on développait sur une machine virtuelle vierge ayant pour système d'exploitation `Ubuntu 20.04` {{< fa brands linux >}} ;
+2. `RUN` : lance une commande Linux. Ici, on met d'abord à jour la liste des packages téléchargeables via `apt`, puis on installe `Python` {{< fa brands python >}} ainsi que des librairies système nécessaires au bon fonctionnement de notre application ;
+3. `WORKDIR` : spécifie le répertoire de travail de l'image. Ainsi, toutes les commandes suivantes seront exécutées depuis ce répertoire. C'est l'équivalent `Docker` de la commande `cd` (voir [Linux 101](/chapters/linux-101.qmd)) ;
+4. `COPY` : copie un fichier local sur l'image `Docker`. Cela est lié à la manière dont fonctionne `Docker`. Pour ne pas polluer l'image de fichiers non nécessaires (qui affecteront de manière incidente sa configuration et le poids de celle-ci), par défaut, votre image ne contient pas de fichiers de votre projet. Si certains sont nécessaires pour construire l'image, il faut explicitement le dire à `Docker`. 
+Ici, on copie d'abord le fichier `requirements.txt` du projet, qui spécifie les dépendances `Python` de notre application, puis on les installe avec une commande `RUN`. La seconde instruction `COPY` copie le répertoire du projet sur l'image ;
+5. `ENV` : crée une variable d'environnement qui sera accessible à l'application dans le conteneur. Ici, on définit une variable d'environnement attendue par `Flask`, qui spécifie le nom du script permettant de lancer l'application ;
+6. `EXPOSE` : informe `Docker` que le conteneur "écoute" sur le port 5000, qui est le port par défaut utilisé par le serveur web de `Flask`. Ceci est lié à la nature du fonctionnement de `Flask` qui lance un _localhost_ sur un port donné, en l'occurrence le port 5000. ;
+7. `CMD` : spécifie la commande que doit exécuter le conteneur lors de son lancement. Il s'agit d'une liste, qui contient les différentes parties de la commande sous forme de chaînes de caractères. Ici, on lance la commande `flask run` qui sait automatiquement quelle application lancer du fait de la commande `ENV` spécifiée précédemment. On ajoute l'option `--host=0.0.0.0` pour que ce soit l'application déployée sur le _localhost_ (notre application `Flask`) qui soit mis à disposition de l'utilisateur final. 
 
-[^4]: Dans l'idéal, on essaie de partir d'une couche la plus petite possible
+::: {.callout-tip collapse="true"}
+## Choisir l'image de base
+
+Dans l'idéal, on essaie de partir d'une couche la plus petite possible
 pour limiter la taille de l'image finalement obtenue. Il n'est en effet
-pas nécessaire d'utiliser une image disposant de `R` si on n'utilise que
-du `Python`. En général, les différents langages proposent des images de petite taille dans lequel un interpréteur est déjà installé et proprement configuré. Dans cette application, on aurait par exemple pu utiliser l'image [python:3.9-slim-buster](https://hub.docker.com/layers/python/library/python/3.9-slim-buster/images/sha256-e07b35c0c81c21995a43cefd64730ac0e57a5164cc440b6a5c94c118cfacd0ca?context=explore).
+pas nécessaire d'utiliser une image disposant de {{< fa brands r-project >}} si on n'utilise que
+du {{< fa brands python >}}.
 
-
-::: {.callout-tip}
-Avec la première commande `RUN` du `Dockerfile`, nous installons `Python` mais aussi des librairies système nécessaires au bon fonctionnement de l'application. Mais comment les avons-nous trouvées ?
-
-Par essai et erreur. Lors de l'étape de [build](#build) que l'on verra juste après, le moteur `Docker` va essayer de construire l'image selon les spécifications du `Dockerfile`, comme s'il partait d'un ordinateur vide contenant simplement `Ubuntu 20.04`. Si des librairies manquent, le processus de *build* devrait renvoyer une erreur, qui s'affichera dans les *logs* de l'application, affichés par défaut dans la console. Quand on a de la chance, les logs décrivent explicitement les librairies système manquantes. Mais souvent, les messages d'erreur ne sont pas très explicites, et il faut alors les copier dans un moteur de recherche bien connu pour trouver la réponse, souvent sur [Stackoverflow](https://stackoverflow.com/).
+En général, les différents langages proposent des images de petite taille dans lequel un interpréteur est déjà installé et proprement configuré. Dans cette application, on aurait par exemple pu utiliser l'image [`python:3.9-slim-buster`](https://hub.docker.com/layers/python/library/python/3.9-slim-buster/images/sha256-e07b35c0c81c21995a43cefd64730ac0e57a5164cc440b6a5c94c118cfacd0ca?context=explore).
 :::
 
 
-::: {.callout-tip}
+Avec la première commande `RUN` du `Dockerfile`, nous installons `Python` mais aussi des librairies système nécessaires au bon fonctionnement de l'application. Mais comment les avons-nous trouvées ?
+
+Par essai et erreur. Lors de l'étape de [build](#build) que l'on verra juste après, le moteur `Docker` va essayer de construire l'image selon les spécifications du `Dockerfile`, comme s'il partait d'un ordinateur vide contenant simplement `Ubuntu 20.04`. Si des librairies manquent, le processus de *build* devrait renvoyer une erreur, qui s'affichera dans les *logs* de l'application, affichés par défaut dans la console. Quand on a de la chance, les _logs_ décrivent explicitement les librairies système manquantes. Mais souvent, les messages d'erreur ne sont pas très explicites, et il faut alors les copier dans un moteur de recherche bien connu pour trouver la réponse, souvent sur [StackOverflow](https://stackoverflow.com/).
+
+Il est recommandé, avant d'essayer de créer une image `Docker`, de passer par l'étape intermédiaire dans la démarche de reproductibilité qu'est la création d'un script shell (`.sh`). Cette approche graduelle est illustrée dans [l'application fil rouge](/chapters/application.qmd). 
+
+
+::: {.callout-note collapse="true"}
+## L'instruction `COPY`
 La recette présente dans le `Dockerfile` peut nécessiter l'utilisation de
 fichiers appartenant au dossier de travail. Pour que `Docker` les trouve
 dans son contexte, il est nécessaire d'introduire une
@@ -909,21 +983,29 @@ un produit dans une recette, il faut le sortir du frigo (fichier local)
 et le mettre sur la table. 
 :::
 
-::: {.callout-note}
-Nous n'avons vu que les commandes `Docker` les plus fréquentes, il en existe beaucoup d'autres en pratique. N'hésitez pas à consulter la [documentation officielle](https://docs.docker.com/engine/reference/builder/) pour comprendre leur utilisation.
-:::
+
+Nous n'avons ici vu que les commandes `Docker` les plus fréquentes, il en existe beaucoup d'autres en pratique. N'hésitez pas à consulter la [documentation officielle](https://docs.docker.com/engine/reference/builder/) pour comprendre leur utilisation.
 
 
-#### Construction d'une image Docker {#build}
 
-Pour construire une image à partir d'un `Dockerfile`, il suffit d'utiliser la commande `docker build`. Il faut ensuite spécifier deux éléments importnats :
-- le *build context*. Il faut indiquer à `Docker` le chemin de notre projet, qui doit contenir le `Dockerfile`. En pratique, il est plus simple de se mettre dans le dossier du projet via la commande `cd`, puis de passer `.` comme *build context* pour indiquer à `Docker` de *build* "d'ici" ;
-- le *tag*, c'est à dire le nom de l'image. Tant que l'on utilisee `Docker` en local, le *tag* importe peu. On verra par la suite que la structure du *tag* a de l'importance lorsque l'on souhaite [exporter](#imp-docker) ou [importer](#exp-docker) une image `Docker` à partir d'un dépôt distant.
+## Construction d'une image Docker {#build}
 
-Regardons ce qui se passe en pratique lorsque l'on essaie de construire notre image.
+Pour construire une image à partir d'un `Dockerfile`, il suffit d'utiliser la commande `docker build` depuis la ligne de commande[^windows]. Il faut ensuite spécifier deux éléments importants :
 
-```bash
+- le __*build context*__. Il faut indiquer à `Docker` le chemin de notre projet, qui doit contenir le `Dockerfile`. En pratique, il est plus simple de se mettre dans le dossier du projet via la commande `cd`, puis de passer `.` comme *build context* pour indiquer à `Docker` de *build* "d'ici" ;
+- le __*tag*__, c'est à dire le nom de l'image. Tant que l'on utilise `Docker` en local, le *tag* importe peu. On verra par la suite que la structure du *tag* a de l'importance lorsque l'on souhaite [exporter](#imp-docker) ou [importer](#exp-docker) une image `Docker` à partir d'un dépôt distant.
+
+[^windows]: Si vous êtes sur Windows, les lignes de commande disponibles par défaut (`cmd` ou `Powershell`) sont peu pratiques. Il est recommandé d'utiliser la ligne de commande de `Git Bash` (une émulation minimaliste d'une ligne de commande `Linux`) qui vous permettra de faire des opérations en ligne de commande.  
+
+Regardons ce qui se passe en pratique lorsque l'on essaie de construire notre image. Le tag de celle-ci est `myflaskapp`:
+
+```{python}
+#| eval: false
 $ docker build -t myflaskapp .
+```
+
+```{python}
+#| eval: false
 Sending build context to Docker daemon     47MB
 Step 1/8 : FROM ubuntu:20.04
  ---> 825d55fb6340
@@ -943,23 +1025,40 @@ Successfully built 125bd8da70ff
 Successfully tagged myflaskapp:latest
 ```
 
-Le moteur `Docker` essaie de construire notre image séquentiellement à partir des commandes spécifiées dans le `Dockerfile`. S'il rencontre une erreur, la procédure s'arrête, et il faut alors trouver la source du problème dans les *logs* et adapter le `Dockerfile` en conséquence. Si tout se passe bien, `Docker` nous indique que le *build* a réussi et l'image est prête à être utilisée. On peut vérifier que l'image est bien disponible à l'aide de la commande `docker images`.
 
-```bash
+
+Le moteur `Docker` essaie de construire notre image séquentiellement à partir des commandes spécifiées dans le `Dockerfile`. S'il rencontre une erreur, la procédure s'arrête, et il faut alors trouver la source du problème dans les *logs* et adapter le `Dockerfile` en conséquence. 
+
+Si tout se passe bien, `Docker` nous indique que le *build* a réussi et l'image est prête à être utilisée. On peut vérifier que l'image est bien disponible à l'aide de la commande `docker images`.
+
+```{python}
+#| eval: false
+
 $ docker images
 REPOSITORY                               TAG       IMAGE ID       CREATED          SIZE
 myflaskapp                               latest    57d2f410a631   2 hours ago      433MB
 ```
 
-Intéressons nous un peu plus en détail aux *logs* de l'étape de *build*. Entre les étapes, `Docker` affiche des suites de lettres et de chiffres un peu ésotériques, et nous parle de conteneurs intermédiaires. En fait, il faut voir une image `Docker` comme un empilement de couches (*layers*), qui sont elles-mêmes des images `Docker`. Quand on hérite d'une image avec l'instruction `FROM`, on spécifie donc à `Docker` la couche initiale, sur laquelle il va construire le reste de notre environnement. A chaque étape sa nouvelle couche, et à chaque couche son *hash*, un identifiant unique fait de lettres et de chiffres.
+Intéressons nous un peu plus en détail aux *logs* de l'étape de *build* 👆️. 
 
-Cela peut ressembler à des détails techniques, mais c'est en fait extrêmement utile en pratique car cela permet à `Docker` de faire du *caching*. Lorsque l'on développe un `Dockerfile`, il est fréquent de devoir modifier ce dernier de nombreuses fois avant de trouver la bonne recette, et on aimerait bien ne pas avoir à *rebuild* l'environnement complet à chaque fois. `Docker` gère cela très bien : il *cache* chacune des couches intermédiaires. Par exemple, si l'on modifie la 5ème commande du `Dockerfile`, `Docker` va utiliser le cache pour ne pas avoir à recalculer les étapes précédentes, qui n'ont pas changé. Cela s'appelle l'_"invalidation du cache"_ :
+Entre les étapes, `Docker` affiche des suites de lettres et de chiffres un peu ésotériques, et nous parle de conteneurs intermédiaires. En fait, il faut voir une image `Docker` comme un empilement de couches (*layers*), qui sont elles-mêmes des images `Docker`. Quand on hérite d'une image avec l'instruction `FROM`, on spécifie donc à `Docker` la couche initiale, sur laquelle il va construire le reste de notre environnement. A chaque étape sa nouvelle couche, et à chaque couche son *hash*, un identifiant unique fait de lettres et de chiffres.
+
+Cela peut ressembler à des détails techniques, mais c'est en fait extrêmement utile en pratique car cela permet à `Docker` de faire du *caching*. Lorsqu'on développe un `Dockerfile`, il est fréquent de devoir modifier ce dernier de nombreuses fois avant de trouver la bonne recette, et on aimerait bien ne pas avoir à *rebuild* l'environnement complet à chaque fois. `Docker` gère cela très bien : il *cache* chacune des couches intermédiaires[^cacheCI]. 
+
+Par exemple, si l'on modifie la 5ème commande du `Dockerfile`, `Docker` va utiliser le cache pour ne pas avoir à recalculer les étapes précédentes, qui n'ont pas changé. Cela s'appelle l'_"invalidation du cache"_ :
 dès lors qu'une étape du `Dockerfile` est modifiée, `Docker` va recalculer toutes les étapes suivantes, mais seulement celles-ci. Conséquence directe de cette observation : il faut toujours ordonner les étapes d'un `Dockerfile` de sorte à ce qui est le plus susceptible d'être souvent modifié soit à la fin du fichier, et inversement.
+
+[^cacheCI]: Le _cache_ est très pratique pour une construction expérimentale en local. Malheureusement, lorsqu'on passe par des services d'intégration continue, l'utilisation du _cache_ est moins évidente car chaque `run` se fait sur une machine indépendante de la précédente. 
 
 Pour illustrer cela, regardons ce qui se passe si l'on modifie le nom du script qui lance l'application, et donc la valeur de la variable d'environnement `FLASK_APP` dans le `Dockerfile`.
 
-```bash
+```{python}
+#| eval: false
 $ docker build . -t myflaskapp
+```
+
+```{python}
+#| eval: false
 Sending build context to Docker daemon  4.096kB
 Step 1/10 : FROM ubuntu:20.04
  ---> 825d55fb6340
@@ -998,11 +1097,14 @@ Successfully tagged myflaskapp:latest
 
 L'étape de *build* a pris quelques secondes au lieu de plusieurs minutes, et les *logs* montrent bien l'utilisation du cache faite par `Docker` : les étapes précédant le changement réutilisent les couches cachées, mais celle d'après sont recalculées.
 
-#### Exécuter une image `Docker` {#execution}
+## Exécuter (_run_) une image `Docker` {#execution}
 
-L'étape de *build* a permis de créer une *image* `Docker`. Une image doit être vue comme un *template* : elle permet d'exécuter l'application sur n'importe quel environnement d'exécution sur lequel un moteur `Docker` est installé. En l'état, on a donc juste *construit*, mais rien *lancé* : notre application ne tourne pas encore. Pour cela, il faut créer un *conteneur*, i.e. une instance vivante de l'image qui permet d'accéder à l'application. Cela se fait via la commande `docker run`.
+L'étape de *build* a permis de créer une *image* `Docker`. Une image doit être vue comme un *template* : elle permet d'exécuter l'application sur n'importe quel environnement d'exécution sur lequel un moteur `Docker` est installé. 
 
-```bash
+En l'état, on a donc juste *construit*, mais rien *lancé* : notre application ne tourne pas encore. Pour cela, il faut créer un *conteneur*, i.e. une instance vivante de l'image qui permet d'accéder à l'application. Cela se fait via la commande `docker run`.
+
+```{python}
+#| eval: false
 $ docker run -d -p 8000:5000 myflaskapp:latest
 6a2ab0d82d051a3829b182ede7b9152f7b692117d63fa013e7dfe6232f1b9e81
 ```
@@ -1015,7 +1117,9 @@ Détaillons la syntaxe de cette commande :
 
 Lorsque l'on exécute `docker run`, `Docker` nous répond simplement un *hash* qui identifie le conteneur que l'on a lancé. On peut vérifier qu'il tourne bien avec la commande `docker ps`, qui renvoie toutes les informations associées au conteneur.
 
-```bash
+```{python}
+#| eval: false
+
 $ docker ps
 CONTAINER ID   IMAGE        COMMAND                  CREATED         STATUS         PORTS                                   NAMES
 6a2ab0d82d05   myflaskapp   "flask run --host=0.…"   7 seconds ago   Up 6 seconds   0.0.0.0:8000->5000/tcp, :::8000->5000/tcp   vigorous_kalam
@@ -1026,22 +1130,26 @@ Les conteneurs peuvent être utilisés pour réaliser des tâches très différe
 - le conteneur effectue une tâche "one-shot", c'est à dire une opération qui a vocation à s'effectuer en un certain temps, suite à quoi le conteneur peut s'arrêter ;
 - le conteneur exécute une application. Dans ce cas, on souhaite que le conteneur reste en vie aussi longtemps que l'on souhaite utiliser l'application en question.
 
-Dans notre cas d'application, on se situe dans la seconde configuration puisque l'on veut exécuter une application web. Lorsque l'application tourne, elle expose sur le *localhost*, accessible depuis un navigateur web — en l'occurence, à l'adresse [localhost:8000/](localhost:8000/). Les calculs sont effectués sur un serveur local, et le navigateur sert d'interface avec l'utilisateur — comme lorsque vous utilisez un notebook `Jupyter` par exemple. 
+Dans notre cas d'application, on se situe dans la seconde configuration puisque l'on veut exécuter une application web. Lorsque l'application tourne, elle expose sur le *localhost*, accessible depuis un navigateur web — en l'occurence, à l'adresse [localhost:5000/](localhost:5000/). Les calculs sont effectués sur un serveur local, et le navigateur sert d'interface avec l'utilisateur — comme lorsque vous utilisez un _notebook_ `Jupyter` par exemple. 
 
 Finalement, on a pu développer et exécuter une application complète sur notre environnement local, sans avoir eu à installer quoi que ce soit sur notre machine personnelle, à part `Docker.`
 
-#### Exporter une image `Docker` {#exp-docker}
+## Exporter une image `Docker` {#exp-docker}
 
-Jusqu'à maintenant, toutes les commandes `Docker` que nous avons exécutées se sont passées en local. Ce mode de fonctionnement peut être intéressant pour la phase de développement. Mais comme on l'a vu, un des gros avantages de `Docker` est la facilité de redistribution des images construites, qui peuvent ensuite être utilisées par de nombreux utilisateurs pour faire tourner notre application. Pour cela, il nous faut uploader notre image sur un dépôt distant, à partir duquel les utilisateurs pourront la télécharger.
+Jusqu'à maintenant, toutes les commandes `Docker` que nous avons exécutées se sont passées en local. Ce mode de fonctionnement peut être intéressant pour la phase de développement et d'expérimentation. Mais comme on l'a vu, un des gros avantages de `Docker` est la facilité de redistribution des images construites, qui peuvent ensuite être utilisées par de nombreux utilisateurs pour faire tourner notre application. Pour cela, il nous faut _uploader_ notre image sur un dépôt distant, à partir duquel les utilisateurs pourront la télécharger.
 
-Plusieurs possibilités existent selon le contexte de travail : une entreprise peut avoir un dépôt interne par exemple. Si le projet est open-source, on peut utiliser le [DockerHub](https://hub.docker.com/). Le *workflow* pour uploader une image est le suivant :
-- créer un compte sur le DockerHub ;
-- créer un projet (public) sur le DockerHub, qui va héberger les images `Docker` du projet ;
+Plusieurs possibilités existent selon le contexte de travail : une entreprise peut avoir un dépôt interne par exemple. Si le projet est _open source_, on peut utiliser le [DockerHub](https://hub.docker.com/). 
+
+Le *workflow* pour uploader une image est le suivant :
+
+- créer un compte sur `DockerHub` ;
+- créer un projet (public) sur `DockerHub`, qui va héberger les images `Docker` du projet ;
 - sur un terminal, utiliser `docker login` pour s'authentifier au `DockerHub` ;
 - on va modifier le *tag* que l'on fournit lors du *build* pour spécifier le chemin attendu. Dans notre cas : `docker build -t compte/projet:version .` ;
 - uploader l'image avec `docker push compte/projet:version`
 
-```bash
+```{python}
+#| eval: false
 $ docker push avouacr/myflaskapp:1.0.0
 The push refers to repository [docker.io/avouacr/myflaskapp]
 71db96687fe6: Pushed 
@@ -1053,11 +1161,12 @@ c5ec52c98b31: Pushed
 1.0.0: digest: sha256:b75fe53fd1990c3092ec41ab0966a9fbbb762f3047957d99327cc16e27c68cc9 size: 1574
 ```
 
-#### Importer une image `Docker` {#imp-docker}
+## Importer une image `Docker` {#imp-docker}
 
 En supposant que le dépôt utilisé pour uploader l'image est public, la procédure que doit suivre un utilisateur pour la télécharger se résume à utiliser la commande `docker pull compte/projet:version`
 
-```bash
+```{python}
+#| eval: false
 $ docker pull avouacr/myflaskapp:1.0.0
 1.0.0: Pulling from avouacr/myflaskapp
 e0b25ef51634: Pull complete 
@@ -1073,7 +1182,7 @@ docker.io/avouacr/myflaskapp:1.0.0
 
 `Docker` télécharge et extrait chacune des couches qui constituent l'image (ce qui peut parfois être long). L'utilisateur peut alors créer un conteneur à partir de l'image, en utilisant `docker run` comme illustré précédemment.
 
-### Aide-mémoire
+## Aide-mémoire
 
 Voici une première aide-mémoire sur les principales commandes à intégrer dans 
 un `Dockerfile`:
