@@ -1008,10 +1008,10 @@ Mettre à disposition son image <code>Docker</code>
 <h2 class="anchored" data-anchor-id="application">Application</h2>
 <p>Afin de présenter l’utilisation de <code>Docker</code> en pratique, nous allons présenter les différentes étapes permettant de <em>“dockeriser”</em> une application web minimaliste construite avec le <em>framework</em> <code>Python</code> <a href="https://flask.palletsprojects.com/en/2.1.x/"><code>Flask</code></a><a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a>.</p>
 <p>La structure de notre projet est la suivante.</p>
-<div class="sourceCode" id="cb38" data-no-prefix="true" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="ex">├──</span> myflaskapp</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span>   ├── Dockerfile</span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span>   ├── hello-world.py</span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span>   └── requirements.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>├── myflaskapp
+│   ├── Dockerfile
+│   ├── hello-world.py
+│   └── requirements.txt</code></pre>
 <p>Le script <code>hello-world.py</code> contient le code d’une application minimaliste, qui affiche simplement <em>“Hello, World!”</em> sur une page web. Nous verrons dans l’<a href="../chapters/application.html">application fil rouge</a> comment construire une application interactive plus complète.</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -1172,7 +1172,7 @@ L’instruction <code>COPY</code>
 <p>Par exemple, si l’on modifie la 5ème commande du <code>Dockerfile</code>, <code>Docker</code> va utiliser le cache pour ne pas avoir à recalculer les étapes précédentes, qui n’ont pas changé. Cela s’appelle l’<em>“invalidation du cache”</em> : dès lors qu’une étape du <code>Dockerfile</code> est modifiée, <code>Docker</code> va recalculer toutes les étapes suivantes, mais seulement celles-ci. Conséquence directe de cette observation : il faut toujours ordonner les étapes d’un <code>Dockerfile</code> de sorte à ce qui est le plus susceptible d’être souvent modifié soit à la fin du fichier, et inversement.</p>
 <p>Pour illustrer cela, regardons ce qui se passe si l’on modifie le nom du script qui lance l’application, et donc la valeur de la variable d’environnement <code>FLASK_APP</code> dans le <code>Dockerfile</code>.</p>
 <div class="sourceCode" id="cb45" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker build . <span class="at">-t</span> myflaskapp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div id="bbed0d7b" class="cell" data-execution_count="1">
+<div id="545f0720" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>Sending build context to Docker daemon  <span class="fl">4.096</span><span class="er">kB</span></span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">1</span><span class="op">/</span><span class="dv">10</span> : FROM ubuntu:<span class="fl">20.04</span></span>
 <span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> <span class="dv">825</span><span class="er">d55fb6340</span></span>
