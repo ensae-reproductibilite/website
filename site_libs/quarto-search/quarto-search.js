@@ -98,7 +98,6 @@ window.document.addEventListener("DOMContentLoaded", function (_event) {
     classNames: {
       form: "d-flex",
     },
-    placeholder: language["search-text-placeholder"],
     translations: {
       clearButtonTitle: language["search-clear-button-title"],
       detachedCancelButtonText: language["search-detached-cancel-button-title"],
@@ -393,12 +392,7 @@ window.document.addEventListener("DOMContentLoaded", function (_event) {
       return focusedEl.tagName.toLowerCase() === tag;
     });
 
-    if (
-      kbds &&
-      kbds.includes(key) &&
-      !isFormElFocused &&
-      !document.activeElement.isContentEditable
-    ) {
+    if (kbds && kbds.includes(key) && !isFormElFocused) {
       event.preventDefault();
       window.quartoOpenSearch();
     }
