@@ -22,7 +22,7 @@ pour afficher les slides en plein écran.
 
 # Introduction : la notion de portabilité
 
-Dans les chapitres précédents, nous avons vu un ensemble de bonnes pratiques qui permettent de considérablement améliorer la qualité d'un projet : rendre le code plus lisible, adopter une structure du projet normalisée et évolutive et versionner proprement son code sur un dépôt `GitHub`.
+Dans les chapitres précédents, nous avons vu un ensemble de bonnes pratiques qui permettent de considérablement améliorer la qualité d'un projet : rendre le code plus lisible, adopter une structure du projet normalisée et évolutive et versionner proprement son code sur un dépôt `GitHub` {{< fa brands github >}}.
 
 Une fois ces bonnes pratiques appliquées à notre projet, ce dernier apparaît largement partageable. Du moins en théorie, car la pratique est souvent plus compliquée : il y a fort à parier que si vous essayez d'exécuter votre projet sur un autre environnement d'exécution (un autre ordinateur, un serveur, etc.), les choses ne se passent pas du tout comme attendu. Cela signifie que qu'**en l'état, le projet n'est pas [portable]{.colorized} : il n'est pas possible, sans modifications coûteuses, de l'exécuter dans un environnement différent de celui dans lequel il a été développé**.
 
@@ -43,15 +43,14 @@ Les deux autres nécessitent en général des outils plus avancés.
 Nous allons progresser dans la démarche de reproductibilité en visant un projet
 portable, c'est-à-dire qui peut être 
 exécuté dans un environnement différent de celui dans lequel il a été développé. 
-
 Nous allons avoir besoin de nouveaux outils qui 
 seront, chacun, des avancées sur l'échelle de la 
 reproductibilité:
 
-* Les environnements virtuels ;
-* Les conteneurs
+* Les [environnements virtuels](#virtualenv) ;
+* Les [conteneurs](#conteneurs).
 
-Ces outils vont nous permettre de **normaliser l'environnement afin de produire un projet portable**, Cette étape est primordiale lorsque l'on se préoccupe de la mise en production d'un projet, car elle assure une transition relativement indolore entre l'environnement de développement et celui de production.
+Ces outils vont nous permettre de **normaliser l'environnement afin de produire un projet portable**. Cette étape est primordiale lorsque l'on se préoccupe de la mise en production d'un projet, car elle assure une transition relativement indolore entre l'environnement de développement et celui de production.
 
 ![Image empruntée à [devrant.com](https://devrant.com/rants/174386/when-i-say-but-it-works-on-my-machine)](https://img.devrant.com/devrant/rant/r_174386_yx6zV.jpg){fig-align="center"}
 
@@ -64,7 +63,7 @@ et que la conteneurisation s'avère adéquate, celle-ci
 sera peu coûteuse à mettre en oeuvre.  
 
 
-# Les environnements virtuels 🐍
+# Les environnements virtuels {{< fa brands python >}} {#virtualenv}
 
 ## Introduction
 
@@ -144,7 +143,7 @@ La qualité supérieure des outils {{< fa brands r-project >}} pour la gestion d
 
 > R version: renv tracks, but doesn’t help with, the version of R used with the packge. renv can’t easily help with this because it’s run inside of R, but you might find tools like rig helpful, as they make it easier to switch between multiple version of R on one computer.
 
-C'est, en fait, le problème principal des outils {{< fa brands r-project >}} pour la reproductibilité. Pour les utiliser, il faut souvent se trouver dans une session {{< fa brands r-project >}}, avec ses spécificités. Les outils {{< fa brands python >}} qui s'utilisent pas le biais de la ligne de commande offrent une robstusse plus importante. 
+C'est, en fait, le problème principal des outils {{< fa brands r-project >}} pour la reproductibilité. Pour les utiliser, il faut souvent se trouver dans une session {{< fa brands r-project >}}, avec ses spécificités. Les outils {{< fa brands python >}} qui s'utilisent pas le biais de la ligne de commande offrent une robustesse plus importante. 
 :::
 
 Puisqu'il n'y a pas de raison absolue d'imposer `pip+venv` ou `conda`, nous recommandons le pragmatisme. Personnellement, nous utilisons plutôt `venv` car nous travaillons principalement dans des microservices basés sur des conteneurs et non sur des postes personnels, ce qui est l'approche moderne dans le monde de la _data science_. Nous présentons néanmoins les deux approches par la suite. L'[application fil rouge](/chapters/application.qmd) propose les deux approches, à vous de choisir celle que vous désirez privilégier. 
@@ -158,7 +157,9 @@ Puisqu'il n'y a pas de raison absolue d'imposer `pip+venv` ou `conda`, nous reco
 
 ## `venv`
 
-Les instructions pour installer et utiliser `venv`, l'outil de création d'environnements virtuels intégré à Python, sont détaillées dans la [documentation officielle de Python](https://docs.python.org/fr/3/library/venv.html). `venv` est un module inclus par défaut dans `Python`, ce qui le rend facilement accessible pour la gestion d'environnements virtuels.
+`venv` est un module inclus par défaut dans `Python`, ce qui le rend facilement accessible pour la gestion d'environnements virtuels.
+
+Les instructions pour utiliser `venv`, l'outil de création d'environnements virtuels intégré à Python, sont détaillées dans la [documentation officielle de Python](https://docs.python.org/fr/3/library/venv.html).
 
 ![Illustration du principe (Source: [dataquest](https://www.dataquest.io/blog/a-complete-guide-to-python-virtual-environments/))](https://www.dataquest.io/wp-content/uploads/2022/01/python-virtual-envs1-1024x576.webp)
 
@@ -186,11 +187,13 @@ un environnement virtuel, cela se fait en ligne de commande par le biais de
 `Python`. Cela signifie que la version de `Python` utilisée
 par cet environnement sera celle utilisée lors de la création de celui-ci. 
 
-```{python}
-#| eval: false
-$ python -m venv dev #<1>
+::: {.bash}
+```{.bash}
+python -m venv dev #<1>
 ```
 1. Sur un système `Windows`, ce sera `python.exe -m venv dev` 
+
+:::
 
 Cette commande crée un dossier nommé `dev/` contenant une installation Python isolée.
 
@@ -205,9 +208,8 @@ Celle-ci est de la version de `Python` enregistrée par défaut dans le `PATH`, 
 `Python 3.11`. Pour créer un environnement virtuel avec une autre version de `Python`, il faudra
 définir le chemin de manière formelle, par exemple:
 
-```{python}
-#| eval: false
-$ /chemin_local/python3.8 -m venv dev-old #<1>
+```{.bash}
+/chemin_local/python3.8 -m venv dev-old #<1>
 ```
 
 
@@ -216,8 +218,11 @@ $ /chemin_local/python3.8 -m venv dev-old #<1>
 
 Pour commencer à utiliser `conda`, commençons par créer un environnement vierge, nommé `dev`, en spécifiant la version de Python que l'on souhaite installer pour notre projet.
 
-```bash
-$ conda create -n dev python=3.9.7
+```{.bash filename="terminal"}
+conda create -n dev python=3.9.7
+```
+
+```{.python}
 Retrieving notices: ...working... done
 Channels:
  - conda-forge
@@ -242,20 +247,21 @@ Downloading and Extracting Packages
 ...
 ```
 
+
 Comme indiqué dans les _logs_,
 `Conda` a créé notre environnement et nous indique son emplacement sur le *filesystem*.
 En réalité, l'environnement n'est jamais vraiment vierge :
-`Conda` nous demande — et il faut répondre oui en tapant _"y"_ — 
+`Conda` nous demande — et il faut répondre oui en tapant `y` — 
 d'installer un certain nombre de packages,
 qui sont ceux qui viennent avec la distribution `Miniconda`.
 
 On peut vérifier que l'environnement a bien été créé en listant les environnements installés sur le système.
 
-```bash
-$ conda info --envs
+```{.bash}
+conda info --envs
 ```
 
-```
+```{.python}
 # conda environments:                                                                                                                             
 #                                                                                                                                                 
 base                  *  /opt/mamba                                                                                                               
@@ -268,30 +274,36 @@ dev                      /opt/mamba/envs/dev
 ### Activer un environnement
 
 Comme plusieurs environnements peuvent coexister sur un même système,
-il faut spécifier à notre gestionnaire d'environnement d'activer celui-ci.
+il faut dire à notre gestionnaire d'environnement d'activer celui-ci.
 Dès lors, ce sera celui-ci qui sera utilisé implicitement lorsqu'on
-utilisera `python`, `pip`, etc. en ligne de commande.  
+utilisera `python`, `pip`, etc. dans
+la ligne de commande active[^sourceactivate].
+
+[^sourceactivate]: Cela signifie que si on ouvre un nouveau terminal, il faudra à nouveau activer cet environnement si on désire l'utiliser. Si on désire activer par défaut un environnement, 
+il est possible de configurer le terminal pour qu'il active automatiquement un environnement spécifique lors de son ouverture. Cela peut être réalisé en modifiant les fichiers de configuration du shell, par le biais par exemple du script `.bashrc` sur `Linux`. 
 
 ::: {.panel-tabset group="language"}
 
 ## `venv`
 
-```bash
-$ source dev/bin/activate
+```{.bash}
+source dev/bin/activate
 ```
 
 `venv` active l'environnement virtuel `dev`, indiqué par le changement du nom de l'environnement qui apparaît au début de la ligne de commande dans le terminal. Une fois activé, `dev` devient temporairement notre environnement par défaut pour les opérations `Python`. Pour confirmer cela, nous pouvons utiliser la commande `which` pour déterminer l'emplacement de l'interpréteur Python qui sera utilisé pour exécuter des scripts comme `python mon-script.py`.
 
-```bash
-(dev) $ which python
+```{.bash env=dev}
+which python
+```
+
+```{.python}
 /home/onyxia/work/dev/bin/python
 ```
 
-
 ## `conda`
 
-```bash
-$ conda activate dev
+```{.bash}
+conda activate dev
 ```
 
 `Conda` nous indique que l'on travaille à partir de maintenant dans l'environnement `dev` en indiquant son nom entre parenthèses au début de la ligne de commandes. Autrement dit, `dev` devient pour un temps notre 
@@ -299,9 +311,12 @@ environnement par défaut.
 Pour s'en assurer,
 vérifions avec la commande `which` l'emplacement de l'interpréteur Python qui sera utilisé si on lance une commande du type `python mon-script.py`.
 
-```bash
-(dev) $ which python 
-/home/coder/local/bin/conda/envs/dev/bin/python
+```{.bash env=dev}
+which python 
+```
+
+```{.python}
+/opt/mamba/envs/dev/bin/python
 ```
 
 :::
@@ -320,9 +335,11 @@ Cela confirme qu'un certain nombre de packages sont installés par défaut lors 
 
 On part d'un environnement vraiment réduit à l'os:
 
-```python
-(dev) $ pip list
+```{.bash env=dev}
+pip list
+```
 
+```{.python}
 Package    Version
 ---------- -------
 pip        23.3.2
@@ -336,8 +353,11 @@ wheel      0.42.0
 L'environnement est assez minimaliste, quoique plus garni que lors
 de la création d'un environnement virtuel par `venv`
 
-```bash
-(dev) $ conda list
+```{.bash env="dev"}
+conda list
+```
+
+```{.python}
 # packages in environment at /opt/mamba/envs/dev:
 #
 # Name                    Version                   Build  Channel
@@ -352,8 +372,11 @@ ca-certificates           2023.11.17           hbcca054_0    conda-forge
 Pour se convaincre, on peut vérifier que `Numpy` 
 est bien absent de notre environnement:
 
-```python
-(dev) $ python -c "import numpy as np"
+```{.bash env="dev"}
+python -c "import numpy as np"
+```
+
+```{.python}
 Traceback (most recent call last):
   File "<string>", line 1, in <module>
 ModuleNotFoundError: No module named 'numpy'
@@ -390,13 +413,13 @@ c'est ce que vous faites, sans vous en rendre compte.
 
 ## `venv`
 
-```shell
+```{.bash env="dev"}
 pip install nom_du_package
 ```
 
 ## `conda` 
 
-```shell
+```{.bash env="dev"}
 conda install nom_du_package
 ```
 
@@ -417,11 +440,11 @@ récentes de leurs packages, comme sur  [PyPI](https://pypi.org/).
 
 ## `venv`
 
-```shell
-(dev) $ conda install scikit-learn
+```{.bash env="dev"}
+conda install scikit-learn
 ```
 
-```
+```{.python}
 pip install scikit-learn
 Collecting scikit-learn
   Obtaining dependency information for scikit-learn from https://files.pythonhosted.org/packages/5b/be/208f17ce87a5e55094b0e8ffd55b06919ab9b56e7e4ce2a64cd9095ec5d2/scikit_learn-1.4.0-1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata
@@ -434,11 +457,11 @@ Collecting numpy<2.0,>=1.19.5 (from scikit-learn)
 Les dépendances nécessaires (par exemple `Numpy` sont automatiquement installées).
 L'environnement s'enrichit donc:
 
-```python
-(dev) $ pip list
+```{.bash env="dev"}
+pip list
 ```
 
-```
+```{.python}
 Package       Version
 ------------- -------
 joblib        1.3.2
@@ -454,8 +477,8 @@ threadpoolctl 3.2.0
 ## `conda`
 
 
-```bash
-(dev) $ conda install scikit-learn
+```{.bash env="dev"}
+conda install scikit-learn
 ```
 
 <details>
@@ -463,7 +486,7 @@ threadpoolctl 3.2.0
 Voir la sortie
 </summary>
 
-```
+```{.python}
 Channels:
  - conda-forge
 Platform: linux-64
@@ -590,8 +613,8 @@ dans un fichier spécial qui peut permettre de créer un nouvel environnement si
 
 ## `venv`
 
-```bash
-(dev) $ pip freeze > requirements.txt
+```{.bash env="dev"}
+pip freeze > requirements.txt
 ```
 
 <details>
@@ -599,18 +622,20 @@ dans un fichier spécial qui peut permettre de créer un nouvel environnement si
 Voir le fichier `requirements.txt` généré
 </summary>
 
+```{.python filename="requirements.txt"}
 joblib==1.3.2
 numpy==1.26.3
 scikit-learn==1.4.0
 scipy==1.12.0
 threadpoolctl==3.2.0
+```
 
 </details>
 
 ## `conda`
 
-```bash
-(dev) $ conda env export > environment.yml
+```{.bash env="dev"}
+conda env export > environment.yml
 ```
 
 <details>
@@ -618,10 +643,7 @@ threadpoolctl==3.2.0
 Voir le fichier `environment.yml` généré
 </summary>
 
-```{python}
-#| eval: false
-#| filename: "environment.yml"
-#| file: "environment.yml"
+```{.python filename="environment.yml"}
 name: dev
 channels:
   - conda-forge
@@ -679,17 +701,22 @@ Ainsi, les personnes souhaitant tester l'application peuvent recréer le même e
 On refait la démarche précédente de création d'un 
 environnement vierge puis un `pip install -r requirements.txt`
 
-```bash
-$ python -m venv newenv
-$ source newenv/bin/activate
-(newenv) $ pip install -r requirements.txt
+```{.bash}
+python -m venv newenv
+source newenv/bin/activate
 ```
+
+```{.bash env="newenv"}
+pip install -r requirements.txt
+```
+
 
 
 ## `conda` 
 
+Cela se fait en une seule commande:
 
-```bash
+```{.bash}
 $ conda env create -f environment.yml
 ```
 
@@ -704,7 +731,7 @@ $ conda env create -f environment.yml
 
 Pour changer d'environnement virtuel, il suffit d'en activer un autre.
 
-```bash
+```{.bash no-prefix="true"}
 (myenv) $ deactivate
 $ source anotherenv/bin/activate
 (anotherenv) $ which python
@@ -713,7 +740,7 @@ $ source anotherenv/bin/activate
 
 Pour quitter l'environnement virtuel actif, on utilise simplement la commande `deactivate` :
 
-```bash
+```{.bash no-prefix="true"}
 (anotherenv) $ deactivate
 $ 
 ```
@@ -723,7 +750,7 @@ $
 
 Pour changer d'environnement, il suffit d'en activer un autre.
 
-```bash
+```{.bash no-prefix="true"}
 (dev) $ conda activate base
 (base) $ which python
 /opt/mamba/bin/python
@@ -731,7 +758,7 @@ Pour changer d'environnement, il suffit d'en activer un autre.
 
 Pour sortir de tout environnement conda, on utilise la commande `conda deactivate` :
 
-```bash
+```{.bash no-prefix="true"}
 (base) $ conda deactivate
 $ 
 ```
@@ -869,7 +896,7 @@ des applications reposant sur
 
 La structure de notre projet est la suivante.
 
-```bash
+```{.bash no-prefix=true}
 ├── myflaskapp
 │   ├── Dockerfile
 │   ├── hello-world.py
@@ -877,12 +904,10 @@ La structure de notre projet est la suivante.
 ```
 
 
-Le script `hello-world.py` contient le code d'une application minimaliste, qui affiche simplement _"Hello, World!"_ sur une page web.
+Le script `hello-world.py` contient le code d'une application minimaliste, qui affiche simplement _"Hello, World!"_ sur une page web. Nous verrons
+dans l'[application fil rouge](/chapters/application.qmd) comment construire une application interactive plus complète.  
 
-```{python}
-#| eval: false
-#| file: "hello-world.py"
-#| filename: "hello-world.py"
+```{.python filename="hello-world.py"}
 from flask import Flask
 
 app = Flask(__name__)
@@ -902,10 +927,7 @@ Il est donc nécessaire de contrôler l'environnement virtuel autour de `Python`
 Si la version de `Python` utilisée par notre application nous importe peu, il est plus simple d'adopter un environnement virtuel `venv` que `conda`. Nous allons donc proposer d'utiliser ceci ce qui tombe bien car nous avons déjà notre `requirements.txt` qui
 prend la forme suivante:
 
-```{python}
-#| eval: false
-#| file: "requirements.txt"
-#| filename: "requirements.txt"
+```{.python filename="requirements.txt"}
 Flask==2.1.1
 ```
 
@@ -922,11 +944,7 @@ L'idée est de partir d'une couche de base (une distribution Linux minimaliste) 
 
 Pour illustrer cela, analysons ligne à ligne le `Dockerfile` nécessaire pour construire une image `Docker` de notre application `Flask.`
 
-```{python}
-#| eval: false
-#| file: "Dockerfile"
-#| filename: "Dockerfile"
-
+```{.python filename="Dockerfile"}
 FROM ubuntu:20.04 #<1>
 
 RUN apt-get update -y && \ 
@@ -999,13 +1017,11 @@ Pour construire une image à partir d'un `Dockerfile`, il suffit d'utiliser la c
 
 Regardons ce qui se passe en pratique lorsque l'on essaie de construire notre image. Le tag de celle-ci est `myflaskapp`:
 
-```{python}
-#| eval: false
-$ docker build -t myflaskapp .
+```{.bash}
+docker build -t myflaskapp .
 ```
 
-```{python}
-#| eval: false
+```{.python}
 Sending build context to Docker daemon     47MB
 Step 1/8 : FROM ubuntu:20.04
  ---> 825d55fb6340
@@ -1031,10 +1047,11 @@ Le moteur `Docker` essaie de construire notre image séquentiellement à partir 
 
 Si tout se passe bien, `Docker` nous indique que le *build* a réussi et l'image est prête à être utilisée. On peut vérifier que l'image est bien disponible à l'aide de la commande `docker images`.
 
-```{python}
-#| eval: false
+```{.bash}
+docker images
+```
 
-$ docker images
+```{.python}
 REPOSITORY                               TAG       IMAGE ID       CREATED          SIZE
 myflaskapp                               latest    57d2f410a631   2 hours ago      433MB
 ```
@@ -1052,9 +1069,8 @@ dès lors qu'une étape du `Dockerfile` est modifiée, `Docker` va recalculer to
 
 Pour illustrer cela, regardons ce qui se passe si l'on modifie le nom du script qui lance l'application, et donc la valeur de la variable d'environnement `FLASK_APP` dans le `Dockerfile`.
 
-```{python}
-#| eval: false
-$ docker build . -t myflaskapp
+```{.bash}
+docker build . -t myflaskapp
 ```
 
 ```{python}
@@ -1103,8 +1119,7 @@ L'étape de *build* a permis de créer une *image* `Docker`. Une image doit êtr
 
 En l'état, on a donc juste *construit*, mais rien *lancé* : notre application ne tourne pas encore. Pour cela, il faut créer un *conteneur*, i.e. une instance vivante de l'image qui permet d'accéder à l'application. Cela se fait via la commande `docker run`.
 
-```{python}
-#| eval: false
+```{.bash no-prefix=true}
 $ docker run -d -p 8000:5000 myflaskapp:latest
 6a2ab0d82d051a3829b182ede7b9152f7b692117d63fa013e7dfe6232f1b9e81
 ```
@@ -1117,10 +1132,11 @@ Détaillons la syntaxe de cette commande :
 
 Lorsque l'on exécute `docker run`, `Docker` nous répond simplement un *hash* qui identifie le conteneur que l'on a lancé. On peut vérifier qu'il tourne bien avec la commande `docker ps`, qui renvoie toutes les informations associées au conteneur.
 
-```{python}
-#| eval: false
+```{.bash}
+docker ps
+```
 
-$ docker ps
+```{.python}
 CONTAINER ID   IMAGE        COMMAND                  CREATED         STATUS         PORTS                                   NAMES
 6a2ab0d82d05   myflaskapp   "flask run --host=0.…"   7 seconds ago   Up 6 seconds   0.0.0.0:8000->5000/tcp, :::8000->5000/tcp   vigorous_kalam
 ```
@@ -1148,9 +1164,11 @@ Le *workflow* pour uploader une image est le suivant :
 - on va modifier le *tag* que l'on fournit lors du *build* pour spécifier le chemin attendu. Dans notre cas : `docker build -t compte/projet:version .` ;
 - uploader l'image avec `docker push compte/projet:version`
 
-```{python}
-#| eval: false
-$ docker push avouacr/myflaskapp:1.0.0
+```{.bash}
+docker push avouacr/myflaskapp:1.0.0
+```
+
+```{.python}
 The push refers to repository [docker.io/avouacr/myflaskapp]
 71db96687fe6: Pushed 
 624877ac887b: Pushed 
@@ -1165,9 +1183,11 @@ c5ec52c98b31: Pushed
 
 En supposant que le dépôt utilisé pour uploader l'image est public, la procédure que doit suivre un utilisateur pour la télécharger se résume à utiliser la commande `docker pull compte/projet:version`
 
-```{python}
-#| eval: false
-$ docker pull avouacr/myflaskapp:1.0.0
+```{.bash}
+docker pull avouacr/myflaskapp:1.0.0
+```
+
+```{.python}
 1.0.0: Pulling from avouacr/myflaskapp
 e0b25ef51634: Pull complete 
 c0445e4b247e: Pull complete 
