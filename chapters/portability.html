@@ -208,7 +208,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#introduction-la-notion-de-portabilité" id="toc-introduction-la-notion-de-portabilité" class="nav-link active" data-scroll-target="#introduction-la-notion-de-portabilité">Introduction : la notion de portabilité</a></li>
-  <li><a href="#les-environnements-virtuels" id="toc-les-environnements-virtuels" class="nav-link" data-scroll-target="#les-environnements-virtuels">Les environnements virtuels 🐍</a>
+  <li><a href="#virtualenv" id="toc-virtualenv" class="nav-link" data-scroll-target="#virtualenv">Les environnements virtuels <i class="fa-brands fa-python" aria-label="python"></i></a>
   <ul class="collapse">
   <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">Introduction</a></li>
   <li><a href="#fonctionnement" id="toc-fonctionnement" class="nav-link" data-scroll-target="#fonctionnement">Fonctionnement</a></li>
@@ -300,7 +300,7 @@ Dérouler les <em>slides</em> ci-dessous ou <a href="https://ensae-reproductibil
 </details>
 <section id="introduction-la-notion-de-portabilité" class="level1">
 <h1>Introduction : la notion de portabilité</h1>
-<p>Dans les chapitres précédents, nous avons vu un ensemble de bonnes pratiques qui permettent de considérablement améliorer la qualité d’un projet : rendre le code plus lisible, adopter une structure du projet normalisée et évolutive et versionner proprement son code sur un dépôt <code>GitHub</code>.</p>
+<p>Dans les chapitres précédents, nous avons vu un ensemble de bonnes pratiques qui permettent de considérablement améliorer la qualité d’un projet : rendre le code plus lisible, adopter une structure du projet normalisée et évolutive et versionner proprement son code sur un dépôt <code>GitHub</code> <i class="fa-brands fa-github" aria-label="github"></i>.</p>
 <p>Une fois ces bonnes pratiques appliquées à notre projet, ce dernier apparaît largement partageable. Du moins en théorie, car la pratique est souvent plus compliquée : il y a fort à parier que si vous essayez d’exécuter votre projet sur un autre environnement d’exécution (un autre ordinateur, un serveur, etc.), les choses ne se passent pas du tout comme attendu. Cela signifie que qu’<strong>en l’état, le projet n’est pas <span class="colorized">portable</span> : il n’est pas possible, sans modifications coûteuses, de l’exécuter dans un environnement différent de celui dans lequel il a été développé</strong>.</p>
 <p>La raison principale est qu’un code ne vit pas dans une bulle isolée, il contient en général de nombreuses adhérences, plus ou moins visibles, au langage et à l’environnement dans lesquels il a été développé :</p>
 <ul>
@@ -309,13 +309,12 @@ Dérouler les <em>slides</em> ci-dessous ou <a href="https://ensae-reproductibil
 <li>des <strong>dépendances à des librairies systèmes</strong> nécessaires pour installer certains <em>packages</em> qui ne seront pas les mêmes selon le système d’exploitation utilisé et certains paramètres matériels (par exemple, selon que Windows utilise une version 32 ou 64 bits). Par exemple, les librairies de manipulation ou de visualisation de données spatiales (<code>GeoPandas</code>, <code>Folium</code>) reposent sur des librairies systèmes <code>GDAL</code> qui sont propres à chaque système d’exploitation<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</li>
 </ul>
 <p>Le premier problème peut être géré relativement facilement en adoptant une structure de projet (<a href="../chapters/projects-architecture.html">chapitre précédent</a>) avec un fichier <code>requirements.txt</code> bien structuré et versionné. Les deux autres nécessitent en général des outils plus avancés.</p>
-<p>Nous allons progresser dans la démarche de reproductibilité en visant un projet portable, c’est-à-dire qui peut être exécuté dans un environnement différent de celui dans lequel il a été développé.</p>
-<p>Nous allons avoir besoin de nouveaux outils qui seront, chacun, des avancées sur l’échelle de la reproductibilité:</p>
+<p>Nous allons progresser dans la démarche de reproductibilité en visant un projet portable, c’est-à-dire qui peut être exécuté dans un environnement différent de celui dans lequel il a été développé. Nous allons avoir besoin de nouveaux outils qui seront, chacun, des avancées sur l’échelle de la reproductibilité:</p>
 <ul>
-<li>Les environnements virtuels ;</li>
-<li>Les conteneurs</li>
+<li>Les <a href="#virtualenv">environnements virtuels</a> ;</li>
+<li>Les <a href="#conteneurs">conteneurs</a>.</li>
 </ul>
-<p>Ces outils vont nous permettre de <strong>normaliser l’environnement afin de produire un projet portable</strong>, Cette étape est primordiale lorsque l’on se préoccupe de la mise en production d’un projet, car elle assure une transition relativement indolore entre l’environnement de développement et celui de production.</p>
+<p>Ces outils vont nous permettre de <strong>normaliser l’environnement afin de produire un projet portable</strong>. Cette étape est primordiale lorsque l’on se préoccupe de la mise en production d’un projet, car elle assure une transition relativement indolore entre l’environnement de développement et celui de production.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://img.devrant.com/devrant/rant/r_174386_yx6zV.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
@@ -324,8 +323,8 @@ Dérouler les <em>slides</em> ci-dessous ou <a href="https://ensae-reproductibil
 </div>
 <p>Le choix de la méthode à privilégier dépend d’un arbitrage temps-opportunité. Tous les projets n’ont pas vocation à être mis à disposition par le biais de conteneurs. Néanmoins, l’intérêt d’adopter une démarche de bonnes pratiques est que si le projet gagne en ambition et que la conteneurisation s’avère adéquate, celle-ci sera peu coûteuse à mettre en oeuvre.</p>
 </section>
-<section id="les-environnements-virtuels" class="level1">
-<h1>Les environnements virtuels 🐍</h1>
+<section id="virtualenv" class="level1">
+<h1>Les environnements virtuels <i class="fa-brands fa-python" aria-label="python"></i></h1>
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
 <p>Pour illustrer l’importance de travailler avec des environnements virtuels, mettons-nous à la place d’un.e aspirant.e <em>data scientist</em> qui commencerait ses premiers projets.</p>
@@ -392,7 +391,7 @@ C’est différent en <i class="fa-brands fa-r-project" aria-label="r-project"><
 <blockquote class="blockquote">
 <p>R version: renv tracks, but doesn’t help with, the version of R used with the packge. renv can’t easily help with this because it’s run inside of R, but you might find tools like rig helpful, as they make it easier to switch between multiple version of R on one computer.</p>
 </blockquote>
-<p>C’est, en fait, le problème principal des outils <i class="fa-brands fa-r-project" aria-label="r-project"></i> pour la reproductibilité. Pour les utiliser, il faut souvent se trouver dans une session <i class="fa-brands fa-r-project" aria-label="r-project"></i>, avec ses spécificités. Les outils <i class="fa-brands fa-python" aria-label="python"></i> qui s’utilisent pas le biais de la ligne de commande offrent une robstusse plus importante.</p>
+<p>C’est, en fait, le problème principal des outils <i class="fa-brands fa-r-project" aria-label="r-project"></i> pour la reproductibilité. Pour les utiliser, il faut souvent se trouver dans une session <i class="fa-brands fa-r-project" aria-label="r-project"></i>, avec ses spécificités. Les outils <i class="fa-brands fa-python" aria-label="python"></i> qui s’utilisent pas le biais de la ligne de commande offrent une robustesse plus importante.</p>
 </div>
 </div>
 </div>
@@ -406,7 +405,8 @@ C’est différent en <i class="fa-brands fa-r-project" aria-label="r-project"><
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true"><code>venv</code></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false"><code>conda</code></a></li></ul>
 <div class="tab-content" data-group="language">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
-<p>Les instructions pour installer et utiliser <code>venv</code>, l’outil de création d’environnements virtuels intégré à Python, sont détaillées dans la <a href="https://docs.python.org/fr/3/library/venv.html">documentation officielle de Python</a>. <code>venv</code> est un module inclus par défaut dans <code>Python</code>, ce qui le rend facilement accessible pour la gestion d’environnements virtuels.</p>
+<p><code>venv</code> est un module inclus par défaut dans <code>Python</code>, ce qui le rend facilement accessible pour la gestion d’environnements virtuels.</p>
+<p>Les instructions pour utiliser <code>venv</code>, l’outil de création d’environnements virtuels intégré à Python, sont détaillées dans la <a href="https://docs.python.org/fr/3/library/venv.html">documentation officielle de Python</a>.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="https://www.dataquest.io/wp-content/uploads/2022/01/python-virtual-envs1-1024x576.webp" class="img-fluid figure-img"></p>
@@ -433,16 +433,14 @@ C’est différent en <i class="fa-brands fa-r-project" aria-label="r-project"><
 <div class="tab-content" data-group="language">
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <p>Pour commencer à utiliser <code>venv</code>, commençons par créer un environnement vierge, nommé <code>dev</code>. Pour créer un environnement virtuel, cela se fait en ligne de commande par le biais de <code>Python</code>. Cela signifie que la version de <code>Python</code> utilisée par cet environnement sera celle utilisée lors de la création de celui-ci.</p>
-<div id="b502df1c" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="annotated-cell-15"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><a class="code-annotation-anchor" data-target-cell="annotated-cell-15" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-15-1" class="code-annotation-target"><a href="#annotated-cell-15-1" aria-hidden="true" tabindex="-1"></a>$ python <span class="op">-</span>m venv dev</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-annotation">
+<div class="bash">
+<div class="sourceCode" id="annotated-cell-21" data-filename="terminal"><pre class="sourceCode bash code-annotation-code code-with-copy code-annotated"><code class="sourceCode bash"><a class="code-annotation-anchor" data-target-cell="annotated-cell-21" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-21-1" class="code-annotation-target"><a href="#annotated-cell-21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> python <span class="at">-m</span> venv dev</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <dl class="code-annotation-container-grid">
-<dt data-target-cell="annotated-cell-15" data-target-annotation="1">1</dt>
+<dt data-target-cell="annotated-cell-21" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-cell="annotated-cell-15" data-code-lines="1" data-code-annotation="1">Sur un système <code>Windows</code>, ce sera <code>python.exe -m venv dev</code></span>
+<span data-code-cell="annotated-cell-21" data-code-lines="1" data-code-annotation="1">Sur un système <code>Windows</code>, ce sera <code>python.exe -m venv dev</code></span>
 </dd>
 </dl>
-</div>
 </div>
 <p>Cette commande crée un dossier nommé <code>dev/</code> contenant une installation Python isolée.</p>
 <details>
@@ -457,63 +455,66 @@ Exemple sur un système <code>Linux</code>
 </div>
 </details>
 <p>Celle-ci est de la version de <code>Python</code> enregistrée par défaut dans le <code>PATH</code>, en l’occurrence <code>Python 3.11</code>. Pour créer un environnement virtuel avec une autre version de <code>Python</code>, il faudra définir le chemin de manière formelle, par exemple:</p>
-<div id="e106d443" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="annotated-cell-16"><pre class="sourceCode python code-annotation-code code-with-copy"><code class="sourceCode python"><span id="annotated-cell-16-1"><a href="#annotated-cell-16-1" aria-hidden="true" tabindex="-1"></a>$ <span class="op">/</span>chemin_local<span class="op">/</span>python3<span class="fl">.8</span> <span class="op">-</span>m venv dev<span class="op">-</span>old</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<div class="sourceCode" id="annotated-cell-20" data-filename="terminal"><pre class="sourceCode bash code-annotation-code code-with-copy"><code class="sourceCode bash"><span id="annotated-cell-20-1"><a href="#annotated-cell-20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> /chemin_local/python3.8 <span class="at">-m</span> venv dev-old</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <p>Pour commencer à utiliser <code>conda</code>, commençons par créer un environnement vierge, nommé <code>dev</code>, en spécifiant la version de Python que l’on souhaite installer pour notre projet.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> conda create <span class="at">-n</span> dev python=3.9.7</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Retrieving</span> notices: ...working... done</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Channels:</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a> <span class="ex">-</span> conda-forge</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Platform:</span> linux-64</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">Collecting</span> package metadata <span class="er">(</span><span class="ex">repodata.json</span><span class="kw">)</span><span class="bu">:</span> done</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Solving</span> environment: done</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">## Package Plan ##</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="ex">environment</span> location: /opt/mamba/envs/dev</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="ex">added</span> / updated specs:</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="ex">-</span> python=3.9.7</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> following packages will be downloaded:</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="ex">The</span> following NEW packages will be INSTALLED:</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="ex">Proceed</span> <span class="er">(</span><span class="ex">[y]/n</span><span class="kw">)</span><span class="ex">?</span> y</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="ex">Downloading</span> and Extracting Packages</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Comme indiqué dans les <em>logs</em>, <code>Conda</code> a créé notre environnement et nous indique son emplacement sur le <em>filesystem</em>. En réalité, l’environnement n’est jamais vraiment vierge : <code>Conda</code> nous demande — et il faut répondre oui en tapant <em>“y”</em> — d’installer un certain nombre de packages, qui sont ceux qui viennent avec la distribution <code>Miniconda</code>.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb1" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> conda create <span class="at">-n</span> dev python=3.9.7</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>Retrieving notices: ...working... done</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>Channels:</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a> <span class="op">-</span> conda<span class="op">-</span>forge</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>Platform: linux<span class="op">-</span><span class="dv">64</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>Collecting package metadata (repodata.json): done</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>Solving environment: done</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">## Package Plan ##</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  environment location: <span class="op">/</span>opt<span class="op">/</span>mamba<span class="op">/</span>envs<span class="op">/</span>dev</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  added <span class="op">/</span> updated specs:</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> python<span class="op">=</span><span class="fl">3.9.7</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>The following packages will be downloaded:</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>...</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>The following NEW packages will be INSTALLED:</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>...</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>Proceed ([y]<span class="op">/</span>n)? y</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>Downloading <span class="kw">and</span> Extracting Packages</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Comme indiqué dans les <em>logs</em>, <code>Conda</code> a créé notre environnement et nous indique son emplacement sur le <em>filesystem</em>. En réalité, l’environnement n’est jamais vraiment vierge : <code>Conda</code> nous demande — et il faut répondre oui en tapant <code>y</code> — d’installer un certain nombre de packages, qui sont ceux qui viennent avec la distribution <code>Miniconda</code>.</p>
 <p>On peut vérifier que l’environnement a bien été créé en listant les environnements installés sur le système.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> conda info <span class="at">--envs</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code># conda environments:                                                                                                                             
-#                                                                                                                                                 
-base                  *  /opt/mamba                                                                                                               
-dev                      /opt/mamba/envs/dev</code></pre>
+<div class="sourceCode" id="cb3" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> conda info <span class="at">--envs</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># conda environments:                                                                                                                             </span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">#                                                                                                                                                 </span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>base                  <span class="op">*</span>  <span class="op">/</span>opt<span class="op">/</span>mamba                                                                                                               </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>dev                      <span class="op">/</span>opt<span class="op">/</span>mamba<span class="op">/</span>envs<span class="op">/</span>dev</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
 </section>
 <section id="activer-un-environnement" class="level3">
 <h3 class="anchored" data-anchor-id="activer-un-environnement">Activer un environnement</h3>
-<p>Comme plusieurs environnements peuvent coexister sur un même système, il faut spécifier à notre gestionnaire d’environnement d’activer celui-ci. Dès lors, ce sera celui-ci qui sera utilisé implicitement lorsqu’on utilisera <code>python</code>, <code>pip</code>, etc. en ligne de commande.</p>
+<p>Comme plusieurs environnements peuvent coexister sur un même système, il faut dire à notre gestionnaire d’environnement d’activer celui-ci. Dès lors, ce sera celui-ci qui sera utilisé implicitement lorsqu’on utilisera <code>python</code>, <code>pip</code>, etc. dans la ligne de commande active<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true"><code>venv</code></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false"><code>conda</code></a></li></ul>
 <div class="tab-content" data-group="language">
 <div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> source dev/bin/activate</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> source dev/bin/activate</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><code>venv</code> active l’environnement virtuel <code>dev</code>, indiqué par le changement du nom de l’environnement qui apparaît au début de la ligne de commande dans le terminal. Une fois activé, <code>dev</code> devient temporairement notre environnement par défaut pour les opérations <code>Python</code>. Pour confirmer cela, nous pouvons utiliser la commande <code>which</code> pour déterminer l’emplacement de l’interpréteur Python qui sera utilisé pour exécuter des scripts comme <code>python mon-script.py</code>.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> which python</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">/home/onyxia/work/dev/bin/python</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6" data-env="dev" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> which python</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="op">/</span>home<span class="op">/</span>onyxia<span class="op">/</span>work<span class="op">/</span>dev<span class="op">/</span><span class="bu">bin</span><span class="op">/</span>python</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> conda activate dev</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> conda activate dev</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><code>Conda</code> nous indique que l’on travaille à partir de maintenant dans l’environnement <code>dev</code> en indiquant son nom entre parenthèses au début de la ligne de commandes. Autrement dit, <code>dev</code> devient pour un temps notre environnement par défaut. Pour s’en assurer, vérifions avec la commande <code>which</code> l’emplacement de l’interpréteur Python qui sera utilisé si on lance une commande du type <code>python mon-script.py</code>.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> which python </span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">/home/coder/local/bin/conda/envs/dev/bin/python</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb9" data-env="dev" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> which python </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="op">/</span>opt<span class="op">/</span>mamba<span class="op">/</span>envs<span class="op">/</span>dev<span class="op">/</span><span class="bu">bin</span><span class="op">/</span>python</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -527,32 +528,31 @@ dev                      /opt/mamba/envs/dev</code></pre>
 <div class="tab-content" data-group="language">
 <div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
 <p>On part d’un environnement vraiment réduit à l’os:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>(dev) $ pip <span class="bu">list</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>Package    Version</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="op">----------</span> <span class="op">-------</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>pip        <span class="fl">23.3.2</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>setuptools <span class="fl">69.0.3</span></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>wheel      <span class="fl">0.42.0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb11" data-env="dev" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> pip list</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>Package    Version</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="op">----------</span> <span class="op">-------</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>pip        <span class="fl">23.3.2</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>setuptools <span class="fl">69.0.3</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>wheel      <span class="fl">0.42.0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
 <p>L’environnement est assez minimaliste, quoique plus garni que lors de la création d’un environnement virtuel par <code>venv</code></p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> conda list</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># packages in environment at /opt/mamba/envs/dev:</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Name                    Version                   Build  Channel</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="ex">_libgcc_mutex</span>             0.1                 conda_forge    conda-forge</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="ex">_openmp_mutex</span>             4.5                       2_gnu    conda-forge</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="ex">ca-certificates</span>           2023.11.17           hbcca054_0    conda-forge</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb13" data-env="dev" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> conda list</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># packages in environment at /opt/mamba/envs/dev:</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Name                    Version                   Build  Channel</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>_libgcc_mutex             <span class="fl">0.1</span>                 conda_forge    conda<span class="op">-</span>forge</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>_openmp_mutex             <span class="fl">4.5</span>                       <span class="dv">2</span><span class="er">_gnu</span>    conda<span class="op">-</span>forge</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>ca<span class="op">-</span>certificates           <span class="fl">2023.11.17</span>           hbcca054_0    conda<span class="op">-</span>forge</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
 <p>Pour se convaincre, on peut vérifier que <code>Numpy</code> est bien absent de notre environnement:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>(dev) $ python <span class="op">-</span>c <span class="st">"import numpy as np"</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>Traceback (most recent call last):</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  File <span class="st">"&lt;string&gt;"</span>, line <span class="dv">1</span>, <span class="kw">in</span> <span class="op">&lt;</span>module<span class="op">&gt;</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="pp">ModuleNotFoundError</span>: No module named <span class="st">'numpy'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb15" data-env="dev" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> python <span class="at">-c</span> <span class="st">"import numpy as np"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>Traceback (most recent call last):</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  File <span class="st">"&lt;string&gt;"</span>, line <span class="dv">1</span>, <span class="kw">in</span> <span class="op">&lt;</span>module<span class="op">&gt;</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="pp">ModuleNotFoundError</span>: No module named <span class="st">'numpy'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="installer-un-package" class="level3">
 <h3 class="anchored" data-anchor-id="installer-un-package">Installer un package</h3>
@@ -569,7 +569,7 @@ Mélanger <code>pip</code> et <code>conda</code>
 </div>
 <div id="callout-3" class="callout-3-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>Il est techniquement possible d’installer des <em>packages</em> par le biais de <code>pip</code> en étant situé dans un environnement virtuel <code>conda</code><a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>. Ce n’est pas un problème pour de l’expérimentation et ça permet de développer rapidement.</p>
+<p>Il est techniquement possible d’installer des <em>packages</em> par le biais de <code>pip</code> en étant situé dans un environnement virtuel <code>conda</code><a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>. Ce n’est pas un problème pour de l’expérimentation et ça permet de développer rapidement.</p>
 <p>Néanmoins, dans un environnement de production c’est une <a href="https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#using-pip-in-an-environment">pratique à éviter</a>.</p>
 <ul>
 <li>Soit on initialise un environnement <code>conda</code> autosuffisant avec un <code>env.yml</code> (voir plus bas) ;</li>
@@ -582,105 +582,105 @@ Mélanger <code>pip</code> et <code>conda</code>
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true"><code>venv</code></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false"><code>conda</code></a></li></ul>
 <div class="tab-content" data-group="language">
 <div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
-<pre class="shell"><code>pip install nom_du_package</code></pre>
+<div class="sourceCode" id="cb17" data-env="dev" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> pip install nom_du_package</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
-<pre class="shell"><code>conda install nom_du_package</code></pre>
+<div class="sourceCode" id="cb18" data-env="dev" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> conda install nom_du_package</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
-<p>La différence est que là où <code>pip install</code> va installer un package à partir du répertoire <a href="https://pypi.org/">PyPI</a>, <code>conda install</code> va chercher le package sur les répertoires maintenus par les développeurs de Conda<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>.</p>
+<p>La différence est que là où <code>pip install</code> va installer un package à partir du répertoire <a href="https://pypi.org/">PyPI</a>, <code>conda install</code> va chercher le package sur les répertoires maintenus par les développeurs de Conda<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>.</p>
 <p>Installons par exemple le package phare de <em>machine learning</em> <code>scikit-learn</code>.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true"><code>venv</code></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false"><code>conda</code></a></li></ul>
 <div class="tab-content" data-group="language">
 <div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
-<pre class="shell"><code>(dev) $ conda install scikit-learn</code></pre>
-<pre><code>pip install scikit-learn
-Collecting scikit-learn
-  Obtaining dependency information for scikit-learn from https://files.pythonhosted.org/packages/5b/be/208f17ce87a5e55094b0e8ffd55b06919ab9b56e7e4ce2a64cd9095ec5d2/scikit_learn-1.4.0-1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata
-  Downloading scikit_learn-1.4.0-1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (11 kB)
-Collecting numpy&lt;2.0,&gt;=1.19.5 (from scikit-learn)
-  Obtaining dependency information for numpy&lt;2.0,&gt;=1.19.5 from https://files.pythonhosted.org/packages/5a/62/007b63f916aca1d27f5fede933fda3315d931
-...</code></pre>
+<div class="sourceCode" id="cb19" data-env="dev" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> conda install scikit-learn</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>pip install scikit<span class="op">-</span>learn</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>Collecting scikit<span class="op">-</span>learn</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  Obtaining dependency information <span class="cf">for</span> scikit<span class="op">-</span>learn <span class="im">from</span> https:<span class="op">//</span>files.pythonhosted.org<span class="op">/</span>packages<span class="op">/</span><span class="dv">5</span><span class="er">b</span><span class="op">/</span>be<span class="op">/</span><span class="dv">208</span><span class="er">f17ce87a5e55094b0e8ffd55b06919ab9b56e7e4ce2a64cd9095ec5d2</span><span class="op">/</span>scikit_learn<span class="op">-</span><span class="fl">1.4.0</span><span class="op">-</span><span class="dv">1</span><span class="op">-</span>cp311<span class="op">-</span>cp311<span class="op">-</span>manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  Downloading scikit_learn<span class="op">-</span><span class="fl">1.4.0</span><span class="op">-</span><span class="dv">1</span><span class="op">-</span>cp311<span class="op">-</span>cp311<span class="op">-</span>manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (<span class="dv">11</span> kB)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>Collecting numpy<span class="op">&lt;</span><span class="fl">2.0</span>,<span class="op">&gt;=</span><span class="fl">1.19.5</span> (<span class="im">from</span> scikit<span class="op">-</span>learn)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  Obtaining dependency information <span class="cf">for</span> numpy<span class="op">&lt;</span><span class="fl">2.0</span>,<span class="op">&gt;=</span><span class="fl">1.19.5</span> <span class="im">from</span> https:<span class="op">//</span>files.pythonhosted.org<span class="op">/</span>packages<span class="op">/</span><span class="dv">5</span><span class="er">a</span><span class="op">/</span><span class="dv">62</span><span class="op">/</span><span class="dv">00</span><span class="er">7b63f916aca1d27f5fede933fda3315d931</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Les dépendances nécessaires (par exemple <code>Numpy</code> sont automatiquement installées). L’environnement s’enrichit donc:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>(dev) $ pip <span class="bu">list</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code>Package       Version
-------------- -------
-joblib        1.3.2
-numpy         1.26.3
-pip           23.2.1
-scikit-learn  1.4.0
-scipy         1.12.0
-setuptools    65.5.0
-threadpoolctl 3.2.0</code></pre>
+<div class="sourceCode" id="cb21" data-env="dev" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> pip list</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>Package       Version</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="op">-------------</span> <span class="op">-------</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>joblib        <span class="fl">1.3.2</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>numpy         <span class="fl">1.26.3</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>pip           <span class="fl">23.2.1</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>scikit<span class="op">-</span>learn  <span class="fl">1.4.0</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>scipy         <span class="fl">1.12.0</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>setuptools    <span class="fl">65.5.0</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>threadpoolctl <span class="fl">3.2.0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
-<div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> conda install scikit-learn</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb23" data-env="dev" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> conda install scikit-learn</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <details>
 <summary>
 Voir la sortie
 </summary>
-<pre><code>Channels:
- - conda-forge
-Platform: linux-64
-Collecting package metadata (repodata.json): done
-Solving environment: done
-
-## Package Plan ##
-
-  environment location: /opt/mamba/envs/dev
-
-  added / updated specs:
-    - scikit-learn
-
-
-The following packages will be downloaded:
-
-    package                    |            build
-    ---------------------------|-----------------
-    joblib-1.3.2               |     pyhd8ed1ab_0         216 KB  conda-forge
-    libblas-3.9.0              |21_linux64_openblas          14 KB  conda-forge
-    libcblas-3.9.0             |21_linux64_openblas          14 KB  conda-forge
-    libgfortran-ng-13.2.0      |       h69a702a_3          23 KB  conda-forge
-    libgfortran5-13.2.0        |       ha4646dd_3         1.4 MB  conda-forge
-    liblapack-3.9.0            |21_linux64_openblas          14 KB  conda-forge
-    libopenblas-0.3.26         |pthreads_h413a1c8_0         5.3 MB  conda-forge
-    libstdcxx-ng-13.2.0        |       h7e041cc_3         3.7 MB  conda-forge
-    numpy-1.26.3               |   py39h474f0d3_0         6.6 MB  conda-forge
-    python_abi-3.9             |           4_cp39           6 KB  conda-forge
-    scikit-learn-1.4.0         |   py39ha22ef79_0         8.7 MB  conda-forge
-    scipy-1.12.0               |   py39h474f0d3_2        15.6 MB  conda-forge
-    threadpoolctl-3.2.0        |     pyha21a80b_0          20 KB  conda-forge
-    ------------------------------------------------------------
-                                           Total:        41.6 MB
-
-The following NEW packages will be INSTALLED:
-
-  joblib             conda-forge/noarch::joblib-1.3.2-pyhd8ed1ab_0 
-  libblas            conda-forge/linux-64::libblas-3.9.0-21_linux64_openblas 
-  libcblas           conda-forge/linux-64::libcblas-3.9.0-21_linux64_openblas 
-  libgfortran-ng     conda-forge/linux-64::libgfortran-ng-13.2.0-h69a702a_3 
-  libgfortran5       conda-forge/linux-64::libgfortran5-13.2.0-ha4646dd_3 
-  liblapack          conda-forge/linux-64::liblapack-3.9.0-21_linux64_openblas 
-  libopenblas        conda-forge/linux-64::libopenblas-0.3.26-pthreads_h413a1c8_0 
-  libstdcxx-ng       conda-forge/linux-64::libstdcxx-ng-13.2.0-h7e041cc_3 
-  numpy              conda-forge/linux-64::numpy-1.26.3-py39h474f0d3_0 
-  python_abi         conda-forge/linux-64::python_abi-3.9-4_cp39 
-  scikit-learn       conda-forge/linux-64::scikit-learn-1.4.0-py39ha22ef79_0 
-  scipy              conda-forge/linux-64::scipy-1.12.0-py39h474f0d3_2 
-  threadpoolctl      conda-forge/noarch::threadpoolctl-3.2.0-pyha21a80b_0 
-
-
-
-Downloading and Extracting Packages:
-                                                                                                                                                  
-Preparing transaction: done                                                                                                                       
-Verifying transaction: done                                                                                                                       
-Executing transaction: done </code></pre>
+<div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>Channels:</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a> <span class="op">-</span> conda<span class="op">-</span>forge</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>Platform: linux<span class="op">-</span><span class="dv">64</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>Collecting package metadata (repodata.json): done</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>Solving environment: done</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="co">## Package Plan ##</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>  environment location: <span class="op">/</span>opt<span class="op">/</span>mamba<span class="op">/</span>envs<span class="op">/</span>dev</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  added <span class="op">/</span> updated specs:</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> scikit<span class="op">-</span>learn</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>The following packages will be downloaded:</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>    package                    <span class="op">|</span>            build</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">---------------------------|-----------------</span></span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>    joblib<span class="op">-</span><span class="fl">1.3.2</span>               <span class="op">|</span>     pyhd8ed1ab_0         <span class="dv">216</span> KB  conda<span class="op">-</span>forge</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>    libblas<span class="op">-</span><span class="fl">3.9.0</span>              <span class="op">|</span><span class="dv">21</span><span class="er">_linux64_openblas</span>          <span class="dv">14</span> KB  conda<span class="op">-</span>forge</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>    libcblas<span class="op">-</span><span class="fl">3.9.0</span>             <span class="op">|</span><span class="dv">21</span><span class="er">_linux64_openblas</span>          <span class="dv">14</span> KB  conda<span class="op">-</span>forge</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>    libgfortran<span class="op">-</span>ng<span class="op">-</span><span class="fl">13.2.0</span>      <span class="op">|</span>       h69a702a_3          <span class="dv">23</span> KB  conda<span class="op">-</span>forge</span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>    libgfortran5<span class="op">-</span><span class="fl">13.2.0</span>        <span class="op">|</span>       ha4646dd_3         <span class="fl">1.4</span> MB  conda<span class="op">-</span>forge</span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>    liblapack<span class="op">-</span><span class="fl">3.9.0</span>            <span class="op">|</span><span class="dv">21</span><span class="er">_linux64_openblas</span>          <span class="dv">14</span> KB  conda<span class="op">-</span>forge</span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>    libopenblas<span class="op">-</span><span class="fl">0.3.26</span>         <span class="op">|</span>pthreads_h413a1c8_0         <span class="fl">5.3</span> MB  conda<span class="op">-</span>forge</span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>    libstdcxx<span class="op">-</span>ng<span class="op">-</span><span class="fl">13.2.0</span>        <span class="op">|</span>       h7e041cc_3         <span class="fl">3.7</span> MB  conda<span class="op">-</span>forge</span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>    numpy<span class="op">-</span><span class="fl">1.26.3</span>               <span class="op">|</span>   py39h474f0d3_0         <span class="fl">6.6</span> MB  conda<span class="op">-</span>forge</span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>    python_abi<span class="op">-</span><span class="fl">3.9</span>             <span class="op">|</span>           <span class="dv">4</span><span class="er">_cp39</span>           <span class="dv">6</span> KB  conda<span class="op">-</span>forge</span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>    scikit<span class="op">-</span>learn<span class="op">-</span><span class="fl">1.4.0</span>         <span class="op">|</span>   py39ha22ef79_0         <span class="fl">8.7</span> MB  conda<span class="op">-</span>forge</span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>    scipy<span class="op">-</span><span class="fl">1.12.0</span>               <span class="op">|</span>   py39h474f0d3_2        <span class="fl">15.6</span> MB  conda<span class="op">-</span>forge</span>
+<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>    threadpoolctl<span class="op">-</span><span class="fl">3.2.0</span>        <span class="op">|</span>     pyha21a80b_0          <span class="dv">20</span> KB  conda<span class="op">-</span>forge</span>
+<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a>    <span class="op">------------------------------------------------------------</span></span>
+<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a>                                           Total:        <span class="fl">41.6</span> MB</span>
+<span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a>The following NEW packages will be INSTALLED:</span>
+<span id="cb24-36"><a href="#cb24-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-37"><a href="#cb24-37" aria-hidden="true" tabindex="-1"></a>  joblib             conda<span class="op">-</span>forge<span class="op">/</span>noarch::joblib<span class="op">-</span><span class="fl">1.3.2</span><span class="op">-</span>pyhd8ed1ab_0 </span>
+<span id="cb24-38"><a href="#cb24-38" aria-hidden="true" tabindex="-1"></a>  libblas            conda<span class="op">-</span>forge<span class="op">/</span>linux<span class="op">-</span><span class="dv">64</span>::libblas<span class="op">-</span><span class="fl">3.9.0</span><span class="op">-</span><span class="dv">21</span><span class="er">_linux64_openblas</span> </span>
+<span id="cb24-39"><a href="#cb24-39" aria-hidden="true" tabindex="-1"></a>  libcblas           conda<span class="op">-</span>forge<span class="op">/</span>linux<span class="op">-</span><span class="dv">64</span>::libcblas<span class="op">-</span><span class="fl">3.9.0</span><span class="op">-</span><span class="dv">21</span><span class="er">_linux64_openblas</span> </span>
+<span id="cb24-40"><a href="#cb24-40" aria-hidden="true" tabindex="-1"></a>  libgfortran<span class="op">-</span>ng     conda<span class="op">-</span>forge<span class="op">/</span>linux<span class="op">-</span><span class="dv">64</span>::libgfortran<span class="op">-</span>ng<span class="op">-</span><span class="fl">13.2.0</span><span class="op">-</span>h69a702a_3 </span>
+<span id="cb24-41"><a href="#cb24-41" aria-hidden="true" tabindex="-1"></a>  libgfortran5       conda<span class="op">-</span>forge<span class="op">/</span>linux<span class="op">-</span><span class="dv">64</span>::libgfortran5<span class="op">-</span><span class="fl">13.2.0</span><span class="op">-</span>ha4646dd_3 </span>
+<span id="cb24-42"><a href="#cb24-42" aria-hidden="true" tabindex="-1"></a>  liblapack          conda<span class="op">-</span>forge<span class="op">/</span>linux<span class="op">-</span><span class="dv">64</span>::liblapack<span class="op">-</span><span class="fl">3.9.0</span><span class="op">-</span><span class="dv">21</span><span class="er">_linux64_openblas</span> </span>
+<span id="cb24-43"><a href="#cb24-43" aria-hidden="true" tabindex="-1"></a>  libopenblas        conda<span class="op">-</span>forge<span class="op">/</span>linux<span class="op">-</span><span class="dv">64</span>::libopenblas<span class="op">-</span><span class="fl">0.3.26</span><span class="op">-</span>pthreads_h413a1c8_0 </span>
+<span id="cb24-44"><a href="#cb24-44" aria-hidden="true" tabindex="-1"></a>  libstdcxx<span class="op">-</span>ng       conda<span class="op">-</span>forge<span class="op">/</span>linux<span class="op">-</span><span class="dv">64</span>::libstdcxx<span class="op">-</span>ng<span class="op">-</span><span class="fl">13.2.0</span><span class="op">-</span>h7e041cc_3 </span>
+<span id="cb24-45"><a href="#cb24-45" aria-hidden="true" tabindex="-1"></a>  numpy              conda<span class="op">-</span>forge<span class="op">/</span>linux<span class="op">-</span><span class="dv">64</span>::numpy<span class="op">-</span><span class="fl">1.26.3</span><span class="op">-</span>py39h474f0d3_0 </span>
+<span id="cb24-46"><a href="#cb24-46" aria-hidden="true" tabindex="-1"></a>  python_abi         conda<span class="op">-</span>forge<span class="op">/</span>linux<span class="op">-</span><span class="dv">64</span>::python_abi<span class="op">-</span><span class="fl">3.9</span><span class="op">-</span><span class="dv">4</span><span class="er">_cp39</span> </span>
+<span id="cb24-47"><a href="#cb24-47" aria-hidden="true" tabindex="-1"></a>  scikit<span class="op">-</span>learn       conda<span class="op">-</span>forge<span class="op">/</span>linux<span class="op">-</span><span class="dv">64</span>::scikit<span class="op">-</span>learn<span class="op">-</span><span class="fl">1.4.0</span><span class="op">-</span>py39ha22ef79_0 </span>
+<span id="cb24-48"><a href="#cb24-48" aria-hidden="true" tabindex="-1"></a>  scipy              conda<span class="op">-</span>forge<span class="op">/</span>linux<span class="op">-</span><span class="dv">64</span>::scipy<span class="op">-</span><span class="fl">1.12.0</span><span class="op">-</span>py39h474f0d3_2 </span>
+<span id="cb24-49"><a href="#cb24-49" aria-hidden="true" tabindex="-1"></a>  threadpoolctl      conda<span class="op">-</span>forge<span class="op">/</span>noarch::threadpoolctl<span class="op">-</span><span class="fl">3.2.0</span><span class="op">-</span>pyha21a80b_0 </span>
+<span id="cb24-50"><a href="#cb24-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-51"><a href="#cb24-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-52"><a href="#cb24-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-53"><a href="#cb24-53" aria-hidden="true" tabindex="-1"></a>Downloading <span class="kw">and</span> Extracting Packages:</span>
+<span id="cb24-54"><a href="#cb24-54" aria-hidden="true" tabindex="-1"></a>                                                                                                                                                  </span>
+<span id="cb24-55"><a href="#cb24-55" aria-hidden="true" tabindex="-1"></a>Preparing transaction: done                                                                                                                       </span>
+<span id="cb24-56"><a href="#cb24-56" aria-hidden="true" tabindex="-1"></a>Verifying transaction: done                                                                                                                       </span>
+<span id="cb24-57"><a href="#cb24-57" aria-hidden="true" tabindex="-1"></a>Executing transaction: done </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <p>Là encore, <code>conda</code> nous demande d’installer d’autres packages, qui sont des dépendances de <code>scikit-learn</code>. Par exemple, la librairie de calcul scientifique <code>NumPy</code>.</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>(dev) $ conda <span class="bu">list</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>(dev) $ conda <span class="bu">list</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code># packages in environment at /opt/mamba/envs/dev:
 #
 # Name                    Version                   Build  Channel
@@ -730,65 +730,72 @@ zlib                      1.2.13               hd590300_5    conda-forge</code><
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true"><code>venv</code></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false"><code>conda</code></a></li></ul>
 <div class="tab-content" data-group="language">
 <div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
-<div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> pip freeze <span class="op">&gt;</span> requirements.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb27" data-env="dev" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> pip freeze <span class="op">&gt;</span> requirements.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <details>
 <summary>
 Voir le fichier <code>requirements.txt</code> généré
 </summary>
-<p>joblib==1.3.2 numpy==1.26.3 scikit-learn==1.4.0 scipy==1.12.0 threadpoolctl==3.2.0</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>requirements.txt</strong></pre>
+</div>
+<div class="sourceCode" id="cb28" data-filename="requirements.txt"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>joblib<span class="op">==</span><span class="fl">1.3.2</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>numpy<span class="op">==</span><span class="fl">1.26.3</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>scikit<span class="op">-</span>learn<span class="op">==</span><span class="fl">1.4.0</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>scipy<span class="op">==</span><span class="fl">1.12.0</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>threadpoolctl<span class="op">==</span><span class="fl">3.2.0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </details>
 </div>
 <div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
-<div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> conda env export <span class="op">&gt;</span> environment.yml</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb29" data-env="dev" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> conda env export <span class="op">&gt;</span> environment.yml</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <details>
 <summary>
 Voir le fichier <code>environment.yml</code> généré
 </summary>
-<div id="a73909da" class="cell" data-file="environment.yml" data-execution_count="3">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>environment.yml</strong></pre>
 </div>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>name: dev</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>channels:</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> conda<span class="op">-</span>forge</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>dependencies:</span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> _libgcc_mutex<span class="op">=</span><span class="fl">0.1</span><span class="op">=</span>conda_forge</span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> _openmp_mutex<span class="op">=</span><span class="fl">4.5</span><span class="op">=</span><span class="dv">2</span><span class="er">_gnu</span></span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> ca<span class="op">-</span>certificates<span class="op">=</span><span class="fl">2023.11.17</span><span class="op">=</span>hbcca054_0</span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> joblib<span class="op">=</span><span class="fl">1.3.2</span><span class="op">=</span>pyhd8ed1ab_0</span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> ld_impl_linux<span class="op">-</span><span class="dv">64</span><span class="op">=</span><span class="fl">2.40</span><span class="op">=</span>h41732ed_0</span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> libblas<span class="op">=</span><span class="fl">3.9.0</span><span class="op">=</span><span class="dv">21</span><span class="er">_linux64_openblas</span></span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> libcblas<span class="op">=</span><span class="fl">3.9.0</span><span class="op">=</span><span class="dv">21</span><span class="er">_linux64_openblas</span></span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> libffi<span class="op">=</span><span class="fl">3.4.2</span><span class="op">=</span>h7f98852_5</span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> libgcc<span class="op">-</span>ng<span class="op">=</span><span class="fl">13.2.0</span><span class="op">=</span>h807b86a_3</span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> libgfortran<span class="op">-</span>ng<span class="op">=</span><span class="fl">13.2.0</span><span class="op">=</span>h69a702a_3</span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> libgfortran5<span class="op">=</span><span class="fl">13.2.0</span><span class="op">=</span>ha4646dd_3</span>
-<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> libgomp<span class="op">=</span><span class="fl">13.2.0</span><span class="op">=</span>h807b86a_3</span>
-<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> liblapack<span class="op">=</span><span class="fl">3.9.0</span><span class="op">=</span><span class="dv">21</span><span class="er">_linux64_openblas</span></span>
-<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> libopenblas<span class="op">=</span><span class="fl">0.3.26</span><span class="op">=</span>pthreads_h413a1c8_0</span>
-<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> libsqlite<span class="op">=</span><span class="fl">3.44.2</span><span class="op">=</span>h2797004_0</span>
-<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> libstdcxx<span class="op">-</span>ng<span class="op">=</span><span class="fl">13.2.0</span><span class="op">=</span>h7e041cc_3</span>
-<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> libzlib<span class="op">=</span><span class="fl">1.2.13</span><span class="op">=</span>hd590300_5</span>
-<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> ncurses<span class="op">=</span><span class="fl">6.4</span><span class="op">=</span>h59595ed_2</span>
-<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> numpy<span class="op">=</span><span class="fl">1.26.3</span><span class="op">=</span>py39h474f0d3_0</span>
-<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> openssl<span class="op">=</span><span class="fl">3.2.0</span><span class="op">=</span>hd590300_1</span>
-<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> pip<span class="op">=</span><span class="fl">23.3.2</span><span class="op">=</span>pyhd8ed1ab_0</span>
-<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> python<span class="op">=</span><span class="fl">3.9.7</span><span class="op">=</span>hf930737_3_cpython</span>
-<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> python_abi<span class="op">=</span><span class="fl">3.9</span><span class="op">=</span><span class="dv">4</span><span class="er">_cp39</span></span>
-<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> readline<span class="op">=</span><span class="fl">8.2</span><span class="op">=</span>h8228510_1</span>
-<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> scikit<span class="op">-</span>learn<span class="op">=</span><span class="fl">1.4.0</span><span class="op">=</span>py39ha22ef79_0</span>
-<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> scipy<span class="op">=</span><span class="fl">1.12.0</span><span class="op">=</span>py39h474f0d3_2</span>
-<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> setuptools<span class="op">=</span><span class="fl">69.0.3</span><span class="op">=</span>pyhd8ed1ab_0</span>
-<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> sqlite<span class="op">=</span><span class="fl">3.44.2</span><span class="op">=</span>h2c6b66d_0</span>
-<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> threadpoolctl<span class="op">=</span><span class="fl">3.2.0</span><span class="op">=</span>pyha21a80b_0</span>
-<span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> tk<span class="op">=</span><span class="fl">8.6.13</span><span class="op">=</span>noxft_h4845f30_101</span>
-<span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> tzdata<span class="op">=</span><span class="dv">2023</span><span class="er">d</span><span class="op">=</span>h0c530f3_0</span>
-<span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> wheel<span class="op">=</span><span class="fl">0.42.0</span><span class="op">=</span>pyhd8ed1ab_0</span>
-<span id="cb23-37"><a href="#cb23-37" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> xz<span class="op">=</span><span class="fl">5.2.6</span><span class="op">=</span>h166bdaf_0</span>
-<span id="cb23-38"><a href="#cb23-38" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> zlib<span class="op">=</span><span class="fl">1.2.13</span><span class="op">=</span>hd590300_5</span>
-<span id="cb23-39"><a href="#cb23-39" aria-hidden="true" tabindex="-1"></a>prefix: <span class="op">/</span>opt<span class="op">/</span>mamba<span class="op">/</span>envs<span class="op">/</span>dev</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<div class="sourceCode" id="cb30" data-filename="environment.yml"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>name: dev</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>channels:</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> conda<span class="op">-</span>forge</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>dependencies:</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> _libgcc_mutex<span class="op">=</span><span class="fl">0.1</span><span class="op">=</span>conda_forge</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> _openmp_mutex<span class="op">=</span><span class="fl">4.5</span><span class="op">=</span><span class="dv">2</span><span class="er">_gnu</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> ca<span class="op">-</span>certificates<span class="op">=</span><span class="fl">2023.11.17</span><span class="op">=</span>hbcca054_0</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> joblib<span class="op">=</span><span class="fl">1.3.2</span><span class="op">=</span>pyhd8ed1ab_0</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> ld_impl_linux<span class="op">-</span><span class="dv">64</span><span class="op">=</span><span class="fl">2.40</span><span class="op">=</span>h41732ed_0</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> libblas<span class="op">=</span><span class="fl">3.9.0</span><span class="op">=</span><span class="dv">21</span><span class="er">_linux64_openblas</span></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> libcblas<span class="op">=</span><span class="fl">3.9.0</span><span class="op">=</span><span class="dv">21</span><span class="er">_linux64_openblas</span></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> libffi<span class="op">=</span><span class="fl">3.4.2</span><span class="op">=</span>h7f98852_5</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> libgcc<span class="op">-</span>ng<span class="op">=</span><span class="fl">13.2.0</span><span class="op">=</span>h807b86a_3</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> libgfortran<span class="op">-</span>ng<span class="op">=</span><span class="fl">13.2.0</span><span class="op">=</span>h69a702a_3</span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> libgfortran5<span class="op">=</span><span class="fl">13.2.0</span><span class="op">=</span>ha4646dd_3</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> libgomp<span class="op">=</span><span class="fl">13.2.0</span><span class="op">=</span>h807b86a_3</span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> liblapack<span class="op">=</span><span class="fl">3.9.0</span><span class="op">=</span><span class="dv">21</span><span class="er">_linux64_openblas</span></span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> libopenblas<span class="op">=</span><span class="fl">0.3.26</span><span class="op">=</span>pthreads_h413a1c8_0</span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> libsqlite<span class="op">=</span><span class="fl">3.44.2</span><span class="op">=</span>h2797004_0</span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> libstdcxx<span class="op">-</span>ng<span class="op">=</span><span class="fl">13.2.0</span><span class="op">=</span>h7e041cc_3</span>
+<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> libzlib<span class="op">=</span><span class="fl">1.2.13</span><span class="op">=</span>hd590300_5</span>
+<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> ncurses<span class="op">=</span><span class="fl">6.4</span><span class="op">=</span>h59595ed_2</span>
+<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> numpy<span class="op">=</span><span class="fl">1.26.3</span><span class="op">=</span>py39h474f0d3_0</span>
+<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> openssl<span class="op">=</span><span class="fl">3.2.0</span><span class="op">=</span>hd590300_1</span>
+<span id="cb30-25"><a href="#cb30-25" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> pip<span class="op">=</span><span class="fl">23.3.2</span><span class="op">=</span>pyhd8ed1ab_0</span>
+<span id="cb30-26"><a href="#cb30-26" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> python<span class="op">=</span><span class="fl">3.9.7</span><span class="op">=</span>hf930737_3_cpython</span>
+<span id="cb30-27"><a href="#cb30-27" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> python_abi<span class="op">=</span><span class="fl">3.9</span><span class="op">=</span><span class="dv">4</span><span class="er">_cp39</span></span>
+<span id="cb30-28"><a href="#cb30-28" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> readline<span class="op">=</span><span class="fl">8.2</span><span class="op">=</span>h8228510_1</span>
+<span id="cb30-29"><a href="#cb30-29" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> scikit<span class="op">-</span>learn<span class="op">=</span><span class="fl">1.4.0</span><span class="op">=</span>py39ha22ef79_0</span>
+<span id="cb30-30"><a href="#cb30-30" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> scipy<span class="op">=</span><span class="fl">1.12.0</span><span class="op">=</span>py39h474f0d3_2</span>
+<span id="cb30-31"><a href="#cb30-31" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> setuptools<span class="op">=</span><span class="fl">69.0.3</span><span class="op">=</span>pyhd8ed1ab_0</span>
+<span id="cb30-32"><a href="#cb30-32" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> sqlite<span class="op">=</span><span class="fl">3.44.2</span><span class="op">=</span>h2c6b66d_0</span>
+<span id="cb30-33"><a href="#cb30-33" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> threadpoolctl<span class="op">=</span><span class="fl">3.2.0</span><span class="op">=</span>pyha21a80b_0</span>
+<span id="cb30-34"><a href="#cb30-34" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> tk<span class="op">=</span><span class="fl">8.6.13</span><span class="op">=</span>noxft_h4845f30_101</span>
+<span id="cb30-35"><a href="#cb30-35" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> tzdata<span class="op">=</span><span class="dv">2023</span><span class="er">d</span><span class="op">=</span>h0c530f3_0</span>
+<span id="cb30-36"><a href="#cb30-36" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> wheel<span class="op">=</span><span class="fl">0.42.0</span><span class="op">=</span>pyhd8ed1ab_0</span>
+<span id="cb30-37"><a href="#cb30-37" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> xz<span class="op">=</span><span class="fl">5.2.6</span><span class="op">=</span>h166bdaf_0</span>
+<span id="cb30-38"><a href="#cb30-38" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> zlib<span class="op">=</span><span class="fl">1.2.13</span><span class="op">=</span>hd590300_5</span>
+<span id="cb30-39"><a href="#cb30-39" aria-hidden="true" tabindex="-1"></a>prefix: <span class="op">/</span>opt<span class="op">/</span>mamba<span class="op">/</span>envs<span class="op">/</span>dev</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </details>
 </div>
@@ -800,12 +807,13 @@ Voir le fichier <code>environment.yml</code> généré
 <div class="tab-content" data-group="language">
 <div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
 <p>On refait la démarche précédente de création d’un environnement vierge puis un <code>pip install -r requirements.txt</code></p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> python <span class="at">-m</span> venv newenv</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> source newenv/bin/activate</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">newenv</span><span class="kw">)</span> <span class="ex">$</span> pip install <span class="at">-r</span> requirements.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb31" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> python <span class="at">-m</span> venv newenv</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> source newenv/bin/activate</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb32" data-env="newenv" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">newenv</span><span class="kw">)</span> <span class="ex">$</span> pip install <span class="at">-r</span> requirements.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
-<div class="sourceCode" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> conda env create <span class="at">-f</span> environment.yml</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Cela se fait en une seule commande:</p>
+<div class="sourceCode" id="cb33" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> $ conda env create <span class="at">-f</span> environment.yml</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -817,22 +825,22 @@ Voir le fichier <code>environment.yml</code> généré
 <div class="tab-content" data-group="language">
 <div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
 <p>Pour changer d’environnement virtuel, il suffit d’en activer un autre.</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">myenv</span><span class="kw">)</span> <span class="ex">$</span> deactivate</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> source anotherenv/bin/activate</span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">anotherenv</span><span class="kw">)</span> <span class="ex">$</span> which python</span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="ex">/chemin/vers/anotherenv/bin/python</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb34" data-no-prefix="true" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">myenv</span><span class="kw">)</span> <span class="ex">$</span> deactivate</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> source anotherenv/bin/activate</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">anotherenv</span><span class="kw">)</span> <span class="ex">$</span> which python</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="ex">/chemin/vers/anotherenv/bin/python</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Pour quitter l’environnement virtuel actif, on utilise simplement la commande <code>deactivate</code> :</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">anotherenv</span><span class="kw">)</span> <span class="ex">$</span> deactivate</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb35" data-no-prefix="true" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">anotherenv</span><span class="kw">)</span> <span class="ex">$</span> deactivate</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
 <p>Pour changer d’environnement, il suffit d’en activer un autre.</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> conda activate base</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">base</span><span class="kw">)</span> <span class="ex">$</span> which python</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="ex">/opt/mamba/bin/python</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb36" data-no-prefix="true" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">dev</span><span class="kw">)</span> <span class="ex">$</span> conda activate base</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">base</span><span class="kw">)</span> <span class="ex">$</span> which python</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="ex">/opt/mamba/bin/python</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Pour sortir de tout environnement conda, on utilise la commande <code>conda deactivate</code> :</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">base</span><span class="kw">)</span> <span class="ex">$</span> conda deactivate</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb37" data-no-prefix="true" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">base</span><span class="kw">)</span> <span class="ex">$</span> conda deactivate</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
@@ -971,7 +979,7 @@ Besoins en espace disque
 <p>Avant de mettre à disposition une image, il est nécessaire de la construire (<em>build</em>). Pour cela on utilise un <code>Dockerfile</code>, un fichier texte qui contient la recette — sous forme de commandes Linux — de construction de l’environnement.</p>
 <p>Une fois l’image construite, il est possible de faire deux actions:</p>
 <ul>
-<li>La lancer (<em>run</em>) en local. Cela permet de tester l’application, éventuellement de la corriger en cas de mauvais fonctionnement. Le lancement de l’application permet de faire tourner l’image dans un environnement isolé qu’on appelle le conteneur (<em>container</em>), une instance vivante de l’image en quelques sortes<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>.</li>
+<li>La lancer (<em>run</em>) en local. Cela permet de tester l’application, éventuellement de la corriger en cas de mauvais fonctionnement. Le lancement de l’application permet de faire tourner l’image dans un environnement isolé qu’on appelle le conteneur (<em>container</em>), une instance vivante de l’image en quelques sortes<a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a>.</li>
 <li>La mettre à disposition sur un dépôt public pour permettre à d’autres (ou à soi-même) de la tester. L’image va être uploadée (<em>push</em>) sur un dépôt (<em>registry</em>), public ou privé, depuis lequel les utilisateurs vont pouvoir télécharger l’image (<em>pull</em>).</li>
 </ul>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -998,27 +1006,25 @@ Mettre à disposition son image <code>Docker</code>
 <p><a href="../chapters/application.html">L’application fil rouge</a> présente des exemples similaires sur notre cas d’usage qu’est une application visant à rendre public les résultats de notre modèle de <em>machine learning</em>.</p>
 <section id="application" class="level2">
 <h2 class="anchored" data-anchor-id="application">Application</h2>
-<p>Afin de présenter l’utilisation de <code>Docker</code> en pratique, nous allons présenter les différentes étapes permettant de <em>“dockeriser”</em> une application web minimaliste construite avec le <em>framework</em> <code>Python</code> <a href="https://flask.palletsprojects.com/en/2.1.x/"><code>Flask</code></a><a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a>.</p>
+<p>Afin de présenter l’utilisation de <code>Docker</code> en pratique, nous allons présenter les différentes étapes permettant de <em>“dockeriser”</em> une application web minimaliste construite avec le <em>framework</em> <code>Python</code> <a href="https://flask.palletsprojects.com/en/2.1.x/"><code>Flask</code></a><a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a>.</p>
 <p>La structure de notre projet est la suivante.</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="ex">├──</span> myflaskapp</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span>   ├── Dockerfile</span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span>   ├── hello-world.py</span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span>   └── requirements.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Le script <code>hello-world.py</code> contient le code d’une application minimaliste, qui affiche simplement <em>“Hello, World!”</em> sur une page web.</p>
-<div id="80db5813" class="cell" data-file="hello-world.py" data-execution_count="4">
+<div class="sourceCode" id="cb38" data-no-prefix="true" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="ex">├──</span> myflaskapp</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span>   ├── Dockerfile</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span>   ├── hello-world.py</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="ex">│</span>   └── requirements.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Le script <code>hello-world.py</code> contient le code d’une application minimaliste, qui affiche simplement <em>“Hello, World!”</em> sur une page web. Nous verrons dans l’<a href="../chapters/application.html">application fil rouge</a> comment construire une application interactive plus complète.</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>hello-world.py</strong></pre>
 </div>
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> flask <span class="im">import</span> Flask</span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>app <span class="op">=</span> Flask(<span class="va">__name__</span>)</span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="at">@app.route</span>(<span class="st">"/"</span>)</span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> hello_world():</span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="st">"&lt;p&gt;Hello, World!&lt;/p&gt;"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<div class="sourceCode" id="cb39" data-filename="hello-world.py"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> flask <span class="im">import</span> Flask</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>app <span class="op">=</span> Flask(<span class="va">__name__</span>)</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a><span class="at">@app.route</span>(<span class="st">"/"</span>)</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> hello_world():</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="st">"&lt;p&gt;Hello, World!&lt;/p&gt;"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Pour faire tourner l’application, il nous faut donc à la fois <code>Python</code> et le package <code>Flask</code>. Il est donc nécessaire de contrôler l’environnement virtuel autour de <code>Python</code> ce qui va impliquer:</p>
 <ul>
@@ -1026,13 +1032,11 @@ Mettre à disposition son image <code>Docker</code>
 <li>Installer les <em>packages</em> nécessaires à l’exécution de notre code. En l’occurrence, on n’a besoin que de <code>Flask</code>.</li>
 </ul>
 <p>Si la version de <code>Python</code> utilisée par notre application nous importe peu, il est plus simple d’adopter un environnement virtuel <code>venv</code> que <code>conda</code>. Nous allons donc proposer d’utiliser ceci ce qui tombe bien car nous avons déjà notre <code>requirements.txt</code> qui prend la forme suivante:</p>
-<div id="530fe7d8" class="cell" data-file="requirements.txt" data-execution_count="5">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>requirements.txt</strong></pre>
 </div>
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>Flask<span class="op">==</span><span class="fl">2.1.1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<div class="sourceCode" id="cb40" data-filename="requirements.txt"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>Flask<span class="op">==</span><span class="fl">2.1.1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Ces installations en deux temps (<code>Python</code> et packages nécessaires) doivent être spécifiées dans le <code>Dockerfile</code> (cf.&nbsp;<a href="#dockerfile">section suivante</a>).</p>
 </section>
@@ -1042,61 +1046,57 @@ Mettre à disposition son image <code>Docker</code>
 <p>Ce fichier texte contient une série de commandes qui permettent de construire l’image. Ces fichiers peuvent être plus ou moins complexes selon l’application que l’on cherche à conteneuriser, mais leur structure est assez normalisée.</p>
 <p>L’idée est de partir d’une couche de base (une distribution Linux minimaliste) et y ajouter des couches en fonction des besoins de notre application.</p>
 <p>Pour illustrer cela, analysons ligne à ligne le <code>Dockerfile</code> nécessaire pour construire une image <code>Docker</code> de notre application <code>Flask.</code></p>
-<div id="980d0cc0" class="cell" data-file="Dockerfile" data-execution_count="6">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>Dockerfile</strong></pre>
 </div>
-<div class="sourceCode cell-code" id="annotated-cell-5"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-5-1" class="code-annotation-target"><a href="#annotated-cell-5-1" aria-hidden="true" tabindex="-1"></a>FROM ubuntu:<span class="fl">20.04</span></span>
-<span id="annotated-cell-5-2"><a href="#annotated-cell-5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="annotated-cell-5-3"><a href="#annotated-cell-5-3" aria-hidden="true" tabindex="-1"></a>RUN apt<span class="op">-</span>get update <span class="op">-</span>y <span class="op">&amp;&amp;</span> \ </span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-5-4" class="code-annotation-target"><a href="#annotated-cell-5-4" aria-hidden="true" tabindex="-1"></a>    apt<span class="op">-</span>get install <span class="op">-</span>y python3<span class="op">-</span>pip python3<span class="op">-</span>dev</span>
-<span id="annotated-cell-5-5"><a href="#annotated-cell-5-5" aria-hidden="true" tabindex="-1"></a>    </span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-5-6" class="code-annotation-target"><a href="#annotated-cell-5-6" aria-hidden="true" tabindex="-1"></a>WORKDIR <span class="op">/</span>app</span>
-<span id="annotated-cell-5-7"><a href="#annotated-cell-5-7" aria-hidden="true" tabindex="-1"></a></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-5-8" class="code-annotation-target"><a href="#annotated-cell-5-8" aria-hidden="true" tabindex="-1"></a>COPY requirements.txt <span class="op">/</span>app<span class="op">/</span>requirements.txt</span>
-<span id="annotated-cell-5-9"><a href="#annotated-cell-5-9" aria-hidden="true" tabindex="-1"></a>RUN pip install <span class="op">-</span>r requirements.txt</span>
-<span id="annotated-cell-5-10"><a href="#annotated-cell-5-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="annotated-cell-5-11"><a href="#annotated-cell-5-11" aria-hidden="true" tabindex="-1"></a>COPY . <span class="op">/</span>app</span>
-<span id="annotated-cell-5-12"><a href="#annotated-cell-5-12" aria-hidden="true" tabindex="-1"></a></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="5" onclick="event.preventDefault();">5</a><span id="annotated-cell-5-13" class="code-annotation-target"><a href="#annotated-cell-5-13" aria-hidden="true" tabindex="-1"></a>ENV FLASK_APP<span class="op">=</span><span class="st">"hello-world.py"</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="6" onclick="event.preventDefault();">6</a><span id="annotated-cell-5-14" class="code-annotation-target"><a href="#annotated-cell-5-14" aria-hidden="true" tabindex="-1"></a>EXPOSE <span class="dv">5000</span></span>
-<span id="annotated-cell-5-15"><a href="#annotated-cell-5-15" aria-hidden="true" tabindex="-1"></a></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-5" data-target-annotation="7" onclick="event.preventDefault();">7</a><span id="annotated-cell-5-16" class="code-annotation-target"><a href="#annotated-cell-5-16" aria-hidden="true" tabindex="-1"></a>CMD [<span class="st">"flask"</span>, <span class="st">"run"</span>, <span class="st">"--host=0.0.0.0"</span>]</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="annotated-cell-6" data-filename="Dockerfile"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><a class="code-annotation-anchor" data-target-cell="annotated-cell-6" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-6-1" class="code-annotation-target"><a href="#annotated-cell-6-1" aria-hidden="true" tabindex="-1"></a>FROM ubuntu:<span class="fl">20.04</span></span>
+<span id="annotated-cell-6-2"><a href="#annotated-cell-6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-6-3"><a href="#annotated-cell-6-3" aria-hidden="true" tabindex="-1"></a>RUN apt<span class="op">-</span>get update <span class="op">-</span>y <span class="op">&amp;&amp;</span> \ </span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-6" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-6-4" class="code-annotation-target"><a href="#annotated-cell-6-4" aria-hidden="true" tabindex="-1"></a>    apt<span class="op">-</span>get install <span class="op">-</span>y python3<span class="op">-</span>pip python3<span class="op">-</span>dev</span>
+<span id="annotated-cell-6-5"><a href="#annotated-cell-6-5" aria-hidden="true" tabindex="-1"></a>    </span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-6" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-6-6" class="code-annotation-target"><a href="#annotated-cell-6-6" aria-hidden="true" tabindex="-1"></a>WORKDIR <span class="op">/</span>app</span>
+<span id="annotated-cell-6-7"><a href="#annotated-cell-6-7" aria-hidden="true" tabindex="-1"></a></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-6" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-6-8" class="code-annotation-target"><a href="#annotated-cell-6-8" aria-hidden="true" tabindex="-1"></a>COPY requirements.txt <span class="op">/</span>app<span class="op">/</span>requirements.txt</span>
+<span id="annotated-cell-6-9"><a href="#annotated-cell-6-9" aria-hidden="true" tabindex="-1"></a>RUN pip install <span class="op">-</span>r requirements.txt</span>
+<span id="annotated-cell-6-10"><a href="#annotated-cell-6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-6-11"><a href="#annotated-cell-6-11" aria-hidden="true" tabindex="-1"></a>COPY . <span class="op">/</span>app</span>
+<span id="annotated-cell-6-12"><a href="#annotated-cell-6-12" aria-hidden="true" tabindex="-1"></a></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-6" data-target-annotation="5" onclick="event.preventDefault();">5</a><span id="annotated-cell-6-13" class="code-annotation-target"><a href="#annotated-cell-6-13" aria-hidden="true" tabindex="-1"></a>ENV FLASK_APP<span class="op">=</span><span class="st">"hello-world.py"</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-6" data-target-annotation="6" onclick="event.preventDefault();">6</a><span id="annotated-cell-6-14" class="code-annotation-target"><a href="#annotated-cell-6-14" aria-hidden="true" tabindex="-1"></a>EXPOSE <span class="dv">5000</span></span>
+<span id="annotated-cell-6-15"><a href="#annotated-cell-6-15" aria-hidden="true" tabindex="-1"></a></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-6" data-target-annotation="7" onclick="event.preventDefault();">7</a><span id="annotated-cell-6-16" class="code-annotation-target"><a href="#annotated-cell-6-16" aria-hidden="true" tabindex="-1"></a>CMD [<span class="st">"flask"</span>, <span class="st">"run"</span>, <span class="st">"--host=0.0.0.0"</span>]</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell-annotation">
 <dl class="code-annotation-container-grid">
-<dt data-target-cell="annotated-cell-5" data-target-annotation="1">1</dt>
+<dt data-target-cell="annotated-cell-6" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-cell="annotated-cell-5" data-code-lines="1" data-code-annotation="1"><code>FROM</code> : spécifie l’image de base. Une image <code>Docker</code> hérite toujours d’une image de base. Ici, on choisit l’image <code>Ubuntu</code> version <code>20.04</code>, tout va donc se passer comme si l’on développait sur une machine virtuelle vierge ayant pour système d’exploitation <code>Ubuntu 20.04</code> <i class="fa-brands fa-linux" aria-label="linux"></i> ;</span>
+<span data-code-cell="annotated-cell-6" data-code-lines="1" data-code-annotation="1"><code>FROM</code> : spécifie l’image de base. Une image <code>Docker</code> hérite toujours d’une image de base. Ici, on choisit l’image <code>Ubuntu</code> version <code>20.04</code>, tout va donc se passer comme si l’on développait sur une machine virtuelle vierge ayant pour système d’exploitation <code>Ubuntu 20.04</code> <i class="fa-brands fa-linux" aria-label="linux"></i> ;</span>
 </dd>
-<dt data-target-cell="annotated-cell-5" data-target-annotation="2">2</dt>
+<dt data-target-cell="annotated-cell-6" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-cell="annotated-cell-5" data-code-lines="4" data-code-annotation="2"><code>RUN</code> : lance une commande Linux. Ici, on met d’abord à jour la liste des packages téléchargeables via <code>apt</code>, puis on installe <code>Python</code> <i class="fa-brands fa-python" aria-label="python"></i> ainsi que des librairies système nécessaires au bon fonctionnement de notre application ;</span>
+<span data-code-cell="annotated-cell-6" data-code-lines="4" data-code-annotation="2"><code>RUN</code> : lance une commande Linux. Ici, on met d’abord à jour la liste des packages téléchargeables via <code>apt</code>, puis on installe <code>Python</code> <i class="fa-brands fa-python" aria-label="python"></i> ainsi que des librairies système nécessaires au bon fonctionnement de notre application ;</span>
 </dd>
-<dt data-target-cell="annotated-cell-5" data-target-annotation="3">3</dt>
+<dt data-target-cell="annotated-cell-6" data-target-annotation="3">3</dt>
 <dd>
-<span data-code-cell="annotated-cell-5" data-code-lines="6" data-code-annotation="3"><code>WORKDIR</code> : spécifie le répertoire de travail de l’image. Ainsi, toutes les commandes suivantes seront exécutées depuis ce répertoire. C’est l’équivalent <code>Docker</code> de la commande <code>cd</code> (voir <a href="../chapters/linux-101.html">Linux 101</a>) ;</span>
+<span data-code-cell="annotated-cell-6" data-code-lines="6" data-code-annotation="3"><code>WORKDIR</code> : spécifie le répertoire de travail de l’image. Ainsi, toutes les commandes suivantes seront exécutées depuis ce répertoire. C’est l’équivalent <code>Docker</code> de la commande <code>cd</code> (voir <a href="../chapters/linux-101.html">Linux 101</a>) ;</span>
 </dd>
-<dt data-target-cell="annotated-cell-5" data-target-annotation="4">4</dt>
+<dt data-target-cell="annotated-cell-6" data-target-annotation="4">4</dt>
 <dd>
-<span data-code-cell="annotated-cell-5" data-code-lines="8,9,11" data-code-annotation="4"><code>COPY</code> : copie un fichier local sur l’image <code>Docker</code>. Cela est lié à la manière dont fonctionne <code>Docker</code>. Pour ne pas polluer l’image de fichiers non nécessaires (qui affecteront de manière incidente sa configuration et le poids de celle-ci), par défaut, votre image ne contient pas de fichiers de votre projet. Si certains sont nécessaires pour construire l’image, il faut explicitement le dire à <code>Docker</code>. Ici, on copie d’abord le fichier <code>requirements.txt</code> du projet, qui spécifie les dépendances <code>Python</code> de notre application, puis on les installe avec une commande <code>RUN</code>. La seconde instruction <code>COPY</code> copie le répertoire du projet sur l’image ;</span>
+<span data-code-cell="annotated-cell-6" data-code-lines="8,9,11" data-code-annotation="4"><code>COPY</code> : copie un fichier local sur l’image <code>Docker</code>. Cela est lié à la manière dont fonctionne <code>Docker</code>. Pour ne pas polluer l’image de fichiers non nécessaires (qui affecteront de manière incidente sa configuration et le poids de celle-ci), par défaut, votre image ne contient pas de fichiers de votre projet. Si certains sont nécessaires pour construire l’image, il faut explicitement le dire à <code>Docker</code>. Ici, on copie d’abord le fichier <code>requirements.txt</code> du projet, qui spécifie les dépendances <code>Python</code> de notre application, puis on les installe avec une commande <code>RUN</code>. La seconde instruction <code>COPY</code> copie le répertoire du projet sur l’image ;</span>
 </dd>
-<dt data-target-cell="annotated-cell-5" data-target-annotation="5">5</dt>
+<dt data-target-cell="annotated-cell-6" data-target-annotation="5">5</dt>
 <dd>
-<span data-code-cell="annotated-cell-5" data-code-lines="13" data-code-annotation="5"><code>ENV</code> : crée une variable d’environnement qui sera accessible à l’application dans le conteneur. Ici, on définit une variable d’environnement attendue par <code>Flask</code>, qui spécifie le nom du script permettant de lancer l’application ;</span>
+<span data-code-cell="annotated-cell-6" data-code-lines="13" data-code-annotation="5"><code>ENV</code> : crée une variable d’environnement qui sera accessible à l’application dans le conteneur. Ici, on définit une variable d’environnement attendue par <code>Flask</code>, qui spécifie le nom du script permettant de lancer l’application ;</span>
 </dd>
-<dt data-target-cell="annotated-cell-5" data-target-annotation="6">6</dt>
+<dt data-target-cell="annotated-cell-6" data-target-annotation="6">6</dt>
 <dd>
-<span data-code-cell="annotated-cell-5" data-code-lines="14" data-code-annotation="6"><code>EXPOSE</code> : informe <code>Docker</code> que le conteneur “écoute” sur le port 5000, qui est le port par défaut utilisé par le serveur web de <code>Flask</code>. Ceci est lié à la nature du fonctionnement de <code>Flask</code> qui lance un <em>localhost</em> sur un port donné, en l’occurrence le port 5000. ;</span>
+<span data-code-cell="annotated-cell-6" data-code-lines="14" data-code-annotation="6"><code>EXPOSE</code> : informe <code>Docker</code> que le conteneur “écoute” sur le port 5000, qui est le port par défaut utilisé par le serveur web de <code>Flask</code>. Ceci est lié à la nature du fonctionnement de <code>Flask</code> qui lance un <em>localhost</em> sur un port donné, en l’occurrence le port 5000. ;</span>
 </dd>
-<dt data-target-cell="annotated-cell-5" data-target-annotation="7">7</dt>
+<dt data-target-cell="annotated-cell-6" data-target-annotation="7">7</dt>
 <dd>
-<span data-code-cell="annotated-cell-5" data-code-lines="16" data-code-annotation="7"><code>CMD</code> : spécifie la commande que doit exécuter le conteneur lors de son lancement. Il s’agit d’une liste, qui contient les différentes parties de la commande sous forme de chaînes de caractères. Ici, on lance la commande <code>flask run</code> qui sait automatiquement quelle application lancer du fait de la commande <code>ENV</code> spécifiée précédemment. On ajoute l’option <code>--host=0.0.0.0</code> pour que ce soit l’application déployée sur le <em>localhost</em> (notre application <code>Flask</code>) qui soit mis à disposition de l’utilisateur final.</span>
+<span data-code-cell="annotated-cell-6" data-code-lines="16" data-code-annotation="7"><code>CMD</code> : spécifie la commande que doit exécuter le conteneur lors de son lancement. Il s’agit d’une liste, qui contient les différentes parties de la commande sous forme de chaînes de caractères. Ici, on lance la commande <code>flask run</code> qui sait automatiquement quelle application lancer du fait de la commande <code>ENV</code> spécifiée précédemment. On ajoute l’option <code>--host=0.0.0.0</code> pour que ce soit l’application déployée sur le <em>localhost</em> (notre application <code>Flask</code>) qui soit mis à disposition de l’utilisateur final.</span>
 </dd>
 </dl>
-</div>
-</div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -1137,84 +1137,76 @@ L’instruction <code>COPY</code>
 </section>
 <section id="build" class="level2">
 <h2 class="anchored" data-anchor-id="build">Construction d’une image Docker</h2>
-<p>Pour construire une image à partir d’un <code>Dockerfile</code>, il suffit d’utiliser la commande <code>docker build</code> depuis la ligne de commande<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a>. Il faut ensuite spécifier deux éléments importants :</p>
+<p>Pour construire une image à partir d’un <code>Dockerfile</code>, il suffit d’utiliser la commande <code>docker build</code> depuis la ligne de commande<a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a>. Il faut ensuite spécifier deux éléments importants :</p>
 <ul>
 <li>le <strong><em>build context</em></strong>. Il faut indiquer à <code>Docker</code> le chemin de notre projet, qui doit contenir le <code>Dockerfile</code>. En pratique, il est plus simple de se mettre dans le dossier du projet via la commande <code>cd</code>, puis de passer <code>.</code> comme <em>build context</em> pour indiquer à <code>Docker</code> de <em>build</em> “d’ici” ;</li>
 <li>le <strong><em>tag</em></strong>, c’est à dire le nom de l’image. Tant que l’on utilise <code>Docker</code> en local, le <em>tag</em> importe peu. On verra par la suite que la structure du <em>tag</em> a de l’importance lorsque l’on souhaite <a href="#imp-docker">exporter</a> ou <a href="#exp-docker">importer</a> une image <code>Docker</code> à partir d’un dépôt distant.</li>
 </ul>
 <p>Regardons ce qui se passe en pratique lorsque l’on essaie de construire notre image. Le tag de celle-ci est <code>myflaskapp</code>:</p>
-<div id="0e3ecdad" class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>$ docker build <span class="op">-</span>t myflaskapp .</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="636f2c89" class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>Sending build context to Docker daemon     <span class="dv">47</span><span class="er">MB</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">1</span><span class="op">/</span><span class="dv">8</span> : FROM ubuntu:<span class="fl">20.04</span></span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> <span class="dv">825</span><span class="er">d55fb6340</span></span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">2</span><span class="op">/</span><span class="dv">8</span> : RUN apt<span class="op">-</span>get update <span class="op">&amp;&amp;</span> apt<span class="op">-</span>get install <span class="op">-</span>y python3<span class="op">-</span>pip python3<span class="op">-</span>dev</span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> Running <span class="kw">in</span> <span class="dv">92</span><span class="er">b42d579cfa</span></span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>...</span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>done.</span>
-<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>Removing intermediate container <span class="dv">92</span><span class="er">b42d579cfa</span></span>
-<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> <span class="dv">8826</span><span class="er">d53e3c01</span></span>
-<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">3</span><span class="op">/</span><span class="dv">8</span> : WORKDIR <span class="op">/</span>app</span>
-<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> Running <span class="kw">in</span> <span class="dv">153</span><span class="er">b32893c23</span></span>
-<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>Removing intermediate container <span class="dv">153</span><span class="er">b32893c23</span></span>
-<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> <span class="dv">7</span><span class="er">b4d22021986</span></span>
-<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">4</span><span class="op">/</span><span class="dv">8</span> : COPY requirements.txt <span class="op">/</span>app<span class="op">/</span>requirements.txt</span>
-<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>...</span>
-<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>Successfully built <span class="dv">125</span><span class="er">bd8da70ff</span></span>
-<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>Successfully tagged myflaskapp:latest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<div class="sourceCode" id="cb41" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker build <span class="at">-t</span> myflaskapp .</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>Sending build context to Docker daemon     <span class="dv">47</span><span class="er">MB</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">1</span><span class="op">/</span><span class="dv">8</span> : FROM ubuntu:<span class="fl">20.04</span></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> <span class="dv">825</span><span class="er">d55fb6340</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">2</span><span class="op">/</span><span class="dv">8</span> : RUN apt<span class="op">-</span>get update <span class="op">&amp;&amp;</span> apt<span class="op">-</span>get install <span class="op">-</span>y python3<span class="op">-</span>pip python3<span class="op">-</span>dev</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> Running <span class="kw">in</span> <span class="dv">92</span><span class="er">b42d579cfa</span></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>...</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>done.</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>Removing intermediate container <span class="dv">92</span><span class="er">b42d579cfa</span></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> <span class="dv">8826</span><span class="er">d53e3c01</span></span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">3</span><span class="op">/</span><span class="dv">8</span> : WORKDIR <span class="op">/</span>app</span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> Running <span class="kw">in</span> <span class="dv">153</span><span class="er">b32893c23</span></span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>Removing intermediate container <span class="dv">153</span><span class="er">b32893c23</span></span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> <span class="dv">7</span><span class="er">b4d22021986</span></span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">4</span><span class="op">/</span><span class="dv">8</span> : COPY requirements.txt <span class="op">/</span>app<span class="op">/</span>requirements.txt</span>
+<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a>...</span>
+<span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a>Successfully built <span class="dv">125</span><span class="er">bd8da70ff</span></span>
+<span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a>Successfully tagged myflaskapp:latest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Le moteur <code>Docker</code> essaie de construire notre image séquentiellement à partir des commandes spécifiées dans le <code>Dockerfile</code>. S’il rencontre une erreur, la procédure s’arrête, et il faut alors trouver la source du problème dans les <em>logs</em> et adapter le <code>Dockerfile</code> en conséquence.</p>
 <p>Si tout se passe bien, <code>Docker</code> nous indique que le <em>build</em> a réussi et l’image est prête à être utilisée. On peut vérifier que l’image est bien disponible à l’aide de la commande <code>docker images</code>.</p>
-<div id="ddcf75ac" class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>$ docker images</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>REPOSITORY                               TAG       IMAGE ID       CREATED          SIZE</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>myflaskapp                               latest    <span class="dv">57</span><span class="er">d2f410a631</span>   <span class="dv">2</span> hours ago      <span class="dv">433</span><span class="er">MB</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<div class="sourceCode" id="cb43" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker images</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>REPOSITORY                               TAG       IMAGE ID       CREATED          SIZE</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>myflaskapp                               latest    <span class="dv">57</span><span class="er">d2f410a631</span>   <span class="dv">2</span> hours ago      <span class="dv">433</span><span class="er">MB</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Intéressons nous un peu plus en détail aux <em>logs</em> de l’étape de <em>build</em> 👆️.</p>
 <p>Entre les étapes, <code>Docker</code> affiche des suites de lettres et de chiffres un peu ésotériques, et nous parle de conteneurs intermédiaires. En fait, il faut voir une image <code>Docker</code> comme un empilement de couches (<em>layers</em>), qui sont elles-mêmes des images <code>Docker</code>. Quand on hérite d’une image avec l’instruction <code>FROM</code>, on spécifie donc à <code>Docker</code> la couche initiale, sur laquelle il va construire le reste de notre environnement. A chaque étape sa nouvelle couche, et à chaque couche son <em>hash</em>, un identifiant unique fait de lettres et de chiffres.</p>
-<p>Cela peut ressembler à des détails techniques, mais c’est en fait extrêmement utile en pratique car cela permet à <code>Docker</code> de faire du <em>caching</em>. Lorsqu’on développe un <code>Dockerfile</code>, il est fréquent de devoir modifier ce dernier de nombreuses fois avant de trouver la bonne recette, et on aimerait bien ne pas avoir à <em>rebuild</em> l’environnement complet à chaque fois. <code>Docker</code> gère cela très bien : il <em>cache</em> chacune des couches intermédiaires<a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a>.</p>
+<p>Cela peut ressembler à des détails techniques, mais c’est en fait extrêmement utile en pratique car cela permet à <code>Docker</code> de faire du <em>caching</em>. Lorsqu’on développe un <code>Dockerfile</code>, il est fréquent de devoir modifier ce dernier de nombreuses fois avant de trouver la bonne recette, et on aimerait bien ne pas avoir à <em>rebuild</em> l’environnement complet à chaque fois. <code>Docker</code> gère cela très bien : il <em>cache</em> chacune des couches intermédiaires<a href="#fn10" class="footnote-ref" id="fnref10" role="doc-noteref"><sup>10</sup></a>.</p>
 <p>Par exemple, si l’on modifie la 5ème commande du <code>Dockerfile</code>, <code>Docker</code> va utiliser le cache pour ne pas avoir à recalculer les étapes précédentes, qui n’ont pas changé. Cela s’appelle l’<em>“invalidation du cache”</em> : dès lors qu’une étape du <code>Dockerfile</code> est modifiée, <code>Docker</code> va recalculer toutes les étapes suivantes, mais seulement celles-ci. Conséquence directe de cette observation : il faut toujours ordonner les étapes d’un <code>Dockerfile</code> de sorte à ce qui est le plus susceptible d’être souvent modifié soit à la fin du fichier, et inversement.</p>
 <p>Pour illustrer cela, regardons ce qui se passe si l’on modifie le nom du script qui lance l’application, et donc la valeur de la variable d’environnement <code>FLASK_APP</code> dans le <code>Dockerfile</code>.</p>
-<div id="c29e9773" class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>$ docker build . <span class="op">-</span>t myflaskapp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div id="d4b060a7" class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>Sending build context to Docker daemon  <span class="fl">4.096</span><span class="er">kB</span></span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">1</span><span class="op">/</span><span class="dv">10</span> : FROM ubuntu:<span class="fl">20.04</span></span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> <span class="dv">825</span><span class="er">d55fb6340</span></span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">2</span><span class="op">/</span><span class="dv">10</span> : ENV DEBIAN_FRONTEND<span class="op">=</span>noninteractive</span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> Using cache</span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> ea1c7c083ac9</span>
-<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">3</span><span class="op">/</span><span class="dv">10</span> : RUN apt<span class="op">-</span>get update <span class="op">-</span>y <span class="op">&amp;&amp;</span>     apt<span class="op">-</span>get install <span class="op">-</span>y python3<span class="op">-</span>pip python3<span class="op">-</span>dev</span>
-<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> Using cache</span>
-<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> <span class="dv">0</span><span class="er">78b8ac0e1cb</span></span>
-<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">4</span><span class="op">/</span><span class="dv">10</span> : WORKDIR <span class="op">/</span>app</span>
-<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> Using cache</span>
-<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> cd19632825b3</span>
-<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">5</span><span class="op">/</span><span class="dv">10</span> : COPY requirements.txt <span class="op">/</span>app<span class="op">/</span>requirements.txt</span>
-<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> Using cache</span>
-<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> <span class="dv">271</span><span class="er">cd1686899</span></span>
-<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">6</span><span class="op">/</span><span class="dv">10</span> : RUN pip install <span class="op">-</span>r requirements.txt</span>
-<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> Using cache</span>
-<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> <span class="dv">3</span><span class="er">ea406fdf383</span></span>
-<span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">7</span><span class="op">/</span><span class="dv">10</span> : COPY . <span class="op">/</span>app</span>
-<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> <span class="dv">3</span><span class="er">ce5bd3a9572</span></span>
-<span id="cb37-21"><a href="#cb37-21" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">8</span><span class="op">/</span><span class="dv">10</span> : ENV FLASK_APP<span class="op">=</span><span class="st">"new.py"</span></span>
-<span id="cb37-22"><a href="#cb37-22" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> Running <span class="kw">in</span> b378d16bb605</span>
-<span id="cb37-23"><a href="#cb37-23" aria-hidden="true" tabindex="-1"></a>Removing intermediate container b378d16bb605</span>
-<span id="cb37-24"><a href="#cb37-24" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> e1f50490287b</span>
-<span id="cb37-25"><a href="#cb37-25" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">9</span><span class="op">/</span><span class="dv">10</span> : EXPOSE <span class="dv">5000</span></span>
-<span id="cb37-26"><a href="#cb37-26" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> Running <span class="kw">in</span> ab53c461d3de</span>
-<span id="cb37-27"><a href="#cb37-27" aria-hidden="true" tabindex="-1"></a>Removing intermediate container ab53c461d3de</span>
-<span id="cb37-28"><a href="#cb37-28" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> <span class="dv">0</span><span class="er">b86eca40a80</span></span>
-<span id="cb37-29"><a href="#cb37-29" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">10</span><span class="op">/</span><span class="dv">10</span> : CMD [<span class="st">"flask"</span>, <span class="st">"run"</span>, <span class="st">"--host=0.0.0.0"</span>]</span>
-<span id="cb37-30"><a href="#cb37-30" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> Running <span class="kw">in</span> <span class="dv">340</span><span class="er">eec151a51</span></span>
-<span id="cb37-31"><a href="#cb37-31" aria-hidden="true" tabindex="-1"></a>Removing intermediate container <span class="dv">340</span><span class="er">eec151a51</span></span>
-<span id="cb37-32"><a href="#cb37-32" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> <span class="dv">16</span><span class="er">d7a5b8db28</span></span>
-<span id="cb37-33"><a href="#cb37-33" aria-hidden="true" tabindex="-1"></a>Successfully built <span class="dv">16</span><span class="er">d7a5b8db28</span></span>
-<span id="cb37-34"><a href="#cb37-34" aria-hidden="true" tabindex="-1"></a>Successfully tagged myflaskapp:latest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb45" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker build . <span class="at">-t</span> myflaskapp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="bbed0d7b" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>Sending build context to Docker daemon  <span class="fl">4.096</span><span class="er">kB</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">1</span><span class="op">/</span><span class="dv">10</span> : FROM ubuntu:<span class="fl">20.04</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> <span class="dv">825</span><span class="er">d55fb6340</span></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">2</span><span class="op">/</span><span class="dv">10</span> : ENV DEBIAN_FRONTEND<span class="op">=</span>noninteractive</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> Using cache</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> ea1c7c083ac9</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">3</span><span class="op">/</span><span class="dv">10</span> : RUN apt<span class="op">-</span>get update <span class="op">-</span>y <span class="op">&amp;&amp;</span>     apt<span class="op">-</span>get install <span class="op">-</span>y python3<span class="op">-</span>pip python3<span class="op">-</span>dev</span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> Using cache</span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> <span class="dv">0</span><span class="er">78b8ac0e1cb</span></span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">4</span><span class="op">/</span><span class="dv">10</span> : WORKDIR <span class="op">/</span>app</span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> Using cache</span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> cd19632825b3</span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">5</span><span class="op">/</span><span class="dv">10</span> : COPY requirements.txt <span class="op">/</span>app<span class="op">/</span>requirements.txt</span>
+<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> Using cache</span>
+<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> <span class="dv">271</span><span class="er">cd1686899</span></span>
+<span id="cb46-16"><a href="#cb46-16" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">6</span><span class="op">/</span><span class="dv">10</span> : RUN pip install <span class="op">-</span>r requirements.txt</span>
+<span id="cb46-17"><a href="#cb46-17" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> Using cache</span>
+<span id="cb46-18"><a href="#cb46-18" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> <span class="dv">3</span><span class="er">ea406fdf383</span></span>
+<span id="cb46-19"><a href="#cb46-19" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">7</span><span class="op">/</span><span class="dv">10</span> : COPY . <span class="op">/</span>app</span>
+<span id="cb46-20"><a href="#cb46-20" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> <span class="dv">3</span><span class="er">ce5bd3a9572</span></span>
+<span id="cb46-21"><a href="#cb46-21" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">8</span><span class="op">/</span><span class="dv">10</span> : ENV FLASK_APP<span class="op">=</span><span class="st">"new.py"</span></span>
+<span id="cb46-22"><a href="#cb46-22" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> Running <span class="kw">in</span> b378d16bb605</span>
+<span id="cb46-23"><a href="#cb46-23" aria-hidden="true" tabindex="-1"></a>Removing intermediate container b378d16bb605</span>
+<span id="cb46-24"><a href="#cb46-24" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> e1f50490287b</span>
+<span id="cb46-25"><a href="#cb46-25" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">9</span><span class="op">/</span><span class="dv">10</span> : EXPOSE <span class="dv">5000</span></span>
+<span id="cb46-26"><a href="#cb46-26" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> Running <span class="kw">in</span> ab53c461d3de</span>
+<span id="cb46-27"><a href="#cb46-27" aria-hidden="true" tabindex="-1"></a>Removing intermediate container ab53c461d3de</span>
+<span id="cb46-28"><a href="#cb46-28" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> <span class="dv">0</span><span class="er">b86eca40a80</span></span>
+<span id="cb46-29"><a href="#cb46-29" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">10</span><span class="op">/</span><span class="dv">10</span> : CMD [<span class="st">"flask"</span>, <span class="st">"run"</span>, <span class="st">"--host=0.0.0.0"</span>]</span>
+<span id="cb46-30"><a href="#cb46-30" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> Running <span class="kw">in</span> <span class="dv">340</span><span class="er">eec151a51</span></span>
+<span id="cb46-31"><a href="#cb46-31" aria-hidden="true" tabindex="-1"></a>Removing intermediate container <span class="dv">340</span><span class="er">eec151a51</span></span>
+<span id="cb46-32"><a href="#cb46-32" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> <span class="dv">16</span><span class="er">d7a5b8db28</span></span>
+<span id="cb46-33"><a href="#cb46-33" aria-hidden="true" tabindex="-1"></a>Successfully built <span class="dv">16</span><span class="er">d7a5b8db28</span></span>
+<span id="cb46-34"><a href="#cb46-34" aria-hidden="true" tabindex="-1"></a>Successfully tagged myflaskapp:latest</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>L’étape de <em>build</em> a pris quelques secondes au lieu de plusieurs minutes, et les <em>logs</em> montrent bien l’utilisation du cache faite par <code>Docker</code> : les étapes précédant le changement réutilisent les couches cachées, mais celle d’après sont recalculées.</p>
 </section>
@@ -1222,10 +1214,8 @@ L’instruction <code>COPY</code>
 <h2 class="anchored" data-anchor-id="execution">Exécuter (<em>run</em>) une image <code>Docker</code></h2>
 <p>L’étape de <em>build</em> a permis de créer une <em>image</em> <code>Docker</code>. Une image doit être vue comme un <em>template</em> : elle permet d’exécuter l’application sur n’importe quel environnement d’exécution sur lequel un moteur <code>Docker</code> est installé.</p>
 <p>En l’état, on a donc juste <em>construit</em>, mais rien <em>lancé</em> : notre application ne tourne pas encore. Pour cela, il faut créer un <em>conteneur</em>, i.e.&nbsp;une instance vivante de l’image qui permet d’accéder à l’application. Cela se fait via la commande <code>docker run</code>.</p>
-<div id="be7d5e20" class="cell" data-execution_count="12">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>$ docker run <span class="op">-</span>d <span class="op">-</span>p <span class="dv">8000</span>:<span class="dv">5000</span> myflaskapp:latest</span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="dv">6</span><span class="er">a2ab0d82d051a3829b182ede7b9152f7b692117d63fa013e7dfe6232f1b9e81</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<div class="sourceCode" id="cb47" data-no-prefix="true" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker run <span class="at">-d</span> <span class="at">-p</span> 8000:5000 myflaskapp:latest</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="ex">6a2ab0d82d051a3829b182ede7b9152f7b692117d63fa013e7dfe6232f1b9e81</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Détaillons la syntaxe de cette commande :</p>
 <ul>
 <li><code>docker run tag</code> : lance l’image dont on fournit le <em>tag</em>. Le <em>tag</em> est de la forme <code>repository/projet:version</code>. Ici, il n’y a pas de <em>repository</em> puisque tout est fait en local ;</li>
@@ -1233,11 +1223,9 @@ L’instruction <code>COPY</code>
 <li><code>-p</code> : effectue un <em>mapping</em> entre un port de la machine qui exécute le conteneur, et le conteneur lui-même. Notre conteneur écoute sur le port 5000, et l’on veut que notre application soit exposée sur le port 8000 de notre machine.</li>
 </ul>
 <p>Lorsque l’on exécute <code>docker run</code>, <code>Docker</code> nous répond simplement un <em>hash</em> qui identifie le conteneur que l’on a lancé. On peut vérifier qu’il tourne bien avec la commande <code>docker ps</code>, qui renvoie toutes les informations associées au conteneur.</p>
-<div id="1b88fa28" class="cell" data-execution_count="13">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>$ docker ps</span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>CONTAINER ID   IMAGE        COMMAND                  CREATED         STATUS         PORTS                                   NAMES</span>
-<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="dv">6</span><span class="er">a2ab0d82d05</span>   myflaskapp   <span class="st">"flask run --host=0.…"</span>   <span class="dv">7</span> seconds ago   Up <span class="dv">6</span> seconds   <span class="fl">0.0.0.0</span>:<span class="dv">8000</span><span class="op">-&gt;</span><span class="dv">5000</span><span class="op">/</span>tcp, :::<span class="dv">8000</span><span class="op">-&gt;</span><span class="dv">5000</span><span class="op">/</span>tcp   vigorous_kalam</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<div class="sourceCode" id="cb48" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker ps</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>CONTAINER ID   IMAGE        COMMAND                  CREATED         STATUS         PORTS                                   NAMES</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="dv">6</span><span class="er">a2ab0d82d05</span>   myflaskapp   <span class="st">"flask run --host=0.…"</span>   <span class="dv">7</span> seconds ago   Up <span class="dv">6</span> seconds   <span class="fl">0.0.0.0</span>:<span class="dv">8000</span><span class="op">-&gt;</span><span class="dv">5000</span><span class="op">/</span>tcp, :::<span class="dv">8000</span><span class="op">-&gt;</span><span class="dv">5000</span><span class="op">/</span>tcp   vigorous_kalam</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Les conteneurs peuvent être utilisés pour réaliser des tâches très différentes. Grossièrement, on peut distinguer deux situations :</p>
 <ul>
 <li>le conteneur effectue une tâche “one-shot”, c’est à dire une opération qui a vocation à s’effectuer en un certain temps, suite à quoi le conteneur peut s’arrêter ;</li>
@@ -1258,34 +1246,30 @@ L’instruction <code>COPY</code>
 <li>on va modifier le <em>tag</em> que l’on fournit lors du <em>build</em> pour spécifier le chemin attendu. Dans notre cas : <code>docker build -t compte/projet:version .</code> ;</li>
 <li>uploader l’image avec <code>docker push compte/projet:version</code></li>
 </ul>
-<div id="871a7e1d" class="cell" data-execution_count="14">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>$ docker push avouacr<span class="op">/</span>myflaskapp:<span class="fl">1.0.0</span></span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>The push refers to repository [docker.io<span class="op">/</span>avouacr<span class="op">/</span>myflaskapp]</span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a><span class="dv">71</span><span class="er">db96687fe6</span>: Pushed </span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="dv">624877</span><span class="er">ac887b</span>: Pushed </span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>ea4ab6b86e70: Pushed </span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>b5120a5bc48d: Pushed </span>
-<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="dv">5</span><span class="er">fa484a3c9d8</span>: Pushed </span>
-<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>c5ec52c98b31: Pushed </span>
-<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="fl">1.0.0</span>: digest: sha256:b75fe53fd1990c3092ec41ab0966a9fbbb762f3047957d99327cc16e27c68cc9 size: <span class="dv">1574</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<div class="sourceCode" id="cb50" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker push avouacr/myflaskapp:1.0.0</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>The push refers to repository [docker.io<span class="op">/</span>avouacr<span class="op">/</span>myflaskapp]</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="dv">71</span><span class="er">db96687fe6</span>: Pushed </span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a><span class="dv">624877</span><span class="er">ac887b</span>: Pushed </span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>ea4ab6b86e70: Pushed </span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>b5120a5bc48d: Pushed </span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a><span class="dv">5</span><span class="er">fa484a3c9d8</span>: Pushed </span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>c5ec52c98b31: Pushed </span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a><span class="fl">1.0.0</span>: digest: sha256:b75fe53fd1990c3092ec41ab0966a9fbbb762f3047957d99327cc16e27c68cc9 size: <span class="dv">1574</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="imp-docker" class="level2">
 <h2 class="anchored" data-anchor-id="imp-docker">Importer une image <code>Docker</code></h2>
 <p>En supposant que le dépôt utilisé pour uploader l’image est public, la procédure que doit suivre un utilisateur pour la télécharger se résume à utiliser la commande <code>docker pull compte/projet:version</code></p>
-<div id="3e1db372" class="cell" data-execution_count="15">
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>$ docker pull avouacr<span class="op">/</span>myflaskapp:<span class="fl">1.0.0</span></span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fl">1.0.0</span>: Pulling <span class="im">from</span> avouacr<span class="op">/</span>myflaskapp</span>
-<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>e0b25ef51634: Pull complete </span>
-<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>c0445e4b247e: Pull complete </span>
-<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a><span class="dv">48</span><span class="er">ba4e71d1c2</span>: Pull complete </span>
-<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>ffd728caa80a: Pull complete </span>
-<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a><span class="dv">906</span><span class="er">a95f00510</span>: Pull complete </span>
-<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>d7d49b6e17ab: Pull complete </span>
-<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>Digest: sha256:b75fe53fd1990c3092ec41ab0966a9fbbb762f3047957d99327cc16e27c68cc9</span>
-<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>Status: Downloaded newer image <span class="cf">for</span> avouacr<span class="op">/</span>myflaskapp:<span class="fl">1.0.0</span></span>
-<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>docker.io<span class="op">/</span>avouacr<span class="op">/</span>myflaskapp:<span class="fl">1.0.0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<div class="sourceCode" id="cb52" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker pull avouacr/myflaskapp:1.0.0</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fl">1.0.0</span>: Pulling <span class="im">from</span> avouacr<span class="op">/</span>myflaskapp</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>e0b25ef51634: Pull complete </span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>c0445e4b247e: Pull complete </span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a><span class="dv">48</span><span class="er">ba4e71d1c2</span>: Pull complete </span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>ffd728caa80a: Pull complete </span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a><span class="dv">906</span><span class="er">a95f00510</span>: Pull complete </span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>d7d49b6e17ab: Pull complete </span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>Digest: sha256:b75fe53fd1990c3092ec41ab0966a9fbbb762f3047957d99327cc16e27c68cc9</span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>Status: Downloaded newer image <span class="cf">for</span> avouacr<span class="op">/</span>myflaskapp:<span class="fl">1.0.0</span></span>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a>docker.io<span class="op">/</span>avouacr<span class="op">/</span>myflaskapp:<span class="fl">1.0.0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><code>Docker</code> télécharge et extrait chacune des couches qui constituent l’image (ce qui peut parfois être long). L’utilisateur peut alors créer un conteneur à partir de l’image, en utilisant <code>docker run</code> comme illustré précédemment.</p>
 </section>
 <section id="aide-mémoire-1" class="level2">
@@ -1384,12 +1368,13 @@ L’instruction <code>COPY</code>
 <li id="fn1"><p>Nous reviendrons plus tard sur la manière dont la mise à disposition de <em>packages</em> sous forme précompilée par le biais de <em>wheels</em> offre une solution à ce problème.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn2"><p>S’il est impossible de suivre les évolutions de tous les <em>packages</em> de la <em>data science</em>, il est recommandé de faire une veille sur les principaux comme <code>Pandas</code> ou <code>Scikit</code> en suivant les <em>release notes</em> des versions majeures qui introduisent généralement des non-compatibilités.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn3"><p>Le <em>solver</em> de <code>conda</code>, qui est un algorithme de recherche de chemin optimal dans des graphes pour gérer les (in)compatibilités de versions, est lourd à mettre en oeuvre. Le projet <a href="https://mamba.readthedocs.io/en/latest/"><code>mamba</code></a> a permis d’offrir une réimplémentation de <code>Conda</code> en <code>C++</code> par le biais d’un <em>solver</em> plus efficace. Cela a permis de franchement accélérer la vitesse d’installation des <em>packages</em> par le biais de <code>conda</code>. Néanmoins, l’accès de plus en plus fréquent à des <a href="https://pythonwheels.com/"><em>wheels</em></a> a permis un retour en grâce des environnements virtuels implémentés par <code>venv</code> au cours des dernières années.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4"><p>D’ailleurs, si vous utilisez <code>pip</code> sur le SSPCloud, c’est ce que vous faites, sans vous en rendre compte.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn5"><p>Ces répertoires sont, dans le langage <code>conda</code>, les <em>canaux</em>. Le canal par défaut est maintenu par les développeurs d<code>Anaconda</code>. Cependant, pour en assurer la stabilité, ce canal a une forte inertie. La <code>conda-forge</code> a émergé pour offrir plus de flexibilité aux développeurs de <em>package</em> qui peuvent ainsi mettre à disposition des versions plus récentes de leurs packages, comme sur <a href="https://pypi.org/">PyPI</a>.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn6"><p>Par abus de langage, on mélange souvent les termes <em>“image”</em> et <em>“conteneur”</em>. En pratique ces deux concepts sont très proches. Le second correspond à la version vivante du premier.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn7"><p><a href="https://flask.palletsprojects.com/en/2.1.x/"><code>Flask</code></a> est un <em>framework</em> permettant de déployer, de manière légère, des applications reposant sur <code>Python</code>.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn8"><p>Si vous êtes sur Windows, les lignes de commande disponibles par défaut (<code>cmd</code> ou <code>Powershell</code>) sont peu pratiques. Il est recommandé d’utiliser la ligne de commande de <code>Git Bash</code> (une émulation minimaliste d’une ligne de commande <code>Linux</code>) qui vous permettra de faire des opérations en ligne de commande.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn9"><p>Le <em>cache</em> est très pratique pour une construction expérimentale en local. Malheureusement, lorsqu’on passe par des services d’intégration continue, l’utilisation du <em>cache</em> est moins évidente car chaque <code>run</code> se fait sur une machine indépendante de la précédente.<a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Cela signifie que si on ouvre un nouveau terminal, il faudra à nouveau activer cet environnement si on désire l’utiliser. Si on désire activer par défaut un environnement, il est possible de configurer le terminal pour qu’il active automatiquement un environnement spécifique lors de son ouverture. Cela peut être réalisé en modifiant les fichiers de configuration du shell, par le biais par exemple du script <code>.bashrc</code> sur <code>Linux</code>.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>D’ailleurs, si vous utilisez <code>pip</code> sur le SSPCloud, c’est ce que vous faites, sans vous en rendre compte.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>Ces répertoires sont, dans le langage <code>conda</code>, les <em>canaux</em>. Le canal par défaut est maintenu par les développeurs d<code>Anaconda</code>. Cependant, pour en assurer la stabilité, ce canal a une forte inertie. La <code>conda-forge</code> a émergé pour offrir plus de flexibilité aux développeurs de <em>package</em> qui peuvent ainsi mettre à disposition des versions plus récentes de leurs packages, comme sur <a href="https://pypi.org/">PyPI</a>.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>Par abus de langage, on mélange souvent les termes <em>“image”</em> et <em>“conteneur”</em>. En pratique ces deux concepts sont très proches. Le second correspond à la version vivante du premier.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p><a href="https://flask.palletsprojects.com/en/2.1.x/"><code>Flask</code></a> est un <em>framework</em> permettant de déployer, de manière légère, des applications reposant sur <code>Python</code>.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn9"><p>Si vous êtes sur Windows, les lignes de commande disponibles par défaut (<code>cmd</code> ou <code>Powershell</code>) sont peu pratiques. Il est recommandé d’utiliser la ligne de commande de <code>Git Bash</code> (une émulation minimaliste d’une ligne de commande <code>Linux</code>) qui vous permettra de faire des opérations en ligne de commande.<a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn10"><p>Le <em>cache</em> est très pratique pour une construction expérimentale en local. Malheureusement, lorsqu’on passe par des services d’intégration continue, l’utilisation du <em>cache</em> est moins évidente car chaque <code>run</code> se fait sur une machine indépendante de la précédente.<a href="#fnref10" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
