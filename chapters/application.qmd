@@ -108,8 +108,8 @@ pouvez initialiser la création du service en cliquant directement [ici](https:/
 terminal depuis `Visual Studio` (`Terminal > New Terminal`) et
 en passant directement le token dans l'URL selon cette structure:
 
-```shell
-$ git clone https://<TOKEN>@github.com/<USERNAME>/ensae-reproductibilite-application-correction.git
+```{.bash}
+git clone https://<TOKEN>@github.com/<USERNAME>/ensae-reproductibilite-application-correction.git
 ```
 
 où `<TOKEN>` et `<USERNAME>` sont à remplacer, respectivement, 
@@ -117,14 +117,14 @@ par le jeton que vous avez généré précédemment et votre nom d'utilisateur.
 
 - Se placer avec le terminal dans le dossier en question : 
 
-```shell
-$ cd ensae-reproductibilite-application-correction
+```{.bash}
+cd ensae-reproductibilite-application-correction
 ```
 
 - Se placer sur une branche de travail en faisant:
 
-```shell
-$ git checkout -b dev
+```{.bash}
+git checkout -b dev
 ```
 
 :::
@@ -240,11 +240,7 @@ le script principal _(Application 3b)_.
 Un exemple de définition d'un argument pour l'utilisation en ligne de commande
 </summary>
 
-```{python}
-#| eval: false
-#| file: prenom.py
-#| filename: prenom.py
-#| code-summary: prenom.py
+```{.python filename="prenom.py"}
 import argparse
 parser = argparse.ArgumentParser(description="Qui êtes-vous?")
 parser.add_argument(
@@ -256,7 +252,7 @@ print(args.prenom)
 
 Exemples d'utilisations en ligne de commande
 
-```bash
+```{.bash}
 python prenom.py
 python prenom.py --prenom "Zinedine"
 ```
@@ -345,7 +341,7 @@ dans le projet dans quelques temps.
 <details>
 <summary>Etat actuel du projet 🙈</summary>
 
-```shell
+```
 ├── README.md
 ├── train.csv
 ├── test.csv
@@ -377,7 +373,7 @@ issu d'un effort communautaire.
 ::: {.callout-note}
 L'idée de [`cookiecutter`](https://cookiecutter.readthedocs.io/en/stable/) est de proposer des _templates_ que l'on utilise pour __initialiser__ un projet, afin de bâtir à l'avance une structure évolutive. La syntaxe à utiliser dans ce cas est la suivante : 
 
-```shell
+```{.bash}
 $ pip install cookiecutter
 $ cookiecutter https://github.com/drivendata/cookiecutter-data-science
 ```
@@ -393,7 +389,7 @@ on va adopter la structure suivante:
 Structure recommandée
 </summary>
 
-```shell
+```
 ensae-reproductibilite-application
 ├── main.py
 ├── README.md
@@ -519,10 +515,12 @@ la statistique mesurant cela.
 Cela peut s'effectuer de la manière suivante avec le package
 [`coverage`](https://coverage.readthedocs.io/en/7.2.2/):
 
-```shell
-$ coverage run -m unittest tests/test_create_variable_title.py
-$ coverage report -m
+```{.bash}
+coverage run -m unittest tests/test_create_variable_title.py
+coverage report -m
+```
 
+```{.python}
 Name                                  Stmts   Miss  Cover   Missing
 -------------------------------------------------------------------
 src/features/build_features.py           34     21    38%   35-36, 48-58, 71-74, 85-89, 99-101, 111-113
@@ -553,7 +551,7 @@ est la suivante:
 <details>
 <summary>Structure visée</summary>
 
-```shell
+```
 ensae-reproductibilite-application
 ├── docs                                    ┐ 
 │   ├── main.py                             │ 
@@ -578,7 +576,7 @@ ensae-reproductibilite-application
 <details>
 <summary>Rappel: structure actuelle</summary>
 
-```shell
+```
 ensae-reproductibilite-application
 ├── notebooks                                 
 │   └── titanic.ipynb                  
@@ -615,13 +613,13 @@ Comme on a déjà une structure très modulaire, on va plutôt recréer cette
 structure dans notre projet déjà existant. En fait, il ne manque qu'un fichier essentiel, 
 le principal distinguant un projet classique d'un package : `pyproject.toml`.
 
-```shell
+```{.bash}
 cookiecutter https://github.com/py-pkgs/py-pkgs-cookiecutter.git
 ```
 
 <details>
 <summary>Dérouler pour voir les choix possibles</summary>
-```shell
+```{.python}
 author_name [Monty Python]: Daffy Duck
 package_name [mypkg]: titanicml
 package_short_description []: Impressive Titanic survival analysis
