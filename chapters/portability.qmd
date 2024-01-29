@@ -187,13 +187,10 @@ un environnement virtuel, cela se fait en ligne de commande par le biais de
 `Python`. Cela signifie que la version de `Python` utilisée
 par cet environnement sera celle utilisée lors de la création de celui-ci. 
 
-::: {.bash}
-```{.bash}
+```{.bash filename="terminal"}
 python -m venv dev #<1>
 ```
 1. Sur un système `Windows`, ce sera `python.exe -m venv dev` 
-
-:::
 
 Cette commande crée un dossier nommé `dev/` contenant une installation Python isolée.
 
@@ -208,7 +205,7 @@ Celle-ci est de la version de `Python` enregistrée par défaut dans le `PATH`, 
 `Python 3.11`. Pour créer un environnement virtuel avec une autre version de `Python`, il faudra
 définir le chemin de manière formelle, par exemple:
 
-```{.bash}
+```{.bash filename="terminal"}
 /chemin_local/python3.8 -m venv dev-old #<1>
 ```
 
@@ -257,7 +254,7 @@ qui sont ceux qui viennent avec la distribution `Miniconda`.
 
 On peut vérifier que l'environnement a bien été créé en listant les environnements installés sur le système.
 
-```{.bash}
+```{.bash filename="terminal"}
 conda info --envs
 ```
 
@@ -280,19 +277,19 @@ utilisera `python`, `pip`, etc. dans
 la ligne de commande active[^sourceactivate].
 
 [^sourceactivate]: Cela signifie que si on ouvre un nouveau terminal, il faudra à nouveau activer cet environnement si on désire l'utiliser. Si on désire activer par défaut un environnement, 
-il est possible de configurer le terminal pour qu'il active automatiquement un environnement spécifique lors de son ouverture. Cela peut être réalisé en modifiant les fichiers de configuration du shell, par le biais par exemple du script `.bashrc` sur `Linux`. 
+il est possible de configurer le terminal pour qu'il active automatiquement un environnement spécifique lors de son ouverture. Cela peut être réalisé en modifiant les fichiers de configuration du shell, par le biais par exemple du script `.bash filename="terminal"rc` sur `Linux`. 
 
 ::: {.panel-tabset group="language"}
 
 ## `venv`
 
-```{.bash}
+```{.bash filename="terminal"}
 source dev/bin/activate
 ```
 
 `venv` active l'environnement virtuel `dev`, indiqué par le changement du nom de l'environnement qui apparaît au début de la ligne de commande dans le terminal. Une fois activé, `dev` devient temporairement notre environnement par défaut pour les opérations `Python`. Pour confirmer cela, nous pouvons utiliser la commande `which` pour déterminer l'emplacement de l'interpréteur Python qui sera utilisé pour exécuter des scripts comme `python mon-script.py`.
 
-```{.bash env=dev}
+```{.bash filename="terminal" env=dev}
 which python
 ```
 
@@ -302,7 +299,7 @@ which python
 
 ## `conda`
 
-```{.bash}
+```{.bash filename="terminal"}
 conda activate dev
 ```
 
@@ -311,7 +308,7 @@ environnement par défaut.
 Pour s'en assurer,
 vérifions avec la commande `which` l'emplacement de l'interpréteur Python qui sera utilisé si on lance une commande du type `python mon-script.py`.
 
-```{.bash env=dev}
+```{.bash filename="terminal" env=dev}
 which python 
 ```
 
@@ -335,7 +332,7 @@ Cela confirme qu'un certain nombre de packages sont installés par défaut lors 
 
 On part d'un environnement vraiment réduit à l'os:
 
-```{.bash env=dev}
+```{.bash filename="terminal" env=dev}
 pip list
 ```
 
@@ -353,7 +350,7 @@ wheel      0.42.0
 L'environnement est assez minimaliste, quoique plus garni que lors
 de la création d'un environnement virtuel par `venv`
 
-```{.bash env="dev"}
+```{.bash filename="terminal" env="dev"}
 conda list
 ```
 
@@ -372,7 +369,7 @@ ca-certificates           2023.11.17           hbcca054_0    conda-forge
 Pour se convaincre, on peut vérifier que `Numpy` 
 est bien absent de notre environnement:
 
-```{.bash env="dev"}
+```{.bash filename="terminal" env="dev"}
 python -c "import numpy as np"
 ```
 
@@ -413,13 +410,13 @@ c'est ce que vous faites, sans vous en rendre compte.
 
 ## `venv`
 
-```{.bash env="dev"}
+```{.bash filename="terminal" env="dev"}
 pip install nom_du_package
 ```
 
 ## `conda` 
 
-```{.bash env="dev"}
+```{.bash filename="terminal" env="dev"}
 conda install nom_du_package
 ```
 
@@ -440,7 +437,7 @@ récentes de leurs packages, comme sur  [PyPI](https://pypi.org/).
 
 ## `venv`
 
-```{.bash env="dev"}
+```{.bash filename="terminal" env="dev"}
 conda install scikit-learn
 ```
 
@@ -457,7 +454,7 @@ Collecting numpy<2.0,>=1.19.5 (from scikit-learn)
 Les dépendances nécessaires (par exemple `Numpy` sont automatiquement installées).
 L'environnement s'enrichit donc:
 
-```{.bash env="dev"}
+```{.bash filename="terminal" env="dev"}
 pip list
 ```
 
@@ -477,7 +474,7 @@ threadpoolctl 3.2.0
 ## `conda`
 
 
-```{.bash env="dev"}
+```{.bash filename="terminal" env="dev"}
 conda install scikit-learn
 ```
 
@@ -613,7 +610,7 @@ dans un fichier spécial qui peut permettre de créer un nouvel environnement si
 
 ## `venv`
 
-```{.bash env="dev"}
+```{.bash filename="terminal" env="dev"}
 pip freeze > requirements.txt
 ```
 
@@ -634,7 +631,7 @@ threadpoolctl==3.2.0
 
 ## `conda`
 
-```{.bash env="dev"}
+```{.bash filename="terminal" env="dev"}
 conda env export > environment.yml
 ```
 
@@ -701,12 +698,12 @@ Ainsi, les personnes souhaitant tester l'application peuvent recréer le même e
 On refait la démarche précédente de création d'un 
 environnement vierge puis un `pip install -r requirements.txt`
 
-```{.bash}
+```{.bash filename="terminal"}
 python -m venv newenv
 source newenv/bin/activate
 ```
 
-```{.bash env="newenv"}
+```{.bash filename="terminal" env="newenv"}
 pip install -r requirements.txt
 ```
 
@@ -716,7 +713,7 @@ pip install -r requirements.txt
 
 Cela se fait en une seule commande:
 
-```{.bash}
+```{.bash filename="terminal"}
 $ conda env create -f environment.yml
 ```
 
@@ -731,7 +728,7 @@ $ conda env create -f environment.yml
 
 Pour changer d'environnement virtuel, il suffit d'en activer un autre.
 
-```{.bash no-prefix="true"}
+```{.bash filename="terminal" no-prefix="true"}
 (myenv) $ deactivate
 $ source anotherenv/bin/activate
 (anotherenv) $ which python
@@ -740,7 +737,7 @@ $ source anotherenv/bin/activate
 
 Pour quitter l'environnement virtuel actif, on utilise simplement la commande `deactivate` :
 
-```{.bash no-prefix="true"}
+```{.bash filename="terminal" no-prefix="true"}
 (anotherenv) $ deactivate
 $ 
 ```
@@ -750,7 +747,7 @@ $
 
 Pour changer d'environnement, il suffit d'en activer un autre.
 
-```{.bash no-prefix="true"}
+```{.bash filename="terminal" no-prefix="true"}
 (dev) $ conda activate base
 (base) $ which python
 /opt/mamba/bin/python
@@ -758,7 +755,7 @@ Pour changer d'environnement, il suffit d'en activer un autre.
 
 Pour sortir de tout environnement conda, on utilise la commande `conda deactivate` :
 
-```{.bash no-prefix="true"}
+```{.bash filename="terminal" no-prefix="true"}
 (base) $ conda deactivate
 $ 
 ```
@@ -1019,7 +1016,7 @@ Pour construire une image à partir d'un `Dockerfile`, il suffit d'utiliser la c
 
 Regardons ce qui se passe en pratique lorsque l'on essaie de construire notre image. Le tag de celle-ci est `myflaskapp`:
 
-```{.bash}
+```{.bash filename="terminal"}
 docker build -t myflaskapp .
 ```
 
@@ -1049,7 +1046,7 @@ Le moteur `Docker` essaie de construire notre image séquentiellement à partir 
 
 Si tout se passe bien, `Docker` nous indique que le *build* a réussi et l'image est prête à être utilisée. On peut vérifier que l'image est bien disponible à l'aide de la commande `docker images`.
 
-```{.bash}
+```{.bash filename="terminal"}
 docker images
 ```
 
@@ -1071,7 +1068,7 @@ dès lors qu'une étape du `Dockerfile` est modifiée, `Docker` va recalculer to
 
 Pour illustrer cela, regardons ce qui se passe si l'on modifie le nom du script qui lance l'application, et donc la valeur de la variable d'environnement `FLASK_APP` dans le `Dockerfile`.
 
-```{.bash}
+```{.bash filename="terminal"}
 docker build . -t myflaskapp
 ```
 
@@ -1121,7 +1118,7 @@ L'étape de *build* a permis de créer une *image* `Docker`. Une image doit êtr
 
 En l'état, on a donc juste *construit*, mais rien *lancé* : notre application ne tourne pas encore. Pour cela, il faut créer un *conteneur*, i.e. une instance vivante de l'image qui permet d'accéder à l'application. Cela se fait via la commande `docker run`.
 
-```{.bash no-prefix=true}
+```{.bash filename="terminal" no-prefix=true}
 $ docker run -d -p 8000:5000 myflaskapp:latest
 6a2ab0d82d051a3829b182ede7b9152f7b692117d63fa013e7dfe6232f1b9e81
 ```
@@ -1134,7 +1131,7 @@ Détaillons la syntaxe de cette commande :
 
 Lorsque l'on exécute `docker run`, `Docker` nous répond simplement un *hash* qui identifie le conteneur que l'on a lancé. On peut vérifier qu'il tourne bien avec la commande `docker ps`, qui renvoie toutes les informations associées au conteneur.
 
-```{.bash}
+```{.bash filename="terminal"}
 docker ps
 ```
 
@@ -1166,7 +1163,7 @@ Le *workflow* pour uploader une image est le suivant :
 - on va modifier le *tag* que l'on fournit lors du *build* pour spécifier le chemin attendu. Dans notre cas : `docker build -t compte/projet:version .` ;
 - uploader l'image avec `docker push compte/projet:version`
 
-```{.bash}
+```{.bash filename="terminal"}
 docker push avouacr/myflaskapp:1.0.0
 ```
 
@@ -1185,7 +1182,7 @@ c5ec52c98b31: Pushed
 
 En supposant que le dépôt utilisé pour uploader l'image est public, la procédure que doit suivre un utilisateur pour la télécharger se résume à utiliser la commande `docker pull compte/projet:version`
 
-```{.bash}
+```{.bash filename="terminal"}
 docker pull avouacr/myflaskapp:1.0.0
 ```
 

@@ -1,9 +1,10 @@
--- file: add-dollar-sign.lua
+-- file: dollar.lua
 
 function CodeBlock(block)
     -- Check if the code block is of type 'bash'
     if block.classes[1] == 'bash' then
       -- Add or replace the 'filename' attribute
+      block.attributes['file'] = 'terminal'
       block.attributes['filename'] = 'terminal'
   
       -- Existing code to prepend $ and handle the 'env' attribute...
