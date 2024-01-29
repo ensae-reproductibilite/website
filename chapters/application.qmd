@@ -108,7 +108,7 @@ pouvez initialiser la création du service en cliquant directement [ici](https:/
 terminal depuis `Visual Studio` (`Terminal > New Terminal`) et
 en passant directement le token dans l'URL selon cette structure:
 
-```{.bash}
+```{.bash filename="terminal"}
 git clone https://<TOKEN>@github.com/<USERNAME>/ensae-reproductibilite-application-correction.git
 ```
 
@@ -117,13 +117,13 @@ par le jeton que vous avez généré précédemment et votre nom d'utilisateur.
 
 - Se placer avec le terminal dans le dossier en question : 
 
-```{.bash}
+```{.bash filename="terminal"}
 cd ensae-reproductibilite-application-correction
 ```
 
 - Se placer sur une branche de travail en faisant:
 
-```{.bash}
+```{.bash filename="terminal"}
 git checkout -b dev
 ```
 
@@ -252,7 +252,7 @@ print(args.prenom)
 
 Exemples d'utilisations en ligne de commande
 
-```{.bash}
+```{.bash filename="terminal"}
 python prenom.py
 python prenom.py --prenom "Zinedine"
 ```
@@ -373,7 +373,7 @@ issu d'un effort communautaire.
 ::: {.callout-note}
 L'idée de [`cookiecutter`](https://cookiecutter.readthedocs.io/en/stable/) est de proposer des _templates_ que l'on utilise pour __initialiser__ un projet, afin de bâtir à l'avance une structure évolutive. La syntaxe à utiliser dans ce cas est la suivante : 
 
-```{.bash}
+```{.bash filename="terminal"}
 $ pip install cookiecutter
 $ cookiecutter https://github.com/drivendata/cookiecutter-data-science
 ```
@@ -515,7 +515,7 @@ la statistique mesurant cela.
 Cela peut s'effectuer de la manière suivante avec le package
 [`coverage`](https://coverage.readthedocs.io/en/7.2.2/):
 
-```{.bash}
+```{.bash filename="terminal"}
 coverage run -m unittest tests/test_create_variable_title.py
 coverage report -m
 ```
@@ -613,7 +613,7 @@ Comme on a déjà une structure très modulaire, on va plutôt recréer cette
 structure dans notre projet déjà existant. En fait, il ne manque qu'un fichier essentiel, 
 le principal distinguant un projet classique d'un package : `pyproject.toml`.
 
-```{.bash}
+```{.bash filename="terminal"}
 cookiecutter https://github.com/py-pkgs/py-pkgs-cookiecutter.git
 ```
 
@@ -683,9 +683,9 @@ On sera alors tout proche de pouvoir mettre le projet en production.
 On progressera dans l'échelle de la reproductibilité 
 de la manière suivante: 
 
-- :one: [**Environnements virtuels**](#anaconda) ;
-- :two: Créer un script shell qui permet, depuis un environnement minimal, de construire l'application de A à Z ;
-- :three: [**Images et conteneurs `Docker`**](#docker).
+1. [**Environnements virtuels**](#anaconda) ;
+2. Créer un script shell qui permet, depuis un environnement minimal, de construire l'application de A à Z ;
+3. [**Images et conteneurs `Docker`**](#docker).
 
 
 Nous allons repartir de l'application 8, c'est-à-dire d'un projet
@@ -695,7 +695,7 @@ modulaire mais qui n'est pas, à strictement parler, un package
 Pour se replacer dans l'état du projet à ce niveau,
 il est possible d'utiliser le _tag_ _ad hoc_.
 
-```shell
+```{.bash filename="terminal"}
 git checkout appli8
 ```
 
@@ -729,7 +729,7 @@ liste de package
 4. Activer l'environnement et vérifier l'installation de `Python` maintenant utilisée par votre machine <!---source titanic/bin/activate && which python---->
 5. Vérifier directement depuis la ligne de commande que `Python` exécute bien une commande avec:
 
-    ```shell
+    ```{.bash filename="terminal"}
     python -c "print('Hello')"
     ```
 
@@ -746,7 +746,7 @@ dans une perspective de portabilité, vous pouvez ajouter une option, par exempl
 :::: {.callout-caution collapse="true"}
 ## Checkpoint
 
-```shell
+```{.bash filename="terminal"}
 git checkout appli11a
 ```
 
@@ -777,7 +777,7 @@ liste de package
 2. Tester l'utilisation d'un package qu'on n'utilise pas dans notre chaine de
 production, par exemple `seaborn`:
 
-    ```shell
+    ```{.bash filename="terminal"}
     python -c "import seaborn as sns"
     ```
 
@@ -791,7 +791,7 @@ pour observer et comprendre le contenu de celui-ci
 
 6. Vérifier que cette fois `seaborn` n'est pas installé dans l'environnement :
 
-    ```shell
+    ```{.bash filename="terminal"}
     python -c "import seaborn as sns"
     ```
 
@@ -800,7 +800,7 @@ pour observer et comprendre le contenu de celui-ci
 que la chaine de production fonctionne
 9. Créer le fichier `environment.yaml` à partir de `conda env export`:
 
-    ```shell
+    ```{.bash filename="terminal"}
     conda env export > environment.yaml
     ```
 
@@ -815,7 +815,7 @@ en face à face.
 :::: {.callout-caution collapse="true"}
 ## Checkpoint
 
-```shell
+```{.bash filename="terminal"}
 git checkout appli11b
 ```
 
@@ -850,7 +850,7 @@ Leur méthode de construction étant un peu difficile à prendre en main au déb
 
 <details>
 <summary>Script à créer sous le nom `install.sh` </summary>
-```shell
+```{.bash filename="terminal"}
 #!/bin/bash
 
 # Install Python
@@ -868,19 +868,19 @@ pip install -r requirements.txt
 
 6. Changer les permissions sur le script pour le rendre exécutable
 
-```shell
+```{.bash filename="terminal"}
 chmod +x install.sh
 ```
 
 7. Exécuter le script depuis la ligne de commande avec des droits de super-utilisateur (nécessaires pour installer des *packages* via `apt`)
 
-```shell
+```{.bash filename="terminal"}
 sudo ./install.sh
 ```
 
 8. Vérifier que le script `main.py` fonctionne correctement dans l'environnement virtuel créé 
 
-```shell
+```{.bash filename="terminal"}
 source titanic/bin/activate
 python3 main.py
 ```
@@ -890,7 +890,7 @@ python3 main.py
 :::: {.callout-caution collapse="true"}
 ## Checkpoint
 
-```shell
+```{.bash filename="terminal"}
 git checkout appli12a
 ```
 
@@ -908,7 +908,7 @@ git checkout appli12a
 3. Se placer dans le dossier du projet avec `cd`
 4. On va se placer en super-utilisateur dans la ligne de commande en tapant
 
-```shell
+```{.bash filename="terminal"}
 sudo bash
 ```
 
@@ -916,7 +916,7 @@ sudo bash
 
 <details>
 <summary>Script à créer sous le nom `install.sh` </summary>
-```shell
+```{.bash filename="terminal"}
 apt-get -y update && apt-get -y install wget
 
 wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
@@ -938,7 +938,7 @@ python main.py
 
 6. Changer les permissions sur le fichier 
 
-```shell
+```{.bash filename="terminal"}
 chmod u+x ./install.sh
 ```
 
@@ -949,7 +949,7 @@ chmod u+x ./install.sh
 :::: {.callout-caution collapse="true"}
 ## Checkpoint
 
-```shell
+```{.bash filename="terminal"}
 git checkout appli12b
 ```
 
@@ -987,7 +987,7 @@ Se placer dans un environnement avec `Docker`
 - Créer via la ligne de commande un fichier texte vierge nommé `Dockerfile` (la majuscule au début du mot est importante)
 
 <details><summary>Commande pour créer un `Dockerfile` vierge depuis la ligne de commande</summary>
-```shell
+```{.bash filename="terminal"}
 touch Dockerfile
 ```
 </details>
@@ -995,7 +995,7 @@ touch Dockerfile
 - Ouvrir ce fichier via un éditeur de texte et copier le contenu suivant dedans:
 
 <details><summary>Premier `Dockerfile`</summary>
-```shell
+```{.bash filename="terminal"}
 FROM ubuntu:22.04
 
 WORKDIR ${HOME}/titanic
@@ -1018,13 +1018,13 @@ Le `Dockerfile` est la recette de construction de l'image. La construction effec
 
 - Utiliser `docker build` pour créer une image avec le tag `my-python-app`
 
-```shell
+```{.bash filename="terminal"}
 docker build . -t my-python-app
 ```
 
 - Vérifier les images dont vous disposez. Vous devriez avoir un résultat proche de celui-ci :
 
-```shell
+```{.bash filename="terminal"}
 $ docker images
 
 REPOSITORY      TAG       IMAGE ID       CREATED         SIZE
@@ -1040,7 +1040,7 @@ Mais fait-elle effectivement ce que l'on attend d'elle ?
 
 Pour le savoir, il faut passer à l'étape suivante, l'étape de `run`.
 
-```shell
+```{.bash filename="terminal"}
 $ docker run -it my-python-app
 
 python3: can't open file '/~/titanic/main.py': [Errno 2] No such file or directory
@@ -1052,7 +1052,7 @@ Le message d'erreur est clair : `Docker` ne sait pas où trouver le fichier `mai
 
 <details>
 <summary>Nouveau `Dockerfile` </summary>
-```shell
+```{.bash filename="terminal"}
 FROM ubuntu:22.04
 
 WORKDIR ${HOME}/titanic
@@ -1091,7 +1091,7 @@ en faisant tourner uniquement les étapes qui ont changé.
 ::: {.callout-caution collapse="true"}
 ## Checkpoint
 
-```shell
+```{.bash filename="terminal"}
 git checkout appli13
 ```
 
@@ -1205,7 +1205,7 @@ jobs:
 ::: {.callout-caution collapse="true"}
 ## Checkpoint
 
-```shell
+```{.bash filename="terminal"}
 git checkout appli14
 ```
 
@@ -1368,7 +1368,7 @@ facilité la réutilisation de votre image.
 ::: {.callout-caution collapse="true"}
 ## Checkpoint
 
-```shell
+```{.bash filename="terminal"}
 git checkout appli15
 ```
 
@@ -1416,7 +1416,7 @@ du modèle
 ::: {.callout-caution collapse="true"}
 ## Checkpoint
 
-```shell
+```{.bash filename="terminal"}
 git checkout appli16
 ```
 
@@ -1454,7 +1454,7 @@ Récupérer le contenu sur [cette page](https://raw.githubusercontent.com/ensae-
 - Ajouter `model.joblib` au `.gitignore`
 - Déployer en local l'API avec la commande
 
-```shell
+```{.bash filename="terminal"}
 uvicorn api:app --reload --host "0.0.0.0" --port 5000
 ```
 
@@ -1469,7 +1469,7 @@ et depuis `Python` avec `requests` (`requests.get(url).json()`)
 ::: {.callout-caution collapse="true"}
 ## Checkpoint
 
-```shell
+```{.bash filename="terminal"}
 git checkout appli17
 ```
 
@@ -1490,7 +1490,7 @@ A ce stade, nous avons déployé l'API seulement localement, dans le cadre d'un 
 <details>
 <summary>Fichier `run.sh`</summary>
 
-```shell
+```{.bash filename="terminal"}
 #/bin/bash
 
 python3 train.py
@@ -1511,7 +1511,7 @@ uvicorn api:app --reload --host "0.0.0.0" --port 5000
 ::: {.callout-caution collapse="true"}
 ## Checkpoint
 
-```shell
+```{.bash filename="terminal"}
 git checkout appli18
 ```
 :::
@@ -1612,7 +1612,7 @@ spec:
 ::: {.callout-caution collapse="true"}
 ## Checkpoint
 
-```shell
+```{.bash filename="terminal"}
 git checkout appli19
 ```
 
@@ -1689,7 +1689,7 @@ et le jeu d'entrainement associé.
 ::: {.callout-caution collapse="true"}
 ## Checkpoint
 
-```shell
+```{.bash filename="terminal"}
 git checkout appli20
 ```
 
