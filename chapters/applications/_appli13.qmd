@@ -1,0 +1,131 @@
+::: {.callout-tip}
+
+## Application 13: création de l'image `Docker` 
+
+Se placer dans un environnement avec `Docker`, par
+exemple _[Play with Docker](https://labs.play-with-docker.com)_
+
+#### Création du `Dockerfile`
+
+- Dans le terminal `Linux`, cloner votre dépôt `Github` 
+- Repartir de la dernière version à disposition. Par exemple
+
+```{.bash filename="terminal"}
+git checkout appli12a
+```
+
+- Créer via la ligne de commande un fichier texte vierge nommé `Dockerfile` (la majuscule au début du mot est importante)
+
+<details><summary>Commande pour créer un `Dockerfile` vierge depuis la ligne de commande</summary>
+```{.bash filename="terminal"}
+touch Dockerfile
+```
+</details>
+
+- Ouvrir ce fichier via un éditeur de texte et copier le contenu suivant dedans:
+
+<details><summary>Premier `Dockerfile`</summary>
+
+```{.bash filename="terminal" no-prefix=true}
+FROM ubuntu:22.04
+
+WORKDIR ${HOME}/titanic
+
+# Install Python
+RUN apt-get -y update && \
+    apt-get install -y python3-pip
+
+# Install project dependencies
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+CMD ["python3", "main.py"]
+```
+</details>
+
+#### Construire (_build_) l'image
+
+- Utiliser `docker build` pour créer une image avec le tag `my-python-app`
+
+```{.bash filename="terminal"}
+docker build . -t my-python-app
+```
+
+- Vérifier les images dont vous disposez. Vous devriez avoir un résultat proche de celui-ci :
+
+```{.bash filename="terminal"}
+docker images
+```
+
+```{.python}
+REPOSITORY      TAG       IMAGE ID       CREATED              SIZE
+my-python-app   latest    188957e16594   About a minute ago   879MB
+```
+
+#### Tester l'image: découverte du cache
+
+L'étape de `build` a fonctionné: une image a été construite.
+
+Mais fait-elle effectivement ce que l'on attend d'elle ?
+
+Pour le savoir, il faut passer à l'étape suivante, l'étape de `run`.
+
+```{.bash filename="terminal"}
+docker run -it my-python-app
+```
+
+```{.python}
+python3: can't open file '/~/titanic/main.py': [Errno 2] No such file or directory
+```
+
+Le message d'erreur est clair : `Docker` ne sait pas où trouver le fichier `main.py`. D'ailleurs, il ne connait pas non plus les autres fichiers de notre application qui sont nécessaires pour faire tourner le code, par exemple le dossier `src`.
+
+- Avant l'étape `CMD`, copier les fichiers nécessaires sur l'image afin que l'application dispose de tous les éléments nécessaires pour être en mesure de fonctionner.
+
+<details>
+<summary>Nouveau `Dockerfile` </summary>
+```{.bash filename="terminal"}
+FROM ubuntu:22.04
+
+WORKDIR ${HOME}/titanic
+
+# Install Python
+RUN apt-get -y update && \
+    apt-get install -y python3-pip
+
+# Install project dependencies
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY main.py .
+COPY src ./src
+CMD ["python3", "main.py"]
+```
+</details>
+
+- Refaire tourner l'étape de `build`
+
+- Refaire tourner l'étape de `run`. A ce stade, la matrice de confusion doit fonctionner 🎉.
+Vous avez créé votre première application reproductible !
+
+:::
+
+::: {.callout-note}
+
+Ici, le _cache_ permet d'économiser beaucoup de temps. Par besoin de 
+refaire tourner toutes les étapes, `Docker` agit de manière intelligente
+en faisant tourner uniquement les étapes qui ont changé.
+
+:::
+
+
+::: {.callout-caution collapse="true"}
+## Checkpoint
+
+```{.bash filename="terminal"}
+git checkout appli13
+```
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
+:::
