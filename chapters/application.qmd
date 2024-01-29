@@ -675,16 +675,18 @@ Du moins en théorie, car la pratique est souvent plus compliquée :
 il y a fort à parier que si vous essayez d'exécuter votre projet sur un autre environnement (typiquement, votre ordinateur personnel),
 les choses ne se passent pas du tout comme attendu. Cela signifie qu'**en l'état, le projet n'est pas portable : il n'est pas possible, sans modifications coûteuses, de l'exécuter dans un environnement différent de celui dans lequel il a été développé**.
 
-Dans cette seconde partie, nous allons voir 
+Dans cette troisème partie de notre travail vers la mise en production,
+nous allons voir 
 comment **normaliser l'environnement d'exécution afin de produire un projet portable**.
 Autrement dit, nous n'allons plus nous contenter de modularité mais allons rechercher
 la portabilité.
 On sera alors tout proche de pouvoir mettre le projet en production.
+
 On progressera dans l'échelle de la reproductibilité 
 de la manière suivante: 
 
 1. [**Environnements virtuels**](#anaconda) ;
-2. Créer un script shell qui permet, depuis un environnement minimal, de construire l'application de A à Z ;
+2. Créer un [script shell](#shell) qui permet, depuis un environnement minimal, de construire l'application de A à Z ;
 3. [**Images et conteneurs `Docker`**](#docker).
 
 
@@ -705,126 +707,40 @@ git checkout appli8
 Pour qu'un projet soit portable, il doit remplir deux conditions:
 
 - Ne pas nécessiter de dépendance
-qui ne soient pas renseignées quelque part
+qui ne soient pas renseignées quelque part ;
 - Ne pas proposer des dépendances inutiles, qui ne
 sont pas utilisées dans le cadre du projet. 
 
-::: {.panel-tabset}
+Le prochain exercice vise à mettre ceci en oeuvre.
+Comme expliqué dans le [chapitre portabilité](/chapters/portabilite.qmd),
+le choix du gestionnaire d'environnement est laissé
+libre. Il est recommandé de privilégier `venv` si vous découvrez
+la problématique de la portabilité. 
 
-## Environnement virtuel
+::: {.panel-tabset group="language"}
+
+## Environnement virtuel `venv`
 
 L'approche la plus légère est l'environnement virtuel. 
 Nous avons en fait implicitement déjà commencé à aller vers
 cette direction
 en créant un fichier `requirements.txt`. 
 
-:::: {.callout-tip}
+{{< include "./applications/_appli11a.qmd" >}}
 
-## Application 11a: environnement virtuel `venv` 
 
-1. Exécuter `pip freeze` en ligne de commande et observer la (très) longue
-liste de package
-2. Créer l'environnement virtuel `titanic` en s'inspirant de [la documentation officielle](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/)[^pythonversion]
-3. Utiliser `ls` pour observer et comprendre le contenu du dossier `titanic/bin` installé
-4. Activer l'environnement et vérifier l'installation de `Python` maintenant utilisée par votre machine <!---source titanic/bin/activate && which python---->
-5. Vérifier directement depuis la ligne de commande que `Python` exécute bien une commande avec:
-
-    ```{.bash filename="terminal"}
-    python -c "print('Hello')"
-    ```
-
-6. Faire la même chose mais avec `import pandas as pd`
-7. Installer les packages à partir du `requirements.txt`. Tester à nouveau `import pandas as pd` pour comprendre la différence. 
-8. Exécuter `pip freeze` et comprendre la différence avec la situation précédente.
-9. Vérifier que le script `main.py` fonctionne bien. Sinon ajouter les _packages_ manquants dans le `requirements.txt` et reprendre de manière itérative à partir de la question 7
-10. Ajouter le dossier `titanic/` au `.gitignore` pour ne pas ajouter ce dossier à `Git`
-::::
-
-[^pythonversion]: Si vous désirez aussi contrôler la version de `Python`, ce qui peut être important
-dans une perspective de portabilité, vous pouvez ajouter une option, par exemple `-p python3.9`. 
-
-:::: {.callout-caution collapse="true"}
-## Checkpoint
-
-```{.bash filename="terminal"}
-git checkout appli11a
-```
-
-::::
-
-## Environnement conda
+## Environnement `conda`
 
 Les environnements `conda` sont plus lourds à mettre en oeuvre que les 
 environnements virtuels mais peuvent permettre un contrôle
 plus formel des dépendances. 
 
-`conda` est à la fois un gestionnaire de packages (alternative à `pip`)
-et d'environnements virtuels. L'inconvénient de l'utilisation de `conda`
-pour gérer les environnements virtuels est que cet outil est assez lent 
-car l'algorithme de vérification des conflits de version n'est pas
-extrêmement rapide.
-
-Pour cette raison, nous allons
-utiliser [`mamba`](https://mamba.readthedocs.io/en/latest/user_guide/mamba.html),
-un utilitaire de gestion des environnements `conda` qui est plus rapide. 
-
-:::: {.callout-tip}
-
-## Application 11b: environnement `conda` 
-
-1. Exécuter `conda env export` en ligne de commande et observer la (très) longue
-liste de package
-2. Tester l'utilisation d'un package qu'on n'utilise pas dans notre chaine de
-production, par exemple `seaborn`:
-
-    ```{.bash filename="terminal"}
-    python -c "import seaborn as sns"
-    ```
-
-3. Créer un environnement `titanic`
-avec [`mamba create`](https://mamba.readthedocs.io/en/latest/user_guide/mamba.html#quickstart)
-en listant les packages que vous aviez mis dans le `requirements.txt` et en ajoutant
-l'option `-c conda-forge` à la fin pour utiliser [la _conda forge_](https://conda-forge.org/) 
-4. Activer l'environnement et vérifier l'installation de `Python` maintenant utilisée par votre machine <!---mamba activate titanic && which python---->
-5. _(optionnel)_ Utiliser `ls` dans le dossier parent de `Python`
-pour observer et comprendre le contenu de celui-ci
-
-6. Vérifier que cette fois `seaborn` n'est pas installé dans l'environnement :
-
-    ```{.bash filename="terminal"}
-    python -c "import seaborn as sns"
-    ```
-
-7. Exécuter à nouveau `conda env export` et comprendre la différence avec la situation précédente[^splitscreen].
-8. Vérifier que le script `main.py` fonctionne bien. Sinon utiliser `mamba install` avec les _packages_ manquants jusqu'à ce 
-que la chaine de production fonctionne
-9. Créer le fichier `environment.yaml` à partir de `conda env export`:
-
-    ```{.bash filename="terminal"}
-    conda env export > environment.yaml
-    ```
-
-10. Ajouter le dossier `titanic/` au `.gitignore` pour ne pas ajouter ce dossier à `Git`
-
-::::
-
-[^splitscreen]: Pour comparer les deux listes, vous pouvez utiliser la fonctionnalité de _split_ 
-du terminal sur `VSCode` pour comparer les outputs de `conda env export` en les mettant 
-en face à face. 
-
-:::: {.callout-caution collapse="true"}
-## Checkpoint
-
-```{.bash filename="terminal"}
-git checkout appli11b
-```
-
-::::
-
+{{< include "./applications/_appli11b.qmd" >}}
 
 :::
 
-## Étape 2: construire l'environnement de notre application via un script `shell`
+
+## Étape 2: construire l'environnement de notre application via un script `shell` {#shell}
 
 Les environnements virtuels permettent de mieux spécifier les dépendances de notre projet, mais ne permettent pas de garantir une portabilité optimale. Pour cela, il faut recourir à la technologie des conteneurs. L'idée est de construire une machine, en partant d'une base quasi-vierge, qui permette de construire étape par étape l'environnement nécessaire au bon fonctionnement de notre projet. C'est le principe des conteneurs `Docker`.
 
