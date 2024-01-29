@@ -691,7 +691,7 @@ de la manière suivante:
 
 
 Nous allons repartir de l'application 8, c'est-à-dire d'un projet
-modulaire mais qui n'est pas, à strictement parler, un package
+modulaire mais qui n'est pas, à strictement parler, un _package_
 (objet des applications optionnelles suivantes 9 et 10). 
 
 Pour se replacer dans l'état du projet à ce niveau,
@@ -742,134 +742,22 @@ plus formel des dépendances.
 
 ## Étape 2: construire l'environnement de notre application via un script `shell` {#shell}
 
-Les environnements virtuels permettent de mieux spécifier les dépendances de notre projet, mais ne permettent pas de garantir une portabilité optimale. Pour cela, il faut recourir à la technologie des conteneurs. L'idée est de construire une machine, en partant d'une base quasi-vierge, qui permette de construire étape par étape l'environnement nécessaire au bon fonctionnement de notre projet. C'est le principe des conteneurs `Docker`.
+Les environnements virtuels permettent de mieux spécifier les dépendances de notre projet, mais ne permettent pas de garantir une portabilité optimale. Pour cela, il faut recourir à la technologie des conteneurs. L'idée est de construire une machine, en partant d'une base quasi-vierge, qui permette de construire étape par étape l'environnement nécessaire au bon fonctionnement de notre projet. C'est le principe des conteneurs `Docker` {{< fa brands docker >}}.
 
 Leur méthode de construction étant un peu difficile à prendre en main au début, nous allons passer par une étape intermédiaire afin de bien comprendre le processus de production. 
 
 - Nous allons d'abord créer un script `shell`, c'est à dire une suite de commandes `Linux` permettant de construire l'environnement à partir d'une machine vierge ;
 - Nous transformerons celui-ci en `Dockerfile` dans un deuxième temps. C'est l'objet de l'étape suivante. 
 
-::: {.panel-tabset}
+::: {.panel-tabset group="language"}
 
-## Environnement virtuel
+## Environnement virtuel `venv`
 
-:::: {.callout-tip}
-
-## Application 12a : créer un fichier d'installation de A à Z
-
-1. Créer un service `ubuntu` sur le SSP Cloud
-2. Ouvrir un terminal
-3. Cloner le dépôt 
-4. Se placer dans le dossier du projet avec `cd`
-5. Se placer au niveau du checkpoint 11a avec `git checkout appli11a`
-6. Via l'explorateur de fichiers, créer le fichier `install.sh` à la racine du projet avec le contenu suivant:
-
-<details>
-<summary>Script à créer sous le nom `install.sh` </summary>
-```{.bash filename="terminal"}
-#!/bin/bash
-
-# Install Python
-apt-get -y update
-apt-get install -y python3-pip python3-venv
-
-# Create empty virtual environment
-python3 -m venv titanic
-source titanic/bin/activate
-
-# Install project dependencies
-pip install -r requirements.txt
-```
-</details>
-
-6. Changer les permissions sur le script pour le rendre exécutable
-
-```{.bash filename="terminal"}
-chmod +x install.sh
-```
-
-7. Exécuter le script depuis la ligne de commande avec des droits de super-utilisateur (nécessaires pour installer des *packages* via `apt`)
-
-```{.bash filename="terminal"}
-sudo ./install.sh
-```
-
-8. Vérifier que le script `main.py` fonctionne correctement dans l'environnement virtuel créé 
-
-```{.bash filename="terminal"}
-source titanic/bin/activate
-python3 main.py
-```
-
-::::
-
-:::: {.callout-caution collapse="true"}
-## Checkpoint
-
-```{.bash filename="terminal"}
-git checkout appli12a
-```
-
-::::
-
+{{< include "./applications/_appli12a.qmd" >}}
 
 ## Environnement `conda`
 
-:::: {.callout-tip}
-
-## Application 12b : créer un fichier d'installation de A à Z
-
-1. Créer un service `ubuntu` sur le SSP Cloud en cliquant sur [ce lien](https://datalab.sspcloud.fr/launcher/inseefrlab-helm-charts-datascience/ubuntu?autoLaunch=false&git.cache=%C2%AB36000%C2%BB&git.repository=%C2%ABhttps%3A%2F%2Fgithub.com%2Flinogaliana%2Fensae-reproductibilite-application-correction.git%C2%BB)
-2. Cloner le dépôt et se placer au niveau du checkpoint 11b avec `git checkout appli11b`
-3. Se placer dans le dossier du projet avec `cd`
-4. On va se placer en super-utilisateur dans la ligne de commande en tapant
-
-```{.bash filename="terminal"}
-sudo bash
-```
-
-5. Créer le fichier `install.sh` avec le contenu suivant:
-
-<details>
-<summary>Script à créer sous le nom `install.sh` </summary>
-```{.bash filename="terminal"}
-apt-get -y update && apt-get -y install wget
-
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
-    bash Miniconda3-latest-Linux-x86_64.sh -b -p /miniconda && \
-    rm -f Miniconda3-latest-Linux-x86_64.sh
-
-PATH="/miniconda/bin:${PATH}"
-
-# Create environment
-conda install mamba -c conda-forge
-mamba create -n titanic pandas PyYAML scikit-learn -c conda-forge
-mamba activate titanic
-
-PATH="/miniconda/envs/titanic/bin:${PATH}"
-
-python main.py
-```
-</details>
-
-6. Changer les permissions sur le fichier 
-
-```{.bash filename="terminal"}
-chmod u+x ./install.sh
-```
-
-7. Exécuter le script depuis la ligne de commande
-
-::::
-
-:::: {.callout-caution collapse="true"}
-## Checkpoint
-
-```{.bash filename="terminal"}
-git checkout appli12b
-```
-
-::::
+{{< include "./applications/_appli12a.qmd" >}}
 
 :::
 

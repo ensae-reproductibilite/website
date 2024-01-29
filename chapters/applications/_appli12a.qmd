@@ -1,0 +1,60 @@
+:::: {.callout-tip}
+
+## Application 12a : créer un fichier d'installation de A à Z
+
+1. Créer un service `ubuntu` sur le SSP Cloud
+2. Ouvrir un terminal
+3. Cloner le dépôt 
+4. Se placer dans le dossier du projet avec `cd`
+5. Se placer au niveau du checkpoint 11a avec `git checkout appli11a`
+6. Via l'explorateur de fichiers, créer le fichier `install.sh` à la racine du projet avec le contenu suivant:
+
+<details>
+<summary>Script à créer sous le nom `install.sh` </summary>
+```{.bash filename="install.sh" no-prefix=true}
+#!/bin/bash
+
+# Install Python
+apt-get -y update
+apt-get install -y python3-pip python3-venv
+
+# Create empty virtual environment
+python3 -m venv titanic
+source titanic/bin/activate
+
+# Install project dependencies
+pip install -r requirements.txt
+```
+</details>
+
+6. Changer les permissions sur le script pour le rendre exécutable
+
+```{.bash filename="terminal"}
+chmod +x install.sh
+```
+
+7. Exécuter le script depuis la ligne de commande avec des droits de super-utilisateur (nécessaires pour installer des *packages* via `apt`)
+
+```{.bash filename="terminal"}
+sudo ./install.sh
+```
+
+8. Vérifier que le script `main.py` fonctionne correctement dans l'environnement virtuel créé 
+
+```{.bash filename="terminal"}
+source titanic/bin/activate
+python3 main.py
+```
+
+::::
+
+::: {.callout-caution collapse="true"}
+## Checkpoint
+
+```{.bash filename="terminal"}
+git checkout appli12a
+```
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
+:::
