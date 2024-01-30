@@ -11,32 +11,112 @@ eval: true
 echo: false
 ---
 
+Le cours est évalué avec deux rendus :  
+
+- dans un premier temps, en groupe de 2 ou 3, il faudra choisir un projet personnel, le rendre conforme aux bonnes pratiques, choisir un format de valorisation, déployer sur une infra de production 
+- dans un second temps, les étudiants se placeront dans le rôle d’un _data scientist_ qui vérifie la qualité des contributions à un projet et devront individuellement évaluer un des projets d’un autre groupe (peer review), critiquer les choix techniques et les bonnes pratiques mises en œuvre 
+
+## Critères pour le projet
+
 ```{ojs}
-viewof choice = Inputs.checkbox(["indispensables", "bien", "excellent"], {value: "indispensables", label: "Elements"})
+viewof choice = Inputs.checkbox(
+    d3.group(choice_parameters, d => d.level), 
+    {key: ["Indispensable 👮", "Bien 😎", "Excellent 🤩"], label: "Niveau souhaité"}
+)
 ```
 
-```{ojs}
-viewof project = Inputs.checkbox(["site web statique", "API", "Dashboard/ App interactive", "Publication reproductive"], {value: "indispensables", label: "Elements"})
-```
-
 
 
 ```{ojs}
-Inputs.table(
-    liste   
+viewof project = Inputs.checkbox(
+    d3.group(
+        choice_parameters.filter(d => d.project != "all").filter(row => uniqueLevels.includes(row.level)),
+        d => d.project
+    ),
+    {key: ["Site web statique", "API", "Application interactive", "Publication reproductible"], label: "Type d'output"}
 )
 ```
 
 ```{ojs}
-db = DuckDBClient.of({
-  input: FileAttachment("evaluation.json")
-})
-liste = db.query(`SELECT * FROM input`)
-liste_tableau = db.query(`SELECT DISTINCT element, level FROM input`)
+html`<div>${formatToCheckboxLists(
+    liste_tableau.filter(row => uniqueLevels.includes(row.level))
+)}</div>`
+```
+
+
+## Structure d'exemple
+
+```{ojs}
+viewof choice2 = Inputs.checkbox(
+    d3.group(choice_parameters, d => d.level), 
+    {key: uniqueLevels, label: "Niveau souhaité"}
+)
+```
+
+
+
+```{ojs}
+viewof project2 = Inputs.checkbox(
+    d3.group(
+        choice_parameters.filter(d => d.project != "all").filter(row => uniqueLevels.includes(row.level)),
+        d => d.project
+    ),
+    {key: ["Site web statique", "API", "Application interactive", "Publication reproductible"], label: "Type d'output"}
+)
+```
+
+
+```{ojs}
+html`<div>${
+    generateFolderStructure(
+        liste.filter(row => uniqueLevels2.includes(row.level))
+        )
+}</div>`
+```
+
+<!-----
+intermediaire
+---->
+
+
+```{ojs}
+uniqueLevels = Array.from(new Set(choice.flatMap(group => group.map(item => item.level))));
 ```
 
 ```{ojs}
-Inputs.table(liste_tableau)
+uniqueLevels2 = Array.from(new Set(choice2.flatMap(group => group.map(item => item.level))));
+```
+
+
+```{ojs}
+function formatToCheckboxLists(rows) {
+    // Dynamically create levels based on the input data
+    const levels = rows.reduce((acc, row) => {
+        if (!acc[row.level]) {
+            acc[row.level] = [];
+        }
+        acc[row.level].push(row.element);
+        return acc;
+    }, {});
+
+    // Function to create HTML for checkboxes
+    const createCheckboxesHtml = (elements, level) => {
+        if (elements.length === 0) {
+            return ''; // Skip levels with no elements
+        }
+        return `
+            <div>
+                <h3>${level}</h3>
+                <ul>
+                    ${elements.map(element => `<li><input type="checkbox" id="${element}" name="${level}"><label for="${element}">${element}</label></li>`).join('')}
+                </ul>
+            </div>
+        `;
+    };
+
+    // Combine all levels into a single HTML string
+    return Object.entries(levels).map(([level, elements]) => createCheckboxesHtml(elements, level)).join('');
+}
 ```
 
 ```{ojs}
@@ -65,7 +145,7 @@ function generateFolderStructure(jsonData) {
     // Sort parent files
     const sortedFiles = Array.from(fileMap.keys()).sort((a, b) => a.localeCompare(b));
 
-    let structure = "<pre><code>ensae-reproductibilite-application\n";
+    let structure = "<pre><code>project\n";
 
     sortedFiles.forEach((file, index, array) => {
         const isLastItem = index === array.length - 1;
@@ -88,8 +168,14 @@ function generateFolderStructure(jsonData) {
 ```
 
 ```{ojs}
-html`<div>${generateFolderStructure(liste)}</div>`
+db = DuckDBClient.of({
+  input: FileAttachment("evaluation.json")
+})
+choice_parameters = db.query(`SELECT DISTINCT level, project FROM input`)
+liste = db.query(`SELECT * FROM input`)
+liste_tableau = db.query(`SELECT DISTINCT element, level FROM input`)
 ```
 
-
-
+```{ojs}
+import {bind} from "@observablehq/synchronized-inputs"
+```
