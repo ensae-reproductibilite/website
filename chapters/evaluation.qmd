@@ -1,0 +1,95 @@
+---
+title: "Critères d'évaluation"
+author: "Romain Avouac et Lino Galiana"
+description: |
+  <br>
+  Résumé des critères d'évaluation
+image: https://minio.lab.sspcloud.fr/lgaliana/generative-art/pythonds/kid.png
+order: 10
+href: chapters/evaluation.html
+eval: true
+echo: false
+---
+
+```{ojs}
+viewof choice = Inputs.checkbox(["indispensables", "bien", "excellent"], {value: "indispensables", label: "Elements"})
+```
+
+```{ojs}
+viewof project = Inputs.checkbox(["site web statique", "API", "Dashboard/ App interactive", "Publication reproductive"], {value: "indispensables", label: "Elements"})
+```
+
+
+
+```{ojs}
+Inputs.table(
+    liste   
+)
+```
+
+```{ojs}
+db = DuckDBClient.of({
+  input: FileAttachment("evaluation.json")
+})
+liste = db.query(`SELECT * FROM input`)
+liste_tableau = db.query(`SELECT DISTINCT element, level FROM input`)
+```
+
+```{ojs}
+Inputs.table(liste_tableau)
+```
+
+```{ojs}
+function generateFolderStructure(jsonData) {
+    // Create a map to group subfiles by their parent files
+    const fileMap = new Map();
+
+    jsonData.forEach(item => {
+        if (item.file) {
+            // Splitting the file string into an array and trimming spaces
+            const filesArray = item.file.split(',').map(file => file.trim());
+
+            filesArray.forEach(file => {
+                if (!fileMap.has(file)) {
+                    fileMap.set(file, []);
+                }
+                if (item.subfiles) {
+                    // Splitting the subfiles string into an array and trimming spaces
+                    const subfilesArray = item.subfiles.split(',').map(subfile => subfile.trim());
+                    fileMap.get(file).push(...subfilesArray);
+                }
+            });
+        }
+    });
+
+    // Sort parent files
+    const sortedFiles = Array.from(fileMap.keys()).sort((a, b) => a.localeCompare(b));
+
+    let structure = "<pre><code>ensae-reproductibilite-application\n";
+
+    sortedFiles.forEach((file, index, array) => {
+        const isLastItem = index === array.length - 1;
+        const filePrefix = isLastItem ? "└── " : "├── ";
+        structure += `${filePrefix}${file}\n`;
+
+        const subfiles = fileMap.get(file);
+        if (subfiles.length) {
+            subfiles.forEach((subfile, subIndex, subArray) => {
+                const subIsLastItem = subIndex === subArray.length - 1;
+                const subPrefix = subIsLastItem ? "    └── " : "    ├── ";
+                structure += `${subPrefix}${subfile}\n`;
+            });
+        }
+    });
+
+    structure += "</code></pre>";
+    return structure;
+}
+```
+
+```{ojs}
+html`<div>${generateFolderStructure(liste)}</div>`
+```
+
+
+
