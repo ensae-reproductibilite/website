@@ -416,7 +416,7 @@ Ce que vous devriez voir sur la page de création du <em>fork</em>
 <section id="étape-1-sassurer-que-le-script-sexécute-correctement" class="level2">
 <h2 class="anchored" data-anchor-id="étape-1-sassurer-que-le-script-sexécute-correctement">Étape 1 : s’assurer que le script s’exécute correctement</h2>
 <p>On va partir du fichier <code>notebook.py</code> qui reprend le contenu du <em>notebook</em><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> mais dans un script classique. Le travail de nettoyage en sera facilité.</p>
-<p>La première étape est simple, mais souvent oubliée : <strong>vérifier que le code fonctionne correctement</strong>.</p>
+<p>La première étape est simple, mais souvent oubliée : <strong>vérifier que le code fonctionne correctement</strong>. Pour cela, nous recommandons de faire un aller-retour entre le script ouvert dans <code>VSCode</code> et un terminal pour le lancer.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -429,7 +429,7 @@ Application 1: corriger les erreurs
 <div class="callout-body-container callout-body">
 <ul>
 <li>Ouvrir dans <code>VSCode</code> le script <code>titanic.py</code> ;</li>
-<li>Exécuter le script en ligne de commande (<code>python titanic.py</code>) ou de manière interactive ligne à ligne (<kbd>MAJ</kbd>+<kbd>ENTER</kbd>)pour détecter les erreurs ;</li>
+<li>Exécuter le script en ligne de commande (<code>python titanic.py</code>)<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> pour détecter les erreurs ;</li>
 <li>Corriger les deux erreurs qui empêchent la bonne exécution ;</li>
 <li>Vérifier le fonctionnement du script en utilisant la ligne de commande:</li>
 </ul>
@@ -446,7 +446,7 @@ Aide sur les erreurs rencontrées
 </summary>
 <p>La première erreur rencontrée est une alerte <code>FileNotFoundError</code>, la seconde est liée à un <em>package</em>.</p>
 </details>
-<p>Il est maintenant temps de <em>commit</em> les changements effectués avec <code>Git</code><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> :</p>
+<p>Il est maintenant temps de <em>commit</em> les changements effectués avec <code>Git</code><a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> :</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
@@ -455,6 +455,9 @@ Aide sur les erreurs rencontrées
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git commit <span class="at">-m</span> <span class="st">"Corrige l'erreur qui empêchait l'exécution"</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git push</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<!---- 
+Temps estimé: 3mn
+------>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
@@ -514,7 +517,7 @@ Application 2: rendre lisible le script
 <div class="callout-body-container callout-body">
 <ul>
 <li>Diagnostiquer et évaluer la qualité de <code>titanic.py</code> avec <a href="https://pylint.readthedocs.io/en/latest/"><code>PyLint</code></a>. Regarder la note obtenue.</li>
-<li>Utiliser <code>black titanic.py --diff --color</code> pour observer les changements de forme que va induire l’utilisation du <em>formatter</em> <a href="https://black.readthedocs.io/en/stable/"><code>Black</code></a></li>
+<li>Utiliser <code>black titanic.py --diff --color</code> pour observer les changements de forme que va induire l’utilisation du <em>formatter</em> <a href="https://black.readthedocs.io/en/stable/"><code>Black</code></a>. Cette étape n’applique pas les modifications, elle ne fait que vous les montrer.</li>
 <li>Appliquer le <em>formatter</em> <a href="https://black.readthedocs.io/en/stable/"><code>Black</code></a></li>
 <li>Réutiliser <a href="https://pylint.readthedocs.io/en/latest/"><code>PyLint</code></a> pour diagnostiquer l’amélioration de la qualité du script et le travail qui reste à faire.</li>
 <li>Comme la majorité du travail restant est à consacrer aux imports:
@@ -526,6 +529,9 @@ Application 2: rendre lisible le script
 </ul></li>
 <li>Délimiter des parties dans votre code pour rendre sa structure plus lisible</li>
 </ul>
+<!-----
+Temps test Julien: 22mn
+------>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
@@ -561,7 +567,7 @@ Checkpoint
 <p>L’exécution du code et les résultats obtenus dépendent de certains paramètres définis dans le code. L’étude de résultats alternatifs, en jouant sur des variantes des (hyper)paramètres, est à ce stade compliquée car il est nécessaire de parcourir le code pour trouver ces paramètres. De plus, certains paramètres personnels comme des jetons d’API ou des mots de passe n’ont pas vocation à être présents dans le code.</p>
 <p>Il est plus judicieux de considérer ces paramètres comme des variables d’entrée du script. Cela peut être fait de deux manières:</p>
 <ol type="1">
-<li>Avec des <strong>arguments optionnels</strong> appelés depuis la ligne de commande <em>(Application 3a)</em>. Cela peut être pratique pour mettre en oeuvre des tests automatisés[^noteCI] mais n’est pas forcément pertinent pour toutes les variables. Nous allons montrer cet usage avec le nombre d’arbres de notre <em>random forest</em> ;</li>
+<li>Avec des <strong>arguments optionnels</strong> appelés depuis la ligne de commande <em>(Application 3a)</em>. Cela peut être pratique pour mettre en oeuvre des tests automatisés mais n’est pas forcément pertinent pour toutes les variables. Nous allons montrer cet usage avec le nombre d’arbres de notre <em>random forest</em> ;</li>
 <li>En utilisant un <strong>fichier de configuration</strong> dont les valeurs sont importées dans le script principal <em>(Application 3b)</em>.</li>
 </ol>
 <details>
@@ -634,44 +640,48 @@ Application 3b: La configuration dans un fichier YAML
 <p>Maintenant, nous allons exploiter ce fichier:</p>
 <ol start="3" type="1">
 <li>Pour éviter d’avoir à le faire plus tard, créer une fonction <code>import_yaml_config</code> qui prend en argument le chemin d’un fichier <code>YAML</code> et renvoie le contenu de celui-ci en <em>output</em>. Vous pouvez suivre le conseil du chapitre sur la <a href="../chapters/code-quality.html">Qualité du code</a> en adoptant le <em>type hinting</em> ;</li>
-<li>Dans la fonction <code>import_yaml_config</code>, créer une condition logique pour tenir compte du fait que le YAML de configuration peut ne pas exister<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> ;</li>
-<li>Utiliser le canevas de code suivant pour créer les variables adéquates</li>
-</ol>
-<div id="2c7e4eba" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>API_TOKEN <span class="op">=</span> config.get(<span class="st">"jeton_api"</span>)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>TRAIN_PATH <span class="op">=</span> config.get(<span class="st">"train_path"</span>, <span class="st">"train.csv"</span>)</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>TEST_PATH <span class="op">=</span> config.get(<span class="st">"test_path"</span>, <span class="st">"test.csv"</span>)</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>TEST_FRACTION <span class="op">=</span> config.get(<span class="st">"test_fraction"</span>, <span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>et remplacer dans le code ;</p>
-<ol start="5" type="1">
-<li>Tester en ligne de commande que l’exécution du fichier est toujours sans erreur et sinon corriger ;</li>
-<li>Refaire un diagnostic avec <a href="https://pylint.readthedocs.io/en/latest/"><code>PyLint</code></a> et corriger les éventuels messages ;</li>
-<li>Créer un fichier <code>.gitignore</code> (cf.&nbsp;<a href="../chapters/git.html">Chapitre <code>Git</code></a>). Ajouter dans ce fichier <code>config.yaml</code> car il ne faut pas committer ce fichier. Au passage ajouter <code>__pycache__/</code> au <code>.gitignore</code><a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>, cela évitera d’avoir à le faire ultérieurement ;</li>
-<li>Créer un fichier <code>README.md</code> où vous indiquez qu’il faut créer un fichier <code>config.yaml</code> pour pouvoir utiliser l’API.</li>
 </ol>
 <details>
 <summary>
 Indice si vous ne trouvez pas comment lire un fichier <code>YAML</code>
 </summary>
 <p>Si le fichier s’appelle <code>toto.yaml</code>, vous pouvez l’importer de cette manière:</p>
-<div id="59893480" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"toto.yaml"</span>, <span class="st">"r"</span>, encoding<span class="op">=</span><span class="st">"utf-8"</span>) <span class="im">as</span> stream:</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    dict_config <span class="op">=</span> yaml.safe_load(stream)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="7be104e1" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"toto.yaml"</span>, <span class="st">"r"</span>, encoding<span class="op">=</span><span class="st">"utf-8"</span>) <span class="im">as</span> stream:</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    dict_config <span class="op">=</span> yaml.safe_load(stream)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </details>
+<ol start="4" type="1">
+<li>Dans la fonction <code>import_yaml_config</code>, créer une condition logique pour tenir compte du fait que le YAML de configuration peut ne pas exister<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a> ;</li>
+</ol>
 <details>
 <summary>
 Indice si vous ne savez comment conditionner la création de la configuration à l’existence du fichier
 </summary>
 <p>Voici la ligne qui peut vous aider. L’idéal est d’insérer ceci dans <code>import_yaml_config</code>:</p>
-<div id="70032dec" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>CONFIG_PATH <span class="op">=</span> <span class="st">'config.yaml'</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>config <span class="op">=</span> {}</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> os.path.exists(CONFIG_PATH):</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># lecture du fichier</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="541e868e" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>CONFIG_PATH <span class="op">=</span> <span class="st">'config.yaml'</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>config <span class="op">=</span> {}</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> os.path.exists(CONFIG_PATH):</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># lecture du fichier</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </details>
+<ol start="5" type="1">
+<li>Utiliser le canevas de code suivant pour créer les variables adéquates</li>
+</ol>
+<div id="6944da6a" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>API_TOKEN <span class="op">=</span> config.get(<span class="st">"jeton_api"</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>TRAIN_PATH <span class="op">=</span> config.get(<span class="st">"train_path"</span>, <span class="st">"train.csv"</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>TEST_PATH <span class="op">=</span> config.get(<span class="st">"test_path"</span>, <span class="st">"test.csv"</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>TEST_FRACTION <span class="op">=</span> config.get(<span class="st">"test_fraction"</span>, <span class="fl">.1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>et remplacer dans le code ;</p>
+<ol start="5" type="1">
+<li>Tester en ligne de commande que l’exécution du fichier est toujours sans erreur et sinon corriger ;</li>
+<li>Refaire un diagnostic avec <a href="https://pylint.readthedocs.io/en/latest/"><code>PyLint</code></a> et corriger les éventuels messages ;</li>
+<li>Créer un fichier <code>.gitignore</code> (cf.&nbsp;<a href="../chapters/git.html">Chapitre <code>Git</code></a>). Ajouter dans ce fichier <code>config.yaml</code> car il ne faut pas committer ce fichier. Au passage ajouter <code>__pycache__/</code> au <code>.gitignore</code><a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>, cela évitera d’avoir à le faire ultérieurement ;</li>
+<li>Créer un fichier <code>README.md</code> où vous indiquez qu’il faut créer un fichier <code>config.yaml</code> pour pouvoir utiliser l’API.</li>
+</ol>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
@@ -704,7 +714,7 @@ Checkpoint
 <section id="étape-4-privilégier-la-programmation-fonctionnelle" class="level2">
 <h2 class="anchored" data-anchor-id="étape-4-privilégier-la-programmation-fonctionnelle">Étape 4 : Privilégier la programmation fonctionnelle</h2>
 <p>Nous allons <strong>mettre en fonctions les parties importantes de l’analyse</strong>. Ceci facilitera l’étape ultérieure de modularisation de notre projet.</p>
-<p>Cet exercice étant chronophage, il n’est <strong>pas obligatoire de le réaliser en entier</strong>. L’important est de comprendre la démarche et d’adopter fréquemment une approche fonctionnelle<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>. Pour obtenir une chaine entièrement fonctionnalisée, vous pouvez reprendre le <em>checkpoint</em>.</p>
+<p>Cet exercice étant chronophage, il n’est <strong>pas obligatoire de le réaliser en entier</strong>. L’important est de comprendre la démarche et d’adopter fréquemment une approche fonctionnelle<a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>. Pour obtenir une chaine entièrement fonctionnalisée, vous pouvez reprendre le <em>checkpoint</em>.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -719,7 +729,7 @@ Application 4: adoption des standards de programmation fonctionnelle
 <li>Créer une fonction qui importe les données d’entraînement (<code>train.csv</code>) et de test (<code>test.csv</code>) et renvoie des <code>DataFrames</code> <code>Pandas</code> ;</li>
 <li>En fonction du temps disponible, créer plusieurs fonctions pour réaliser les étapes de <em>feature engineering</em>:
 <ul>
-<li>La création de la variable <em>“Title”</em> peut être automatisée en vertu du principe <em>“do not repeat yourself”</em><a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>.</li>
+<li>La création de la variable <em>“Title”</em> peut être automatisée en vertu du principe <em>“do not repeat yourself”</em><a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a>.</li>
 <li>Regrouper ensemble les <code>fillna</code> et essayer de créer une fonction généralisant l’opération.</li>
 <li>Les <em>label encoders</em> peuvent être transformés en deux fonctions: une première pour encoder une colonne puis une seconde qui utilise la première de manière répétée pour encoder plusieurs colonnes. <em>Remarquez les erreurs de copier-coller que cela corrige</em></li>
 <li>Finaliser les dernières transformations avec des fonctions</li>
@@ -861,10 +871,10 @@ Etat actuel du projet 🙈
 ├── test.csv
 ├── .gitignore
 ├── config.yaml
-├── secrets.yaml
 ├── import_data.py
 ├── build_features.py
 ├── train_evaluate.py
+├── titanic.ipynb
 └── main.py</code></pre>
 </details>
 <p>Comme cela est expliqué dans la partie <a href="../chapters/projects-architecture.html">Structure des projets</a>, on va adopter une structure certes arbitraire mais qui va faciliter l’autodocumentation de notre projet. De plus, une telle structure va faciliter des évolutions optionnelles comme la <em>packagisation</em> du projet. Passer d’une structure modulaire bien faite à un <em>package</em> est quasi-immédiat en <code>Python</code>.</p>
@@ -884,8 +894,8 @@ Note
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
 </div>
-<div class="sourceCode" id="cb19" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> $ pip install cookiecutter</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> $ cookiecutter https://github.com/drivendata/cookiecutter-data-science</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb19" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> pip install cookiecutter</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cookiecutter https://github.com/drivendata/cookiecutter-data-science</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Ici, on a déjà un projet, on va donc faire les choses dans l’autre sens : on va s’inspirer de la structure proposée afin de réorganiser celle de notre projet selon les standards communautaires.</p>
 </div>
@@ -927,7 +937,7 @@ Application 6: adopter une structure lisible
 <ul>
 <li><em>(optionnel)</em> Analyser et comprendre la <a href="https://drivendata.github.io/cookiecutter-data-science/#directory-structure">structure de projet</a> proposée par le template ;</li>
 <li>Modifier l’arborescence du projet selon le modèle ;</li>
-<li>Mettre à jour l’import des dépendances et le fichier de configuration avec les nouveaux chemins ;</li>
+<li>Mettre à jour l’import des dépendances, le fichier de configuration et <code>main.py</code> avec les nouveaux chemins ;</li>
 </ul>
 </div>
 </div>
@@ -1020,13 +1030,13 @@ Pour en savoir plus sur le système de stockage <code>S3</code>
 </div>
 <div id="callout-21" class="callout-21-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>Pour mettre en oeuvre cette étape, il peut être utile de comprendre un peu comme fonctionne le SSP Cloud. Vous devrez suivre la <a href="https://inseefrlab.github.io/docs.sspcloud.fr/docs/fr/storage.html">documentation du SSP Cloud</a> pour la réaliser. Une aide-mémoire est également disponible dans le cours de 2e année de l’ENSAE <a href="https://linogaliana-teaching.netlify.app/reads3/#">Python pour la data science</a>.</p>
+<p>Pour mettre en oeuvre cette étape, il peut être utile de comprendre un peu comme fonctionne le SSP Cloud. Vous devrez suivre la <a href="https://inseefrlab.github.io/docs.sspcloud.fr/docs/fr/storage.html">documentation du SSP Cloud</a> pour la réaliser. Une aide-mémoire est également disponible dans le cours de 2e année de l’ENSAE <a href="https://linogaliana-teaching.netlify.app/reads3/#">Python pour la <em>data science</em></a>.</p>
 </div>
 </div>
 </div>
 <p>Le chapitre sur la <a href="../chapters/project-structure.qmd">structure des projets</a> développe l’idée qu’il est recommandé de converger vers un modèle où environnements d’exécution, de stockage du code et des données sont conceptuellement séparés. Ce haut niveau d’exigence est un gain de temps important lors de la mise en production car au cours de cette dernière, le projet est amené à être exécuté sur une infrastructure informatique dédiée qu’il est bon d’anticiper.</p>
 <p>A l’heure actuelle, les données sont stockées dans le dépôt. C’est une mauvaise pratique. En premier lieu, <code>Git</code> n’est techniquement pas bien adapté au stockage de données. Ici ce n’est pas très grave car il ne s’agit pas de données volumineuses et ces dernières ne sont pas modifiées au cours de notre chaine de traitement. La raison principale est que les données traitées par les <em>data scientists</em> sont généralement soumises à des clauses de confidentialités (<a href="https://www.cnil.fr/fr/rgpd-de-quoi-parle-t-on">RGPD</a>, <a href="https://www.insee.fr/fr/information/1300624">secret statistique</a>…). Mettre ces données sous contrôle de version c’est prendre le risque de les divulguer à un public non habilité. Il est donc recommandé de privilégier des outils techniques adaptés au stockage de données.</p>
-<p>L’idéal, dans notre cas, est d’utiliser une solution de stockage externe. On va utiliser pour cela <code>MinIO</code>, la solution de stockage de type <code>S3</code> offerte par le SSP Cloud. Cela nous permettra de supprimer les données de <code>Github</code> tout en maintenant la reproductibilité de notre projet <a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a>.</p>
+<p>L’idéal, dans notre cas, est d’utiliser une solution de stockage externe. On va utiliser pour cela <code>MinIO</code>, la solution de stockage de type <code>S3</code> offerte par le SSP Cloud. Cela nous permettra de supprimer les données de <code>Github</code> tout en maintenant la reproductibilité de notre projet <a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a>.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1047,14 +1057,12 @@ Indice
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
 </div>
-<div class="sourceCode" id="cb23" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> $ mc cp data/raw/train.csv s3/<span class="op">&lt;</span>BUCKET_PERSONNEL<span class="op">&gt;</span>/ensae-reproductibilite/data/raw/train.csv</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> $ mc cp data/raw/test.csv s3/<span class="op">&lt;</span>BUCKET_PERSONNEL<span class="op">&gt;</span>/ensae-reproductibilite/data/raw/test.csv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb23" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> mc cp data/raw/train.csv s3/<span class="op">&lt;</span>BUCKET_PERSONNEL<span class="op">&gt;</span>/ensae-reproductibilite/data/raw/train.csv</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> mc cp data/raw/test.csv s3/<span class="op">&lt;</span>BUCKET_PERSONNEL<span class="op">&gt;</span>/ensae-reproductibilite/data/raw/test.csv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 en modifiant l’emplacement de votre bucket personnel
 </details>
-<ul>
-<li>Pour se simplifier la vie, on va utiliser des URL de téléchargement des fichiers (comme si ceux-ci étaient sur n’importe quel espace de stockage) plutôt que d’utiliser une librairie <code>S3</code> compatible comme <code>boto3</code> ou <code>s3fs</code>. Pour cela, en ligne de commande, faire:</li>
-</ul>
+<p>Pour se simplifier la vie, on va utiliser des URL de téléchargement des fichiers (comme si ceux-ci étaient sur n’importe quel espace de stockage) plutôt que d’utiliser une librairie <code>S3</code> compatible comme <code>boto3</code> ou <code>s3fs</code>. Par défaut, le contenu de votre <em>bucket</em> est privé, seul vous y avez accès. Néanmoins, vous pouvez rendre accessible à tous en lecture le contenu de votre <em>bucket</em> en faisant lui donnant des droits anonymes. Pour cela, en ligne de commande, faire:</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
@@ -1222,10 +1230,13 @@ Structure visée
 ├── requirements.txt                        │
 ├── titanicml                               │                
 │   ├── __init__.py                         │ Package source code, metadata
-│   ├── config.yaml                         │ and build instructions 
-│   ├── import_data.py                      │
-│   ├── build_features.py                   │ 
-│   └── train_evaluate.py                   ┘
+│   ├── data                                │ and build instructions 
+│   │   ├── import_data.py                  │  
+│   │   └── test_create_variable_title.py   │   
+│   ├── features                            │
+│   │   └── build_features.py               │
+│   └── models                              │
+│       └── train_evaluate.py               ┘
 └── tests                                   ┐
     └── test_create_variable_title.py       ┘ Package tests</code></pre>
 </details>
@@ -1307,9 +1318,9 @@ Application 10: packagisation <em>(optionnel)</em>
 <div class="callout-body-container callout-body">
 <ul>
 <li>Renommer le dossier <code>titanicml</code> pour respecter la nouvelle arborescence ;</li>
-<li>Dans <code>titanicml/</code>, créer un fichier <code>__init__.py</code><a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a> ;</li>
+<li>Créer un fichier <code>pyproject.toml</code> sur cette base ;</li>
 </ul>
-<div id="daa6b288" class="cell" data-execution_count="4">
+<div id="e61fc438" class="cell" data-execution_count="4">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>pyproject.toml</strong></pre>
@@ -1335,9 +1346,9 @@ Application 10: packagisation <em>(optionnel)</em>
 </div>
 <ul>
 <li>Créer le dossier <code>docs</code> et mettre les fichiers indiqués dedans</li>
-<li>Créer un fichier <code>pyproject.toml</code> sur cette base</li>
+<li>Dans <code>titanicml/</code>, créer un fichier <code>__init__.py</code><a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a></li>
 </ul>
-<div id="ac224933" class="cell" data-execution_count="5">
+<div id="d6d09a60" class="cell" data-execution_count="5">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>__init__.py</strong></pre>
@@ -1450,10 +1461,10 @@ Application 11a: environnement virtuel <code>venv</code>
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li>Exécuter <code>pip freeze</code> en ligne de commande et observer la (très) longue liste de package</li>
-<li>Créer l’environnement virtuel <code>titanic</code> en s’inspirant de <a href="https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/">la documentation officielle</a><a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a> ou du <a href="../chapters/portabilite.qmd">chapitre dédié</a></li>
+<li>Créer l’environnement virtuel <code>titanic</code> en s’inspirant de <a href="https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/">la documentation officielle</a><a href="#fn10" class="footnote-ref" id="fnref10" role="doc-noteref"><sup>10</sup></a> ou du <a href="../chapters/portabilite.qmd">chapitre dédié</a></li>
 <li>Utiliser <code>ls</code> pour observer et comprendre le contenu du dossier <code>titanic/bin</code> installé</li>
 <li>Activer l’environnement et vérifier l’installation de <code>Python</code> maintenant utilisée par votre machine <!---source titanic/bin/activate && which python----></li>
-<li>Vérifier directement depuis la ligne de commande que <code>Python</code> exécute bien une commande<a href="#fn10" class="footnote-ref" id="fnref10" role="doc-noteref"><sup>10</sup></a> avec:</li>
+<li>Vérifier directement depuis la ligne de commande que <code>Python</code> exécute bien une commande<a href="#fn11" class="footnote-ref" id="fnref11" role="doc-noteref"><sup>11</sup></a> avec:</li>
 </ol>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -1525,7 +1536,7 @@ Application 11b: environnement <code>conda</code>
 <li>Exécuter <code>conda env export</code> en ligne de commande et observer la (très) longue liste de package</li>
 <li>Créer un environnement <code>titanic</code> avec <a href="https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-with-commands"><code>conda create</code></a></li>
 <li>Activer l’environnement et vérifier l’installation de <code>Python</code> maintenant utilisée par votre machine <!---conda activate titanic && which python----></li>
-<li>Vérifier directement depuis la ligne de commande que <code>Python</code> exécute bien une commande<a href="#fn11" class="footnote-ref" id="fnref11" role="doc-noteref"><sup>11</sup></a> avec:</li>
+<li>Vérifier directement depuis la ligne de commande que <code>Python</code> exécute bien une commande<a href="#fn12" class="footnote-ref" id="fnref12" role="doc-noteref"><sup>12</sup></a> avec:</li>
 </ol>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -1536,7 +1547,7 @@ Application 11b: environnement <code>conda</code>
 <ol start="6" type="1">
 <li>Faire la même chose mais avec <code>import pandas as pd</code></li>
 <li>Installer les <em>packages</em> qu’on avait listé dans le <code>requirements.txt</code> précédemment. Ne pas faire un <code>pip install -r requirements.txt</code> afin de privilégier <code>conda install</code></li>
-<li>Exécuter à nouveau <code>conda env export</code> et comprendre la différence avec la situation précédente<a href="#fn12" class="footnote-ref" id="fnref12" role="doc-noteref"><sup>12</sup></a>.</li>
+<li>Exécuter à nouveau <code>conda env export</code> et comprendre la différence avec la situation précédente<a href="#fn13" class="footnote-ref" id="fnref13" role="doc-noteref"><sup>13</sup></a>.</li>
 <li>Vérifier que le script <code>main.py</code> fonctionne bien. Sinon installer les <em>packages</em> manquants et reprndre de manière itérative à partir de la question 7.</li>
 <li>Quand <code>main.py</code> fonctionne, faire <code>conda env export &gt; environment.yml</code> pour figer l’environnement de travail.</li>
 </ol>
@@ -2005,7 +2016,7 @@ Application 14: premier script d’intégration continue
 <li>Créer un fichier <code>.github/workflows/ci.yaml</code> avec le contenu de l’exemple de la documentation</li>
 <li>Retirer la <code>strategy matrix</code> et ne tester qu’avec la version <code>3.10</code> de <code>Python</code></li>
 <li>Utiliser le fichier <code>requirements.txt</code> pour installer les dépendances.</li>
-<li>Remplacer <code>russ</code> par <code>pylint</code> pour vérifier la qualité du code. Ajouter l’argument <code>--fail-under=6</code> pour renvoyer une erreur en cas de note trop basse<a href="#fn13" class="footnote-ref" id="fnref13" role="doc-noteref"><sup>13</sup></a></li>
+<li>Remplacer <code>russ</code> par <code>pylint</code> pour vérifier la qualité du code. Ajouter l’argument <code>--fail-under=6</code> pour renvoyer une erreur en cas de note trop basse<a href="#fn14" class="footnote-ref" id="fnref14" role="doc-noteref"><sup>14</sup></a></li>
 <li>Plutôt que <code>pytest</code>, utiliser <code>python main.py</code> pour tester que la matrice de confusion s’affiche bien.</li>
 </ol>
 <details>
@@ -2604,19 +2615,20 @@ Checkpoint
 
 <ol>
 <li id="fn1"><p>L’export dans un script <code>.py</code> a été fait directement depuis <code>VSCode</code>. Comme cela n’est pas vraiment l’objet du cours, nous passons cette étape et fournissons directement le script expurgé du texte intermédiaire. Mais n’oubliez pas que cette démarche, fréquente quand on a démarré sur un <em>notebook</em> et qu’on désire consolider en faisant la transition vers des scripts, nécessite d’être attentif pour ne pas risquer de faire une erreur.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>Essayez de <em>commit</em> vos changements à chaque étape de l’exercice, c’est une bonne habitude à prendre.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn3"><p>Ici, le jeton d’API n’est pas indispensable pour que le code fonctionne. Afin d’éviter une erreur non nécessaire lorsqu’on automatisera le processus, on peut créer une condition qui vérifie la présence ou non de ce fichier. Le script reste donc reproductible même pour un utilisateur n’ayant pas le fichier <code>secrets.yaml</code>.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn4"><p>Il est normal d’avoir des dossiers <code>__pycache__</code> qui traînent en local : ils se créent automatiquement à l’exécution d’un script en <code>Python</code>. Néanmoins, il ne faut pas associer ces fichiers à <code>Git</code>, voilà pourquoi on les ajoute au <code>.gitignore</code>.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn5"><p>Nous proposons ici d’adopter le principe de la <strong>programmation fonctionnelle</strong>. Pour encore fiabiliser un processus, il serait possible d’adopter le paradigme de la <strong>programmation orientée objet (POO)</strong>. Celle-ci est plus rebutante et demande plus de temps au développeur. L’arbitrage coût-avantage est négatif pour notre exemple, nous proposons donc de nous en passer. Néanmoins, pour une mise en production réelle d’un modèle, il est recommandé de l’adopter. C’est d’ailleurs obligatoire avec des <a href="https://pythonds.linogaliana.fr/pipeline-scikit/"><em>pipelines</em> <code>scikit</code></a>.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn6"><p>Au passage vous pouvez noter que mauvaises pratiques discutables, peuvent être corrigées, notamment l’utilisation excessive de <code>apply</code> là où il serait possible d’utiliser des méthodes embarquées par <code>Pandas</code>. Cela est plutôt de l’ordre du bon style de programmation que de la qualité formelle du script. Ce n’est donc pas obligatoire mais c’est mieux.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn7"><p>Attention, les données ont été <em>committées</em> au moins une fois. Les supprimer du dépôt ne les efface pas de l’historique. Si cette erreur arrive, le mieux est de supprimer le dépôt en ligne, créer un nouvel historique <code>Git</code> et partir de celui-ci pour des publications ultérieures sur <code>Github</code>. Néanmoins l’idéal serait de ne pas s’exposer à cela. C’est justement l’objet des bonnes pratiques de ce cours: un <code>.gitignore</code> bien construit et une séparation des environnements de stockage du code et des données seront bien plus efficaces pour vous éviter ces problèmes que tout les conseils de vigilance que vous pourrez trouver ailleurs.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn8"><p>Le fichier <code>__init__.py</code> indique à <code>Python</code> que le dossier est un <em>package</em>. Il permet de proposer certaines configurations lors de l’import du <em>package</em>. Il permet également de contrôler les objets exportés (c’est-à-dire mis à disposition de l’utilisateur) par le <em>package</em> par rapport aux objets internes au <em>package</em>. En le laissant vide, nous allons utiliser ce fichier pour importer l’ensemble des fonctions de nos sous-modules. Ce n’est pas la meilleure pratique mais un contrôle plus fin des objets exportés demanderait un investissement qui ne vaut, ici, pas le coût.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn9"><p>Si vous désirez aussi contrôler la version de <code>Python</code>, ce qui peut être important dans une perspective de portabilité, vous pouvez ajouter une option, par exemple <code>-p python3.10</code>. Néanmoins nous n’allons pas nous embarasser de cette nuance pour la suite car nous pourrons contrôler la version de <code>Python</code> plus finement par le biais de <code>Docker</code>.<a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn10"><p>L’option <code>-c</code> passée après la commande <code>python</code> permet d’indiquer à <code>Python</code> que la commande ne se trouve pas dans un fichier mais sera dans le texte qu’on va directement lui fournir.<a href="#fnref10" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Il est également possible avec <code>VSCode</code> d’exécuter le script ligne à ligne de manière interactive ligne à ligne (<kbd>MAJ</kbd>+<kbd>ENTER</kbd>). Néanmoins, cela nécessite de s’assurer que le <em>working directory</em> de votre console interactive est le bon. Celle-ci se lance selon les paramètres préconfigurés de <code>VSCode</code> et les votres ne sont peut-être pas les mêmes que les notres. Vous pouvez changer le <em>working directory</em> dans le script en utilisant le <em>package</em> <code>os</code> mais peut-être allez vous découvrir ultérieurement qu’il y a de meilleures pratiques…<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Essayez de <em>commit</em> vos changements à chaque étape de l’exercice, c’est une bonne habitude à prendre.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Ici, le jeton d’API n’est pas indispensable pour que le code fonctionne. Afin d’éviter une erreur non nécessaire lorsqu’on automatisera le processus, on peut créer une condition qui vérifie la présence ou non de ce fichier. Le script reste donc reproductible même pour un utilisateur n’ayant pas le fichier <code>secrets.yaml</code>.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p>Il est normal d’avoir des dossiers <code>__pycache__</code> qui traînent en local : ils se créent automatiquement à l’exécution d’un script en <code>Python</code>. Néanmoins, il ne faut pas associer ces fichiers à <code>Git</code>, voilà pourquoi on les ajoute au <code>.gitignore</code>.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p>Nous proposons ici d’adopter le principe de la <strong>programmation fonctionnelle</strong>. Pour encore fiabiliser un processus, il serait possible d’adopter le paradigme de la <strong>programmation orientée objet (POO)</strong>. Celle-ci est plus rebutante et demande plus de temps au développeur. L’arbitrage coût-avantage est négatif pour notre exemple, nous proposons donc de nous en passer. Néanmoins, pour une mise en production réelle d’un modèle, il est recommandé de l’adopter. C’est d’ailleurs obligatoire avec des <a href="https://pythonds.linogaliana.fr/pipeline-scikit/"><em>pipelines</em> <code>scikit</code></a>.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p>Au passage vous pouvez noter que mauvaises pratiques discutables, peuvent être corrigées, notamment l’utilisation excessive de <code>apply</code> là où il serait possible d’utiliser des méthodes embarquées par <code>Pandas</code>. Cela est plutôt de l’ordre du bon style de programmation que de la qualité formelle du script. Ce n’est donc pas obligatoire mais c’est mieux.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p>Attention, les données ont été <em>committées</em> au moins une fois. Les supprimer du dépôt ne les efface pas de l’historique. Si cette erreur arrive, le mieux est de supprimer le dépôt en ligne, créer un nouvel historique <code>Git</code> et partir de celui-ci pour des publications ultérieures sur <code>Github</code>. Néanmoins l’idéal serait de ne pas s’exposer à cela. C’est justement l’objet des bonnes pratiques de ce cours: un <code>.gitignore</code> bien construit et une séparation des environnements de stockage du code et des données seront bien plus efficaces pour vous éviter ces problèmes que tout les conseils de vigilance que vous pourrez trouver ailleurs.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn9"><p>Le fichier <code>__init__.py</code> indique à <code>Python</code> que le dossier est un <em>package</em>. Il permet de proposer certaines configurations lors de l’import du <em>package</em>. Il permet également de contrôler les objets exportés (c’est-à-dire mis à disposition de l’utilisateur) par le <em>package</em> par rapport aux objets internes au <em>package</em>. En le laissant vide, nous allons utiliser ce fichier pour importer l’ensemble des fonctions de nos sous-modules. Ce n’est pas la meilleure pratique mais un contrôle plus fin des objets exportés demanderait un investissement qui ne vaut, ici, pas le coût.<a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn10"><p>Si vous désirez aussi contrôler la version de <code>Python</code>, ce qui peut être important dans une perspective de portabilité, vous pouvez ajouter une option, par exemple <code>-p python3.10</code>. Néanmoins nous n’allons pas nous embarasser de cette nuance pour la suite car nous pourrons contrôler la version de <code>Python</code> plus finement par le biais de <code>Docker</code>.<a href="#fnref10" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn11"><p>L’option <code>-c</code> passée après la commande <code>python</code> permet d’indiquer à <code>Python</code> que la commande ne se trouve pas dans un fichier mais sera dans le texte qu’on va directement lui fournir.<a href="#fnref11" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn12"><p>Pour comparer les deux listes, vous pouvez utiliser la fonctionnalité de <em>split</em> du terminal sur <code>VSCode</code> pour comparer les outputs de <code>conda env export</code> en les mettant en face à face.<a href="#fnref12" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn13"><p>Il existe une approche alternative pour faire des tests réguliers: les <em>hooks</em> <code>Git</code>. Il s’agit de règles qui doivent être satisfaites pour que le fichier puisse être committé. Cela assurera que chaque <code>commit</code> remplisse des critères de qualité afin d’éviter le problème de la procrastination.</p>
-<p>La <a href="https://pylint.pycqa.org/en/latest/user_guide/pre-commit-integration.html">documentation de pylint</a> offre des explications supplémentaires.<a href="#fnref13" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn12"><p>L’option <code>-c</code> passée après la commande <code>python</code> permet d’indiquer à <code>Python</code> que la commande ne se trouve pas dans un fichier mais sera dans le texte qu’on va directement lui fournir.<a href="#fnref12" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn13"><p>Pour comparer les deux listes, vous pouvez utiliser la fonctionnalité de <em>split</em> du terminal sur <code>VSCode</code> pour comparer les outputs de <code>conda env export</code> en les mettant en face à face.<a href="#fnref13" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn14"><p>Il existe une approche alternative pour faire des tests réguliers: les <em>hooks</em> <code>Git</code>. Il s’agit de règles qui doivent être satisfaites pour que le fichier puisse être committé. Cela assurera que chaque <code>commit</code> remplisse des critères de qualité afin d’éviter le problème de la procrastination.</p>
+<p>La <a href="https://pylint.pycqa.org/en/latest/user_guide/pre-commit-integration.html">documentation de pylint</a> offre des explications supplémentaires.<a href="#fnref14" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </aside></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
