@@ -172,6 +172,8 @@ Le travail de nettoyage en sera facilité.
         scripts, nécessite d'être attentif pour ne pas risquer de faire une erreur. 
 
 La première étape est simple, mais souvent oubliée : **vérifier que le code fonctionne correctement**. 
+Pour cela, nous recommandons de faire un aller-retour entre le script ouvert dans `VSCode`
+et un terminal pour le lancer. 
 
 
 {{< include "./applications/_appli1.qmd" >}}
@@ -228,7 +230,7 @@ variables d'entrée du script. Cela peut être fait de deux
 manières:
 
 1. Avec des __arguments optionnels__ appelés depuis la ligne de commande _(Application 3a)_.
-Cela peut être pratique pour mettre en oeuvre des tests automatisés[^noteCI] mais
+Cela peut être pratique pour mettre en oeuvre des tests automatisés mais
 n'est pas forcément pertinent pour toutes les variables. Nous allons montrer
 cet usage avec le nombre d'arbres de notre _random forest_ ;
 2. En utilisant un __fichier de configuration__ dont les valeurs sont importées dans
@@ -347,10 +349,10 @@ dans le projet dans quelques temps.
 ├── test.csv
 ├── .gitignore
 ├── config.yaml
-├── secrets.yaml
 ├── import_data.py
 ├── build_features.py
 ├── train_evaluate.py
+├── titanic.ipynb
 └── main.py
 ```
 
@@ -374,8 +376,8 @@ issu d'un effort communautaire.
 L'idée de [`cookiecutter`](https://cookiecutter.readthedocs.io/en/stable/) est de proposer des _templates_ que l'on utilise pour __initialiser__ un projet, afin de bâtir à l'avance une structure évolutive. La syntaxe à utiliser dans ce cas est la suivante : 
 
 ```{.bash filename="terminal"}
-$ pip install cookiecutter
-$ cookiecutter https://github.com/drivendata/cookiecutter-data-science
+pip install cookiecutter
+cookiecutter https://github.com/drivendata/cookiecutter-data-science
 ```
 
 Ici, on a déjà un projet, on va donc faire les choses dans l'autre sens : on va s'inspirer de la structure proposée afin de réorganiser celle de notre projet selon les standards communautaires.
@@ -441,7 +443,7 @@ Ici on ne va pas fixer les versions, on raffinera ce fichier ultérieurement.
 Pour mettre en oeuvre cette étape, il peut être utile de
 comprendre un peu comme fonctionne le SSP Cloud.
 Vous devrez suivre la [documentation du SSP Cloud](https://inseefrlab.github.io/docs.sspcloud.fr/docs/fr/storage.html) pour la réaliser. Une aide-mémoire est également disponible dans le cours
-de 2e année de l'ENSAE [Python pour la data science](https://linogaliana-teaching.netlify.app/reads3/#).
+de 2e année de l'ENSAE [Python pour la _data science_](https://linogaliana-teaching.netlify.app/reads3/#).
 :::
 
 
@@ -564,10 +566,13 @@ ensae-reproductibilite-application
 ├── requirements.txt                        │
 ├── titanicml                               │                
 │   ├── __init__.py                         │ Package source code, metadata
-│   ├── config.yaml                         │ and build instructions 
-│   ├── import_data.py                      │
-│   ├── build_features.py                   │ 
-│   └── train_evaluate.py                   ┘
+│   ├── data                                │ and build instructions 
+│   │   ├── import_data.py                  │  
+│   │   └── test_create_variable_title.py   │   
+│   ├── features                            │
+│   │   └── build_features.py               │
+│   └── models                              │
+│       └── train_evaluate.py               ┘
 └── tests                                   ┐
     └── test_create_variable_title.py       ┘ Package tests
 ```

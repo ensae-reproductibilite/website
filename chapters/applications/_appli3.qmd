@@ -38,9 +38,41 @@ chemin d'un fichier `YAML`
 et renvoie le contenu de celui-ci en _output_. Vous pouvez suivre
 le conseil du chapitre sur la [Qualité du code](/chapters/code-quality.html)
 en adoptant le _type hinting_ ;
+
+<details>
+<summary>Indice si vous ne trouvez pas comment lire un fichier `YAML`</summary>
+
+Si le fichier s'appelle `toto.yaml`, vous pouvez l'importer de cette manière:
+
+```{python}
+#| eval: false
+with open("toto.yaml", "r", encoding="utf-8") as stream:
+    dict_config = yaml.safe_load(stream)
+```
+
+</details>
+
 4. Dans la fonction `import_yaml_config`,
 créer une condition logique pour tenir compte du fait que le YAML de configuration
 peut ne pas exister[^fileexist] ;
+
+<details>
+<summary>Indice si vous ne savez comment conditionner la création de la configuration à l'existence du fichier</summary>
+
+Voici la ligne qui peut vous aider. L'idéal
+est d'insérer ceci dans `import_yaml_config`:
+
+```{python}
+#| eval: false
+CONFIG_PATH = 'config.yaml'
+config = {}
+if os.path.exists(CONFIG_PATH):
+    # lecture du fichier
+```
+
+</details>
+
+
 5. Utiliser le canevas de code suivant pour créer les variables adéquates
 
 ```{python}
@@ -72,35 +104,6 @@ pouvoir utiliser l'API.
 
 [^pycache]: Il est normal d'avoir des dossiers `__pycache__` qui traînent en local : ils se créent automatiquement à l'exécution d'un script en `Python`. Néanmoins, il ne faut pas associer ces fichiers à `Git`, voilà pourquoi on les ajoute au `.gitignore`.
 
-
-<details>
-<summary>Indice si vous ne trouvez pas comment lire un fichier `YAML`</summary>
-
-Si le fichier s'appelle `toto.yaml`, vous pouvez l'importer de cette manière:
-
-```{python}
-#| eval: false
-with open("toto.yaml", "r", encoding="utf-8") as stream:
-    dict_config = yaml.safe_load(stream)
-```
-
-</details>
-
-<details>
-<summary>Indice si vous ne savez comment conditionner la création de la configuration à l'existence du fichier</summary>
-
-Voici la ligne qui peut vous aider. L'idéal
-est d'insérer ceci dans `import_yaml_config`:
-
-```{python}
-#| eval: false
-CONFIG_PATH = 'config.yaml'
-config = {}
-if os.path.exists(CONFIG_PATH):
-    # lecture du fichier
-```
-
-</details>
 
 :::
 
