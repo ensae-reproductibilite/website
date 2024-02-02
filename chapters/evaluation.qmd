@@ -7,16 +7,106 @@ description: |
 image: https://minio.lab.sspcloud.fr/lgaliana/generative-art/pythonds/kid.png
 order: 10
 href: chapters/evaluation.html
-eval: true
+eval: false
 echo: false
 ---
 
-Le cours est évalué avec deux rendus :  
+Evaluation en **deux parties** : 
 
-- dans un premier temps, en groupe de 2 ou 3, il faudra choisir un projet personnel, le rendre conforme aux bonnes pratiques, choisir un format de valorisation, déployer sur une infra de production 
-- dans un second temps, les étudiants se placeront dans le rôle d’un _data scientist_ qui vérifie la qualité des contributions à un projet et devront individuellement évaluer un des projets d’un autre groupe (peer review), critiquer les choix techniques et les bonnes pratiques mises en œuvre 
+1. **Par groupe de 3** : un **projet** à choisir parmi les 3 parcours (MLOps, app interactive / dashboard, publication reproductible / site web) 
+2. **Seul** : **revue de code**
 
-## Critères pour le projet
+## 1️⃣ Critères pour la revue de code
+
+Sur le projet d'un groupe différent du sien (attribué aléatoirement) : 
+
+- ouvrir une *pull request* de revue de code
+- donner une appréciation générale de la conformité du projet à la checklist des bonnes pratiques de développement
+- suggérer des pistes d'amélioration du projet
+
+
+## 2️⃣ Critères pour le projet
+
+### Checklist des bonnes pratiques de développement
+
+- [ ] **Utilisation de `Git`**
+    * Présence d'un fichier `.gitignore` adapté au langage et avec des règles additionnelles pour respecter les bonnes pratiques de versioning
+    * Travail collaboratif : utilisation des branches et des *pull requests*
+- [ ]  **Présence d'un fichier `README`** présentant le projet : contexte, objectif, comment l'utiliser ?
+- [ ]  **Présence d'un fichier `LICENSE`** déclarant la licence (_open-source_) d'exploitation du projet.
+- [ ]  **Versioning des packages** : présence d'un fichier `requirements.txt` ou d'un fichier d'environnement `environment.yml` pour `conda`
+- [ ]  **Bonnes pratiques de code**
+    + Respect des standards communautaires : utiliser un _linter_ et/ou un _formatter_
+    + Modularité : un script principal qui appelle des modules
+- [ ] **Bonnes pratiques de structure des projets**
+    + Respect des standards communautaires (`cookiecutter`)
+    + Modularité du projet selon le modèle évoqué dans le cours:
+        * Code sur `GitHub`
+        * Données sur `S3`
+        * Fichiers de configuration (_secrets_, etc.) à part
+
+![Proposition de modularité du projet illustrée pour un projet mixte `MLOps` et _dashboard_](/workflow2.png)
+
+## Les différents types de projets 
+
+### Parcours MLOps
+
+::: {.callout-tip}
+## Objectif
+
+A partir d'un projet existant ou d'un projet type _contest_ `Kaggle`,
+développer un modèle de ML répondant à une problématique, puis le mettre en production conformément aux principes du _MLOps_.
+:::
+
+**Etapes** :
+
+- [ ] Respecter la _checklist_ des bonnes pratiques de développement ;
+- [ ] Développer un modèle de ML qui répond à un besoin métier ;
+- [ ] Entraîner le modèle via validation croisée, avec une procédure de _fine-tuning_ des hyperparamètres ;
+- [ ] Formaliser le processus de _fine-tuning_ de manière reproductible via `MLFlow` ;
+- [ ] Construire une API avec `Fastapi` pour exposer le meilleur modèle ;
+- [ ] Créer une image `Docker` pour mettre à disposition l'API ;
+- [ ] Déployer l'API sur le `SSP Cloud` ;
+- [ ] Industrialiser le déploiement en mode `GitOps` avec `ArgoCD`
+- [ ] Gérer le monitoring de l'application : _logs_, _dashboard_ de suivi des performances, etc.
+
+### Parcours dashboard / application interactive
+
+::: {.callout-tip}
+## Objectif
+à partir d'un projet existant ou d'un projet que vous construirez, développer une application interactive / un dashboard répondant à une problématique métier, puis la mettre en production.
+:::
+
+**Etapes** :
+
+- [ ] Respecter la _checklist_ des bonnes pratiques de développement
+- [ ] Développer une application interactive `Streamlit` ou un _dashboard_ statique avec `Quarto` répondant à une problématique métier
+- [ ] Créer une image `Docker` permettant d'exposer l'application en local
+- [ ] Déployer l'application sur le `SSP Cloud`
+- [ ] Industrialiser le déploiement en mode `GitOps` avec `ArgoCD`
+- [ ] Gérer le monitoring de l'application : _logs_, métriques de suivi des performances, etc.
+
+### Parcours publication reproductible
+
+**Etapes** :
+
+::: {.callout-tip}
+## Objectif
+A partir d'un projet existant ou d'un projet que vous construirez, développer une application interactive / un dashboard répondant à une problématique métier, puis la mettre en production.
+:::
+
+- [ ] Respecter la _checklist_ des bonnes pratiques de développement
+- [ ] Rédiger un rapport reproductible avec `Quarto` qui fasse intervenir des données, du code, de la visualisation de données, du texte, etc.
+- [ ] Exposer le rapport sous la forme d'un site web via `GitHub Actions`
+- [ ] Customiser le thème, le CSS etc. pour mettre en valeur au maximum les résultats de la publication et les messages principaux
+- [ ] Automatiser l'ingestion des données en entrée pour que le site _web_ se mette à jour régulièrement
+- [ ] Mettre en place des tests automatisés de vérification des standards de qualité du code (_linter_), de détection de fautes d'orthographes/de grammaire, etc.
+- [ ] Générer des slides au format `quarto-revealjs` afin de présenter les principaux résultats de la publication, et les exposer comme une page du site
+
+
+<!--------
+old
+--------->
 
 ```{ojs}
 viewof choice = Inputs.checkbox(
@@ -44,7 +134,6 @@ html`<div>${formatToCheckboxLists(
 ```
 
 
-## Structure d'exemple
 
 ```{ojs}
 viewof choice2 = Inputs.checkbox(
