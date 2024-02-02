@@ -90,8 +90,11 @@ En général, on va donc initialiser le projet dans l'autre sens :
 
 Le projet cloné est un projet Git — il contient le dossier `.git` — synchronisé par défaut avec le répertoire distant. On peut le vérifier avec la commande `remote` de Git :
 
-```bash
-$ git remote -v
+```{.bash filename="terminal"}
+git remote -v
+```
+
+```{.python}
 origin  https://github.com/linogaliana/ensae-reproductibilite-website.git (fetch)
 origin  https://github.com/linogaliana/ensae-reproductibilite-website.git (push)
 ```
@@ -146,7 +149,7 @@ On a listé précédemment un large éventail de fichiers qui n'ont, par nature,
 
 De manière générale, il y a pour chaque langage des fichiers que l'on ne souhaitera jamais versionner. Pour en tenir compte, une première bonne pratique est de choisir le `.gitignore` associé au langage du projet lors de la création du dépôt sur GitHub. Ce faisant, le projet est initialité avec un `gitignore` déjà existant et pré-rempli de chemins et de types de fichiers qui ne sont pas à versionner. Regardons un extrait du `gitignore Python` pour comprendre sa structure et son fonctionnement.
 
-```
+```{.python}
 pip-log.txt
 __pycache__/
 *.log
@@ -197,8 +200,11 @@ La possibilité de créer des branches est l'une des fonctionnalités majeures d
 
 Pour comprendre comment fonctionnent les branches, il nous faut revenir un peu plus en détail sur la manière dont Git stocke l'historique du projet. Comme nous l'avons vu, l'unité temporelle de Git est le commit, qui correspond à une photographie à un instant donné de l'état du projet (*snapshot*). Chaque commit est uniquement identifié par un *hash*, une longue suite de caractères. La commande `git log`, qui liste les différents commits d'un projet, permet d'afficher ce *hash* ainsi que diverses métadonnées (auteur, date, message) associées au commit.
 
-```bash
-$ git log
+```{.bash filename="terminal"}
+git log
+```
+
+```{.python}
 commit e58b004d3b68bdf28093fe6ad6036b5d13216e55 (HEAD -> master, origin/master, origin/HEAD)
 Author: Lino Galiana <xxx@xxx.fr>
 Date:   Tue Mar 22 14:34:04 2022 +0100
@@ -214,12 +220,19 @@ Une branche est simplement un pointeur vers un commit. Dans l'exemple précéden
 
 Dans ce contexte, créer une nouvelle branche (en local) revient simplement à créer un nouveau pointeur vers un commit donné. Supposons que l'on crée une branche `testing` à partir du dernier commit.
 
-```bash
-$ git branch testing  # Crée une nouvelle branche
-$ git branch  # Liste les branches existantes
-* master  # La branche sur laquelle on se situe
-  testing  # La nouvelle branche créée
+```{.bash filename="terminal"}
+git branch testing  #<1>
+git branch  #<2>
 ```
+1. Crée une nouvelle branche
+2. Liste les branches existantes
+
+```{.python}
+* master  #<1>
+  testing  #<2> 
+```
+1. La branche sur laquelle on se situe
+2. La nouvelle branche créée
 
 La figure suivante illustre l'effet de cette création sur l'historique Git.
 
@@ -229,8 +242,11 @@ Désormais, deux branches (`master` et `testing`) pointent vers le même commit.
 
 Pour savoir sur quelle branche on se situe à instant donné — et donc sur quelle branche on va commiter — Git utilise un pointeur spécial, appelé `HEAD`, qui pointe vers la branche courante. On comprend à présent mieux la signification de `HEAD -> master` dans l'output de la commande `git log` vu précédemment. Cet élément spécifie la situation *locale* actuelle et signifie : on se situe actuellement sur la branche `master`, qui pointe sur le commit `e58b004`. Pour changer de branche, i.e. déplacer le `HEAD`, on utilise la commande `git checkout`. Par exemple, pour passer de la branche `master` sur laquelle on est par défaut à la branche `testing` :
 
-```bash
-$ git checkout testing  # Changement de branche
+```{.bash filename="terminal"}
+git checkout testing  # Changement de branche
+```
+
+```{.python}
 Switched to branch 'testing'
 ```
 
@@ -248,8 +264,11 @@ La résolution des conflits est une étape souvent douloureuse lors de l'apprent
 
 Rappellons que toutes les opérations que nous avons effectuées sur les branches dans cette section se sont passés en local, le répertoire distant est resté totalement inchangé. Pour pouvoir collaborer sur une branche ou bien en faire une *pull request* (cf. supra), il faut pousser la branche sur le répertoire distant. La commande est simple : `git push origin <branche>`.
 
-```bash
-$ git push origin testing
+```{.bash filename="terminal"}
+git push origin testing
+```
+
+```{.python}
 Counting objects: 24, done.
 Delta compression using up to 8 threads.
 Compressing objects: 100% (15/15), done.
@@ -259,7 +278,7 @@ To https://github.com/linogaliana/ensae-reproductibilite-website
  * [new branch]      testing -> testing
 ```
 
-## Workflow collaboratif
+## _Workflow_ collaboratif
 
 Comme on l'a vu précédemment, si le modèle des branches de Git semble idéal pour gérer le travail collaboratif et asynchrone, il peut également s'avérer rapidement complexe à manipuler en l'absence d'une bonne organisation du travail en équipe. De nombreux modèles ("*workflows*") existent en la matière, avec des complexités plus ou moins grandes selon la nature du projet. Nous conseillons d'adopter dans la plupart des cas un modèle très simple : le [GitHub Flow](https://docs.github.com/en/get-started/quickstart/github-flow).
 
