@@ -56,8 +56,11 @@ Décrivons d'abord les différentes inscriptions qui arrivent à l'initialisatio
 
 Pour éviter la lourdeur des images et permettre de copier/coller facilement les commandes, on représentera dans la suite du tutoriel (et du cours) le terminal du service VSCode par des bandes de texte sur fond noir, comme dans l'exemple suivant. Les lignes commençant par un `$` sont celles avec lesquelles une commande est lancée, et les lignes sans `$` représentent le résultat d'une commande. Attention à ne pas inclure le `$` lorsque vous lancez les commandes, il sert simplement à différencier celles-ci des résultats.
 
-```bash
-$ echo "une petite illustration"
+```{.bash filename="terminal"}
+echo "une petite illustration"
+```
+
+```{.python}
 une petite illustration
 ```
 
@@ -106,16 +109,16 @@ Ainsi, la très grande majorité des opérations que l'on est amené à réalise
 
 | Commande                          | Description                                                     |
 |-----------------------------------|-----------------------------------------------------------------|
-| **pwd**                             | afficher (Print Working Directory) le chemin (absolu) du dossier courant |
-| **cd chemin**                       | changer (Change Directory) de dossier courant                   |
-| **ls**                              | lister les fichiers dans le dossier courant                     |
+| `pwd`                             | afficher (Print Working Directory) le chemin (absolu) du dossier courant |
+| `cd chemin`                        | changer (Change Directory) de dossier courant                   |
+| `ls`                              | lister les fichiers dans le dossier courant                     |
 
 La commande `cd` accepte aussi bien des chemins absolus que des chemins relatifs. En pratique, il est assez pénible de manipuler des chemins absolus, qui peuvent facilement être très longs. On utilisera donc essentiellement des chemins relatifs, ce qui revient à se déplacer à partir du répertoire courant. Pour se faire, voici quelques utilisations très fréquentes de la commande `cd`.
 
 | Commande                          | Description                                                     |
 |-----------------------------------|-----------------------------------------------------------------|
-| **cd ..**                             | remonter d'un niveau dans l'arborescence (dossier parent) |
-| **cd ~**                       | revenir dans le répertoire HOME de l'utilisateur courant               |
+| `cd ..`                             | remonter d'un niveau dans l'arborescence (dossier parent) |
+| `cd ~`                       | revenir dans le répertoire HOME de l'utilisateur courant               |
 
 La première commande est l'occasion de revenir sur une convention d'écriture importante pour les chemins relatifs :
 
@@ -158,9 +161,12 @@ Dans les exemples de commandes précédents, les paramètres étaient passés en
 
 Comme tout langage de programmation, le langage `shell` permet d'assigner et d'utiliser des variables dans des commandes. Pour afficher le contenu d'une variable, on utilise la commande `echo`, qui est l'équivalent de la fonction `print` en `Python` ou en `R`.
 
-```bash
-$ MY_VAR="toto"
-$ echo $MY_VAR
+```{.bash filename="terminal"}
+MY_VAR="toto"
+echo $MY_VAR
+```
+
+```{.python}
 toto
 ```
 
@@ -174,8 +180,11 @@ Notre objectif avec ce tutoriel n'est pas de savoir coder en `shell`, on ne va d
 
 La liste des variables d'environnement peut être affichée à l'aide de la commande `env`. Il y a généralement un grand nombre de variables d'environnement prééxistantes ; en voici un échantillon obtenu à partir du terminal du service VSCode.
 
-```bash
-$ env
+```{.bash filename="terminal"}
+env
+```
+
+```{.python}
 SHELL=/bin/bash
 HOME=/home/coder
 LANG=en_US.UTF-8
@@ -190,8 +199,11 @@ Cette liste illustre la variété des utilisations des variables d'environnement
 
 Une variable d'environnement essentielle, et que l'on est fréquemment amené à modifier dans les applications de data science, est la variable `$PATH`. Elle consiste en une concaténation de chemins absolus, séparés par `:`, qui spécifie les dossiers dans lesquels Linux va chercher les exécutables lorsque l'on lance une commande, ainsi que l'ordre de la recherche. Regardons la valeur du `$PATH` sur le terminal du service VSCode.
 
-```bash
-$ echo $PATH
+```{.bash filename="terminal"}
+echo $PATH
+```
+
+```{.python}
 /home/coder/local/bin/conda/bin:/home/coder/local/bin/conda/condabin:/home/coder/local/bin/conda/envs/basesspcloud/bin:/home/coder/local/bin/conda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ```
 
@@ -205,35 +217,44 @@ La sécurité est un enjeu central en Linux, qui permet une gestion très fine d
 
 Une différence majeure par rapport à d'autres systèmes d'exploitation, notamment Windows, est qu'aucun utilisateur n'a par défaut les droits complets d'administrateur (*root*). Il n'est donc pas possible nativement d'accéder au parties sensibles du système, ou bien de lancer certains types de programme. Par exemple, si l'on essaie de lister les fichiers du dossier `/root`, on obtient une erreur.
 
-```bash
-$ ls /root
+```{.bash filename="terminal"}
+ls /root
+```
+
+```{.python}
 ls: cannot open directory '/root': Permission denied
 ```
 Dans la pratique du quotidien, certaines opérations telles que l'installation de binaires ou de packages nécessitent cependant des droits administrateurs. Dans ce cas, il est d'usage d'utiliser la commande `sudo` (Substitute User DO), qui permet de prendre les droits *root* le temps de l'exécution de la commande. 
 
-```bash
-$ sudo ls /root
-
+```{.bash filename="terminal"}
+sudo ls /root
 ```
 
 Le dossier `/root` étant vide, la commande `ls` renvoie une chaîne de caractères vide, mais nous n'avons plus de problème de permission. Notons qu'une bonne pratique de sécurité, en particulier dans les scripts `shell` que l'on peut être amenés à écrire ou exécuter, est de limiter l'utilisation de cette commande aux cas où elle s'avère nécessaire.
 
 Une autre subtilité concerne justement l'exécution de scripts `shell`. Par défaut, qu'il soit créé par l'utilisateur ou téléchargé d'internet, un script n'est pas exécutable.
 
-```bash
-$ touch test.sh # Créer le script test.sh (vide)
-$ ./test.sh # Exécuter le script test.sh
+```{.bash filename="terminal"}
+touch test.sh #<1>
+./test.sh #<2>
+```
+1. Créer le script test.sh (vide)
+2. Exécuter le script test.sh
+
+```{.python}
 bash: ./test.sh: Permission denied
 ```
 
 C'est bien entendu une mesure de sécurité pour éviter l'exécution automatique de scripts potentiellement malveillants. Pour pouvoir exécuter un tel script, il faut attribuer des droits d'exécution au fichier avec la commande `chmod`. Il devient alors possible d'exécuter le script classiquement.
 
-```bash
-$ chmod +x test.sh # Donner des droits d'exécution au script test.sh
-$ ./test.sh # Exécuter le script test.sh
+```{.bash filename="terminal"}
+chmod +x test.sh #<1>
+./test.sh #<2>
 
 # Le script étant vide, il ne se passe rien
 ```
+1. Donner des droits d'exécution au script `test.sh`
+2. Exécuter le script test.sh
 
 ## Les scripts shell
 
@@ -241,7 +262,7 @@ Maintenant que nous avons vu les variables et les permissions, revenons sur les 
 
 Illustrons leur structure ainsi que leur fonctionnement à l'aide d'un script simple. Considérons les commandes suivantes, que l'on met dans un fichier `monscript.sh` dans le répertoire courant.
 
-```bash
+```{.bash filename="terminal"}
 #!/bin/bash
 SECTION=$1
 CHAPTER=$2
@@ -260,10 +281,13 @@ Analysons la structure de ce script :
 
 Exécutons maintenant ce script, en prenant soin de lui donner les permission adéquates au préalable.
 
-```bash
-$ chmod +x monscript.sh
-$ bash monscript.sh section2 chapitre3
-$ ls formation/section1/chapitre2/
+```{.bash filename="terminal"}
+chmod +x monscript.sh
+bash monscript.sh section2 chapitre3
+ls formation/section1/chapitre2/
+```
+
+```{.python}
 text.txt
 ```
 
@@ -279,8 +303,11 @@ Pourquoi cette différence ? Une raison importante est que, contrairement à Win
 
 L'utilisation d'`apt` est très simple. La seule difficulté est de savoir le nom du paquet que l'on souhaite installer, ce qui nécessite en général d'utiliser un moteur de recherche. L'installation de paquets est également un cas où il faut utiliser `sudo`, puisque cela implique souvent l'accès à des répertoires protégés. 
 
-```bash
-$ sudo apt install tree
+```{.bash filename="terminal"}
+sudo apt install tree
+```
+
+```{.python}
 Reading package lists... Done
 Building dependency tree... Done
 Reading state information... Done
@@ -292,8 +319,11 @@ The following NEW packages will be installed:
 
 Désinstaller un package est également simple : c'est l'opération inverse. Par sécurité, le terminal vous demande si vous êtes sûr de votre choix en vous demandant de tapper la lettre y ou la lettre n. On peut passer automatiquement cette étape en ajoutant le paramètre `-y`
 
-```bash
-$ sudo apt remove -y tree
+```{.bash filename="terminal"}
+sudo apt remove -y tree
+```
+
+```{.python}
 Reading package lists... Done
 Building dependency tree... Done
 Reading state information... Done
@@ -305,8 +335,11 @@ The following packages will be REMOVED:
 
 Avant d'installer un package, il est toujours préférable de mettre à jour la base des packages, pour s'assurer qu'on obtiendra bien la dernière version.
 
-```bash
-$ sudo apt update
+```{.bash filename="terminal"}
+sudo apt update
+```
+
+```{.python}
 Hit:1 http://deb.debian.org/debian bullseye InRelease
 Hit:2 http://deb.debian.org/debian bullseye-updates InRelease
 Hit:3 http://security.debian.org/debian-security bullseye-security InRelease
