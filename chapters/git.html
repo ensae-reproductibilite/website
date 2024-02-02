@@ -232,7 +232,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#branches-locales" id="toc-branches-locales" class="nav-link" data-scroll-target="#branches-locales">Branches locales</a></li>
   <li><a href="#branches-remote" id="toc-branches-remote" class="nav-link" data-scroll-target="#branches-remote">Branches <em>remote</em></a></li>
   </ul></li>
-  <li><a href="#workflow-collaboratif" id="toc-workflow-collaboratif" class="nav-link" data-scroll-target="#workflow-collaboratif">Workflow collaboratif</a>
+  <li><a href="#workflow-collaboratif" id="toc-workflow-collaboratif" class="nav-link" data-scroll-target="#workflow-collaboratif"><em>Workflow</em> collaboratif</a>
   <ul class="collapse">
   <li><a href="#définition-des-rôles-des-contributeurs" id="toc-définition-des-rôles-des-contributeurs" class="nav-link" data-scroll-target="#définition-des-rôles-des-contributeurs">Définition des rôles des contributeurs</a></li>
   <li><a href="#développement-sur-des-branches-de-court-terme" id="toc-développement-sur-des-branches-de-court-terme" class="nav-link" data-scroll-target="#développement-sur-des-branches-de-court-terme">Développement sur des branches de court-terme</a></li>
@@ -343,9 +343,14 @@ Dérouler les <em>slides</em> ci-dessous ou <a href="https://ensae-reproductibil
 <p>En pratique, travailler uniquement en local n’est pas très intéressant. Pour pouvoir travailler de manière collaborative, on va vouloir <strong>synchroniser les différentes copies locales du projet à un répertoire centralisé</strong>, qui maintient de fait la “source de vérité” (<em>single source of truth</em>). Même sur un projet individuel, il fait sens de synchroniser son répertoire local à une copie distante pour assurer l’intégrité du code de son projet en cas de problème matériel.</p>
 <p>En général, on va donc initialiser le projet dans l’autre sens : - créer un nouveau projet sur GitHub - générer un <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token">jeton d’accès</a> (<em>personal access token</em>) - cloner le projet en local via la méthode HTTPS : <code>git clone https://github.com/&lt;username&gt;/&lt;project_name&gt;.git</code></p>
 <p>Le projet cloné est un projet Git — il contient le dossier <code>.git</code> — synchronisé par défaut avec le répertoire distant. On peut le vérifier avec la commande <code>remote</code> de Git :</p>
-<div class="sourceCode" id="cb1" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> $ git remote <span class="at">-v</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> origin  https://github.com/linogaliana/ensae-reproductibilite-website.git <span class="er">(</span><span class="ex">fetch</span><span class="kw">)</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> origin  https://github.com/linogaliana/ensae-reproductibilite-website.git <span class="er">(</span><span class="ex">push</span><span class="kw">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb1" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git remote <span class="at">-v</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>origin  https:<span class="op">//</span>github.com<span class="op">/</span>linogaliana<span class="op">/</span>ensae<span class="op">-</span>reproductibilite<span class="op">-</span>website.git (fetch)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>origin  https:<span class="op">//</span>github.com<span class="op">/</span>linogaliana<span class="op">/</span>ensae<span class="op">-</span>reproductibilite<span class="op">-</span>website.git (push)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Le projet local est bien lié au répertoire distant sur GitHub, auquel Git donne par défaut le nom <code>origin</code>. Ce lien permet d’utiliser les commandes de synchronisation usuelles : - <code>git pull</code> : récupérer les changements (<em>fetch</em>) sur le <em>remote</em> et les appliquer au projet local - <code>git push</code> : envoyer les changements locaux sur le <em>remote</em></p>
 </section>
 <section id="implémentations" class="level2">
@@ -381,9 +386,9 @@ Dérouler les <em>slides</em> ci-dessous ou <a href="https://ensae-reproductibil
 <h4 class="anchored" data-anchor-id="gitignore">Utiliser un <code>.gitignore</code></h4>
 <p>On a listé précédemment un large éventail de fichiers qui n’ont, par nature, pas vocation à être versionné. Bien entendu, faire attention à ne pas ajouter ces différents fichiers au moment de chaque <code>git add</code> serait assez pénible. Git simplifie largement cette procédure en nous donnant la possibilité de remplir un fichier <code>.gitignore</code>, situé à la racine du projet, qui spécifie l’ensemble des fichiers et types de fichiers que l’on ne souhaite pas versionner dans le cadre du projet courant.</p>
 <p>De manière générale, il y a pour chaque langage des fichiers que l’on ne souhaitera jamais versionner. Pour en tenir compte, une première bonne pratique est de choisir le <code>.gitignore</code> associé au langage du projet lors de la création du dépôt sur GitHub. Ce faisant, le projet est initialité avec un <code>gitignore</code> déjà existant et pré-rempli de chemins et de types de fichiers qui ne sont pas à versionner. Regardons un extrait du <code>gitignore Python</code> pour comprendre sa structure et son fonctionnement.</p>
-<pre><code>pip-log.txt
-__pycache__/
-*.log</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>pip<span class="op">-</span>log.txt</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>__pycache__<span class="op">/</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="op">*</span>.log</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Chaque ligne du <code>gitignore</code> spécifie un élément à ignorer du contrôle de version, élément qui peut être un ficher/dossier ou bien une règle concernant un ensemble de fichiers/dossiers. Sauf si spécifié explicitement, les chemins sont relatifs à la racine du projet. L’extrait du <code>gitignore Python</code> illustre les différentes possibilités :</p>
 <ul>
 <li>ligne 1 : ignore le fichier <code>pip-log.txt</code> ;</li>
@@ -425,27 +430,58 @@ __pycache__/
 <h3 class="anchored" data-anchor-id="concept">Concept</h3>
 <p>La possibilité de créer des branches est l’une des fonctionnalités majeures de Git. La création d’une branche au sein d’un projet permet de diverger de la ligne principale de développement (généralement appelée <code>master</code>, terme tendant à disparaître au profit de celui de <code>main</code>) sans impacter cette ligne. Cela permet de séparer le nouveau développement et de <strong>faire cohabiter plusieurs versions, pouvant évoluer séparément et pouvant être facilement rassemblées si nécessaire</strong>.</p>
 <p>Pour comprendre comment fonctionnent les branches, il nous faut revenir un peu plus en détail sur la manière dont Git stocke l’historique du projet. Comme nous l’avons vu, l’unité temporelle de Git est le commit, qui correspond à une photographie à un instant donné de l’état du projet (<em>snapshot</em>). Chaque commit est uniquement identifié par un <em>hash</em>, une longue suite de caractères. La commande <code>git log</code>, qui liste les différents commits d’un projet, permet d’afficher ce <em>hash</em> ainsi que diverses métadonnées (auteur, date, message) associées au commit.</p>
-<div class="sourceCode" id="cb3" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> $ git log</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> commit e58b004d3b68bdf28093fe6ad6036b5d13216e55 <span class="er">(</span><span class="ex">HEAD</span> <span class="at">-</span><span class="op">&gt;</span> master, origin/master, origin/HEAD<span class="kw">)</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> Author: Lino Galiana <span class="op">&lt;</span>xxx@xxx.fr<span class="op">&gt;</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> Date:   Tue Mar 22 14:34:04 2022 +0100</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span>     ajoute code équivalent python</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb4" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git log</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>commit e58b004d3b68bdf28093fe6ad6036b5d13216e55 (HEAD <span class="op">-&gt;</span> master, origin<span class="op">/</span>master, origin<span class="op">/</span>HEAD)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>Author: Lino Galiana <span class="op">&lt;</span>xxx<span class="op">@</span>xxx.fr<span class="op">&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>Date:   Tue Mar <span class="dv">22</span> <span class="dv">14</span>:<span class="dv">34</span>:<span class="dv">0</span><span class="er">4</span> <span class="dv">2022</span> <span class="op">+</span><span class="dv">0</span><span class="er">100</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    ajoute code équivalent python</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Une branche est simplement un pointeur vers un commit. Dans l’exemple précédent, on a imprimé les informations du dernier commit en date. La branche principale (<code>master</code>) pointe vers ce commit. Si l’on faisait un nouveau commit, le pointeur se décalerait et la branche <code>master</code> pointerait à présent sur le nouveau commit.</p>
 </section>
 <section id="branches-locales" class="level3">
 <h3 class="anchored" data-anchor-id="branches-locales">Branches locales</h3>
 <p>Dans ce contexte, créer une nouvelle branche (en local) revient simplement à créer un nouveau pointeur vers un commit donné. Supposons que l’on crée une branche <code>testing</code> à partir du dernier commit.</p>
-<div class="sourceCode" id="cb4" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> $ git branch testing  <span class="co"># Crée une nouvelle branche</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> $ git branch  <span class="co"># Liste les branches existantes</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> <span class="pp">*</span> master  <span class="co"># La branche sur laquelle on se situe</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span>   testing  <span class="co"># La nouvelle branche créée</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="sourceCode" id="annotated-cell-9" data-filename="terminal"><pre class="sourceCode bash code-annotation-code code-with-copy"><code class="sourceCode bash"><span id="annotated-cell-9-1"><a href="#annotated-cell-9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git branch testing</span>
+<span id="annotated-cell-9-2"><a href="#annotated-cell-9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git branch</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol type="1">
+<li>Crée une nouvelle branche</li>
+<li>Liste les branches existantes</li>
+</ol>
+<div class="sourceCode" id="annotated-cell-4"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-4-1" class="code-annotation-target"><a href="#annotated-cell-4-1" aria-hidden="true" tabindex="-1"></a><span class="op">*</span> master</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-4-2" class="code-annotation-target"><a href="#annotated-cell-4-2" aria-hidden="true" tabindex="-1"></a>  testing</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-4" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="1" data-code-annotation="1">La branche sur laquelle on se situe</span>
+</dd>
+<dt data-target-cell="annotated-cell-4" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="2" data-code-annotation="2">La nouvelle branche créée</span>
+</dd>
+</dl>
 <p>La figure suivante illustre l’effet de cette création sur l’historique Git.</p>
 <p><img src="../newbranch.png" class="img-fluid"></p>
 <p>Désormais, deux branches (<code>master</code> et <code>testing</code>) pointent vers le même commit. Si l’on effectue à présent des commits sur la branche <code>testing</code>, on va diverger de la branche principale, ce qui permet de développer une nouvelle fonctionnalité sans risquer d’impacter <code>master</code>.</p>
 <p>Pour savoir sur quelle branche on se situe à instant donné — et donc sur quelle branche on va commiter — Git utilise un pointeur spécial, appelé <code>HEAD</code>, qui pointe vers la branche courante. On comprend à présent mieux la signification de <code>HEAD -&gt; master</code> dans l’output de la commande <code>git log</code> vu précédemment. Cet élément spécifie la situation <em>locale</em> actuelle et signifie : on se situe actuellement sur la branche <code>master</code>, qui pointe sur le commit <code>e58b004</code>. Pour changer de branche, i.e.&nbsp;déplacer le <code>HEAD</code>, on utilise la commande <code>git checkout</code>. Par exemple, pour passer de la branche <code>master</code> sur laquelle on est par défaut à la branche <code>testing</code> :</p>
-<div class="sourceCode" id="cb5" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> $ git checkout testing  <span class="co"># Changement de branche</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> Switched to branch <span class="st">'testing'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb6" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git checkout testing  <span class="co"># Changement de branche</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>Switched to branch <span class="st">'testing'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>On se situe désormais sur la branche <code>testing</code>, sur laquelle on peut laisser libre cours à sa créativité sans risquer d’impacer la branche principale du projet. Mais que se passe-t-il si, pendant que l’on développe sur <code>testing</code>, un autre membre du projet commit sur <code>master</code> ? On dit que les historiques ont divergé. La figure suivante illustre à quoi ressemble à présent l’historique du projet (et suppose que l’on est repassé sur <code>master</code>).</p>
 <p><img src="../divergence.png" class="img-fluid"></p>
 <p>Cette divergence n’est pas problématique en soi : il est normal que les différentes parties et expérimentations d’un projet avancent à différents rythmes. La difficulté est de savoir comment réconcillier les différents changements si l’on décide que la branche <code>testing</code> doit être intégrée dans <code>master</code>. Deux situations peuvent survenir : - les modifications opérées en parallèle sur les deux branches ne concernent pas les mêmes fichiers ou les mêmes parties des fichiers. Dans ce cas, Git est capable de fusionner (<em>merge</em>) les changements automatiquement et tout se passe sans encombre ; - dans le cas contraire, survient un <em>merge conflict</em> : les branches ont divergé de telle sorte qu’il n’est pas possible pour Git de fusionner les changements automatiquement. Il faut alors résoudre les conflits manuellement.</p>
@@ -454,18 +490,23 @@ __pycache__/
 <section id="branches-remote" class="level3">
 <h3 class="anchored" data-anchor-id="branches-remote">Branches <em>remote</em></h3>
 <p>Rappellons que toutes les opérations que nous avons effectuées sur les branches dans cette section se sont passés en local, le répertoire distant est resté totalement inchangé. Pour pouvoir collaborer sur une branche ou bien en faire une <em>pull request</em> (cf.&nbsp;supra), il faut pousser la branche sur le répertoire distant. La commande est simple : <code>git push origin &lt;branche&gt;</code>.</p>
-<div class="sourceCode" id="cb6" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> $ git push origin testing</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> Counting objects: 24, done.</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> Delta compression using up to 8 threads.</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> Compressing objects: 100% <span class="er">(</span><span class="ex">15/15</span><span class="kw">)</span><span class="ex">,</span> done.</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> Writing objects: 100% <span class="er">(</span><span class="ex">24/24</span><span class="kw">)</span><span class="ex">,</span> 1.91 KiB <span class="kw">|</span> <span class="ex">0</span> bytes/s, done.</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> Total 24 <span class="er">(</span><span class="ex">delta</span> 2<span class="kw">)</span><span class="ex">,</span> reused 0 <span class="er">(</span><span class="ex">delta</span> 0<span class="kw">)</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> To https://github.com/linogaliana/ensae-reproductibilite-website</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span>  <span class="pp">*</span> [new branch]      testing <span class="at">-</span><span class="op">&gt;</span> testing</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb8" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git push origin testing</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>Counting objects: <span class="dv">24</span>, done.</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>Delta compression using up to <span class="dv">8</span> threads.</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>Compressing objects: <span class="dv">100</span><span class="op">%</span> (<span class="dv">15</span><span class="op">/</span><span class="dv">15</span>), done.</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>Writing objects: <span class="dv">100</span><span class="op">%</span> (<span class="dv">24</span><span class="op">/</span><span class="dv">24</span>), <span class="fl">1.91</span> KiB <span class="op">|</span> <span class="dv">0</span> <span class="bu">bytes</span><span class="op">/</span>s, done.</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>Total <span class="dv">24</span> (delta <span class="dv">2</span>), reused <span class="dv">0</span> (delta <span class="dv">0</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>To https:<span class="op">//</span>github.com<span class="op">/</span>linogaliana<span class="op">/</span>ensae<span class="op">-</span>reproductibilite<span class="op">-</span>website</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a> <span class="op">*</span> [new branch]      testing <span class="op">-&gt;</span> testing</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
 <section id="workflow-collaboratif" class="level2">
-<h2 class="anchored" data-anchor-id="workflow-collaboratif">Workflow collaboratif</h2>
+<h2 class="anchored" data-anchor-id="workflow-collaboratif"><em>Workflow</em> collaboratif</h2>
 <p>Comme on l’a vu précédemment, si le modèle des branches de Git semble idéal pour gérer le travail collaboratif et asynchrone, il peut également s’avérer rapidement complexe à manipuler en l’absence d’une bonne organisation du travail en équipe. De nombreux modèles (“<em>workflows</em>”) existent en la matière, avec des complexités plus ou moins grandes selon la nature du projet. Nous conseillons d’adopter dans la plupart des cas un modèle très simple : le <a href="https://docs.github.com/en/get-started/quickstart/github-flow">GitHub Flow</a>.</p>
 <p>Le <em>GitHub Flow</em> est une méthode d’organisation minimaliste du travail collaboratif, qui est progressivement devenue la norme dans les projets open-source. Elle est résumée par la figure suivante, dont nous détaillons par la suite les différentes étapes.</p>
 <p><img src="../ghflow.png" class="img-fluid"></p>
