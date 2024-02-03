@@ -793,39 +793,72 @@ pouvoir plus facilement automatiser la construction de l'image
 
 # Partie 4 : automatisation avec l'intégration continue
 
+
+Imaginez que vous êtes au restaurant
+et qu'on ne vous serve pas le plat mais seulement la recette
+et que, de plus, on vous demande de préparer le plat
+chez vous avec les ingrédients dans votre frigo.
+Vous seriez quelque peu déçu. En revanche, si vous avez goûté
+au plat, que vous êtes un réel cordon bleu
+et qu'on vous donne la recette pour refaire ce plat ultérieurement,
+peut-être
+que vous appréciriez plus. 
+
+Cette analogie illustre l'enjeu de définir
+le public cible et ses attentes afin de fournir un livrable adapté. 
 Une image `Docker` est un livrable qui n'est pas forcément intéressant
 pour tous les publics. Certains préféreront avoir un plat bien préparé
-qu'une recette. Nous allons donc proposer d'aller plus loin en proposant
-plusieurs types de livrables.
+qu'une recette ; certains apprécieront avoir une image `Docker` mais
+d'autres ne seront pas en mesure de construire celle-ci ou ne sauront
+pas la faire fonctionner. Une image `Docker` est plus souvent un 
+moyen pour faciliter la mise en service d'une production qu'une fin en soi. 
 
-Cela va nous amener à découvrir les outils
-du `CI/CD` (_Continuous Integration / Continuous Delivery_)
-qui sont au coeur de l'approche `DevOps`.
+Nous allons donc proposer
+plusieurs types de livrables plus classiques par la suite. Ceux-ci
+correspondront mieux aux attendus des publics utilisateurs de services
+construits à partir de techniques de _data science_. `Docker` est néanmoins
+un passage obligé car l'ensemble des types de livrables que nous allons
+explorer reposent sur la standardisation permise par les conteneurs. 
 
-Notre approche appliquée
-au _machine learning_ va nous entraîner plutôt du côté du `MLOps` qui devient
-une approche de plus en plus fréquente dans l'industrie de la 
-_data science_.
+Cette approche nous permettra de quitter le domaine de l'artisanat pour
+s'approcher d'une industrialisation de la mise à disposition 
+de notre projet. Ceci va notamment nous amener à mettre en oeuvre
+l'approche pragmatique du `DevOps` qui consiste à intégrer dès la phase de
+développement d'un projet les contraintes liées à sa mise à disposition
+au public cible (cette approche est détaillée plus
+amplement dans le chapitre sur la [mise en production](/chapters/deployment.qmd)). 
 
-Nous allons améliorer notre approche de trois manières:
-
-- Automatisation de la création de l'image `Docker` et tests
-automatisés de la qualité du code ;
-- Production d'un site _web_ automatisé permettant de documenter et
-valoriser le modèle de _Machine Learning_ ;
-- Mise à disposition du modèle entraîné par le biais d'une API pour
-ne pas le ré-entraîner à chaque fois et faciliter sa réutilisation ;
-
-A chaque fois, nous allons d'abord tester en local notre travail puis
-essayer d'automatiser cela avec les outils de `Github`.
-
+L'automatisation et la mise à disposition automatisée de nos productions
+sera faite progressivement, au cours des prochaines parties. Tous les 
+projets n'ont pas vocation à aller aussi loin dans ce domaine. 
+L'opportunité doit être comparée aux coûts humains et financiers
+de leur mise en oeuvre et de leur cycle de vie. 
+Avant de faire une production en série de nos modèles,
+nous allons déjà commencer
+par automatiser quelques tests de conformité de notre code. 
 On va ici utiliser l'intégration continue pour deux objectifs distincts:
 
 - la mise à disposition de l'image `Docker` ;
 - la mise en place de tests automatisés de la qualité du code
-sur le modèle de notre `linter` précédent 
+sur le modèle de notre `linter` précédent.
 
-Nous allons utiliser `Github Actions` pour cela. 
+Nous allons utiliser `Github Actions` pour cela. Il s'agit de serveurs
+standardisés mis à disposition gratuitement par `Github` {{<fa brands github >}}.
+`Gitlab` {{<fa brands gitlab >}}, l'autre principal acteur du domaine,
+propose des services similaires. L'implémentation est légèrement différente
+mais les principes sont identiques. 
+
+
+::: {.callout-caution collapse="true"}
+## Si vous prenez ce projet fil rouge en cours de route
+
+```{.bash filename="terminal"}
+git checkout appli13
+```
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
+:::
 
 
 ## Étape 1: mise en place de tests automatisés
@@ -836,7 +869,11 @@ de l'intégration continue en testant de manière automatisée
 notre script `main.py`.
 
 Pour cela, nous allons partir de la structure proposée dans l'[action officielle](https://github.com/actions/setup-python). 
-La documentation associée est [ici](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python)
+La documentation associée est [ici](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python).
+Des éléments succincts de présentation de la logique déclarative des actions `Github` 
+sont disponibles dans le chapitre sur la [mise en production](/chapters/deployment.qmd). Néanmoins, la meilleure
+école pour comprendre le fonctionnement de celles-ci est de parcourir la documentation du service et d'observer
+les actions `Github` mises en oeuvre par vos projets favoris, celles-ci seront fort instructives !
 
 
 ::: {.callout-tip}
