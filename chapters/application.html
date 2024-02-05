@@ -240,7 +240,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#étape-1-mise-en-place-de-tests-automatisés" id="toc-étape-1-mise-en-place-de-tests-automatisés" class="nav-link" data-scroll-target="#étape-1-mise-en-place-de-tests-automatisés">Étape 1: mise en place de tests automatisés</a></li>
   <li><a href="#étape-2-automatisation-de-la-livraison-de-limage-docker" id="toc-étape-2-automatisation-de-la-livraison-de-limage-docker" class="nav-link" data-scroll-target="#étape-2-automatisation-de-la-livraison-de-limage-docker">Étape 2: Automatisation de la livraison de l’image <code>Docker</code></a></li>
   </ul></li>
-  <li><a href="#partie-5-mise-en-production-dune-api-servant-un-modèle-de-machine-learning" id="toc-partie-5-mise-en-production-dune-api-servant-un-modèle-de-machine-learning" class="nav-link" data-scroll-target="#partie-5-mise-en-production-dune-api-servant-un-modèle-de-machine-learning">Partie 5: mise en production d’une API servant un modèle de machine learning</a>
+  <li><a href="#partie-5-expérimenter-en-local-des-valorisations-puis-automatiser-leur-production" id="toc-partie-5-expérimenter-en-local-des-valorisations-puis-automatiser-leur-production" class="nav-link" data-scroll-target="#partie-5-expérimenter-en-local-des-valorisations-puis-automatiser-leur-production">Partie 5: expérimenter en local des valorisations puis automatiser leur production</a>
   <ul class="collapse">
   <li><a href="#étape-1-création-dun-pipeline-scikit" id="toc-étape-1-création-dun-pipeline-scikit" class="nav-link" data-scroll-target="#étape-1-création-dun-pipeline-scikit">Étape 1: création d’un pipeline <code>scikit</code></a></li>
   <li><a href="#étape-2-développer-une-api-en-local" id="toc-étape-2-développer-une-api-en-local" class="nav-link" data-scroll-target="#étape-2-développer-une-api-en-local">Étape 2: développer une API en local</a></li>
@@ -650,7 +650,7 @@ Application 3b: La configuration dans un fichier YAML
 Indice si vous ne trouvez pas comment lire un fichier <code>YAML</code>
 </summary>
 <p>Si le fichier s’appelle <code>toto.yaml</code>, vous pouvez l’importer de cette manière:</p>
-<div id="212fe32f" class="cell" data-execution_count="1">
+<div id="41b314c1" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"toto.yaml"</span>, <span class="st">"r"</span>, encoding<span class="op">=</span><span class="st">"utf-8"</span>) <span class="im">as</span> stream:</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    dict_config <span class="op">=</span> yaml.safe_load(stream)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -663,7 +663,7 @@ Indice si vous ne trouvez pas comment lire un fichier <code>YAML</code>
 Indice si vous ne savez comment conditionner la création de la configuration à l’existence du fichier
 </summary>
 <p>Voici la ligne qui peut vous aider. L’idéal est d’insérer ceci dans <code>import_yaml_config</code>:</p>
-<div id="6b494452" class="cell" data-execution_count="2">
+<div id="2c1a2716" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>CONFIG_PATH <span class="op">=</span> <span class="st">'config.yaml'</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>config <span class="op">=</span> {}</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> os.path.exists(CONFIG_PATH):</span>
@@ -673,7 +673,7 @@ Indice si vous ne savez comment conditionner la création de la configuration à
 <ol start="5" type="1">
 <li>Utiliser le canevas de code suivant pour créer les variables adéquates</li>
 </ol>
-<div id="01f0250d" class="cell" data-execution_count="3">
+<div id="8d6064be" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>API_TOKEN <span class="op">=</span> config.get(<span class="st">"jeton_api"</span>)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>TRAIN_PATH <span class="op">=</span> config.get(<span class="st">"train_path"</span>, <span class="st">"train.csv"</span>)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>TEST_PATH <span class="op">=</span> config.get(<span class="st">"test_path"</span>, <span class="st">"test.csv"</span>)</span>
@@ -1324,7 +1324,7 @@ Application 10: packagisation <em>(optionnel)</em>
 <li>Renommer le dossier <code>titanicml</code> pour respecter la nouvelle arborescence ;</li>
 <li>Créer un fichier <code>pyproject.toml</code> sur cette base ;</li>
 </ul>
-<div id="a2de2b86" class="cell" data-execution_count="4">
+<div id="2f30d698" class="cell" data-execution_count="4">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>pyproject.toml</strong></pre>
@@ -1352,7 +1352,7 @@ Application 10: packagisation <em>(optionnel)</em>
 <li>Créer le dossier <code>docs</code> et mettre les fichiers indiqués dedans</li>
 <li>Dans <code>titanicml/</code>, créer un fichier <code>__init__.py</code><a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a></li>
 </ul>
-<div id="8facbe2b" class="cell" data-execution_count="5">
+<div id="aeb8d520" class="cell" data-execution_count="5">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>__init__.py</strong></pre>
@@ -2192,8 +2192,36 @@ Checkpoint
 </div>
 </section>
 </section>
-<section id="partie-5-mise-en-production-dune-api-servant-un-modèle-de-machine-learning" class="level1">
-<h1>Partie 5: mise en production d’une API servant un modèle de machine learning</h1>
+<section id="partie-5-expérimenter-en-local-des-valorisations-puis-automatiser-leur-production" class="level1">
+<h1>Partie 5: expérimenter en local des valorisations puis automatiser leur production</h1>
+<p>Nous avons automatisé les étapes intermédiaires de notre projet. Néanmoins nous n’avons pas encore réfléchi à la valorisation à mettre en oeuvre pour notre projet. On va supposer que notre projet s’adresse à des <em>data scientists</em> mais aussi à une audience moins technique. Pour ces premiers, nous pourrions nous contenter de valorisations techniques, comme des API, mais pour ces derniers il est conseillé de privilégier des formats plus <em>user friendly</em>.</p>
+<p>Afin de faire le parallèle avec les parcours possibles pour l’évaluation, nous allons proposer trois valorisations<a href="#fn16" class="footnote-ref" id="fnref16" role="doc-noteref"><sup>16</sup></a>:</p>
+<ul>
+<li>Une API facilitant la réutilisation du modèle en “production” ;</li>
+<li>Un site web statique exploitant cette API pour exposer les prédictions à une audience moins technique. Pour illustrer les enjeux spécifiques aux applications réactives mises en oeuvre avec <code>Streamlit</code>, nous proposerons aussi cette valorisation même si, dans notre cas, elle n’apportera pas plus que le site statique.</li>
+</ul>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-49-contents" aria-controls="callout-49" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Site statique vs application réactive
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-49" class="callout-49-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>La solution que nous allons proposer pour les sites statiques, <code>Quarto</code> associé à <code>Github Pages</code>, peut être utilisée dans le cadre des parcours <em>“rapport reproductible”</em> ou <em>“dashboard / application interactive”</em>.</p>
+<p>Pour ce dernier parcours, d’autres approches techniques sont néanmoins possibles, comme <code>Streamlit</code>. Celles-ci sont plus exigeantes sur le plan technique puisqu’elles nécessitent de mettre en production sur des serveurs conteuneurisés (comme la mise en production de l’API) là où le site statique ne nécessite qu’un serveur web, mis à disposition gratuitement par <code>Github</code>.</p>
+<p>La distinction principale entre ces deux approches est qu’elles s’appuient sur des serveurs différents. Un site statique repose sur un serveur web là où <code>Streamlit</code> s’appuie sur serveur classique en <em>backend</em>. La différence principale entre ces deux types de serveurs réside principalement dans leur fonction et leur utilisation:</p>
+<ul>
+<li>Un serveur web est spécifiquement conçu pour stocker, traiter et livrer des pages web aux clients. Cela inclut des fichiers HTML, CSS, JavaScript, images, etc. Les serveurs web écoutent les requêtes HTTP/HTTPS provenant des navigateurs des utilisateurs et y répondent en envoyant les données demandées.</li>
+<li>Un serveur <em>backend</em> classique est</li>
+</ul>
+</div>
+</div>
+</div>
 <section id="étape-1-création-dun-pipeline-scikit" class="level2">
 <h2 class="anchored" data-anchor-id="étape-1-création-dun-pipeline-scikit">Étape 1: création d’un pipeline <code>scikit</code></h2>
 <p>Notre code respecte des bonnes pratiques formelles. Cependant, la mise en production nécessite d’être exigeant sur la mise en oeuvre opérationnelle de notre <em>pipeline</em>.</p>
@@ -2217,7 +2245,7 @@ Application 16: Un <em>pipeline</em> de <em>machine learning</em>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-50-contents" aria-controls="callout-50" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-51-contents" aria-controls="callout-51" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2226,7 +2254,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-50" class="callout-50-contents callout-collapse collapse">
+<div id="callout-51" class="callout-51-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -2290,7 +2318,7 @@ Récupérer le contenu sur <a href="https://raw.githubusercontent.com/ensae-repr
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-52-contents" aria-controls="callout-52" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-53-contents" aria-controls="callout-53" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2299,7 +2327,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-52" class="callout-52-contents callout-collapse collapse">
+<div id="callout-53" class="callout-53-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -2350,7 +2378,7 @@ Fichier <code>run.sh</code>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-54-contents" aria-controls="callout-54" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-55-contents" aria-controls="callout-55" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2359,7 +2387,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-54" class="callout-54-contents callout-collapse collapse">
+<div id="callout-55" class="callout-55-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -2466,7 +2494,7 @@ Fichier <code>deployment/ingress.yaml</code>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-56-contents" aria-controls="callout-56" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-57-contents" aria-controls="callout-57" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2475,7 +2503,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-56" class="callout-56-contents callout-collapse collapse">
+<div id="callout-57" class="callout-57-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -2543,7 +2571,7 @@ Note
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-59-contents" aria-controls="callout-59" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-60-contents" aria-controls="callout-60" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2552,7 +2580,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-59" class="callout-59-contents callout-collapse collapse">
+<div id="callout-60" class="callout-60-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -2587,6 +2615,7 @@ Checkpoint
 <li id="fn14"><p>Il est tout à fait normal de ne pas parvenir à créer une action fonctionnelle du premier coup. N’hésitez pas à <em>pusher</em> votre code après chaque question pour vérifier que vous parvenez bien à réaliser chaque étape. Sinon vous risquez de devoir corriger bout par bout un fichier plus conséquent.<a href="#fnref14" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn15"><p>Il existe une approche alternative pour faire des tests réguliers: les <em>hooks</em> <code>Git</code>. Il s’agit de règles qui doivent être satisfaites pour que le fichier puisse être committé. Cela assure que chaque <code>commit</code> remplisse des critères de qualité afin d’éviter le problème de la procrastination.</p>
 <p>La <a href="https://pylint.pycqa.org/en/latest/user_guide/pre-commit-integration.html">documentation de pylint</a> offre des explications supplémentaires. Ici, nous allons adopter une approche moins ambitieuse en demandant à notre action de faire ce travail d’évaluation de la qualité de notre code<a href="#fnref15" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn16"><p>Vous n’êtes pas obligés pour l’évaluation de mettre en oeuvre les jalons de plusieurs parcours. Néanmoins, vous découvrirez que chaque nouveau pas en avant est moins coûteux que le précédent si vous avez mis en oeuvre les réflexes des bonnes pratiques.<a href="#fnref16" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </aside></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
