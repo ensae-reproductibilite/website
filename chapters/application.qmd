@@ -1227,9 +1227,39 @@ ainsi chaque modification d’un fichier présent dans le dossier `kubernetes/`.
 va entrainer le redéploiement automatique en synchronisant avec notre dépôt Github.
 
 
-Projet exo appli19:
+::: {.callout-tip}
+## Projet d'application 19: Mettre à disposition l'API (déploiement automatisé)
 
 - Lancer un service argoCD
+- Ouvrez le template [argocd/template-argocd.yml]() et modifier les lignes surlignées :
+
+```{python}
+#| eval: false
+#| file: "argocd/pipeline.yaml"
+#| filename: "argocd/pipeline.yaml"
+#| source-line-numbers: "8-9,13"
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ensae-mlops
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ensae-reproductibilite/application-correction.git
+    targetRevision: test15
+    path: deployment
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: user-lgaliana
+  syncPolicy:
+    automated:
+      selfHeal: true
+```
+
+- Dans ArgoCD, cliquez sur New App puis Edit as a YAML. Copiez-collez le contenu de argocd/template-argocd.yml et cliquez sur Create.
+- Accédez à votre API en utilisant l’URL définie dans votre fichier ingress.yml.
+
+:::
 
 
 ## Etape 4: construire un site web
