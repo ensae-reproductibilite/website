@@ -929,6 +929,18 @@ de valorisations techniques, comme des API,
 mais pour ces derniers il est
 conseillé de privilégier des formats plus _user friendly_. 
 
+::: {.callout-caution collapse="true"}
+## Si vous prenez ce projet fil rouge en cours de route
+
+```{.bash filename="terminal"}
+git checkout appli15
+```
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
+:::
+
+
 Afin de faire le parallèle avec les parcours possibles pour l'évaluation,
 nous allons proposer trois valorisations[^valorisation]:
 
@@ -969,42 +981,61 @@ serveur classique en _backend_. La différence principale
 entre ces deux types de serveurs
 réside principalement dans leur fonction et leur utilisation:
 
-- Un serveur web est spécifiquement conçu pour stocker, traiter et livrer des pages web aux clients. Cela inclut des fichiers HTML, CSS, JavaScript, images, etc. Les serveurs web écoutent les requêtes HTTP/HTTPS provenant des navigateurs des utilisateurs et y répondent en envoyant les données demandées.
-- Un serveur _backend_ classique est 
+- Un __serveur web__ est spécifiquement conçu pour stocker, traiter et livrer des pages web aux clients. Cela inclut des fichiers HTML, CSS, JavaScript, images, etc. Les serveurs web écoutent les requêtes HTTP/HTTPS provenant des navigateurs des utilisateurs et y répondent en envoyant les données demandées.
+- Un **serveur _backend_** classique est conçu pour effectuer des opérations en réponse à un _front_, en l'occurrence une page web. 
+Dans le contexte d'une application `Streamlit`, il s'agit d'un serveur avec l'environnement `Python` _ad hoc_ pour
+exécuter le code nécessaire à répondre à toute action d'un utilisateur de l'appliacation. 
 
 :::
 
-## Étape 1: création d'un pipeline `scikit`
 
-Notre code respecte des bonnes pratiques formelles. Cependant, la mise en
+## Étape préliminaire: création d'un _pipeline_ `scikit`
+
+La mise en
 production nécessite d'être exigeant sur la mise en oeuvre opérationnelle
-de notre _pipeline_. 
+de notre _pipeline_. Nous avons néanmoins un _pipeline_ un peu bancal
+car il requiert d'être vigilant dans la manière d'enchaîner les
+étapes de _preprocessing_, d'entraînement et d'évaluation.
 
-Quand  on utilise `scikit`, la bonne pratique est d'utiliser
+Quand on utilise `scikit`, la bonne pratique est d'utiliser
 les [_pipelines_](https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html)
-qui sécurisent les étapes de _feature engineering_ avant la mise en oeuvre d'un modèle (que
-ce soit pour l'entraînement ou le test sur un nouveau jeu de données). 
+qui sécurisent les étapes de _feature engineering_ nécessaires avant la mise en oeuvre d'un modèle, qu'il
+que
+ce soit pour l'entraînement ou pour appliquer les mêmes opérations avec les mêmes paramètres sur 
+sur un nouveau jeu de données avant de faire un _predict_. 
 
 On va donc devoir refactoriser notre application pour utiliser un _pipeline_ `scikit`. 
-Les raisons sont expliquées [ici](https://scikit-learn.org/stable/common_pitfalls.html).
+Les raisons sont expliquées plus en détail [ici](https://scikit-learn.org/stable/common_pitfalls.html).
 Cela aura
-aussi l'avantage de rendre les étapes plus lisibles. 
+également l'avantage de rendre les étapes de notre _pipeline_ plus lisibles lorsqu'on passera à
+l'étape d'industrialisation avec `MLFLow`. 
 
 
 ::: {.callout-tip}
 
-## Application 16: Un _pipeline_ de _machine learning_
+## Application 16 _(optionnelle)_: Un _pipeline_ de _machine learning_
 
-- Refactoriser le code de `random_forest_titanic` pour créer 
-un vrai pipeline de _preprocessing_ avant la modélisation
+Cette application est __optionnelle__ car elle relève plutôt d'un cours
+de _machine learning_ que de cet enseignement. 
+Les instructions sont donc minimales pour laisser de la marge de manoeuvre.
 
-- Simplifier la fonction `split_train_test_titanic`
-en la réduisant au découpage train/test
+- Simplifier le code de `split_train_test_titanic` pour
+renvoyer deux `DataFrames`: `train` et `test` au lieu
+des 4 _arrays_ `Numpy` comme jusqu'à présent
+
+- Créer une fonction `build_pipeline` dans `src/models/train_evaluate.py`
+qui :
+    + Reprend les arguments de `random_forest_titanic`
+    + Effectue le _preprocessing_ suivant pour les variables numériques (à définir):
+une imputation à la valeur médiane, un `MinMaxScaler` ensuite
+    + Effectue le _preprocessing_ suivant pour les variables catégorielles (à définir):
+une imputation à la valeur la plus fréquente, un _one hot encoding_ ensuite
+    + Définit une _random forest_ avec le nombre d'arbre donné en argument de la fonction
 
 - Modifier `main.py` pour que ce soit à ce niveau
 qu'a lieu le découpage en train/test, l'entrainement
 et l'évaluation
-du modèle
+du modèle (qui est donc à exfiltrer de `src/models/train_evaluate.py`)
 
 :::
 
