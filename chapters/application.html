@@ -6,7 +6,6 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Romain Avouac et Lino Galiana">
 <meta name="description" content="Une application fil rouge pour illustrer l’intérêt d’appliquer graduellement les bonnes pratiques dans une optique de mise en production d’une application de data science.">
 
 <title>Mise en production - Application</title>
@@ -125,22 +124,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/introduction.html"> 
+<span class="menu-text">Introduction</span></a>
+  </li>  
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-les-bases" role="button" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Les bases</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-les-bases">    
         <li>
-    <a class="dropdown-item" href="../chapters/introduction.html">
- <span class="dropdown-text">Introduction</span></a>
-  </li>  
-        <li>
     <a class="dropdown-item" href="../chapters/linux-101.html">
  <span class="dropdown-text">Linux 101</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="../chapters/git.html">
- <span class="dropdown-text">Versionner son code et travailler collaborativement avec Git</span></a>
+ <span class="dropdown-text">Git</span></a>
   </li>  
     </ul>
   </li>
@@ -257,7 +256,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">Application</h1>
-<p class="subtitle lead">Appliquer pas à pas les concepts étudiés à un projet de data science</p>
 </div>
 
 <div>
@@ -269,12 +267,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Romain Avouac et Lino Galiana </p>
-          </div>
-  </div>
     
   
     
@@ -650,7 +642,7 @@ Application 3b: La configuration dans un fichier YAML
 Indice si vous ne trouvez pas comment lire un fichier <code>YAML</code>
 </summary>
 <p>Si le fichier s’appelle <code>toto.yaml</code>, vous pouvez l’importer de cette manière:</p>
-<div id="eb8b9938" class="cell" data-execution_count="1">
+<div id="f38365f3" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"toto.yaml"</span>, <span class="st">"r"</span>, encoding<span class="op">=</span><span class="st">"utf-8"</span>) <span class="im">as</span> stream:</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    dict_config <span class="op">=</span> yaml.safe_load(stream)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -663,7 +655,7 @@ Indice si vous ne trouvez pas comment lire un fichier <code>YAML</code>
 Indice si vous ne savez comment conditionner la création de la configuration à l’existence du fichier
 </summary>
 <p>Voici la ligne qui peut vous aider. L’idéal est d’insérer ceci dans <code>import_yaml_config</code>:</p>
-<div id="bc971159" class="cell" data-execution_count="2">
+<div id="1aa90cba" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>CONFIG_PATH <span class="op">=</span> <span class="st">'config.yaml'</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>config <span class="op">=</span> {}</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> os.path.exists(CONFIG_PATH):</span>
@@ -673,7 +665,7 @@ Indice si vous ne savez comment conditionner la création de la configuration à
 <ol start="5" type="1">
 <li>Utiliser le canevas de code suivant pour créer les variables adéquates</li>
 </ol>
-<div id="4701d06e" class="cell" data-execution_count="3">
+<div id="3bd4a16b" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>API_TOKEN <span class="op">=</span> config.get(<span class="st">"jeton_api"</span>)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>TRAIN_PATH <span class="op">=</span> config.get(<span class="st">"train_path"</span>, <span class="st">"train.csv"</span>)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>TEST_PATH <span class="op">=</span> config.get(<span class="st">"test_path"</span>, <span class="st">"test.csv"</span>)</span>
@@ -1038,7 +1030,7 @@ Pour en savoir plus sur le système de stockage <code>S3</code>
 </div>
 </div>
 </div>
-<p>Le chapitre sur la <a href="../chapters/project-structure.qmd">structure des projets</a> développe l’idée qu’il est recommandé de converger vers un modèle où environnements d’exécution, de stockage du code et des données sont conceptuellement séparés. Ce haut niveau d’exigence est un gain de temps important lors de la mise en production car au cours de cette dernière, le projet est amené à être exécuté sur une infrastructure informatique dédiée qu’il est bon d’anticiper.</p>
+<p>Le chapitre sur la <a href="../chapters/projects-architecture.html">structure des projets</a> développe l’idée qu’il est recommandé de converger vers un modèle où environnements d’exécution, de stockage du code et des données sont conceptuellement séparés. Ce haut niveau d’exigence est un gain de temps important lors de la mise en production car au cours de cette dernière, le projet est amené à être exécuté sur une infrastructure informatique dédiée qu’il est bon d’anticiper.</p>
 <p>A l’heure actuelle, les données sont stockées dans le dépôt. C’est une mauvaise pratique. En premier lieu, <code>Git</code> n’est techniquement pas bien adapté au stockage de données. Ici ce n’est pas très grave car il ne s’agit pas de données volumineuses et ces dernières ne sont pas modifiées au cours de notre chaine de traitement. La raison principale est que les données traitées par les <em>data scientists</em> sont généralement soumises à des clauses de confidentialités (<a href="https://www.cnil.fr/fr/rgpd-de-quoi-parle-t-on">RGPD</a>, <a href="https://www.insee.fr/fr/information/1300624">secret statistique</a>…). Mettre ces données sous contrôle de version c’est prendre le risque de les divulguer à un public non habilité. Il est donc recommandé de privilégier des outils techniques adaptés au stockage de données.</p>
 <p>L’idéal, dans notre cas, est d’utiliser une solution de stockage externe. On va utiliser pour cela <code>MinIO</code>, la solution de stockage de type <code>S3</code> offerte par le SSP Cloud. Cela nous permettra de supprimer les données de <code>Github</code> tout en maintenant la reproductibilité de notre projet <a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a>.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
@@ -1324,7 +1316,7 @@ Application 10: packagisation <em>(optionnel)</em>
 <li>Renommer le dossier <code>titanicml</code> pour respecter la nouvelle arborescence ;</li>
 <li>Créer un fichier <code>pyproject.toml</code> sur cette base ;</li>
 </ul>
-<div id="5537bf04" class="cell" data-execution_count="4">
+<div id="d73d8a4f" class="cell" data-execution_count="4">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>pyproject.toml</strong></pre>
@@ -1352,7 +1344,7 @@ Application 10: packagisation <em>(optionnel)</em>
 <li>Créer le dossier <code>docs</code> et mettre les fichiers indiqués dedans</li>
 <li>Dans <code>titanicml/</code>, créer un fichier <code>__init__.py</code><a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a></li>
 </ul>
-<div id="d9c9cbea" class="cell" data-execution_count="5">
+<div id="aa649def" class="cell" data-execution_count="5">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>__init__.py</strong></pre>
@@ -1447,7 +1439,7 @@ Illustration de l’état actuel du projet
 <li>Ne pas nécessiter de dépendance qui ne soient pas renseignées quelque part ;</li>
 <li>Ne pas proposer des dépendances inutiles, qui ne sont pas utilisées dans le cadre du projet.</li>
 </ul>
-<p>Le prochain exercice vise à mettre ceci en oeuvre. Comme expliqué dans le <a href="../chapters/portabilite.qmd">chapitre portabilité</a>, le choix du gestionnaire d’environnement est laissé libre. Il est recommandé de privilégier <code>venv</code> si vous découvrez la problématique de la portabilité.</p>
+<p>Le prochain exercice vise à mettre ceci en oeuvre. Comme expliqué dans le <a href="../chapters/portability.html">chapitre portabilité</a>, le choix du gestionnaire d’environnement est laissé libre. Il est recommandé de privilégier <code>venv</code> si vous découvrez la problématique de la portabilité.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">Environnement virtuel <code>venv</code></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Environnement <code>conda</code></a></li></ul>
 <div class="tab-content" data-group="language">
@@ -1465,7 +1457,7 @@ Application 11a: environnement virtuel <code>venv</code>
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li>Exécuter <code>pip freeze</code> en ligne de commande et observer la (très) longue liste de package</li>
-<li>Créer l’environnement virtuel <code>titanic</code> en s’inspirant de <a href="https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/">la documentation officielle</a><a href="#fn10" class="footnote-ref" id="fnref10" role="doc-noteref"><sup>10</sup></a> ou du <a href="../chapters/portabilite.qmd">chapitre dédié</a></li>
+<li>Créer l’environnement virtuel <code>titanic</code> en s’inspirant de <a href="https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/">la documentation officielle</a><a href="#fn10" class="footnote-ref" id="fnref10" role="doc-noteref"><sup>10</sup></a> ou du <a href="../chapters/portability.html">chapitre dédié</a></li>
 <li>Utiliser <code>ls</code> pour observer et comprendre le contenu du dossier <code>titanic/bin</code> installé</li>
 <li>Activer l’environnement et vérifier l’installation de <code>Python</code> maintenant utilisée par votre machine <!---source titanic/bin/activate && which python----></li>
 <li>Vérifier directement depuis la ligne de commande que <code>Python</code> exécute bien une commande<a href="#fn11" class="footnote-ref" id="fnref11" role="doc-noteref"><sup>11</sup></a> avec:</li>
@@ -1813,7 +1805,7 @@ Note
 <p>Sinon, elle peut être réalisée en essai-erreur par le biais des services d’intégration continue de <code>Github</code> <i class="fa-brands fa-github" aria-label="github"></i> ou <code>Gitlab</code> <i class="fa-brands fa-gitlab" aria-label="gitlab"></i>. Néanmoins, nous présenterons l’utilisation de ces services plus tard, dans la prochaine partie.</p>
 </div>
 </div>
-<p>Maintenant qu’on sait que ce script préparatoire fonctionne, on va le transformer en <code>Dockerfile</code> pour anticiper la mise en production. Comme la syntaxe <code>Docker</code> est légèrement différente de la syntaxe <code>Linux</code> classique (voir le <a href="../chapters/portabilite.qmd">chapitre portabilité</a>), il va être nécessaire de changer quelques instructions mais ceci sera très léger.</p>
+<p>Maintenant qu’on sait que ce script préparatoire fonctionne, on va le transformer en <code>Dockerfile</code> pour anticiper la mise en production. Comme la syntaxe <code>Docker</code> est légèrement différente de la syntaxe <code>Linux</code> classique (voir le <a href="../chapters/portability.html">chapitre portabilité</a>), il va être nécessaire de changer quelques instructions mais ceci sera très léger.</p>
 <p>On va tester le <code>Dockerfile</code> dans un environnement bac à sable pour ensuite pouvoir plus facilement automatiser la construction de l’image <code>Docker</code>.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
