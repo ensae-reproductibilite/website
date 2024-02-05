@@ -1,0 +1,58 @@
+::: {.callout-tip}
+
+## Application 16 _(optionnelle)_: Un _pipeline_ de _machine learning_
+
+Cette application est __optionnelle__ car elle relève plutôt d'un cours
+de _machine learning_ que de cet enseignement. 
+Les instructions sont donc minimales pour laisser de la marge de manoeuvre.
+
+- Simplifier le code de `split_train_test_titanic` pour
+renvoyer deux `DataFrames`: `train` et `test` au lieu
+des 4 _arrays_ `Numpy` comme jusqu'à présent
+
+- Créer une fonction `build_pipeline` dans `src/models/train_evaluate.py`
+qui :
+    + Reprend les arguments de `random_forest_titanic`
+    + Effectue le _preprocessing_ suivant pour les variables numériques (à définir):
+une imputation à la valeur médiane, un `MinMaxScaler` ensuite
+    + Effectue le _preprocessing_ suivant pour les variables catégorielles (à définir):
+une imputation à la valeur la plus fréquente, un _one hot encoding_ ensuite
+    + Définit une _random forest_ avec le nombre d'arbre donné en argument de la fonction
+
+- Modifier `main.py` pour que ce soit à ce niveau
+qu'a lieu le découpage en train/test, l'entrainement
+et l'évaluation
+du modèle (qui est donc à exfiltrer de `src/models/train_evaluate.py`). N'oubliez pas
+de retirer de ce script les étapes de _preprocessing_ qui ne sont plus nécessaires.
+
+- Nettoyer le code de votre projet pour retirer les fonctions qui ne sont plus
+utilisées dans votre projet. Pour vous aider, vous pouvez
+utiliser [`vulture`](https://pypi.org/project/vulture/) comme
+outil de diagnostic. 
+
+```{.bash filename="terminal"}
+vulture main.py src/
+```
+
+Exemple de sortie
+
+```{.python}
+main.py:28: unused variable 'API_TOKEN' (60% confidence)
+src/features/build_features.py:39: unused function 'fill_na_titanic' (60% confidence)
+src/features/build_features.py:77: unused function 'label_encoder_titanic' (60% confidence)
+src/models/train_evaluate.py:3: unused import 'train_test_split' (90% confidence)
+```
+
+:::
+
+
+::: {.callout-caution collapse="true"}
+## Checkpoint
+
+```{.bash filename="terminal"}
+git checkout appli16
+```
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
+:::
