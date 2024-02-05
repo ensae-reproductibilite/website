@@ -1032,112 +1032,60 @@ git checkout appli16
 :::
 
 
-::: {.callout-tip}
+{{< include "./applications/_appli17.qmd" >}}
 
-## Application 17: Mise à disposition sous forme d'API locale
 
-- Installer `fastAPI` et `uvicorn` puis les ajouter au `requirements.txt`
-- Renommer le fichier `main.py` en `train.py`. Dans ce script, ajouter une
-sauvegarde du modèle après l'avoir entraîné, sous le
-format [`joblib`](https://scikit-learn.org/stable/model_persistence.html#python-specific-serialization). 
-- Faire tourner
+## Étape 2: déployer l'API de manière manuelle
 
-```{.bash filename="terminal"}
-python train.py
-```
+A ce stade, nous avons déployé l'API seulement localement, dans le cadre d'un terminal qui tourne en arrière-plan.
+C'est une mise en production manuelle, pas franchement pérenne. 
+Ce mode de déploiement est très pratique pour la phase de développement, afin de s'assurer que l'API fonctionne comme attendu. 
+Pour pérenniser la mise en production, on va éliminer l'aspect artisanal de celle-ci. 
 
-pour enregistrer en local votre modèle de production. 
+Il est temps de passer à l'étape de déploiement, qui permettra à notre API d'être accessible via une URL sur le web
+et d'avoir un serveur, en arrière plan, qui effectuera les opérations pour répondre à une
+requête. Pour se faire, on va utiliser les possibilités offertes par `Kubernetes`, sur lequel est basé le [SSP Cloud](https://datalab.sspcloud.fr).
 
-- Ajouter `model.joblib` au `.gitignore` car `Git` n'est pas fait pour 
-ce type de fichiers. 
-
-Nous allons maintenant passer au développement de l'API.
-Comme découvrir `FastAPI` n'est pas l'objet de cet enseignement, nous
-donnons directement le modèle pour créer l'API. Si vous
-désirez tester de vous-mêmes, vous pouvez créer votre 
-fichier sans vous référer à l'exemple
-
-- Créer le fichier `api.py` permettant d'initialiser l'API:
-
-<details>
-<summary>
-Fichier `api.py`
-</summary>
-Récupérer le contenu sur [cette page](https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/appli17/api.py)
-</details>
-
-- Déployer en local l'API avec la commande
-
-```{.bash filename="terminal"}
-uvicorn api:app --reload --host "0.0.0.0" --port 5000
-```
-
-- A partir du `README` du service, se rendre sur l'URL de déploiement, 
-ajouter `/docs/` à celui-ci et observer la documentation de l'API 
-- Se servir de la documentation pour tester les requêtes `/predict`
-- Récupérer l'URL d'une des requêtes proposées. La tester dans le navigateur
-et depuis `Python` avec `requests` :
-
-```{.python}
-import request
-requests.get(url).json()
-```
-
-:::
-
-::: {.callout-caution collapse="true"}
-## Checkpoint
-
-```{.bash filename="terminal"}
-git checkout appli17
-```
-
-:::
-
-## Étape 3: déployer l'API
-
-A ce stade, nous avons déployé l'API seulement localement, dans le cadre d'un service. Ce mode de déploiement est très pratique pour la phase de développement, afin de s'assurer que l'API fonctionne comme attendu. A présent, il est temps de passer à l'étape de déploiement, qui permettra à notre API d'être accessible via une URL sur le web, et donc aux utilisateurs potentiels de la requêter. Pour se faire, on va utiliser les possibilités offertes par `Kubernetes`, sur lequel est basé le [SSP Cloud](https://datalab.sspcloud.fr).
 
 ::: {.callout-tip}
+## Application 18a: Dockeriser l'API (intégration continue)
 
-## Application 18: Dockeriser l'API
+- Pour rendre la structure du projet plus lisible, déplacer `api.py` -> `api/main.py`
 
-- Modifier le `Dockerfile` pour tenir compte des changements dans les noms de fichier effecutés dans l'application précédente
-
-- Créer un script `run.sh` à la racine du projet qui lance le script `train.py` puis déploie localement l'API 
+- Créer un script `api/run.sh` à la racine du projet qui lance le script `train.py` puis déploie localement l'API 
 
 <details>
 <summary>Fichier `run.sh`</summary>
 
-```{.bash filename="terminal"}
+```{.bash filename="api/run.sh" no-prefix=true}
 #/bin/bash
 
 python3 train.py
-uvicorn api:app --reload --host "0.0.0.0" --port 5000
+uvicorn api.main:app --reload --host "0.0.0.0" --port 5000
 ```
 </details>
 
-- Donner au script `run.sh` des permissions d'exécution : `chmod +x run.sh`
+- Donner au script `api/run.sh` des permissions d'exécution : `chmod +x api/run.sh`
 
-- Changer l'instruction `CMD` du `Dockerfile` pour exécuter le script `run.sh` au lancement du conteneur
+- Changer l'instruction `CMD` du `Dockerfile` pour exécuter le script `api/run.sh` au lancement du conteneur (`CMD ["bash", "-c", "./api/run.sh"]`)
 
 - *Commit* et *push* les changements
 
-- Une fois le CI terminé, récupérer la nouvelle image dans l'environnement de test et vérifier que l'API se déploie correctement
+- Une fois le CI terminé, récupérer la nouvelle image dans votre environnement de test de `Docker` et vérifier que l'API se déploie correctement
 
 :::
 
-::: {.callout-caution collapse="true"}
-## Checkpoint
+Nous avons préparé la mise à disposition de notre API mais à l'heure
+actuelle elle n'est pas disponible de manière aisée car il est nécessaire
+de lancer manuellement une image `Docker` pour pouvoir y accéder. 
+Ce type de travail est la spécialité de `Kubernetes` que nous allons
+utiliser pour gérer la mise à disposition de notre API. 
 
-```{.bash filename="terminal"}
-git checkout appli18
-```
-:::
 
 ::: {.callout-tip}
+## Application 18b: Mettre à disposition l'API (déploiement manuel)
 
-## Application 19: Déployer l'API
+Cette partie nécessite d'avoir à disposition une infrastructure _cloud_. 
 
 - Créer un dossier `deployment` à la racine du projet qui va contenir les fichiers de configuration nécessaires pour déployer sur un cluster `Kubernetes`
 
@@ -1146,7 +1094,7 @@ git checkout appli18
 <details>
 <summary>Fichier `deployment/deployment.yaml`</summary>
 
-```yaml
+```{.yaml filename="deployment/deployment.yaml"}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -1207,9 +1155,9 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - titanic.kub.sspcloud.fr
+    - # METTRE URL ICI #<1>
   rules:
-  - host: titanic.kub.sspcloud.fr
+  - host: # METTRE URL ICI <1>
     http:
       paths:
       - path: /
@@ -1220,11 +1168,12 @@ spec:
             port:
               number: 80
 ```
+1. Mettez l'URL auquel vous voulez exposer votre service. Sur le modèle de `titanic.kub.sspcloud.fr` (mais ne tentez pas celui-là, il est déjà pris 😃)
 </details>
 
-- Appliquer ces fichiers de configuration sur le cluster : `kubectl apply -f deployement/`
+- Appliquer ces fichiers de configuration sur le cluster : `kubectl apply -f deployment/`
 
-- Si tout a correctement fonctionné, vous devriez pouvoir accéder à l'API à l'URL spécifiée dans le fichier `deployment/ingress.yaml`
+- Si tout a correctement fonctionné, vous devriez pouvoir accéder depuis votre navigateur à l'API à l'URL spécifiée dans le fichier `deployment/ingress.yaml`. Par exemple `https://toto.kub.sspcloud.fr/` si vous avez mis celui-ci plus tôt (et `https://toto.kub.sspcloud.fr/docs` pour la documentation). 
 
 :::
 
@@ -1232,10 +1181,61 @@ spec:
 ## Checkpoint
 
 ```{.bash filename="terminal"}
-git checkout appli19
+git checkout appli18
 ```
 
 :::
+
+
+On peut remarquer quelques voies d'amélioration de notre approche qui
+seront ultérieurement traitées:
+
+- l'entraînement du modèle
+est effectué à chaque lancement d'un nouveau conteneur. 
+On relance donc autant de fois un entraînement qu'on déploie
+de conteneur pour répondre à nos utilisateurs. Ce sera
+l'objet de la partie MLOps de fiabiliser et optimiser
+cette partie du _pipeline_. 
+- il est nécessaire de (re)lancer manuellement  `kubectl apply -f deployment/`
+à chaque changement de notre code. Autrement dit, on améliore
+la fiabilité du lancement de notre API mais un lancement manuel est encore indispensable. 
+Comme dans le reste de ce cours, on va essayer d'éviter un geste manuel pouvant 
+être source d'erreur.
+
+
+## Etape 3: automatiser le déploiement (déploiement en continu)
+
+Qu'est-ce qui peut déclencher une évolution nécessitant de mettre à 
+jour l'ensemble de notre processus de production ? 
+
+Regardons à nouveau notre _pipeline_:
+
+![](/workflow2.png)
+
+Les _inputs_ de notre _pipeline_ sont donc:
+
+- La __configuration__.  ;
+- Les __données__. Nos données sont statiques et n'ont pas vocation à évoluer. Si c'était le cas, il faudrait en tenir compte dans notre automatisation. ;
+- Le __code__. C'est l'élément qui évolue chez nous. On va donc faire en sorte qu'à chaque mise à jour de notre code (un _push_ sur `Github`), les étapes ultérieures (production de l'image `Docker`, etc.) vont se mettre à compiler. 
+
+![](https://inseefrlab.github.io/formation-mlops/slides/img/ci-cd.png)
+
+
+Grâce à `ArgoCD` il est possible de déployer un modèle de manière continu, 
+ainsi chaque modification d’un fichier présent dans le dossier `kubernetes/`. Cela
+va entrainer le redéploiement automatique en synchronisant avec notre dépôt Github.
+
+
+Projet exo appli19:
+
+- Lancer un service argoCD
+
+
+## Etape 4: construire un site web
+
+
+
+
 
 
 # Partie 6: un workflow complet de MLOps
