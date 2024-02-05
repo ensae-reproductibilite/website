@@ -243,8 +243,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#partie-5-expérimenter-en-local-des-valorisations-puis-automatiser-leur-production" id="toc-partie-5-expérimenter-en-local-des-valorisations-puis-automatiser-leur-production" class="nav-link" data-scroll-target="#partie-5-expérimenter-en-local-des-valorisations-puis-automatiser-leur-production">Partie 5: expérimenter en local des valorisations puis automatiser leur production</a>
   <ul class="collapse">
   <li><a href="#étape-préliminaire-création-dun-pipeline-scikit" id="toc-étape-préliminaire-création-dun-pipeline-scikit" class="nav-link" data-scroll-target="#étape-préliminaire-création-dun-pipeline-scikit">Étape préliminaire: création d’un <em>pipeline</em> <code>scikit</code></a></li>
-  <li><a href="#étape-2-développer-une-api-en-local" id="toc-étape-2-développer-une-api-en-local" class="nav-link" data-scroll-target="#étape-2-développer-une-api-en-local">Étape 2: développer une API en local</a></li>
-  <li><a href="#étape-3-déployer-lapi" id="toc-étape-3-déployer-lapi" class="nav-link" data-scroll-target="#étape-3-déployer-lapi">Étape 3: déployer l’API</a></li>
+  <li><a href="#étape-1-développer-une-api-en-local" id="toc-étape-1-développer-une-api-en-local" class="nav-link" data-scroll-target="#étape-1-développer-une-api-en-local">Étape 1: développer une API en local</a></li>
+  <li><a href="#étape-2-déployer-lapi-de-manière-manuelle" id="toc-étape-2-déployer-lapi-de-manière-manuelle" class="nav-link" data-scroll-target="#étape-2-déployer-lapi-de-manière-manuelle">Étape 2: déployer l’API de manière manuelle</a></li>
+  <li><a href="#etape-3-automatiser-le-déploiement-déploiement-en-continu" id="toc-etape-3-automatiser-le-déploiement-déploiement-en-continu" class="nav-link" data-scroll-target="#etape-3-automatiser-le-déploiement-déploiement-en-continu">Etape 3: automatiser le déploiement (déploiement en continu)</a></li>
+  <li><a href="#etape-4-construire-un-site-web" id="toc-etape-4-construire-un-site-web" class="nav-link" data-scroll-target="#etape-4-construire-un-site-web">Etape 4: construire un site web</a></li>
   </ul></li>
   <li><a href="#partie-6-un-workflow-complet-de-mlops" id="toc-partie-6-un-workflow-complet-de-mlops" class="nav-link" data-scroll-target="#partie-6-un-workflow-complet-de-mlops">Partie 6: un workflow complet de MLOps</a></li>
   <li><a href="#partie-7-livrer-un-site-web-de-manière-automatisée" id="toc-partie-7-livrer-un-site-web-de-manière-automatisée" class="nav-link" data-scroll-target="#partie-7-livrer-un-site-web-de-manière-automatisée">Partie 7: livrer un site web de manière automatisée</a></li>
@@ -643,7 +645,7 @@ Application 3b: La configuration dans un fichier YAML
 Indice si vous ne trouvez pas comment lire un fichier <code>YAML</code>
 </summary>
 <p>Si le fichier s’appelle <code>toto.yaml</code>, vous pouvez l’importer de cette manière:</p>
-<div id="959f803c" class="cell" data-execution_count="1">
+<div id="0fbef21c" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"toto.yaml"</span>, <span class="st">"r"</span>, encoding<span class="op">=</span><span class="st">"utf-8"</span>) <span class="im">as</span> stream:</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    dict_config <span class="op">=</span> yaml.safe_load(stream)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -656,7 +658,7 @@ Indice si vous ne trouvez pas comment lire un fichier <code>YAML</code>
 Indice si vous ne savez comment conditionner la création de la configuration à l’existence du fichier
 </summary>
 <p>Voici la ligne qui peut vous aider. L’idéal est d’insérer ceci dans <code>import_yaml_config</code>:</p>
-<div id="8c25c63a" class="cell" data-execution_count="2">
+<div id="5c3e8833" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>CONFIG_PATH <span class="op">=</span> <span class="st">'config.yaml'</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>config <span class="op">=</span> {}</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> os.path.exists(CONFIG_PATH):</span>
@@ -666,7 +668,7 @@ Indice si vous ne savez comment conditionner la création de la configuration à
 <ol start="5" type="1">
 <li>Utiliser le canevas de code suivant pour créer les variables adéquates</li>
 </ol>
-<div id="647bde49" class="cell" data-execution_count="3">
+<div id="f57ddf5e" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>API_TOKEN <span class="op">=</span> config.get(<span class="st">"jeton_api"</span>)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>TRAIN_PATH <span class="op">=</span> config.get(<span class="st">"train_path"</span>, <span class="st">"train.csv"</span>)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>TEST_PATH <span class="op">=</span> config.get(<span class="st">"test_path"</span>, <span class="st">"test.csv"</span>)</span>
@@ -1317,7 +1319,7 @@ Application 10: packagisation <em>(optionnel)</em>
 <li>Renommer le dossier <code>titanicml</code> pour respecter la nouvelle arborescence ;</li>
 <li>Créer un fichier <code>pyproject.toml</code> sur cette base ;</li>
 </ul>
-<div id="692c8e54" class="cell" data-execution_count="4">
+<div id="9bb53ac4" class="cell" data-execution_count="4">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>pyproject.toml</strong></pre>
@@ -1345,7 +1347,7 @@ Application 10: packagisation <em>(optionnel)</em>
 <li>Créer le dossier <code>docs</code> et mettre les fichiers indiqués dedans</li>
 <li>Dans <code>titanicml/</code>, créer un fichier <code>__init__.py</code><a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a></li>
 </ul>
-<div id="f997e09a" class="cell" data-execution_count="5">
+<div id="279a61c5" class="cell" data-execution_count="5">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>__init__.py</strong></pre>
@@ -2266,8 +2268,20 @@ Application 16 <em>(optionnelle)</em>: Un <em>pipeline</em> de <em>machine learn
 <li>Effectue le <em>preprocessing</em> suivant pour les variables catégorielles (à définir): une imputation à la valeur la plus fréquente, un <em>one hot encoding</em> ensuite</li>
 <li>Définit une <em>random forest</em> avec le nombre d’arbre donné en argument de la fonction</li>
 </ul></li>
-<li><p>Modifier <code>main.py</code> pour que ce soit à ce niveau qu’a lieu le découpage en train/test, l’entrainement et l’évaluation du modèle (qui est donc à exfiltrer de <code>src/models/train_evaluate.py</code>)</p></li>
+<li><p>Modifier <code>main.py</code> pour que ce soit à ce niveau qu’a lieu le découpage en train/test, l’entrainement et l’évaluation du modèle (qui est donc à exfiltrer de <code>src/models/train_evaluate.py</code>). N’oubliez pas de retirer de ce script les étapes de <em>preprocessing</em> qui ne sont plus nécessaires.</p></li>
+<li><p>Nettoyer le code de votre projet pour retirer les fonctions qui ne sont plus utilisées dans votre projet. Pour vous aider, vous pouvez utiliser <a href="https://pypi.org/project/vulture/"><code>vulture</code></a> comme outil de diagnostic.</p></li>
 </ul>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb69" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> vulture main.py src/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Exemple de sortie</p>
+<div class="sourceCode" id="cb70"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>main.py:<span class="dv">28</span>: unused variable <span class="st">'API_TOKEN'</span> (<span class="dv">60</span><span class="op">%</span> confidence)</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>src<span class="op">/</span>features<span class="op">/</span>build_features.py:<span class="dv">39</span>: unused function <span class="st">'fill_na_titanic'</span> (<span class="dv">60</span><span class="op">%</span> confidence)</span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>src<span class="op">/</span>features<span class="op">/</span>build_features.py:<span class="dv">77</span>: unused function <span class="st">'label_encoder_titanic'</span> (<span class="dv">60</span><span class="op">%</span> confidence)</span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a>src<span class="op">/</span>models<span class="op">/</span>train_evaluate.py:<span class="dv">3</span>: unused <span class="im">import</span> <span class="st">'train_test_split'</span> (<span class="dv">90</span><span class="op">%</span> confidence)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
@@ -2286,14 +2300,46 @@ Checkpoint
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
 </div>
-<div class="sourceCode" id="cb69" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git checkout appli16</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb71" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git checkout appli16</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../checkpoint.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
+</figure>
 </div>
 </div>
 </div>
 </div>
 </section>
-<section id="étape-2-développer-une-api-en-local" class="level2">
-<h2 class="anchored" data-anchor-id="étape-2-développer-une-api-en-local">Étape 2: développer une API en local</h2>
+<section id="étape-1-développer-une-api-en-local" class="level2">
+<h2 class="anchored" data-anchor-id="étape-1-développer-une-api-en-local">Étape 1: développer une API en local</h2>
+<p>Le premier livrable devenu classique dans un projet impliquant du <em>machine learning</em> est la mise à disposition d’un modèle par le biais d’une API (voir chapitre sur la <a href="../chapters/deployment.html">mise en production</a>). Le <em>framework</em> <a href="https://fastapi.tiangolo.com/"><code>FastAPI</code></a> va permettre de rapidement transformer notre application <code>Python</code> en une API fonctionnelle.</p>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-53-contents" aria-controls="callout-53" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Si vous prenez ce projet fil rouge en cours de route
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-53" class="callout-53-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb72" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git checkout appli16</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../checkpoint.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -2305,17 +2351,22 @@ Application 17: Mise à disposition sous forme d’API locale
 </div>
 <div class="callout-body-container callout-body">
 <ul>
-<li>Créer un nouveau service <code>SSPCloud</code> en paramétrant dans l’onglet <code>Networking</code> le port 5000 ;</li>
-<li>Cloner le dépôt et se placer au niveau de l’application précédente (<code>git checkout appli16</code>)</li>
 <li>Installer <code>fastAPI</code> et <code>uvicorn</code> puis les ajouter au <code>requirements.txt</code></li>
-<li>Renommer le fichier <code>main.py</code> en <code>train.py</code> et insérer le contenu suivant dedans :</li>
+<li>Renommer le fichier <code>main.py</code> en <code>train.py</code>. Dans ce script, ajouter une sauvegarde du modèle après l’avoir entraîné, sous le format <a href="https://scikit-learn.org/stable/model_persistence.html#python-specific-serialization"><code>joblib</code></a>.</li>
+<li>Faire tourner</li>
 </ul>
-<details>
-<summary>
-Fichier <code>train.py</code>
-</summary>
-Récupérer le contenu sur <a href="https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/appli17/train.py">cette page</a>
-</details>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb73" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> python train.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>pour enregistrer en local votre modèle de production.</p>
+<ul>
+<li><p>Modifier les appels à <code>main.py</code> dans votre <code>Dockerfile</code> et vos actions <code>Github</code> sous peine d’essuyer des échecs lors de vos actions <code>Github</code> après le prochain <em>push</em>.</p></li>
+<li><p>Ajouter <code>model.joblib</code> au <code>.gitignore</code> car <code>Git</code> n’est pas fait pour ce type de fichiers.</p></li>
+</ul>
+<p>Nous allons maintenant passer au développement de l’API. Comme découvrir <code>FastAPI</code> n’est pas l’objet de cet enseignement, nous donnons directement le modèle pour créer l’API. Si vous désirez tester de vous-mêmes, vous pouvez créer votre fichier sans vous référer à l’exemple</p>
 <ul>
 <li>Créer le fichier <code>api.py</code> permettant d’initialiser l’API:</li>
 </ul>
@@ -2326,25 +2377,28 @@ Fichier <code>api.py</code>
 Récupérer le contenu sur <a href="https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/appli17/api.py">cette page</a>
 </details>
 <ul>
-<li>Exécuter <code>train.py</code> pour stocker en local le modèle entraîné</li>
-<li>Ajouter <code>model.joblib</code> au <code>.gitignore</code></li>
 <li>Déployer en local l’API avec la commande</li>
 </ul>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
 </div>
-<div class="sourceCode" id="cb70" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> uvicorn api:app <span class="at">--reload</span> <span class="at">--host</span> <span class="st">"0.0.0.0"</span> <span class="at">--port</span> 5000</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb74" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> uvicorn api:app <span class="at">--reload</span> <span class="at">--host</span> <span class="st">"0.0.0.0"</span> <span class="at">--port</span> 5000</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ul>
 <li>A partir du <code>README</code> du service, se rendre sur l’URL de déploiement, ajouter <code>/docs/</code> à celui-ci et observer la documentation de l’API</li>
 <li>Se servir de la documentation pour tester les requêtes <code>/predict</code></li>
-<li>Récupérer l’URL d’une des requêtes proposées. La tester dans le navigateur et depuis <code>Python</code> avec <code>requests</code> (<code>requests.get(url).json()</code>)</li>
+<li>Récupérer l’URL d’une des requêtes proposées. La tester dans le navigateur et depuis <code>Python</code> avec <code>requests</code> :</li>
+</ul>
+<div class="sourceCode" id="cb75"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> request</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>requests.get(url).json()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Une fois que vous avez testé, vous pouvez tuer l’application en faisant <kbd>CTRL</kbd>+<kbd>C</kbd>. Retester votre bout de code <code>Python</code> et comprendre l’origine du problème.</li>
 </ul>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-54-contents" aria-controls="callout-54" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-55-contents" aria-controls="callout-55" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2353,34 +2407,40 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-54" class="callout-54-contents callout-collapse collapse">
+<div id="callout-55" class="callout-55-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
 </div>
-<div class="sourceCode" id="cb71" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git checkout appli17</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb76" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git checkout appli17</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../checkpoint.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
+</figure>
 </div>
 </div>
 </div>
 </div>
 </section>
-<section id="étape-3-déployer-lapi" class="level2">
-<h2 class="anchored" data-anchor-id="étape-3-déployer-lapi">Étape 3: déployer l’API</h2>
-<p>A ce stade, nous avons déployé l’API seulement localement, dans le cadre d’un service. Ce mode de déploiement est très pratique pour la phase de développement, afin de s’assurer que l’API fonctionne comme attendu. A présent, il est temps de passer à l’étape de déploiement, qui permettra à notre API d’être accessible via une URL sur le web, et donc aux utilisateurs potentiels de la requêter. Pour se faire, on va utiliser les possibilités offertes par <code>Kubernetes</code>, sur lequel est basé le <a href="https://datalab.sspcloud.fr">SSP Cloud</a>.</p>
+<section id="étape-2-déployer-lapi-de-manière-manuelle" class="level2">
+<h2 class="anchored" data-anchor-id="étape-2-déployer-lapi-de-manière-manuelle">Étape 2: déployer l’API de manière manuelle</h2>
+<p>A ce stade, nous avons déployé l’API seulement localement, dans le cadre d’un terminal qui tourne en arrière-plan. C’est une mise en production manuelle, pas franchement pérenne. Ce mode de déploiement est très pratique pour la phase de développement, afin de s’assurer que l’API fonctionne comme attendu. Pour pérenniser la mise en production, on va éliminer l’aspect artisanal de celle-ci.</p>
+<p>Il est temps de passer à l’étape de déploiement, qui permettra à notre API d’être accessible via une URL sur le web et d’avoir un serveur, en arrière plan, qui effectuera les opérations pour répondre à une requête. Pour se faire, on va utiliser les possibilités offertes par <code>Kubernetes</code>, sur lequel est basé le <a href="https://datalab.sspcloud.fr">SSP Cloud</a>.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Application 18: Dockeriser l’API
+Application 18a: Dockeriser l’API (intégration continue)
 </div>
 </div>
 <div class="callout-body-container callout-body">
 <ul>
-<li><p>Modifier le <code>Dockerfile</code> pour tenir compte des changements dans les noms de fichier effecutés dans l’application précédente</p></li>
-<li><p>Créer un script <code>run.sh</code> à la racine du projet qui lance le script <code>train.py</code> puis déploie localement l’API</p></li>
+<li><p>Pour rendre la structure du projet plus lisible, déplacer <code>api.py</code> -&gt; <code>api/main.py</code></p></li>
+<li><p>Créer un script <code>api/run.sh</code> à la racine du projet qui lance le script <code>train.py</code> puis déploie localement l’API</p></li>
 </ul>
 <details>
 <summary>
@@ -2388,52 +2448,33 @@ Fichier <code>run.sh</code>
 </summary>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
-<pre><strong>terminal</strong></pre>
+<pre><strong>api/run.sh</strong></pre>
 </div>
-<div class="sourceCode" id="cb72" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> <span class="co">#/bin/bash</span></span>
-<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> python3 train.py</span>
-<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> uvicorn api:app <span class="at">--reload</span> <span class="at">--host</span> <span class="st">"0.0.0.0"</span> <span class="at">--port</span> 5000</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb77" data-filename="terminal" data-no-prefix="true"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="co">#/bin/bash</span></span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> train.py</span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a><span class="ex">uvicorn</span> api.main:app <span class="at">--reload</span> <span class="at">--host</span> <span class="st">"0.0.0.0"</span> <span class="at">--port</span> 5000</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </details>
 <ul>
-<li><p>Donner au script <code>run.sh</code> des permissions d’exécution : <code>chmod +x run.sh</code></p></li>
-<li><p>Changer l’instruction <code>CMD</code> du <code>Dockerfile</code> pour exécuter le script <code>run.sh</code> au lancement du conteneur</p></li>
+<li><p>Donner au script <code>api/run.sh</code> des permissions d’exécution : <code>chmod +x api/run.sh</code></p></li>
+<li><p>Changer l’instruction <code>CMD</code> du <code>Dockerfile</code> pour exécuter le script <code>api/run.sh</code> au lancement du conteneur (<code>CMD ["bash", "-c", "./api/run.sh"]</code>)</p></li>
 <li><p><em>Commit</em> et <em>push</em> les changements</p></li>
-<li><p>Une fois le CI terminé, récupérer la nouvelle image dans l’environnement de test et vérifier que l’API se déploie correctement</p></li>
+<li><p>Une fois le CI terminé, récupérer la nouvelle image dans votre environnement de test de <code>Docker</code> et vérifier que l’API se déploie correctement</p></li>
 </ul>
 </div>
 </div>
-<div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-56-contents" aria-controls="callout-56" aria-expanded="false" aria-label="Toggle callout">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Checkpoint
-</div>
-<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
-</div>
-<div id="callout-56" class="callout-56-contents callout-collapse collapse">
-<div class="callout-body-container callout-body">
-<div class="code-with-filename">
-<div class="code-with-filename-file">
-<pre><strong>terminal</strong></pre>
-</div>
-<div class="sourceCode" id="cb73" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git checkout appli18</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</div>
-</div>
-</div>
+<p>Nous avons préparé la mise à disposition de notre API mais à l’heure actuelle elle n’est pas disponible de manière aisée car il est nécessaire de lancer manuellement une image <code>Docker</code> pour pouvoir y accéder. Ce type de travail est la spécialité de <code>Kubernetes</code> que nous allons utiliser pour gérer la mise à disposition de notre API.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Application 19: Déployer l’API
+Application 18b: Mettre à disposition l’API (déploiement manuel)
 </div>
 </div>
 <div class="callout-body-container callout-body">
+<p>Cette partie nécessite d’avoir à disposition une infrastructure <em>cloud</em>.</p>
 <ul>
 <li><p>Créer un dossier <code>deployment</code> à la racine du projet qui va contenir les fichiers de configuration nécessaires pour déployer sur un cluster <code>Kubernetes</code></p></li>
 <li><p>En vous inspirant de la <a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment">documentation</a>, y ajouter un premier fichier <code>deployment.yaml</code> qui va spécifier la configuration du <em>Pod</em> à lancer sur le cluster</p></li>
@@ -2442,27 +2483,32 @@ Application 19: Déployer l’API
 <summary>
 Fichier <code>deployment/deployment.yaml</code>
 </summary>
-<div class="sourceCode" id="cb74"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> apps/v1</span></span>
-<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Deployment</span></span>
-<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
-<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> titanic-deployment</span></span>
-<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">labels</span><span class="kw">:</span></span>
-<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">app</span><span class="kw">:</span><span class="at"> titanic</span></span>
-<span id="cb74-7"><a href="#cb74-7" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
-<span id="cb74-8"><a href="#cb74-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">replicas</span><span class="kw">:</span><span class="at"> </span><span class="dv">1</span></span>
-<span id="cb74-9"><a href="#cb74-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">selector</span><span class="kw">:</span></span>
-<span id="cb74-10"><a href="#cb74-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">matchLabels</span><span class="kw">:</span></span>
-<span id="cb74-11"><a href="#cb74-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">app</span><span class="kw">:</span><span class="at"> titanic</span></span>
-<span id="cb74-12"><a href="#cb74-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">template</span><span class="kw">:</span></span>
-<span id="cb74-13"><a href="#cb74-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">metadata</span><span class="kw">:</span></span>
-<span id="cb74-14"><a href="#cb74-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">labels</span><span class="kw">:</span></span>
-<span id="cb74-15"><a href="#cb74-15" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">app</span><span class="kw">:</span><span class="at"> titanic</span></span>
-<span id="cb74-16"><a href="#cb74-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">spec</span><span class="kw">:</span></span>
-<span id="cb74-17"><a href="#cb74-17" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">containers</span><span class="kw">:</span></span>
-<span id="cb74-18"><a href="#cb74-18" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> titanic</span></span>
-<span id="cb74-19"><a href="#cb74-19" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">image</span><span class="kw">:</span><span class="at"> linogaliana/application-correction:latest</span></span>
-<span id="cb74-20"><a href="#cb74-20" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">ports</span><span class="kw">:</span></span>
-<span id="cb74-21"><a href="#cb74-21" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">containerPort</span><span class="kw">:</span><span class="at"> </span><span class="dv">5000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>deployment/deployment.yaml</strong></pre>
+</div>
+<div class="sourceCode" id="cb78" data-filename="deployment/deployment.yaml"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> apps/v1</span></span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Deployment</span></span>
+<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> titanic-deployment</span></span>
+<span id="cb78-5"><a href="#cb78-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">labels</span><span class="kw">:</span></span>
+<span id="cb78-6"><a href="#cb78-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">app</span><span class="kw">:</span><span class="at"> titanic</span></span>
+<span id="cb78-7"><a href="#cb78-7" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb78-8"><a href="#cb78-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">replicas</span><span class="kw">:</span><span class="at"> </span><span class="dv">1</span></span>
+<span id="cb78-9"><a href="#cb78-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">selector</span><span class="kw">:</span></span>
+<span id="cb78-10"><a href="#cb78-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">matchLabels</span><span class="kw">:</span></span>
+<span id="cb78-11"><a href="#cb78-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">app</span><span class="kw">:</span><span class="at"> titanic</span></span>
+<span id="cb78-12"><a href="#cb78-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">template</span><span class="kw">:</span></span>
+<span id="cb78-13"><a href="#cb78-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb78-14"><a href="#cb78-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">labels</span><span class="kw">:</span></span>
+<span id="cb78-15"><a href="#cb78-15" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">app</span><span class="kw">:</span><span class="at"> titanic</span></span>
+<span id="cb78-16"><a href="#cb78-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb78-17"><a href="#cb78-17" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">containers</span><span class="kw">:</span></span>
+<span id="cb78-18"><a href="#cb78-18" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> titanic</span></span>
+<span id="cb78-19"><a href="#cb78-19" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">image</span><span class="kw">:</span><span class="at"> linogaliana/application-correction:latest</span></span>
+<span id="cb78-20"><a href="#cb78-20" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">ports</span><span class="kw">:</span></span>
+<span id="cb78-21"><a href="#cb78-21" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">containerPort</span><span class="kw">:</span><span class="at"> </span><span class="dv">5000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </details>
 <ul>
 <li>En vous inspirant de la <a href="https://kubernetes.io/fr/docs/concepts/services-networking/service/#d%C3%A9finition-d-un-service">documentation</a>, y ajouter un second fichier <code>service.yaml</code> qui va créer une ressource <code>Service</code> permettant de donner une identité fixe au <code>Pod</code> précédemment créé au sein du cluster</li>
@@ -2471,17 +2517,17 @@ Fichier <code>deployment/deployment.yaml</code>
 <summary>
 Fichier <code>deployment/service.yaml</code>
 </summary>
-<div class="sourceCode" id="cb75"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> v1</span></span>
-<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Service</span></span>
-<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
-<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> titanic-service</span></span>
-<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
-<span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">selector</span><span class="kw">:</span></span>
-<span id="cb75-7"><a href="#cb75-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">app</span><span class="kw">:</span><span class="at"> titanic</span></span>
-<span id="cb75-8"><a href="#cb75-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">ports</span><span class="kw">:</span></span>
-<span id="cb75-9"><a href="#cb75-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">protocol</span><span class="kw">:</span><span class="at"> TCP</span></span>
-<span id="cb75-10"><a href="#cb75-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">80</span></span>
-<span id="cb75-11"><a href="#cb75-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">targetPort</span><span class="kw">:</span><span class="at"> </span><span class="dv">5000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb79"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> v1</span></span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Service</span></span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> titanic-service</span></span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">selector</span><span class="kw">:</span></span>
+<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">app</span><span class="kw">:</span><span class="at"> titanic</span></span>
+<span id="cb79-8"><a href="#cb79-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">ports</span><span class="kw">:</span></span>
+<span id="cb79-9"><a href="#cb79-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> </span><span class="fu">protocol</span><span class="kw">:</span><span class="at"> TCP</span></span>
+<span id="cb79-10"><a href="#cb79-10" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">port</span><span class="kw">:</span><span class="at"> </span><span class="dv">80</span></span>
+<span id="cb79-11"><a href="#cb79-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">targetPort</span><span class="kw">:</span><span class="at"> </span><span class="dv">5000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <ul>
 <li>En vous inspirant de la <a href="https://kubernetes.io/docs/concepts/services-networking/ingress/#the-ingress-resource">documentation</a>, y ajouter un troisième fichier <code>ingress.yaml</code> qui va créer une ressource <code>Ingress</code> permettant d’exposer le service via une URL en dehors du cluster</li>
@@ -2490,32 +2536,38 @@ Fichier <code>deployment/service.yaml</code>
 <summary>
 Fichier <code>deployment/ingress.yaml</code>
 </summary>
-<div class="sourceCode" id="cb76"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> networking.k8s.io/v1</span></span>
-<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Ingress</span></span>
-<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
-<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> titanic-ingress</span></span>
-<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">annotations</span><span class="kw">:</span></span>
-<span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">nginx.ingress.kubernetes.io/rewrite-target</span><span class="kw">:</span><span class="at"> /</span></span>
-<span id="cb76-7"><a href="#cb76-7" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
-<span id="cb76-8"><a href="#cb76-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">ingressClassName</span><span class="kw">:</span><span class="at"> nginx</span></span>
-<span id="cb76-9"><a href="#cb76-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">tls</span><span class="kw">:</span></span>
-<span id="cb76-10"><a href="#cb76-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">hosts</span><span class="kw">:</span></span>
-<span id="cb76-11"><a href="#cb76-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="at"> titanic.kub.sspcloud.fr</span></span>
-<span id="cb76-12"><a href="#cb76-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">rules</span><span class="kw">:</span></span>
-<span id="cb76-13"><a href="#cb76-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">host</span><span class="kw">:</span><span class="at"> titanic.kub.sspcloud.fr</span></span>
-<span id="cb76-14"><a href="#cb76-14" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">http</span><span class="kw">:</span></span>
-<span id="cb76-15"><a href="#cb76-15" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">paths</span><span class="kw">:</span></span>
-<span id="cb76-16"><a href="#cb76-16" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">path</span><span class="kw">:</span><span class="at"> /</span></span>
-<span id="cb76-17"><a href="#cb76-17" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">pathType</span><span class="kw">:</span><span class="at"> Prefix</span></span>
-<span id="cb76-18"><a href="#cb76-18" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">backend</span><span class="kw">:</span></span>
-<span id="cb76-19"><a href="#cb76-19" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">service</span><span class="kw">:</span></span>
-<span id="cb76-20"><a href="#cb76-20" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">name</span><span class="kw">:</span><span class="at"> titanic-service</span></span>
-<span id="cb76-21"><a href="#cb76-21" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">port</span><span class="kw">:</span></span>
-<span id="cb76-22"><a href="#cb76-22" aria-hidden="true" tabindex="-1"></a><span class="at">              </span><span class="fu">number</span><span class="kw">:</span><span class="at"> </span><span class="dv">80</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="annotated-cell-141"><pre class="sourceCode yaml code-annotation-code code-with-copy code-annotated"><code class="sourceCode yaml"><span id="annotated-cell-141-1"><a href="#annotated-cell-141-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> networking.k8s.io/v1</span></span>
+<span id="annotated-cell-141-2"><a href="#annotated-cell-141-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Ingress</span></span>
+<span id="annotated-cell-141-3"><a href="#annotated-cell-141-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="annotated-cell-141-4"><a href="#annotated-cell-141-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> titanic-ingress</span></span>
+<span id="annotated-cell-141-5"><a href="#annotated-cell-141-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">annotations</span><span class="kw">:</span></span>
+<span id="annotated-cell-141-6"><a href="#annotated-cell-141-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">nginx.ingress.kubernetes.io/rewrite-target</span><span class="kw">:</span><span class="at"> /</span></span>
+<span id="annotated-cell-141-7"><a href="#annotated-cell-141-7" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="annotated-cell-141-8"><a href="#annotated-cell-141-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">ingressClassName</span><span class="kw">:</span><span class="at"> nginx</span></span>
+<span id="annotated-cell-141-9"><a href="#annotated-cell-141-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">tls</span><span class="kw">:</span></span>
+<span id="annotated-cell-141-10"><a href="#annotated-cell-141-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">hosts</span><span class="kw">:</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-141" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-141-11" class="code-annotation-target"><a href="#annotated-cell-141-11" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="kw">-</span><span class="co"> # METTRE URL ICI</span></span>
+<span id="annotated-cell-141-12"><a href="#annotated-cell-141-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">rules</span><span class="kw">:</span></span>
+<span id="annotated-cell-141-13"><a href="#annotated-cell-141-13" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="kw">-</span><span class="at"> </span><span class="fu">host</span><span class="kw">:</span><span class="co"> # METTRE URL ICI &lt;1&gt;</span></span>
+<span id="annotated-cell-141-14"><a href="#annotated-cell-141-14" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">http</span><span class="kw">:</span></span>
+<span id="annotated-cell-141-15"><a href="#annotated-cell-141-15" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">paths</span><span class="kw">:</span></span>
+<span id="annotated-cell-141-16"><a href="#annotated-cell-141-16" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">path</span><span class="kw">:</span><span class="at"> /</span></span>
+<span id="annotated-cell-141-17"><a href="#annotated-cell-141-17" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">pathType</span><span class="kw">:</span><span class="at"> Prefix</span></span>
+<span id="annotated-cell-141-18"><a href="#annotated-cell-141-18" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">backend</span><span class="kw">:</span></span>
+<span id="annotated-cell-141-19"><a href="#annotated-cell-141-19" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">service</span><span class="kw">:</span></span>
+<span id="annotated-cell-141-20"><a href="#annotated-cell-141-20" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">name</span><span class="kw">:</span><span class="at"> titanic-service</span></span>
+<span id="annotated-cell-141-21"><a href="#annotated-cell-141-21" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">port</span><span class="kw">:</span></span>
+<span id="annotated-cell-141-22"><a href="#annotated-cell-141-22" aria-hidden="true" tabindex="-1"></a><span class="at">              </span><span class="fu">number</span><span class="kw">:</span><span class="at"> </span><span class="dv">80</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-141" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-141" data-code-lines="11" data-code-annotation="1">Mettez l’URL auquel vous voulez exposer votre service. Sur le modèle de <code>titanic.kub.sspcloud.fr</code> (mais ne tentez pas celui-là, il est déjà pris 😃)</span>
+</dd>
+</dl>
 </details>
 <ul>
-<li><p>Appliquer ces fichiers de configuration sur le cluster : <code>kubectl apply -f deployement/</code></p></li>
-<li><p>Si tout a correctement fonctionné, vous devriez pouvoir accéder à l’API à l’URL spécifiée dans le fichier <code>deployment/ingress.yaml</code></p></li>
+<li><p>Appliquer ces fichiers de configuration sur le cluster : <code>kubectl apply -f deployment/</code></p></li>
+<li><p>Si tout a correctement fonctionné, vous devriez pouvoir accéder depuis votre navigateur à l’API à l’URL spécifiée dans le fichier <code>deployment/ingress.yaml</code>. Par exemple <code>https://toto.kub.sspcloud.fr/</code> si vous avez mis celui-ci plus tôt (et <code>https://toto.kub.sspcloud.fr/docs</code> pour la documentation).</p></li>
 </ul>
 </div>
 </div>
@@ -2535,11 +2587,37 @@ Checkpoint
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
 </div>
-<div class="sourceCode" id="cb77" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git checkout appli19</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb80" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git checkout appli18</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
 </div>
+<p>On peut remarquer quelques voies d’amélioration de notre approche qui seront ultérieurement traitées:</p>
+<ul>
+<li>l’entraînement du modèle est effectué à chaque lancement d’un nouveau conteneur. On relance donc autant de fois un entraînement qu’on déploie de conteneur pour répondre à nos utilisateurs. Ce sera l’objet de la partie MLOps de fiabiliser et optimiser cette partie du <em>pipeline</em>.</li>
+<li>il est nécessaire de (re)lancer manuellement <code>kubectl apply -f deployment/</code> à chaque changement de notre code. Autrement dit, on améliore la fiabilité du lancement de notre API mais un lancement manuel est encore indispensable. Comme dans le reste de ce cours, on va essayer d’éviter un geste manuel pouvant être source d’erreur.</li>
+</ul>
+</section>
+<section id="etape-3-automatiser-le-déploiement-déploiement-en-continu" class="level2">
+<h2 class="anchored" data-anchor-id="etape-3-automatiser-le-déploiement-déploiement-en-continu">Etape 3: automatiser le déploiement (déploiement en continu)</h2>
+<p>Qu’est-ce qui peut déclencher une évolution nécessitant de mettre à jour l’ensemble de notre processus de production ?</p>
+<p>Regardons à nouveau notre <em>pipeline</em>:</p>
+<p><img src="../workflow2.png" class="img-fluid"></p>
+<p>Les <em>inputs</em> de notre <em>pipeline</em> sont donc:</p>
+<ul>
+<li>La <strong>configuration</strong>. ;</li>
+<li>Les <strong>données</strong>. Nos données sont statiques et n’ont pas vocation à évoluer. Si c’était le cas, il faudrait en tenir compte dans notre automatisation. ;</li>
+<li>Le <strong>code</strong>. C’est l’élément qui évolue chez nous. On va donc faire en sorte qu’à chaque mise à jour de notre code (un <em>push</em> sur <code>Github</code>), les étapes ultérieures (production de l’image <code>Docker</code>, etc.) vont se mettre à compiler.</li>
+</ul>
+<p><img src="https://inseefrlab.github.io/formation-mlops/slides/img/ci-cd.png" class="img-fluid"></p>
+<p>Grâce à <code>ArgoCD</code> il est possible de déployer un modèle de manière continu, ainsi chaque modification d’un fichier présent dans le dossier <code>kubernetes/</code>. Cela va entrainer le redéploiement automatique en synchronisant avec notre dépôt Github.</p>
+<p>Projet exo appli19:</p>
+<ul>
+<li>Lancer un service argoCD</li>
+</ul>
+</section>
+<section id="etape-4-construire-un-site-web" class="level2">
+<h2 class="anchored" data-anchor-id="etape-4-construire-un-site-web">Etape 4: construire un site web</h2>
 </section>
 </section>
 <section id="partie-6-un-workflow-complet-de-mlops" class="level1">
@@ -2612,7 +2690,7 @@ Checkpoint
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
 </div>
-<div class="sourceCode" id="cb78" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git checkout appli20</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb81" data-filename="terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git checkout appli20</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
