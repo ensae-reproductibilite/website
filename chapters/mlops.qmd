@@ -47,15 +47,46 @@ Ainsi on définit généralement les 5 piliers du MLOps comme étant :
 
 # Implémentation de l'approche MLOps avec MLflow
 
-## Pourquoi MLflow 
+## Pourquoi MLflow ?
 
-il y en a plein de différentes. mlflow a plusieurs avantages (open source, présent sur ssp cloud)
+Il existe aujourd'hui de nombreux outils pour orchestrer des tâches et des pipelines de données. Parmi les plus populaires (selon leur ⭐ Github) on peut citer [Airflow](https://github.com/apache/airflow), [Luigi](https://github.com/spotify/luigi), [MLFlow](https://github.com/mlflow/mlflow), [Argo Workflow](https://github.com/argoproj/argo-workflows), [Prefect](https://github.com/PrefectHQ/prefect) ou encore [Kubeflow](https://github.com/kubeflow/kubeflow). Il est difficile d'affirmer s'il y en a un meilleur qu'un autre, en réalité votre choix dépend surtout de votre infrastructure informatique et de votre projet. En l’occurrence ici, nous avons fait le choix d'utiliser MLflow pour la simplicité d'utilisation mais aussi car il nous semble être le plus spécialisé pour les projet de machine learning. De plus, il est présent dans le catalogue du SSP Cloud ce qui simplifie grandement son installation. Nous utiliserons également [Argo CD](https://github.com/argoproj/argo-cd) et [Argo Workflow](https://github.com/argoproj/argo-workflows) plutôt qu'[Airflow](https://github.com/apache/airflow) car ils sont optimisés pour les clusters kubernetes (comme le SSP Cloud !).
+
+MLflow est une plateforme qui permet d'optimiser le développement du cycle de vie d'un modèle de machine learning. Il permet de suivre en détails les différentes expérimentations, de *packager* son code pour garantir la reproductibilité, et de servir un modèle à des utilisateurs. MLFlow possède aussi une API qui permet d'être compatible avec la majorité des librairies de machine learning (PyTorch, Scikit learn, XGBoost, etc) mais également différents languages (python, R et Java).
 
 ## Les projets MLflow
 
+MLflow propose un format pour *packager* son projet de data science afin de favoriser la réutilisation et la reproductibilité du code. Ce format s'appelle tout simplement *[MLflow Project](https://mlflow.org/docs/latest/projects.html)*. Concrètement un *MLflow project* n'est rien d'autre qu'un répertoire contenant le code et les ressources nécessaires (données, fichiers de configuration...) nécessaire à l'exécution de votre projet. Il est résumé par un ficher `MLproject` qui résume les différentes commandes pour exécuter une pipeline ainsi que les dépendances nécessaires. De manière général un projet MLflow a la structure suivante : 
+
+Projet_ML/
+├── artifacts/
+│   ├── model.bin
+│   └── train_text.txt
+├── code/
+│   ├── main.py
+│   └── preprocessing.py
+├── MLmodel
+├── conda.yaml
+├── python_env.yaml
+├── python_model.pkl
+└── requirements.txt
+
+
 ## Les modèles MLflow
 
+En plus de *packager* son projet, MLflow permet de également de *packager* son modèle **quelque que soit** la librairie de machine learning sous-jacente utilisée (parmi celles [compatibles avec MLflow](https://mlflow.org/docs/latest/models.html#built-in-model-flavors), aka toutes les librairies que vous utilisez !). Ainsi, deux modèles entraînés avec des librairies différentes, disons PyTorch et Keras, peuvent être ainsi déployé et requêté de la même manière grâce à cette surcouche rajoutée par MLflow.
+
+::: {.callout-tip}
+## Tip
+
+Il est également possible de *packager* son propre modèle personnalisé ! Pour cela vous pouvez suivre le tutoriel présent dans la [documentation](https://mlflow.org/docs/latest/traditional-ml/creating-custom-pyfunc/index.html?highlight=custom%20models)
+:::
+
 ## Le serveur de suivi (*tracking server*)
+
+MLflow fourni un serveur de suivi qui contient à la fois une interface graphique ergonomique ainsi qu'une API permettant de *logger* différents paramètres, métriques, fichiers, etc durant l’entraînement de votre modèle de machine learning.
+
+![](/tracking-metrics-ui.png)
+
 
 ## l'entrepôt de modèles (*model registry*)
 
@@ -81,7 +112,7 @@ PARLER DES LIMITES DES NOTEBOOKS
 
 ## Distribuer l'entraînement des modèles
 
-- Réentraînement : périodique vs continu
+Argo workflow
 
 ## Amélioration continue
 
