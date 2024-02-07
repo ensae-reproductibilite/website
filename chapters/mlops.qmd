@@ -10,11 +10,12 @@ href: chapters/mlops.html
 ---
 
 
-On a vu comment déployer un projet data science. On est déjà aller loin dans la production. Cependant pour les projets de machine learning il y a d'autres enjeux qui apparaissent et qui doivent être pris en compte.
+Grâce aux chapitres précédents on sait comment structurer et rendre son projet de de data science reproductible et portable grâce à l'approche DevOps. Pour de nombreux projets de data science cela peut s'avérer suffisant. Cependant, dès lors que l'on intègre un modèle de machine learning à notre projet l'approche DevOps devient alors une condition nécessaire mais plus suffisante pour réussir à mettre en production notre modèle. Aujourd'hui, une très grande majorité des modèles de machine learning ne dépassent pas le stade de l'expérimentation et très peu parviennent à atteindre le stade de la production. Pour simplifier ce passage vers la production une nouvelle approche a émergé en intégrant les spécificités des modèles de machine learning : le MLOps. On peut voir le MLOps comme la somme de 3 buzzwords à savoir :
 
-- Ou nous en sommes ?
+MLOps = DataOps + DevOps + ModelOps
 
-Grâce aux chapitres précédents on sait comment structurer et rendre son projet de de data science reproductible et portable grâce à l'approche DevOps. Pour de nombreux projets de data science cela peut s'avérer suffisant. Cependant, dès lors que l'on intègre un modèle de machine learning à notre projet l'approche DevOps devient alors une condition nécessaire mais plus suffisante pour réussir à mettre en production notre modèle. Aujourd'hui, une très grande majorité des modèles de machine learning ne dépassent pas le stade de l'expérimentation et très peu parviennent à atteindre le stade de la production. Pour simplifier ce passage vers la production une nouvelle approche a émergé en intégrant les spécificités des modèles de machine learning : le MLOps. Ce chapitre définie cette approche et propose présente plusieurs outils pour l'adopter à ces projets de data science.
+Ce chapitre définie cette approche et propose présente plusieurs outils pour l'adopter à ces projets de data science.
+
 
 
 # Du DevOps vers le MLOps
@@ -28,7 +29,7 @@ Cette approche, datant de 2007, vise à éliminer les barrières traditionnelles
 
 En résumé, DevOps vise à créer un écosystème de développement collaboratif, automatisé et axé sur l'amélioration continue. Le cycle de vie DevOps est souvent résumé par ces 8 phases inter-connectées : 
 
-![](/devops.png)
+![](/devops.png){fig-align="center"}
 
 ## L'approche MLOps 
 
@@ -44,6 +45,7 @@ Ainsi on définit généralement les 5 piliers du MLOps comme étant :
   - **le contrôle de version des modèles** : chaque modèle doit avoir une version spécifique permettant de connaître sa situation tout au long de son cycle de vie (expérimental, en production, archivé...). De plus, un modèle ne dépend pas seulement des scripts associés, mais également des données utilisées lors de l'entraînement ce qui rend d'autant plus nécessaire une bonne gestion des versions
   - **la surveillance** : une fois déployé, il est important de s'assurer que le modèle fonctionne bien comme attendu en évaluant ses performances en temps réel
 
+![](/mlops.png){fig-align="center"}
 
 # Implémentation de l'approche MLOps avec MLflow
 
@@ -57,6 +59,7 @@ MLflow est une plateforme qui permet d'optimiser le développement du cycle de v
 
 MLflow propose un format pour *packager* son projet de data science afin de favoriser la réutilisation et la reproductibilité du code. Ce format s'appelle tout simplement *[MLflow Project](https://mlflow.org/docs/latest/projects.html)*. Concrètement un *MLflow project* n'est rien d'autre qu'un répertoire contenant le code et les ressources nécessaires (données, fichiers de configuration...) nécessaire à l'exécution de votre projet. Il est résumé par un ficher `MLproject` qui résume les différentes commandes pour exécuter une pipeline ainsi que les dépendances nécessaires. De manière général un projet MLflow a la structure suivante : 
 
+```
 Projet_ML/
 ├── artifacts/
 │   ├── model.bin
@@ -69,51 +72,86 @@ Projet_ML/
 ├── python_env.yaml
 ├── python_model.pkl
 └── requirements.txt
+```
 
 
 ## Les modèles MLflow
 
 En plus de *packager* son projet, MLflow permet de également de *packager* son modèle **quelque que soit** la librairie de machine learning sous-jacente utilisée (parmi celles [compatibles avec MLflow](https://mlflow.org/docs/latest/models.html#built-in-model-flavors), aka toutes les librairies que vous utilisez !). Ainsi, deux modèles entraînés avec des librairies différentes, disons PyTorch et Keras, peuvent être ainsi déployé et requêté de la même manière grâce à cette surcouche rajoutée par MLflow.
 
+![](/mlflow-models.png){fig-align="center"}
+
 ::: {.callout-tip}
 ## Tip
 
-Il est également possible de *packager* son propre modèle personnalisé ! Pour cela vous pouvez suivre le tutoriel présent dans la [documentation](https://mlflow.org/docs/latest/traditional-ml/creating-custom-pyfunc/index.html?highlight=custom%20models)
+Il est également possible de *packager* son propre modèle personnalisé ! Pour cela vous pouvez suivre le tutoriel présent dans la [documentation](https://mlflow.org/docs/latest/traditional-ml/creating-custom-pyfunc/index.html?highlight=custom%20models).
 :::
 
 ## Le serveur de suivi (*tracking server*)
 
 MLflow fourni un serveur de suivi qui contient à la fois une interface graphique ergonomique ainsi qu'une API permettant de *logger* différents paramètres, métriques, fichiers, etc durant l’entraînement de votre modèle de machine learning.
+Le *tracking server* est très utile pour comparer les différentes expérimentations que vous avez effectué, pour les stocker et également pour être capable de les reproduire. En effet, chaque *run* sauvegarde la source des données utilisées mais également le commit sur lequel le *run* est basé. 
 
-![](/tracking-metrics-ui.png)
+![](/tracking-server.png){fig-align="center"}
 
 
-## l'entrepôt de modèles (*model registry*)
+## L'entrepôt de modèles (*model registry*)
+
+Une fois que l'on a effectué différentes expérimentations et pu sélectionner les modèles qui nous satisfont il est temps de passer à l'étape suivante du cycle de vie d'un modèle. En effet, le modèle choisi doit pouvoir ensuite passer dans un environnement de production ou de pré-production. Or, connaître l'état d'un modèle dans son cycle de vie nécessite une très bonne organisation et n'est pas si aisé. MLflow a développé une fonctionnalité qui permet justement de simplifier cette gestion des versions des modèles grâce à son [Model Registry](https://mlflow.org/docs/latest/model-registry.html). Cet entrepôt permet d'ajouter des tags et des alias à nos modèles pour définir leur position dans leur cycle de vie et ainsi pouvoir les récupérer de manière efficace. 
+
+De manière générale un modèle de machine learning passe par 4 stades qu'il est nécessaire de pouvoir connaître en tout temps :
+
+1. **Expérimental**
+2. **En évaluation**
+3. **En production**
+4. **Archivé**
+
+![](/mlflow-model-registry.png){fig-align="center"}
 
 ## MLflow en résumé
 
-PARLER DES LIMITES DES NOTEBOOKS
+MLflow est donc un projet open-source qui fournit une plateforme pour suivre le cycle de vie d'une modèle de machine learning de bout en bout. Ce n'est pas le seul outil disponible et il n'est peut être pas le plus adapté à certains de vos projets précis. En revanche, il présente selon nous plusieurs avantages en premier desquels sa très simple prise en main et sa faculté à répondre aux besoins de l'approche MLOps. Il faut garder en tête que cet environnement est encore très récent et de nouveaux projets open-source émergent chaque jour, il est nécessaire de faire une veille sur les dernières évolutions. 
+
+Pour résumer, MLFlow permet : 
+- de simplifier le suivi de l’entraînement des modèles de machine learning grâce à son API et son *tracking server*
+- d'intégrer les principaux framework de machine learning de manière simple
+- d'intégrer son propre framework si besoin
+- de standardiser son script d'entraînement et donc pouvoir l'industrialiser, pour réaliser un *fine-tuning* des hyper-paramètres par exemple
+- de *packager* ses modèles, de sorte à pouvoir les requêter de manière simple et harmonisée entre les différents frameworks
+- stocker ses modèles de manières pertinentes en leur affectant des tags et favorisant le suivi de leur cycle de vie
 
 # Spécificités liées à la mise en prod de modèles de ML
 
-- Entraînement : batch ou online
-- Batch vs real-time prediction 
-- Feedback loops expérimentation/déploiement/monitoring
-- Exposer le modèle via une API
 
-# Servir un modèle ML à des utilisateur
+## 1. Entraînements des modèles 
+
+par nature, tous les projets ML suivent un développement non linéaire : différents preprocessing, feature engineering et algorithmes sont testés, jusqu’à ce qu’une performance suffisante soit atteinte. Garder une trace de ce qui a été expérimenté et de ce qui a ou non fonctionné peut s’avérer complexe. C’est pourtant crucial pour réduire le temps de développement, notamment dans le cas de grosses équipes, afin d’éviter de tester à nouveau des approches qui auraient déjà été expérimentées sans succès par un autre data scientist.
+
+- Entraînement : batch ou online
+- Distribuer l'entraînement des modèles : Argo workflow
+
+## 2. Servir un modèle ML à des utilisateur
+
+Il faut savoir que MLflow permet également de déployer directement un modèle MLflow. Cependant, nous avons décider de ne pas passer cette étape sous le tapis et de la détailler
 
 - API Rest / FastAPI
 
-## Notions d'observabilité
+- Batch vs real-time prediction 
+
+
+## 3. Observabilité en temps réel d'un modèle de ML
 
 - Drifts
 - Quelles métriques monitorer
 
-## Distribuer l'entraînement des modèles
 
-Argo workflow
+## 4. Réentraînement d'un modèle ML
 
-## Amélioration continue
+Amélioration continue Réentraînement : périodique vs continu
+- Feedback loops expérimentation/déploiement/monitoring
 
-- Réentraînement : périodique vs continu
+## 5. Défis organisationnels du MLOps
+
+Pas ouf : 
+
+Dans la plupart des organisations, les équipes data transverses ou intégrées dans différents départements métier sont relativement jeunes et manquent de ressources qualifiées pour gérer le déploiement et le maintien en condition opérationnelle de systèmes ML complexes. En effet, ces équipes se composent généralement principalement de data scientists qui se concentrent sur le développement des modèles de machine learning, mais n’ont pas les compétences nécessaires pour gérer le déploiement et la maintenance d’applications complètes. De plus, les équipes data évoluent encore trop souvent en silo, sans communiquer avec les différentes équipes techniques avec lesquelles elles devraient interagir pour mettre en production leurs modèles.
