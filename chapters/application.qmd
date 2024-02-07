@@ -1098,61 +1098,7 @@ cela se fera en modifiant les instructions présentes dans le dossier `kubernete
 de notre dépôt. Un changement de ces fichiers
 va entrainer le redéploiement automatique en synchronisant avec notre dépôt `Github`.
 
-
-::: {.callout-tip}
-## Projet d'application 19a: Mettre à disposition l'API (déploiement continu)
-
-- Lancer un service `ArgoCD` sur le `SSPCloud` depuis la page `Mes services`. Laisser
-les configurations par défaut. 
-- Ouvrez le template [argocd/template-argocd.yml]() et modifier les lignes surlignées :
-
-```{python}
-#| eval: false
-#| file: "argocd/pipeline.yaml"
-#| filename: "argocd/pipeline.yaml"
-#| source-line-numbers: "8-9,13"
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: ensae-mlops
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/ensae-reproductibilite/application-correction.git #<1>
-    targetRevision: dev #<2>
-    path: deployment
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: user-lgaliana #<3>
-  syncPolicy:
-    automated:
-      selfHeal: true
-```
-1. L'URL de votre dépôt `Github` {{< fa brands github >}}
-2. La branche à partir de laquelle vous déployez. La logique voudrait que ce soit `main`. Néanmoins, ici il s'agit de `dev` pour tenir
-compte des instructions antérieures. Si vous avez changé de branche, adaptez la branche marquée. 
-3. Votre _namespace_ `Kubernetes`. Sur le SSPCloud, cela prend la forme `user-${username}`
-
-- Dans `ArgoCD`, cliquez sur `New App` puis `Edit as a YAML`. Copiez-collez le contenu de `argocd/template-argocd.yml` et cliquez sur `Create`.
-
-Mettre à jour le code dans `api/main.py` pour changer un élément de l'interface de votre documentation.
-Par exemple, mettre en gras un titre. 
-
-```{.python}
-app = FastAPI(
-    title="Prédiction de survie sur le Titanic",
-    description=
-    "<b>Application de prédiction de survie sur le Titanic</b> 🚢 <br>Une version par API pour faciliter la réutilisation du modèle 🚀" +\
-        "<br><br><img src=\"https://media.vogue.fr/photos/5faac06d39c5194ff9752ec9/1:1/w_2404,h_2404,c_limit/076_CHL_126884.jpg\" width=\"200\">"
-    )
-```
-
-- Accédez à votre API en utilisant l’URL définie dans votre fichier `ingress.yml`.
-
-- Faire un `push` après avoir committé, rafraichir la page de documentation de votre API. Votre page a-t-elle changé ? 
-
-:::
-
+{{< include "./applications/_appli19a.qmd" >}}
 
 La page n'a pas changé. En pratique, nous n'avons pas vraiment organisé la mise en production
 et `ArgoCD` nécessite un certain formalisme. 
@@ -1174,103 +1120,7 @@ on va versionner notre image `Docker`.
     ![](https://inseefrlab.github.io/formation-mlops/slides/img/ci-cd.png)
 
 
-
-::: {.callout-tip}
-## Projet d'application 19b: Mettre à jour la version en production
-
-- Mettre à jour le fichier `deployment/deployment.yaml`
-
-<details>
-<summary>
-
-Fichier `deployment/deployment.yaml` 
-
-</summary>
-```{python}
-#| eval: false
-#| file: "deployment/deployment.yaml"
-#| filename: "deployment/deployment.yaml"
-#| source-line-numbers: "20"
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: titanic-deployment
-  labels:
-    app: titanic
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: titanic
-  template:
-    metadata:
-      labels:
-        app: titanic
-    spec:
-      containers:
-      - name: titanic
-        image: username/application-correction:v0.0.1 #<1>
-        ports:
-        - containerPort: 5000
-```
-1. Remplacer `username` par la valeur adéquate
-</details>
-
-- Après avoir _committé_ et _pushé_, observer dans `ArgoCD` le statut de votre application,
-notamment 
-
-![](/argocd-waiting.png)
-
-- Comprendre la raison. Ensuite, modifier le fichier `.github/workflows/prod.yml`
-
-<details>
-<summary>
-
-Fichier `.github/workflows/prod.yml` 
-
-</summary>
-```{python}
-#| eval: false
-#| file: ".github/workflows/prod.yml"
-#| filename: ".github/workflows/prod.yml"
-#| source-line-numbers: "26"
-name: Construction image Docker
-
-on: [push]
-
-jobs:
-  docker:
-    runs-on: ubuntu-latest
-    steps:
-      -
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      -
-        name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          push: true
-          tags: linogaliana/application-correction:v0.0.1
-```
-1. Remplacer `username` par la valeur adéquate
-
-</details>
-
-- Observer l'évolution de l'état de votre plateforme, une fois
-que l'action `Github` est terminée
-
-![](/argocd-success.png)
-
-:::
+{{< include "./applications/_appli19b.qmd" >}}
 
 
 Notre API est accessible sans problème depuis `Python` ou notre navigateur
@@ -1402,94 +1252,12 @@ spec:
 </details>
 
 
-
-
-
 ## Etape 4: construire un site web
 
 On va proposer un nouveau livrable pour parler à un public plus large.
 Pour faire ce site web,
 on va utiliser `Quarto` et déployer sur `Github Pages`.
 
-```{.bash filename="terminal"}
-quarto create-project website
-```
-
-- Faire remonter d'un niveau `_quarto.yml`
-- Ajouter la ligne `/.quarto/` au `.gitignore`
-- Déplacer `website.qmd` vers la racine de notre projet et renommer `index.qmd`
-
-# Partie 6: un workflow complet de MLOps
-
-to do
-
-# Partie 7: livrer un site web de manière automatisée
-
-Pour cela, on va déployer un site web statique qui permet de visualiser
-rapidement les résultats du modèle.
-
-On propose de créer un site web qui permet de comprendre, avec l'appui
-des [valeurs de Shapley](https://christophm.github.io/interpretable-ml-book/shapley.html),
-les facteurs qui auraient pu nous mettre la puce
-à l'oreille sur les destins de Jake et de Rose. 
-
-Pour faire ce site web,
-on va utiliser `Quarto` et déployer sur `Github Pages`.
-Des étapes préliminaires sont réalisées en `Python` 
-puis l'affichage interactif 
-sera contrôlé par du `JavaScript` grâce
-à des [blocs `Observable`](https://quarto.org/docs/interactive/ojs/). 
+{{< include "./applications/_appli20.qmd" >}}
 
 
-::: {.callout-tip}
-
-## Application 19: Déploiement automatisé d'un site web
-
-Dans un premier temps, on va créer un projet `Quarto`
-au sein de notre dépôt: 
-
-- Installer `Quarto` dans votre environnement local (s'il n'est pas déjà disponible) ;
-- Dans le projet, utiliser la commande `quarto create-project` pour initialiser le projet `Quarto` ;
-- Supprimer le fichier automatiquement généré avec l'extension `.qmd` ;
-- Récupérer le contenu du modèle de fichier `Quarto Markdown` [cette page](https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/tree/appli19/index.qmd). Celui-ci permet de générer la page d'accueil de notre site. Enregistrer dans un fichier nommé `index.qmd`
-
-On teste ensuite la compilation en local du fichier:
-
-- Modifier le fichier `train.py` à partir de [cette page](https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/tree/appli19/train.py) pour être en mesure de compiler le fichier 
-- Exécuter le fichier `train.py`
-- En ligne de commande, faire `quarto preview` (ajouter les arguments `--port 5000 --host 0.0.0.0` si vous passez par le `SSPCloud`)
-- Observer le site web généré en local
-
-Enfin, on va construire et déployer automatiquement ce site web grâce au
-combo `Github Actions` et `Github Pages`:
-
-- Créer une branche `gh-pages` à partir du contenu de [cette page](https://quarto.org/docs/publishing/github-pages.html)
-- Créer un fichier `.github/workflows/website.yaml` avec le contenu de [ce fichier](https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/tree/appli19/.github/workflows/publish.yaml)
-
-:::
-
-::: {.callout-note}
-
-On doit dans cette application modifier le fichier `train.py`
-pour enregistrer en local une duplication du modèle
-de _machine learning_ et de l'ensemble d'entraînement
-car pour ces deux éléments
-on n'est pas allé au bout de la démarche MLOps
-d'enregistrement dans un _model registry_ et un
-_feature store_.
-
-Dans la prochaine version de ce cours, qui
-intègrera `MLFlow`, on aura une démarche plus 
-propre car on utilisera bien le modèle de production
-et le jeu d'entrainement associé. 
-:::
-
-
-::: {.callout-caution collapse="true"}
-## Checkpoint
-
-```{.bash filename="terminal"}
-git checkout appli20
-```
-
-:::

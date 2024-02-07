@@ -1,0 +1,54 @@
+::: {.callout-tip}
+## Application 19a: Mettre à disposition l'API (déploiement continu)
+
+- Lancer un service `ArgoCD` sur le `SSPCloud` depuis la page `Mes services`. Laisser
+les configurations par défaut. 
+- Ouvrez le template [argocd/template-argocd.yml]() et modifier les lignes surlignées :
+
+```{python}
+#| eval: false
+#| file: "argocd/pipeline.yaml"
+#| filename: "argocd/pipeline.yaml"
+#| source-line-numbers: "8-9,13"
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ensae-mlops
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ensae-reproductibilite/application-correction.git #<1>
+    targetRevision: dev #<2>
+    path: deployment
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: user-lgaliana #<3>
+  syncPolicy:
+    automated:
+      selfHeal: true
+```
+1. L'URL de votre dépôt `Github` {{< fa brands github >}}
+2. La branche à partir de laquelle vous déployez. La logique voudrait que ce soit `main`. Néanmoins, ici il s'agit de `dev` pour tenir
+compte des instructions antérieures. Si vous avez changé de branche, adaptez la branche marquée. 
+3. Votre _namespace_ `Kubernetes`. Sur le SSPCloud, cela prend la forme `user-${username}`
+
+- Dans `ArgoCD`, cliquez sur `New App` puis `Edit as a YAML`. Copiez-collez le contenu de `argocd/template-argocd.yml` et cliquez sur `Create`.
+
+Mettre à jour le code dans `api/main.py` pour changer un élément de l'interface de votre documentation.
+Par exemple, mettre en gras un titre. 
+
+```{.python}
+app = FastAPI(
+    title="Prédiction de survie sur le Titanic",
+    description=
+    "<b>Application de prédiction de survie sur le Titanic</b> 🚢 <br>Une version par API pour faciliter la réutilisation du modèle 🚀" +\
+        "<br><br><img src=\"https://media.vogue.fr/photos/5faac06d39c5194ff9752ec9/1:1/w_2404,h_2404,c_limit/076_CHL_126884.jpg\" width=\"200\">"
+    )
+```
+
+- Accédez à votre API en utilisant l’URL définie dans votre fichier `ingress.yml`.
+
+- Faire un `push` après avoir committé, rafraichir la page de documentation de votre API. Votre page a-t-elle changé ? 
+
+:::
+
