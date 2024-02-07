@@ -1048,33 +1048,8 @@ et d'avoir un serveur, en arrière plan, qui effectuera les opérations pour ré
 requête. Pour se faire, on va utiliser les possibilités offertes par `Kubernetes`, sur lequel est basé le [SSP Cloud](https://datalab.sspcloud.fr).
 
 
-::: {.callout-tip}
-## Application 18a: Dockeriser l'API (intégration continue)
+{{< include "./applications/_appli18a.qmd" >}}
 
-- Pour rendre la structure du projet plus lisible, déplacer `api.py` -> `api/main.py`
-
-- Créer un script `api/run.sh` à la racine du projet qui lance le script `train.py` puis déploie localement l'API 
-
-<details>
-<summary>Fichier `run.sh`</summary>
-
-```{.bash filename="api/run.sh" no-prefix=true}
-#/bin/bash
-
-python3 train.py
-uvicorn api.main:app --reload --host "0.0.0.0" --port 5000
-```
-</details>
-
-- Donner au script `api/run.sh` des permissions d'exécution : `chmod +x api/run.sh`
-
-- Changer l'instruction `CMD` du `Dockerfile` pour exécuter le script `api/run.sh` au lancement du conteneur (`CMD ["bash", "-c", "./api/run.sh"]`)
-
-- *Commit* et *push* les changements
-
-- Une fois le CI terminé, récupérer la nouvelle image dans votre environnement de test de `Docker` et vérifier que l'API se déploie correctement
-
-:::
 
 Nous avons préparé la mise à disposition de notre API mais à l'heure
 actuelle elle n'est pas disponible de manière aisée car il est nécessaire
@@ -1082,20 +1057,140 @@ de lancer manuellement une image `Docker` pour pouvoir y accéder.
 Ce type de travail est la spécialité de `Kubernetes` que nous allons
 utiliser pour gérer la mise à disposition de notre API. 
 
+{{< include "./applications/_appli18b.qmd" >}}
+
+On peut remarquer quelques voies d'amélioration de notre approche qui
+seront ultérieurement traitées:
+
+- L'entraînement du modèle
+est ré-effectué à chaque lancement d'un nouveau conteneur. 
+On relance donc autant de fois un entraînement qu'on déploie
+de conteneurs pour répondre à nos utilisateurs. Ce sera
+l'objet de la partie MLOps de fiabiliser et optimiser
+cette partie du _pipeline_. 
+- il est nécessaire de (re)lancer manuellement  `kubectl apply -f deployment/`
+à chaque changement de notre code. Autrement dit, lors de cette application,
+on a amélioré
+la fiabilité du lancement de notre API mais un lancement manuel est encore indispensable. 
+Comme dans le reste de ce cours, on va essayer d'éviter un geste manuel pouvant 
+être source d'erreur en privilégiant l'automatisation et l'archivage dans des
+scripts. C'est l'objet de la prochaine étape. 
+
+
+## Etape 3: automatiser le déploiement (déploiement en continu)
+
+Qu'est-ce qui peut déclencher une évolution nécessitant de mettre à 
+jour l'ensemble de notre processus de production ? 
+
+Regardons à nouveau notre _pipeline_:
+
+![](/workflow2.png)
+
+Les _inputs_ de notre _pipeline_ sont donc:
+
+- La __configuration__. Ici, on peut considérer que notre YAML de configuration relèvent de cette catégorie  ;
+- Les __données__. Nos données sont statiques et n'ont pas vocation à évoluer. Si c'était le cas, il faudrait en tenir compte dans notre automatisation. ;
+- Le __code__. C'est l'élément principal qui évolue chez nous. On va donc faire en sorte qu'à chaque mise à jour de notre code (un _push_ sur `Github`), les étapes ultérieures (production de l'image `Docker`, etc.) se mettent à compiler. Néanmoins, il va être nécessaire de se discipliner pour ne pas mettre en production n'importe quel code. 
+
+Grâce à `ArgoCD` il est possible d'automatiser la mise en production de notre
+application. Au lieu d'être fait manuellement par l'appel à `kubectl apply`,
+cela se fera en modifiant les instructions présentes dans le dossier `kubernetes/`
+de notre dépôt. Un changement de ces fichiers
+va entrainer le redéploiement automatique en synchronisant avec notre dépôt `Github`.
+
 
 ::: {.callout-tip}
-## Application 18b: Mettre à disposition l'API (déploiement manuel)
+## Projet d'application 19a: Mettre à disposition l'API (déploiement continu)
 
-Cette partie nécessite d'avoir à disposition une infrastructure _cloud_. 
+- Lancer un service `ArgoCD` sur le `SSPCloud` depuis la page `Mes services`. Laisser
+les configurations par défaut. 
+- Ouvrez le template [argocd/template-argocd.yml]() et modifier les lignes surlignées :
 
-- Créer un dossier `deployment` à la racine du projet qui va contenir les fichiers de configuration nécessaires pour déployer sur un cluster `Kubernetes`
+```{python}
+#| eval: false
+#| file: "argocd/pipeline.yaml"
+#| filename: "argocd/pipeline.yaml"
+#| source-line-numbers: "8-9,13"
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ensae-mlops
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ensae-reproductibilite/application-correction.git #<1>
+    targetRevision: dev #<2>
+    path: deployment
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: user-lgaliana #<3>
+  syncPolicy:
+    automated:
+      selfHeal: true
+```
+1. L'URL de votre dépôt `Github` {{< fa brands github >}}
+2. La branche à partir de laquelle vous déployez. La logique voudrait que ce soit `main`. Néanmoins, ici il s'agit de `dev` pour tenir
+compte des instructions antérieures. Si vous avez changé de branche, adaptez la branche marquée. 
+3. Votre _namespace_ `Kubernetes`. Sur le SSPCloud, cela prend la forme `user-${username}`
 
-- En vous inspirant de la [documentation](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment), y ajouter un premier fichier `deployment.yaml` qui va spécifier la configuration du *Pod* à lancer sur le cluster
+- Dans `ArgoCD`, cliquez sur `New App` puis `Edit as a YAML`. Copiez-collez le contenu de `argocd/template-argocd.yml` et cliquez sur `Create`.
+
+Mettre à jour le code dans `api/main.py` pour changer un élément de l'interface de votre documentation.
+Par exemple, mettre en gras un titre. 
+
+```{.python}
+app = FastAPI(
+    title="Prédiction de survie sur le Titanic",
+    description=
+    "<b>Application de prédiction de survie sur le Titanic</b> 🚢 <br>Une version par API pour faciliter la réutilisation du modèle 🚀" +\
+        "<br><br><img src=\"https://media.vogue.fr/photos/5faac06d39c5194ff9752ec9/1:1/w_2404,h_2404,c_limit/076_CHL_126884.jpg\" width=\"200\">"
+    )
+```
+
+- Accédez à votre API en utilisant l’URL définie dans votre fichier `ingress.yml`.
+
+- Faire un `push` après avoir committé, rafraichir la page de documentation de votre API. Votre page a-t-elle changé ? 
+
+:::
+
+
+La page n'a pas changé. En pratique, nous n'avons pas vraiment organisé la mise en production
+et `ArgoCD` nécessite un certain formalisme. 
+Dorénavant, il convient de versionner nos
+productions pour déclencher dans `ArgoCD` des opérations. 
+Ce versionnement va se faire à deux niveaux[^gitopsrepo]:
+
+- Dans le fichier `deployment.yaml` où on va spécifier 
+la version de l'image Docker utilisée en production
+- Dans le YAML qui nous permet de _pusher_ une image sur `Dockerhub` (`.github/workflows/prod.yml`),
+on va versionner notre image `Docker`. 
+
+
+[^gitopsrepo]: 
+    Techniquement, il serait plus judicieux de séparer notre
+    projet en deux dépôts: un dépôt pour le code source et un visant à fournir
+    les fichiers YAML pour la mise en production.
+
+    ![](https://inseefrlab.github.io/formation-mlops/slides/img/ci-cd.png)
+
+
+
+::: {.callout-tip}
+## Projet d'application 19b: Mettre à jour la version en production
+
+- Mettre à jour le fichier `deployment/deployment.yaml`
 
 <details>
-<summary>Fichier `deployment/deployment.yaml`</summary>
+<summary>
 
-```{.yaml filename="deployment/deployment.yaml"}
+Fichier `deployment/deployment.yaml` 
+
+</summary>
+```{python}
+#| eval: false
+#| file: "deployment/deployment.yaml"
+#| filename: "deployment/deployment.yaml"
+#| source-line-numbers: "20"
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -1114,51 +1209,106 @@ spec:
     spec:
       containers:
       - name: titanic
-        image: linogaliana/application-correction:latest
+        image: username/application-correction:v0.0.1 #<1>
         ports:
         - containerPort: 5000
 ```
+1. Remplacer `username` par la valeur adéquate
 </details>
 
-- En vous inspirant de la [documentation](https://kubernetes.io/fr/docs/concepts/services-networking/service/#d%C3%A9finition-d-un-service), y ajouter un second fichier `service.yaml` qui va créer une ressource `Service` permettant de donner une identité fixe au `Pod` précédemment créé au sein du cluster
+- Après avoir _committé_ et _pushé_, observer dans `ArgoCD` le statut de votre application,
+notamment 
+
+![](/argocd-waiting.png)
+
+- Comprendre la raison. Ensuite, modifier le fichier `.github/workflows/prod.yml`
 
 <details>
-<summary>Fichier `deployment/service.yaml`</summary>
+<summary>
 
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: titanic-service
-spec:
-  selector:
-    app: titanic
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 5000
+Fichier `.github/workflows/prod.yml` 
+
+</summary>
+```{python}
+#| eval: false
+#| file: ".github/workflows/prod.yml"
+#| filename: ".github/workflows/prod.yml"
+#| source-line-numbers: "26"
+name: Construction image Docker
+
+on: [push]
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: linogaliana/application-correction:v0.0.1
 ```
+1. Remplacer `username` par la valeur adéquate
+
 </details>
 
-- En vous inspirant de la [documentation](https://kubernetes.io/docs/concepts/services-networking/ingress/#the-ingress-resource), y ajouter un troisième fichier `ingress.yaml` qui va créer une ressource `Ingress` permettant d'exposer le service via une URL en dehors du cluster
+- Observer l'évolution de l'état de votre plateforme, une fois
+que l'action `Github` est terminée
+
+![](/argocd-success.png)
+
+:::
+
+
+Notre API est accessible sans problème depuis `Python` ou notre navigateur
+mais si on désire utiliser `JavaScript` pour créer une application
+interactive, on va essuyer un refus à cause du [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
+
+Permettre à n'importe quel client de se connecter à 
+notre API permettra de faire un site web exploitant notre API. 
+Pour cela, mettre à jour les fichiers suivants:
 
 <details>
-<summary>Fichier `deployment/ingress.yaml`</summary>
+<summary>
+`deployment/ingress.yaml`
+</summary>
 
-```yaml
+```{python}
+#| eval: false
+#| filename: "deployment/ingress.yaml"
+#| file: "deployment/ingress.yaml"
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: titanic-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
+    # Enable CORS by adding these annotations
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, DELETE, PATCH, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
 spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - # METTRE URL ICI #<1>
+    - #VOTRE URL ICI #<1>
   rules:
-  - host: # METTRE URL ICI <1>
+  - host: #VOTRE URL ICI #<2>
     http:
       paths:
       - path: /
@@ -1169,105 +1319,105 @@ spec:
             port:
               number: 80
 ```
-1. Mettez l'URL auquel vous voulez exposer votre service. Sur le modèle de `titanic.kub.sspcloud.fr` (mais ne tentez pas celui-là, il est déjà pris 😃)
+1. Mettre votre url ici
+2. Ici aussi
+
 </details>
 
-- Appliquer ces fichiers de configuration sur le cluster : `kubectl apply -f deployment/`
-
-- Si tout a correctement fonctionné, vous devriez pouvoir accéder depuis votre navigateur à l'API à l'URL spécifiée dans le fichier `deployment/ingress.yaml`. Par exemple `https://toto.kub.sspcloud.fr/` si vous avez mis celui-ci plus tôt (et `https://toto.kub.sspcloud.fr/docs` pour la documentation). 
-
-:::
-
-::: {.callout-caution collapse="true"}
-## Checkpoint
-
-```{.bash filename="terminal"}
-git checkout appli18
-```
-
-:::
-
-
-On peut remarquer quelques voies d'amélioration de notre approche qui
-seront ultérieurement traitées:
-
-- l'entraînement du modèle
-est effectué à chaque lancement d'un nouveau conteneur. 
-On relance donc autant de fois un entraînement qu'on déploie
-de conteneur pour répondre à nos utilisateurs. Ce sera
-l'objet de la partie MLOps de fiabiliser et optimiser
-cette partie du _pipeline_. 
-- il est nécessaire de (re)lancer manuellement  `kubectl apply -f deployment/`
-à chaque changement de notre code. Autrement dit, on améliore
-la fiabilité du lancement de notre API mais un lancement manuel est encore indispensable. 
-Comme dans le reste de ce cours, on va essayer d'éviter un geste manuel pouvant 
-être source d'erreur.
-
-
-## Etape 3: automatiser le déploiement (déploiement en continu)
-
-Qu'est-ce qui peut déclencher une évolution nécessitant de mettre à 
-jour l'ensemble de notre processus de production ? 
-
-Regardons à nouveau notre _pipeline_:
-
-![](/workflow2.png)
-
-Les _inputs_ de notre _pipeline_ sont donc:
-
-- La __configuration__.  ;
-- Les __données__. Nos données sont statiques et n'ont pas vocation à évoluer. Si c'était le cas, il faudrait en tenir compte dans notre automatisation. ;
-- Le __code__. C'est l'élément qui évolue chez nous. On va donc faire en sorte qu'à chaque mise à jour de notre code (un _push_ sur `Github`), les étapes ultérieures (production de l'image `Docker`, etc.) vont se mettre à compiler. 
-
-![](https://inseefrlab.github.io/formation-mlops/slides/img/ci-cd.png)
-
-
-Grâce à `ArgoCD` il est possible de déployer un modèle de manière continu, 
-ainsi chaque modification d’un fichier présent dans le dossier `kubernetes/`. Cela
-va entrainer le redéploiement automatique en synchronisant avec notre dépôt Github.
-
-
-::: {.callout-tip}
-## Projet d'application 19: Mettre à disposition l'API (déploiement automatisé)
-
-- Lancer un service argoCD
-- Ouvrez le template [argocd/template-argocd.yml]() et modifier les lignes surlignées :
+<details>
+<summary>
+`.github/worflows/prod.yaml`
+</summary>
 
 ```{python}
 #| eval: false
-#| file: "argocd/pipeline.yaml"
-#| filename: "argocd/pipeline.yaml"
-#| source-line-numbers: "8-9,13"
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: ensae-mlops
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/ensae-reproductibilite/application-correction.git
-    targetRevision: test15
-    path: deployment
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: user-lgaliana
-  syncPolicy:
-    automated:
-      selfHeal: true
+#| filename: ".github/worflows/prod.yaml"
+#| file: ".github/worflows/prod.yaml"
+name: Construction image Docker
+
+on: [push]
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: linogaliana/application-correction:v0.0.2
 ```
+1. Mettre votre url ici
+2. Ici aussi
 
-- Dans ArgoCD, cliquez sur New App puis Edit as a YAML. Copiez-collez le contenu de argocd/template-argocd.yml et cliquez sur Create.
-- Accédez à votre API en utilisant l’URL définie dans votre fichier ingress.yml.
+</details>
 
-:::
+<details>
+<summary>
+`deployment/deployment.yaml`
+</summary>
+
+```{python}
+#| eval: false
+#| filename: "deployment/deployment.yaml"
+#| file: "deployment/deployment.yaml"
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: titanic-deployment
+  labels:
+    app: titanic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: titanic
+  template:
+    metadata:
+      labels:
+        app: titanic
+    spec:
+      containers:
+      - name: titanic
+        image: username/application-correction:v0.0.2 #<1>
+        ports:
+        - containerPort: 5000
+```
+1. Remplacer `username` par votre nom d'utilisateur
+
+</details>
+
+
+
 
 
 ## Etape 4: construire un site web
 
+On va proposer un nouveau livrable pour parler à un public plus large.
+Pour faire ce site web,
+on va utiliser `Quarto` et déployer sur `Github Pages`.
 
+```{.bash filename="terminal"}
+quarto create-project website
+```
 
-
-
+- Faire remonter d'un niveau `_quarto.yml`
+- Ajouter la ligne `/.quarto/` au `.gitignore`
+- Déplacer `website.qmd` vers la racine de notre projet et renommer `index.qmd`
 
 # Partie 6: un workflow complet de MLOps
 
@@ -1275,7 +1425,6 @@ to do
 
 # Partie 7: livrer un site web de manière automatisée
 
-On va proposer un nouveau livrable pour parler à un public plus large.
 Pour cela, on va déployer un site web statique qui permet de visualiser
 rapidement les résultats du modèle.
 
