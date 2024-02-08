@@ -1,0 +1,119 @@
+<details>
+<summary>
+`deployment/ingress.yaml`
+</summary>
+
+```{python}
+#| eval: false
+#| filename: "deployment/ingress.yaml"
+#| file: "deployment/ingress.yaml"
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: titanic-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    # Enable CORS by adding these annotations
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, DELETE, PATCH, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - #VOTRE URL ICI #<1>
+  rules:
+  - host: #VOTRE URL ICI #<2>
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: titanic-service
+            port:
+              number: 80
+```
+1. Mettre votre url ici
+2. Ici aussi
+
+</details>
+
+<details>
+<summary>
+`.github/worflows/prod.yaml`
+</summary>
+
+```{python}
+#| eval: false
+#| filename: ".github/worflows/prod.yaml"
+#| file: ".github/worflows/prod.yaml"
+name: Construction image Docker
+
+on: [push]
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: linogaliana/application-correction:v0.0.2
+```
+1. Mettre votre url ici
+2. Ici aussi
+
+</details>
+
+<details>
+<summary>
+`deployment/deployment.yaml`
+</summary>
+
+```{python}
+#| eval: false
+#| filename: "deployment/deployment.yaml"
+#| file: "deployment/deployment.yaml"
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: titanic-deployment
+  labels:
+    app: titanic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: titanic
+  template:
+    metadata:
+      labels:
+        app: titanic
+    spec:
+      containers:
+      - name: titanic
+        image: username/application-correction:v0.0.2 #<1>
+        ports:
+        - containerPort: 5000
+```
+1. Remplacer `username` par votre nom d'utilisateur
+
+</details>

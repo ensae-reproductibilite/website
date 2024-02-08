@@ -134,8 +134,8 @@ Cette première partie vise à **rendre le projet conforme aux bonnes pratiques*
 
 Elle fait intervenir les notions suivantes : 
 
-- Utilisation du **terminal** (voir [Linux 101](/chapters/linux-101.html)) ;
-- **Qualité du code** (voir [Qualité du code](/chapters/code-quality.html)) ;
+- Utilisation du **terminal** (voir [Linux 101](/chapters/linux-101.qmd)) ;
+- **Qualité du code** (voir [Qualité du code](/chapters/code-quality.qmd)) ;
 - **Architecture de projets** (voir [Architecture des projets](/chapters/projects-architecture.html)) ;
 - **Contrôle de version** avec `Git` (voir [Rappels `Git`](/chapters/git.qmd)) ;
 - **Travail collaboratif** avec `Git` et `GitHub` (voir [Rappels `Git`](/chapters/git.qmd)).
@@ -1038,6 +1038,17 @@ git checkout appli16
 
 ## Étape 2: déployer l'API de manière manuelle
 
+::: {.callout-caution collapse="true"}
+## Si vous prenez ce projet fil rouge en cours de route
+
+```{.bash filename="terminal"}
+git checkout appli18
+```
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
+:::
+
 A ce stade, nous avons déployé l'API seulement localement, dans le cadre d'un terminal qui tourne en arrière-plan.
 C'est une mise en production manuelle, pas franchement pérenne. 
 Ce mode de déploiement est très pratique pour la phase de développement, afin de s'assurer que l'API fonctionne comme attendu. 
@@ -1079,6 +1090,48 @@ scripts. C'est l'objet de la prochaine étape.
 
 ## Etape 3: automatiser le déploiement (déploiement en continu)
 
+::: {.callout-caution collapse="true"}
+## Si vous prenez ce projet fil rouge en cours de route
+
+```{.bash filename="terminal"}
+git checkout appli19
+```
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
+:::
+
+
+::: {.callout-important}
+## Clarification sur la branche de travail
+
+A partir de maintenant, il est nécessaire de clarifier la
+branche principale sur laquelle nous travaillons. De manière
+traditionnelle, on utilise la branche `main`. Néanmoins,
+pour être cohérent avec les instructions du début, qui étaient 
+de créer une branche `dev`, tous les exemples ultérieures
+partiront de cette hypothèse. 
+
+Si vous avez fait les applications les unes après les autres, et
+que vous vous situez toujours sur `dev`, vous pouvez passer 
+aux applications suivantes. Si vous avez changé de branche,
+vous pouvez continuer mais en tenir compte dans les exemples ultérieurs.
+
+Si vous avez utilisé un `tag` pour sauter une ou plusieurs étapes, il va
+être nécessaire de se placer sur une branche car vous êtes en _head detached_. 
+Pour cela, après avoir _committé_ les fichiers que vous désirez garder
+
+```{python}
+#| eval: false
+#| file: "terminal"
+#| filename: "terminal"
+$ git branch -D dev #<1>
+$ git checkout -b dev
+$ git push origin dev
+```
+1. Pas indispensable, mais permet de supprimer la branche `dev` si elle existe.
+:::
+
 Qu'est-ce qui peut déclencher une évolution nécessitant de mettre à 
 jour l'ensemble de notre processus de production ? 
 
@@ -1096,7 +1149,7 @@ Grâce à `ArgoCD` il est possible d'automatiser la mise en production de notre
 application. Au lieu d'être fait manuellement par l'appel à `kubectl apply`,
 cela se fera en modifiant les instructions présentes dans le dossier `kubernetes/`
 de notre dépôt. Un changement de ces fichiers
-va entrainer le redéploiement automatique en synchronisant avec notre dépôt `Github`.
+va entraîner le redéploiement automatique en synchronisant avec notre dépôt `Github`.
 
 {{< include "./applications/_appli19a.qmd" >}}
 
@@ -1129,130 +1182,26 @@ interactive, on va essuyer un refus à cause du [CORS](https://developer.mozilla
 
 Permettre à n'importe quel client de se connecter à 
 notre API permettra de faire un site web exploitant notre API. 
-Pour cela, mettre à jour les fichiers suivants:
+Comme c'est un point technique qui ne concerne pas les compétences
+liées à ce cours, nous donnons directement les mises à jour nécessaires
+du projet:
 
-<details>
-<summary>
-`deployment/ingress.yaml`
-</summary>
-
-```{python}
-#| eval: false
-#| filename: "deployment/ingress.yaml"
-#| file: "deployment/ingress.yaml"
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: titanic-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-    # Enable CORS by adding these annotations
-    nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, DELETE, PATCH, OPTIONS"
-    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
-    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
-spec:
-  ingressClassName: nginx
-  tls:
-  - hosts:
-    - #VOTRE URL ICI #<1>
-  rules:
-  - host: #VOTRE URL ICI #<2>
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: titanic-service
-            port:
-              number: 80
-```
-1. Mettre votre url ici
-2. Ici aussi
-
-</details>
-
-<details>
-<summary>
-`.github/worflows/prod.yaml`
-</summary>
-
-```{python}
-#| eval: false
-#| filename: ".github/worflows/prod.yaml"
-#| file: ".github/worflows/prod.yaml"
-name: Construction image Docker
-
-on: [push]
-
-jobs:
-  docker:
-    runs-on: ubuntu-latest
-    steps:
-      -
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      -
-        name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          push: true
-          tags: linogaliana/application-correction:v0.0.2
-```
-1. Mettre votre url ici
-2. Ici aussi
-
-</details>
-
-<details>
-<summary>
-`deployment/deployment.yaml`
-</summary>
-
-```{python}
-#| eval: false
-#| filename: "deployment/deployment.yaml"
-#| file: "deployment/deployment.yaml"
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: titanic-deployment
-  labels:
-    app: titanic
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: titanic
-  template:
-    metadata:
-      labels:
-        app: titanic
-    spec:
-      containers:
-      - name: titanic
-        image: username/application-correction:v0.0.2 #<1>
-        ports:
-        - containerPort: 5000
-```
-1. Remplacer `username` par votre nom d'utilisateur
-
-</details>
-
+{{< include "./applications/_cors.qmd" >}}
 
 ## Etape 4: construire un site web
+
+::: {.callout-caution collapse="true"}
+## Si vous prenez ce projet fil rouge en cours de route
+
+```{.bash filename="terminal"}
+git checkout appli20
+git checkout -b dev
+git push origin dev
+```
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
+:::
 
 On va proposer un nouveau livrable pour parler à un public plus large.
 Pour faire ce site web,
@@ -1261,3 +1210,6 @@ on va utiliser `Quarto` et déployer sur `Github Pages`.
 {{< include "./applications/_appli20.qmd" >}}
 
 
+## Partie 6: adopter une approche MLOps pour améliorer notre modèle
+
+__Exercices à venir__
