@@ -112,7 +112,8 @@ De manière générale un modèle de machine learning passe par 4 stades qu'il e
 
 MLflow est donc un projet open-source qui fournit une plateforme pour suivre le cycle de vie d'une modèle de machine learning de bout en bout. Ce n'est pas le seul outil disponible et il n'est peut être pas le plus adapté à certains de vos projets précis. En revanche, il présente selon nous plusieurs avantages en premier desquels sa très simple prise en main et sa faculté à répondre aux besoins de l'approche MLOps. Il faut garder en tête que cet environnement est encore très récent et de nouveaux projets open-source émergent chaque jour, il est nécessaire de faire une veille sur les dernières évolutions. 
 
-Pour résumer, MLFlow permet : 
+Pour résumer, MLFlow permet :
+
 - de simplifier le suivi de l’entraînement des modèles de machine learning grâce à son API et son *tracking server*
 - d'intégrer les principaux framework de machine learning de manière simple
 - d'intégrer son propre framework si besoin
@@ -120,38 +121,88 @@ Pour résumer, MLFlow permet :
 - de *packager* ses modèles, de sorte à pouvoir les requêter de manière simple et harmonisée entre les différents frameworks
 - stocker ses modèles de manières pertinentes en leur affectant des tags et favorisant le suivi de leur cycle de vie
 
-# Spécificités liées à la mise en prod de modèles de ML
+# Spécificités liées à la mise en production de modèles de ML
+
+## 1️⃣ Entraînements des modèles
 
 
-## 1. Entraînements des modèles 
+La première étape d'un projet de machine learning corresponds à tout ce que l'on effectue jusqu'à l'entraînement des premiers modèles. Cette étape est un - fastidieux - processus itératif qui ne suit pas un développement linéaire : les méthodes de récupération des données peuvent être changeantes, le preprocessing peut varier de même que la selection des features pour le modèle (*feature engineering*), les algorithmes testés peuvent être nombreux... Garder une trace de tous les essais effectués apparaît indispensable afin de savoir ce qui a fonctionné ou non. Cette étape barbante est rendue très simple grâce au *Tracking Server* de MLFlow. 
+Lors de l'exécution d'un *run* MLFlow enregistre tout un tas de métadonnées qui permet de retrouver toutes les informations relatives à ce *run* : la date, le hash du commit, les paramètres du modèles, le dataset utilisé, les métriques spécifiées etc. Cela permet, non seulement de comparer les différents essais réalisés mais aussi d'être capable de reproduire une *run* passé.
 
-par nature, tous les projets ML suivent un développement non linéaire : différents preprocessing, feature engineering et algorithmes sont testés, jusqu’à ce qu’une performance suffisante soit atteinte. Garder une trace de ce qui a été expérimenté et de ce qui a ou non fonctionné peut s’avérer complexe. C’est pourtant crucial pour réduire le temps de développement, notamment dans le cas de grosses équipes, afin d’éviter de tester à nouveau des approches qui auraient déjà été expérimentées sans succès par un autre data scientist.
+De manière générale cette phase exploratoire est réalisée par le data-scientist dans des notebooks. Ces notebooks sont effet parfaitement adaptés pour cette étape puisqu'ils permettent une grande flexibilité et sont particulièrement commode pour effectuer des tests. En revanche, lorsque l'on souhaite aller plus loin et que l'on vise une mise en production de son projet, les notebooks ne sont plus adaptés et cela pour diverses raisons : 
 
-- Entraînement : batch ou online
-- Distribuer l'entraînement des modèles : Argo workflow
+- la collaboration est grandement limitée à cause d'une compatibilité très faible avec les outils de contrôle de version standard (git).
+- l'automatisation de pipeline est beaucoup plus compliqué et peu lisible. Il existe cependant des packages qui permettent d'automatiser des *pipelines* de notebooks commpe [Elyra](https://github.com/elyra-ai/elyra) par exemple, mais ce n'est clairement pas l'approche que nous vous recommandons.
+- Les *workflows* sont souvent moins clairs et peu reproductibles avec souvent une organisation peu optimale (toutes les fonctions définies dans le même fichiers affectant la lisibilité du code par exemple)
+- les notebooks offrent généralement une modularité insuffisante lorsque l'on veut travailler avec des composants de machine learning complexes
 
-## 2. Servir un modèle ML à des utilisateur
+Toutes ces raisons nous amènent à vous conseiller de réduire au maximum votre utilisation de notebook et de restreindre leur utilisation à la phase exploratoire ou à la diffusion de résultats/rapports. Passer le plus tôt possible à des script `.py` vous permettra de réduire le coût de la mise en production. Pour reprendre ce qui a déjà été évoqué dans le chapitre [Architecture des projets](/chapters/projects-architecture.qmd), nous vous invitons à favoriser une structure modulaire de sorte à pouvoir industrialiser votre projet.
 
+Une autre spécificité pouvant impacter la mise en production concerne la manière dont l'entraînement est réalisé. Il existe pour cela 2 écoles qui ont chacune leurs avantages et désavantages : le *batch training* et l'*online training*. 
+
+### Batch training
+
+Le *batch training* est la manière usuelle d'entraîner un modèle de machine learning. Cette méthode consiste à entraîner son modèle sur un jeu de données fixe d'une seule traite. Le modèle est entraîné sur l'intégralité des données disponibles et les prédictions sont réalisées sur de nouvelles données. Cela signifie que le modèle n'est pas mis à jour une fois entraîné et qu'il est nécessaire de le ré-entraîner si l'on souhaite mettre à jour les poids du modèle. Cette méthode est particulièrement simple à mettre en place puisqu'il suffit d'entraîner le modèle une fois, le déployer puis le ré-entraîner ultérieurement. Cette simplicité a forcément une contrepartie : votre modèle est statique et il est nécessaire de le ré-entraîner fréquemment pour prendre en compte les nouvelles données. Un exemple fréquemment utilisé est la détection de spam, si un nouveau type de spam apparaît votre modèle entraîné en batch ne sera pas en capacité de le détecter à moins de le ré-entraîner en entier. De plus, cette méthode peut rapidement nécessiter d'avoir en mémoire une grande quantité de données en fonction de la taille de votre jeu de données ce qui peut être contraignant en fonction de votre infrastructure mais également allonger sensiblement le temps de l'entraînement. 
+
+### Online training
+
+L'*online training* est un peu l'opposé du *batch training* puisqu'il est réalisé de manière incrémentale. L'entraînement consiste à envoyer de petit lot de données séquentiellement afin que l'algorithme mette à jour ses poids à chaque nouveau lot de données. Cela permet alors au modèle de bien repérer les différents changements dans les nouvelles données. Attention cependant à la spécification du *learning rate* pour éviter que le modèle oublie tout ce qu'il a appris sur les anciennes données. L'un des grand avantages de cette méthode est que l'entraînement continue alors même que le modèle est en production puisque celui-ci est computationnellement moins coûteux. Elle est également particulièrement adapté dans les cas où les données en entrée varient fréquemment (i.e. prédiction d'un cours de bourse). L'*online training* est cependant beaucoup plus compliqué à mettre en oeuvre dans un contexte de production et les frameworks classiques de machine learning ne sont pas compatible (Scikit learn, PyTorch, TensorFlow, Keras...).
+
+### Distributed training
+
+ind
+
+- Mettre à l'échelle l’entraînement grâce à des orchestrateurs
+
+## 2️⃣ Servir un modèle ML à des utilisateur
+
+- Questions essentielles ? Comment rendre dispo son modèles ?  
 Il faut savoir que MLflow permet également de déployer directement un modèle MLflow. Cependant, nous avons décider de ne pas passer cette étape sous le tapis et de la détailler
 
-- API Rest / FastAPI
+- Pourquoi exposer un modèle via une API Rest / FastAPI
+
+- Déployer sur Kubernetes
 
 - Batch vs real-time prediction 
 
 
-## 3. Observabilité en temps réel d'un modèle de ML
+## 3️⃣ Observabilité en temps réel d'un modèle de ML
 
-- Drifts
+- Différence monitoring informaticien vs monitoring data-scientist business unit
+- Data Drifts / concept drift
 - Quelles métriques monitorer
+- Systeme d'alerting 
+- dashboard
 
 
-## 4. Réentraînement d'un modèle ML
+## 4️⃣ Réentraînement d'un modèle ML
 
-Amélioration continue Réentraînement : périodique vs continu
+- Amélioration continue Réentraînement : périodique vs continu
 - Feedback loops expérimentation/déploiement/monitoring
 
-## 5. Défis organisationnels du MLOps
+## 5️⃣ Défis organisationnels du MLOps
 
 Pas ouf : 
 
 Dans la plupart des organisations, les équipes data transverses ou intégrées dans différents départements métier sont relativement jeunes et manquent de ressources qualifiées pour gérer le déploiement et le maintien en condition opérationnelle de systèmes ML complexes. En effet, ces équipes se composent généralement principalement de data scientists qui se concentrent sur le développement des modèles de machine learning, mais n’ont pas les compétences nécessaires pour gérer le déploiement et la maintenance d’applications complètes. De plus, les équipes data évoluent encore trop souvent en silo, sans communiquer avec les différentes équipes techniques avec lesquelles elles devraient interagir pour mettre en production leurs modèles.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Batch learning and online learning are two different types of machine learning techniques that are used to train models on data.
+
+Batch learning, also known as offline learning, involves training a model on a fixed dataset, or a batch of data, all at once. The model is trained on the entire dataset, and then used to make predictions on new data. This means that batch learning requires a complete dataset before training can begin, and the model cannot be updated once it has been trained without retraining the entire model. Batch learning is commonly used in situations where the dataset is relatively small and can be processed quickly.
+
+On the other hand, online learning, also known as incremental learning or streaming learning, involves training a model on new data as it arrives, one observation at a time. The model is updated each time a new observation is received, allowing it to adapt to changes in the data over time. Online learning is commonly used in situations where the data is too large to be processed all at once, or where the data is constantly changing, such as in stock market data or social media data.
+
+The key difference between batch learning and online learning is that batch learning requires a fixed dataset, while online learning can adapt to new data as it arrives. Batch learning is typically faster and requires less computational resources than online learning, but may not be as flexible in handling changing or large datasets. Online learning, on the other hand, can be more flexible and adaptable, but may require more resources and be slower to process data. Both techniques have their advantages and disadvantages, and the choice between them depends on the specific problem being solved and the characteristics of the data.
