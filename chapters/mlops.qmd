@@ -132,7 +132,7 @@ Lors de l'exécution d'un *run* MLFlow enregistre tout un tas de métadonnées q
 De manière générale cette phase exploratoire est réalisée par le data-scientist dans des notebooks. Ces notebooks sont effet parfaitement adaptés pour cette étape puisqu'ils permettent une grande flexibilité et sont particulièrement commode pour effectuer des tests. En revanche, lorsque l'on souhaite aller plus loin et que l'on vise une mise en production de son projet, les notebooks ne sont plus adaptés et cela pour diverses raisons : 
 
 - la collaboration est grandement limitée à cause d'une compatibilité très faible avec les outils de contrôle de version standard (git).
-- l'automatisation de pipeline est beaucoup plus compliqué et peu lisible. Il existe cependant des packages qui permettent d'automatiser des *pipelines* de notebooks commpe [Elyra](https://github.com/elyra-ai/elyra) par exemple, mais ce n'est clairement pas l'approche que nous vous recommandons.
+- l'automatisation de pipeline est beaucoup plus compliqué et peu lisible. Il existe cependant des packages qui permettent d'automatiser des *pipelines* de notebooks comme [Elyra](https://github.com/elyra-ai/elyra) par exemple, mais ce n'est clairement pas l'approche que nous vous recommandons.
 - Les *workflows* sont souvent moins clairs et peu reproductibles avec souvent une organisation peu optimale (toutes les fonctions définies dans le même fichiers affectant la lisibilité du code par exemple)
 - les notebooks offrent généralement une modularité insuffisante lorsque l'on veut travailler avec des composants de machine learning complexes
 
@@ -156,12 +156,34 @@ Ainsi pour coller à l'approche du MLOps, une bonne méthode est d'automatiser c
 
 ![Workflow d'optimisation d'hyperparamètres en parallèle](/dag-argo-workflow.png){fig-align="center"}
 
-Cette approche permet d'exécuter facilement en parallèle des tâches intensives en calcul de manière totalement reproductible. Evidemment, l'utilisation de tels *workflow* ne se limite pas à l'optimisation d'hyperparamètres mais peut également être utilisé pour du preprocessing de données, pour créer des pipeline d'ETL etc.
+Cette approche permet d'exécuter facilement en parallèle des tâches intensives en calcul de manière totalement reproductible. Évidemment, l'utilisation de tels *workflow* ne se limite pas à l'optimisation d'hyperparamètres mais peut également être utilisé pour du preprocessing de données, pour créer des pipeline d'ETL etc.
 
 
-## 2️⃣ Servir un modèle ML à des utilisateur
+## 2️⃣ Servir un modèle ML à des utilisateurs
 
-- Questions essentielles ? Comment rendre dispo son modèles ?  
+Une partie très importante, et parfois négligée, des projets de machine learning est la mise à disposition des modèles entraînés à d'autres utilisateurs. Puisque vous avez parfaitement suivi les différents chapitres de ce cours, votre projet est en théorie totalement reproductible. Une méthode pour transmettre le même modèle que celui que vous avez sélectionné serait de partager votre code et toutes les informations nécessaires pour qu'une personne tierce ré-entraîne votre modèle de son côté. Évidemment, ce procédé n'est pas optimal puisqu'il suppose que tous les utilisateurs ont les ressources/infrastructures/connaissances pour réaliser l'entraînement. 
+
+L'objectif est donc de mettre à disposition de manière simple et efficace notre modèle. Pour cela, plusieurs possibilités s'offrent à vous en fonction de votre projet et il est important de se poser quelques questions préalables :
+
+- Quel est le format pertinent à mettre à disposition des utilisateurs ?
+- Les prédictions du modèles doivent-elles être réalisées par lots (*batchs*) ou en ligne (*online*) ?
+- Quelle infrastructure utiliser pour déployer notre modèle de machine learning ?
+
+Dans le cadre de ce cours nous avons choisi d'utiliser une API REST pour mettre à disposition un modèle de machine learning. Cela nous semble être la méthode la plus adaptée dans une grande majorité des cas puisqu'il répond à plusieurs critères : 
+
+- **Simplicité** : les API REST permettent de créer une une porte d'entrée qui peut cacher la complexité sous-jacente du modèle facilitant ainsi la mise à disposition de celui-ci.
+- **Standardisation** : un des principaux avantages des API REST est qu'elles reposent sur le standard HTTP. Cela signifie qu'elles sont agnostique au langage de programmation utilisé et que les requêtes peuvent être réalisée en XML, JSON, HTML etc.
+- **Modularité** : Le client et le serveur sont indépendants. En d'autres mots, le stockage des données, l'interface graphique ou encore la gestion du modèle sont complètement séparés de la mise à disposition (le serveur). 
+- **Passage à l’échelle** : la séparation en le serveur et le client permet aux API REST d'être très flexible et facilite le passage à l'échelle (*scalability*). Elles peuvent ainsi s'adapter à la charge de requêtes concurrentes.
+
+
+L'exposition d'un modèle de machine learning peut être résumer par ce schéma :
+
+![Exposer un modèle de ML via une API](/dag-argo-workflow.png){fig-align="center"}
+
+
+Comme le montre le schéma, l'API est exécutée dans un conteneur afin de garantir un environnement totalement autonome et isolé. Seules les dépendances nécessaires à 
+
 Il faut savoir que MLflow permet également de déployer directement un modèle MLflow. Cependant, nous avons décider de ne pas passer cette étape sous le tapis et de la détailler
 
 - Pourquoi exposer un modèle via une API Rest / FastAPI
