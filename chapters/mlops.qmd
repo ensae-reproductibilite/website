@@ -161,9 +161,9 @@ Cette approche permet d'exécuter facilement en parallèle des tâches intensive
 
 ## 2️⃣ Servir un modèle ML à des utilisateurs
 
-Une partie très importante, et parfois négligée, des projets de machine learning est la mise à disposition des modèles entraînés à d'autres utilisateurs. Puisque vous avez parfaitement suivi les différents chapitres de ce cours, votre projet est en théorie totalement reproductible. Une méthode pour transmettre le même modèle que celui que vous avez sélectionné serait de partager votre code et toutes les informations nécessaires pour qu'une personne tierce ré-entraîne votre modèle de son côté. Évidemment, ce procédé n'est pas optimal puisqu'il suppose que tous les utilisateurs ont les ressources/infrastructures/connaissances pour réaliser l'entraînement. 
+Une partie très importante, et parfois négligée, des projets de machine learning est la mise à disposition des modèles entraînés à d'autres utilisateurs. Puisque vous avez parfaitement suivi les différents chapitres de ce cours, votre projet est en théorie totalement reproductible. Une manière triviale de transmettre le modèle que vous avez sélectionné serait de partager votre code et toutes les informations nécessaires pour qu'une personne tierce ré-entraîne votre modèle de son côté. Évidemment, ce procédé n'est pas optimal puisqu'il suppose que tous les utilisateurs ont les ressources/infrastructures/connaissances pour réaliser l'entraînement. 
 
-L'objectif est donc de mettre à disposition de manière simple et efficace notre modèle. Pour cela, plusieurs possibilités s'offrent à vous en fonction de votre projet et il est important de se poser quelques questions préalables :
+L'objectif est donc de mettre à disposition de manière simple et efficace votre modèle. Pour cela, plusieurs possibilités s'offrent à vous en fonction de votre projet et il est important de se poser quelques questions préalables :
 
 - Quel est le format pertinent à mettre à disposition des utilisateurs ?
 - Les prédictions du modèles doivent-elles être réalisées par lots (*batchs*) ou en ligne (*online*) ?
@@ -179,16 +179,26 @@ Dans le cadre de ce cours nous avons choisi d'utiliser une API REST pour mettre 
 
 L'exposition d'un modèle de machine learning peut être résumer par ce schéma :
 
-![Exposer un modèle de ML via une API](/dag-argo-workflow.png){fig-align="center"}
+![Exposer un modèle de ML via une API](/API-diag.png){fig-align="center"}
 
 
-Comme le montre le schéma, l'API est exécutée dans un conteneur afin de garantir un environnement totalement autonome et isolé. Seules les dépendances nécessaires à 
+Comme le montre le schéma, l'API est exécutée dans un conteneur afin de garantir un environnement totalement autonome et isolé. Seules les dépendances nécessaires à l'exécution du modèle et au fonctionnement de l'API ne sont intégrées à ce conteneur. Travailler avec des *images docker* légères présentent plusieurs avantages. Tous d'abord, créer une image ne contenant que le strict nécessaire au fonctionnement de votre application permet justement de savoir ce qui est strictement nécessaire et ce qui est superflu. Aussi, plus votre image est légère plus le temps de téléchargement depuis votre Hub d'images (e.g. *Dockerhub*) sera rapide à chaque création de conteneur de votre application. Les conteneurs ont l'avantage d'être totalement portable et offre la possibilité de mettre à l'échelle votre application de manière simple et efficace. Par exemple, si l'on imagine que vous avez déployé votre modèle et que vous souhaitez le requêter un grand nombre de fois dans un laps de temps court, alors il est préférable de créer plusieurs instances de votre application pour que les calculs puissent être effectués en parallèle. L'avantage des conteneurs est qu'une fois qu'on a créé l'image il est très simple de lancer une multitude de répliques de conteneur toutes basées sur l'image en question.
+
 
 Il faut savoir que MLflow permet également de déployer directement un modèle MLflow. Cependant, nous avons décider de ne pas passer cette étape sous le tapis et de la détailler
 
 - Pourquoi exposer un modèle via une API Rest / FastAPI
 
+On a un code rangé dans app/
+
+fichiers deployment/service/ingress
+
+
+
+
+
 - Déployer sur Kubernetes
+<!-- j'ai vu que dans les slides vous parlez de kubernetes vous pensez faut mettre un paragraphe dessus ? j'y connais R moi -->
 
 - Batch vs real-time prediction 
 
