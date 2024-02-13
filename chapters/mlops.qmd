@@ -17,7 +17,6 @@ MLOps = DataOps + DevOps + ModelOps
 Ce chapitre définie cette approche et propose présente plusieurs outils pour l'adopter à ces projets de data science.
 
 
-
 # Du DevOps vers le MLOps
 
 ## L'approche DevOps
@@ -51,7 +50,7 @@ Ainsi on définit généralement les 5 piliers du MLOps comme étant :
 
 ## Pourquoi MLflow ?
 
-Il existe aujourd'hui de nombreux outils pour orchestrer des tâches et des pipelines de données. Parmi les plus populaires (selon leur ⭐ Github) on peut citer [Airflow](https://github.com/apache/airflow), [Luigi](https://github.com/spotify/luigi), [MLFlow](https://github.com/mlflow/mlflow), [Argo Workflow](https://github.com/argoproj/argo-workflows), [Prefect](https://github.com/PrefectHQ/prefect) ou encore [Kubeflow](https://github.com/kubeflow/kubeflow). Il est difficile d'affirmer s'il y en a un meilleur qu'un autre, en réalité votre choix dépend surtout de votre infrastructure informatique et de votre projet. En l’occurrence ici, nous avons fait le choix d'utiliser MLflow pour la simplicité d'utilisation mais aussi car il nous semble être le plus spécialisé pour les projet de machine learning. De plus, il est présent dans le catalogue du SSP Cloud ce qui simplifie grandement son installation. Nous utiliserons également [Argo CD](https://github.com/argoproj/argo-cd) et [Argo Workflow](https://github.com/argoproj/argo-workflows) plutôt qu'[Airflow](https://github.com/apache/airflow) car ils sont optimisés pour les clusters kubernetes (comme le SSP Cloud !).
+Il existe aujourd'hui de nombreux outils pour orchestrer des tâches et des pipelines de données. Parmi les plus populaires (selon leur ⭐ Github) on peut citer [Airflow](https://github.com/apache/airflow), [Luigi](https://github.com/spotify/luigi), [MLFlow](https://github.com/mlflow/mlflow), [Argo Workflow](https://github.com/argoproj/argo-workflows), [Prefect](https://github.com/PrefectHQ/prefect) ou encore [Kubeflow](https://github.com/kubeflow/kubeflow). Il est difficile d'affirmer s'il y en a un meilleur qu'un autre, en réalité votre choix dépend surtout de votre infrastructure informatique et de votre projet. En l’occurrence ici, nous avons fait le choix d'utiliser MLflow pour la simplicité d'utilisation mais aussi car il nous semble être le plus spécialisé pour les projet de machine learning. De plus, il est présent dans le catalogue du SSP Cloud ce qui simplifie grandement son installation. Nous utiliserons également [Argo CD](https://github.com/argoproj/argo-cd) et [Argo Workflow](https://github.com/argoproj/argo-workflows) plutôt qu'[Airflow](https://github.com/apache/airflow) car ils sont optimisés pour les clusters Kubernetes (comme le SSP Cloud !).
 
 MLflow est une plateforme qui permet d'optimiser le développement du cycle de vie d'un modèle de machine learning. Il permet de suivre en détails les différentes expérimentations, de *packager* son code pour garantir la reproductibilité, et de servir un modèle à des utilisateurs. MLFlow possède aussi une API qui permet d'être compatible avec la majorité des librairies de machine learning (PyTorch, Scikit learn, XGBoost, etc) mais également différents languages (python, R et Java).
 
@@ -129,7 +128,7 @@ Pour résumer, MLFlow permet :
 La première étape d'un projet de machine learning corresponds à tout ce que l'on effectue jusqu'à l'entraînement des premiers modèles. Cette étape est un - fastidieux - processus itératif qui ne suit pas un développement linéaire : les méthodes de récupération des données peuvent être changeantes, le preprocessing peut varier de même que la selection des features pour le modèle (*feature engineering*), les algorithmes testés peuvent être nombreux... Garder une trace de tous les essais effectués apparaît indispensable afin de savoir ce qui a fonctionné ou non. Cette étape barbante est rendue très simple grâce au *Tracking Server* de MLFlow. 
 Lors de l'exécution d'un *run* MLFlow enregistre tout un tas de métadonnées qui permet de retrouver toutes les informations relatives à ce *run* : la date, le hash du commit, les paramètres du modèles, le dataset utilisé, les métriques spécifiées etc. Cela permet, non seulement de comparer les différents essais réalisés mais aussi d'être capable de reproduire une *run* passé.
 
-De manière générale cette phase exploratoire est réalisée par le data-scientist dans des notebooks. Ces notebooks sont effet parfaitement adaptés pour cette étape puisqu'ils permettent une grande flexibilité et sont particulièrement commode pour effectuer des tests. En revanche, lorsque l'on souhaite aller plus loin et que l'on vise une mise en production de son projet, les notebooks ne sont plus adaptés et cela pour diverses raisons : 
+De manière générale cette phase exploratoire est réalisée par le *data-scientist* dans des notebooks. Ces notebooks sont effet parfaitement adaptés pour cette étape puisqu'ils permettent une grande flexibilité et sont particulièrement commode pour effectuer des tests. En revanche, lorsque l'on souhaite aller plus loin et que l'on vise une mise en production de son projet, les notebooks ne sont plus adaptés et cela pour diverses raisons : 
 
 - la collaboration est grandement limitée à cause d'une compatibilité très faible avec les outils de contrôle de version standard (git).
 - l'automatisation de pipeline est beaucoup plus compliqué et peu lisible. Il existe cependant des packages qui permettent d'automatiser des *pipelines* de notebooks comme [Elyra](https://github.com/elyra-ai/elyra) par exemple, mais ce n'est clairement pas l'approche que nous vous recommandons.
@@ -182,22 +181,22 @@ L'exposition d'un modèle de machine learning peut être résumé par le schéma
 ![Exposer un modèle de ML via une API](/API-diag.png){fig-align="center"}
 
 
-Comme le montre le schéma, l'API est exécutée dans un conteneur afin de garantir un environnement totalement autonome et isolé. Seules les dépendances nécessaires à l'exécution du modèle et au fonctionnement de l'API ne sont intégrées à ce conteneur. Travailler avec des *images docker* légères présentent plusieurs avantages. Tous d'abord, créer une image ne contenant que le strict nécessaire au fonctionnement de votre application permet justement de savoir ce qui est strictement nécessaire et ce qui est superflu. Aussi, plus votre image est légère plus le temps de téléchargement depuis votre Hub d'images (e.g. *Dockerhub*) sera rapide à chaque création de conteneur de votre application. Les conteneurs ont l'avantage d'être totalement portable et offre la possibilité de mettre à l'échelle votre application de manière simple et efficace. Par exemple, si l'on imagine que vous avez déployé votre modèle et que vous souhaitez le requêter un grand nombre de fois dans un laps de temps court, alors il est préférable de créer plusieurs instances de votre application pour que les calculs puissent être effectués en parallèle. L'avantage des conteneurs est qu'une fois qu'on a créé l'image il est très simple de lancer une multitude de répliques de conteneur toutes basées sur l'image en question.
+Comme le montre le schéma, l'API est exécutée dans un conteneur afin de garantir un environnement totalement autonome et isolé. Seules les dépendances nécessaires à l'exécution du modèle et au fonctionnement de l'API ne sont intégrées à ce conteneur. Travailler avec des *images docker* légères présentent plusieurs avantages. Tous d'abord, créer une image ne contenant que le strict nécessaire au fonctionnement de votre application permet justement de savoir ce qui est absolument indispensable et ce qui est superflu. Aussi, plus votre image est légère plus son temps de téléchargement depuis votre Hub d'images (e.g. *Dockerhub*) sera rapide à chaque création de conteneur de votre application. Les conteneurs ont l'avantage d'être totalement portable et offre la possibilité de mettre à l'échelle votre application de manière simple et efficace. Par exemple, si l'on imagine que vous avez déployé votre modèle et que vous souhaitez le requêter un grand nombre de fois dans un laps de temps court, il est alors préférable de créer plusieurs instances de votre application pour que les calculs puissent être effectués en parallèle. L'avantage de procéder de cette manière est qu'une fois qu'on a créé l'image sous-jacente à notre application, il est ensuite très simple de créer une multitude de conteneurs (*replicas*) toutes basées sur l'image en question.
+
+Pour tout ce qui concerne le déploiement de votre application vous pouvez vous référer au chapitre [Mise en production](/chapters/deployment.qmd). Techniquement il n'y aucune difficulté supplémentaire lorsque l'on veut avoir une approche MLOps lors de cette étape. L'unique subtilité à avoir en tête est que l'on souhaite maintenant faire communiquer notre application avec MLflow. En effet, chaque déploiement est basé sur une version particulière du modèle et il est nécessaire de renseigner quelques informations afin de récupérer le bon modèle au sein de notre entrepôt de modèle. Comme pour tout déploiement sous Kubernetes, il faut tout d'abord créer les 3 fichiers yaml  : `deployment.yaml`, `service.yaml`, `ingress.yaml`. Ensuite, comme vous pouvez le voir sur le schéma, notre API doit pouvoir être reliée à MLflow qui lui même à besoin d'être connecté à un espace de stockage (ici s3/MinIO) qui contient l'entrepôt des modèles. Pour cela, dans le fichier `deployment.yaml` on rajoute simplement quelques variables d'environnement qui nous permettent de créer de lien à savoir : 
+
+- **MLFLOW_S3_ENDPOINT_URL** : L'URL de l'endpoint S3 utilisé par MLflow pour stocker les données (et modèles)
+- **MLFLOW_TRACKING_URI** :  L'URI du serveur de suivi MLflow, qui spécifie où les informations concernant les modèles sont stockées.
+- **AWS_ACCESS_KEY_ID** : L'identifiant d'accès utilisé pour authentifier l'accès aux services de stockage s3.
+- **AWS_SECRET_ACCESS_KEY** : La clé secrète utilisée pour authentifier l'accès aux services de stockage s3.
+- **AWS_DEFAULT_REGION** :  Identifie la région S3 pour laquelle vous souhaitez envoyer les demandes aux serveurs. <!--Trouvé dans la doc AWS pas sur du tout de vouloir mettre ca -->
+
+Pour facilité le déploiement continue (voir [chapitre Mise en production](/chapters/deployment.qmd)), il est conseillé de rajouter des variables d'environnement spécifiant la version du modèle à déployer ainsi que le nom du modèle à déployer. En effet, en spécifiant ces valeurs dans le fichiers `deployment.yaml` cela va permettre de *trigger* un nouveau déploiement dès lors que l'on modifiera ces valeurs. 
+
+Il est bon de noter que MLflow permet également de déployer directement un modèle MLflow. Voir pouvez allez regarder la [documentation](https://mlflow.org/docs/latest/deployment/index.html) si cela vous intéresse. Cette option est relativement récente et pas encore tout à fait mature mais se base sur les mêmes technologies que celles présentées dans ce cours (Kubernetes, s3, etc.). C'est pour cela que nous avons préféré détailler le développement de notre propre API en utilisant le *framework*  [FastAPI](https://fastapi.tiangolo.com/) qui est devenu le standard pour le développement d'API en python. 
 
 
-Il faut savoir que MLflow permet également de déployer directement un modèle MLflow. Cependant, nous avons décider de ne pas passer cette étape sous le tapis et de la détailler
-
-- Pourquoi exposer un modèle via une API Rest / FastAPI
-
-On a un code rangé dans app/
-
-fichiers deployment/service/ingress
-
-
-
-
-
-- Déployer sur Kubernetes
+- Déployer sur Kubernetes (plutot dans chap mise en prod ?)
 <!-- j'ai vu que dans les slides vous parlez de kubernetes vous pensez faut mettre un paragraphe dessus ? j'y connais R moi -->
 
 - Batch vs real-time prediction 
@@ -205,12 +204,34 @@ fichiers deployment/service/ingress
 
 ## 3️⃣ Observabilité en temps réel d'un modèle de ML
 
+Une fois la modélisation réalisée, le modèle entraîné, optimisé et mis à disposition d'utilisateur grâce à un déploiement sur un serveur, on peut considérer que le travail est fini. Du point de vue du *data-scientist* stricto sensu ça peut être le cas puisque l'on considère souvent que le domaine du *data-scientist* s'arrête à la sélection du modèle à déployer, le déploiement étant réalisé par ce qu'on appelle les *data-engineer*. Pourtant, une fois déployé dans un environnement de production le modèle n'a pas réaliser l'intégralité de son cycle de vie. En production, le cycle de vie d'un modèle de machine learning suivant l'approche MLOps peut être schématisée de la manière suivante :
+
+
+![Source: [martinfowler.com](https://martinfowler.com)](/ML-model-lifecycle){fig-align="center"}
+
+On retrouve les différentes composantes du MLOps avec les données (DataOps), les modèles (ModelOps) et le code (DevOps). Ces composantes rendent le cycle de vie d'un modèle de machine learning complexe impliquant plusieurs parties prenantes autour du projet. En règle général on observe 3 parties prenantes principales : 
+
+- *Data-scientists*/*Data-engineers*
+- IT/DevOps
+- Équipes métiers
+
+Quelques fois, les *data-scientists* peuvent être intégrés aux équipes métiers et les *data-engineers* aux équipes IT. Cela peut de simplifier les échanges entre les deux équipes mais cela peut également entraîner un travail en silos et cloisonner les deux équipes aux expertises, attentes et vocabulaires très différents. Or la communication est primordiale pour permettre une bonne gestion du cycle de vie du modèle de machine learning et notamment pour surveiller le modèle dans son environnement de production.
+
+Il est extrêmement important de surveiller comment le modèle se comporte une fois déployé pour s'assurer que les résultats renvoyés sont conformes aux attentes. Cela permet d'anticiper des changements dans les données, une baisse des performances ou encore d'améliorer le modèle de manière continue. Il est également nécessaire que notre modèle soit toujours accessible, que notre application soit bien dimensionnée, etc. C'est pour cela que la surveillance (*monitoring*) d'un modèle de machine learning est un enjeu capital dans l'approche MLOps. 
+
+On voit bien qu'il peut y avoir plusieurs facette au terme surveillance. En l'occurence, on retient deux définitions de la surveillance : celle de l'informaticien et celle du data-scientist
+
+
 - Différence monitoring informaticien vs monitoring data-scientist business unit
 - Data Drifts / concept drift
 - Quelles métriques monitorer
 - Systeme d'alerting 
 - dashboard
 
+Bonjour Jules !
+Oui l'emménagement s'est bien déroulé et le lave linge est bien rentré à sa place en enlevant les charnières ! C'est top !
+On est encore un peu au milieu des cartons et occupés avec l'autre appartement à rendre mais on a commencé à noter quelques points qu'on vous transmettra d'ici la fin de semaine quand on sera posé. 
+Normalement on a bien répondu au questionnaire (depuis le lien reçu par mail, je ne sais pas si celui de slack est différent ?) mais on n'a pas encore pris le temps pour le commentaire google mais on fait ça dès qu'on est en vacances 
 
 ## 4️⃣ Réentraînement d'un modèle ML
 
@@ -219,13 +240,21 @@ fichiers deployment/service/ingress
 
 ## 5️⃣ Défis organisationnels du MLOps
 
-Pas ouf : 
 
 Dans la plupart des organisations, les équipes data transverses ou intégrées dans différents départements métier sont relativement jeunes et manquent de ressources qualifiées pour gérer le déploiement et le maintien en condition opérationnelle de systèmes ML complexes. En effet, ces équipes se composent généralement principalement de data scientists qui se concentrent sur le développement des modèles de machine learning, mais n’ont pas les compétences nécessaires pour gérer le déploiement et la maintenance d’applications complètes. De plus, les équipes data évoluent encore trop souvent en silo, sans communiquer avec les différentes équipes techniques avec lesquelles elles devraient interagir pour mettre en production leurs modèles.
 
 
 
+3️⃣ Observabilité en temps réel d'un modèle de ML
 
+L'observabilité en temps réel des modèles de machine learning est cruciale pour garantir leur performance et leur fiabilité une fois déployés. Cette observabilité diffère significativement entre les besoins des informaticiens, qui se concentrent sur le monitoring des systèmes informatiques (comme la disponibilité des ressources, les performances de l'infrastructure, etc.), et ceux des data scientists ou des unités business, qui surveillent l'efficacité des modèles d'un point de vue métier. Les défis tels que le "Data Drift" (dérive des données) et le "Concept Drift" (dérive de concept) nécessitent une attention particulière, car ils peuvent indiquer que le modèle ne performe plus comme attendu en raison de changements dans les données ou dans le contexte d'application. Pour cela, il est essentiel de monitorer des métriques spécifiques, telles que la précision du modèle, le taux d'erreur, ou d'autres indicateurs clés de performance (KPI) alignés sur les objectifs business. Un système d'alerting bien configuré, couplé à un tableau de bord dynamique, permet aux équipes de réagir rapidement aux anomalies et d'assurer la maintenance proactive des modèles.
+
+4️⃣ Réentraînement d'un modèle ML
+
+Le réentraînement des modèles de machine learning est un aspect fondamental de leur cycle de vie, permettant une amélioration continue face à l'évolution des données et des exigences métier. Ce processus peut être abordé de manière périodique, où le modèle est réévalué et mis à jour à intervalles réguliers, ou de manière continue, intégrant un flux constant de nouvelles données pour un ajustement en temps réel. Les boucles de rétroaction (feedback loops) jouent un rôle essentiel dans ce contexte, facilitant une expérimentation agile, le déploiement rapide des améliorations et un monitoring efficace pour identifier les opportunités d'optimisation. Cette approche itérative assure que les modèles restent pertinents et performants, s'adaptant aux changements dans les comportements des utilisateurs et aux conditions du marché.
+5️⃣ Défis organisationnels du MLOps
+
+L'intégration du MLOps au sein des organisations présente des défis organisationnels notables, principalement en raison de la jeunesse relative des équipes data et de leur manque de ressources qualifiées pour gérer avec efficacité le déploiement et la maintenance de systèmes ML complexes. Bien que ces équipes comprennent souvent d'excellents data scientists, leur expertise se limite généralement au développement de modèles, sans s'étendre aux compétences nécessaires pour le déploiement et la gestion opérationnelle d'applications complètes. De surcroît, ces équipes tendent à opérer en silo, ce qui limite la collaboration et la communication efficace avec d'autres équipes techniques essentielles pour la mise en production réussie des modèles. Pour surmonter ces obstacles, il est crucial d'adopter une approche plus intégrée, encourageant le partage de connaissances et la collaboration interdisciplinaire, afin de bâtir des ponts entre le développement de modèles et leurs applications pratiques dans un cadre opérationnel.
 
 
 
