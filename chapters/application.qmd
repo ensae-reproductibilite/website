@@ -943,18 +943,18 @@ git checkout appli15
 Afin de faire le parallèle avec les parcours possibles pour l'évaluation,
 nous allons proposer trois valorisations[^valorisation]:
 
-- Une API facilitant la réutilisation du modèle en "production" ;
-- Un site web statique exploitant cette API pour exposer les prédictions
-à une audience moins technique. Pour illustrer
-les enjeux spécifiques aux applications réactives mises en oeuvre
-avec `Streamlit`, nous proposerons aussi cette valorisation même si, dans
-notre cas, elle n'apportera pas plus que le site statique. 
+- Une [API](https://titanic.kub.sspcloud.fr/docs) facilitant la réutilisation du modèle en "production" ;
+- Un [site web statique](https://ensae-reproductibilite.github.io/application-correction/) exploitant cette API pour exposer les prédictions
+à une audience moins technique.
+
 
 [^valorisation]: Vous n'êtes pas obligés pour l'évaluation de mettre en oeuvre
 les jalons de plusieurs parcours. Néanmoins, vous découvrirez que 
 chaque nouveau pas en avant est moins coûteux que le
 précédent si vous avez mis en oeuvre les réflexes des bonnes
 pratiques.  
+
+
 
 ::: {.callout-warning collapse="true"}
 ## Site statique vs application réactive
@@ -1194,7 +1194,7 @@ du projet:
 ## Si vous prenez ce projet fil rouge en cours de route
 
 ```{.bash filename="terminal"}
-git checkout appli20
+git checkout appli19
 git checkout -b dev
 git push origin dev
 ```
@@ -1212,4 +1212,114 @@ on va utiliser `Quarto` et déployer sur `Github Pages`.
 
 ## Partie 6: adopter une approche MLOps pour améliorer notre modèle
 
-__Exercices à venir__
+::: {.callout-caution collapse="true"}
+## Si vous prenez ce projet fil rouge en cours de route
+
+```{.bash filename="terminal"}
+git checkout appli20
+git checkout -b dev
+git push origin dev
+```
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
+:::
+
+1. Modifier `src/models/train_evaluation.py` 
+
+```
+def build_pipeline(
+    n_trees: int = 20,
+    numeric_features=["Age", "Fare"],
+    categorical_features=["Title", "Embarked", "Sex"]):
+    """Random forest model for Titanic survival
+
+    Args:
+        n_trees (int, optional): _description_. Defaults to 20.
+
+    Returns:
+        _type_: _description_
+    """
+
+    numeric_transformer = Pipeline(
+        steps=[
+            ("imputer", SimpleImputer(strategy="median")),
+            ("scaler", MinMaxScaler()),
+        ]
+    )
+
+    categorical_transformer = Pipeline(
+        steps=[
+            ("imputer", SimpleImputer(strategy="most_frequent")),
+            ("onehot", OneHotEncoder()),
+        ]
+    )
+
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ("Preprocessing numerical", numeric_transformer, numeric_features),
+            (
+                "Preprocessing categorical",
+                categorical_transformer,
+                categorical_features,
+            ),
+        ]
+    )
+
+    pipe = Pipeline(
+        [
+            ("preprocessor", preprocessor),
+            ("classifier", RandomForestClassifier(n_estimators=n_trees)),
+        ]
+    )
+
+    return pipe
+```
+
+2. Introduire une validation croisée par _grid search_ dans `train.py`
+
+```python
+pipe = te.build_pipeline(
+    n_trees=N_TREES, categorical_features=["Embarked", "Sex"])
+
+param_grid = {
+    "classifier__n_estimators": [10, 20, 50],
+    "classifier__max_leaf_nodes": [5, 10, 50]
+}
+
+
+pipe_cross_validation = GridSearchCV(pipe, 
+                         param_grid=param_grid, 
+                         scoring=["accuracy", "precision", "recall", "f1"],
+                         refit="f1",
+                         cv=5, 
+                         n_jobs=5, 
+                         verbose=1)
+
+
+pipe_cross_validation.fit(X_train, y_train)
+pipe = pipe_cross_validation.best_estimator_
+
+```
+
+Tester votre script et corriger
+
+1. Lancer MLFlow depuis l'onflet Mes services
+https://datalab.sspcloud.fr/catalog/automation
+
+Sur l'UI MLFlow (forme https://user-{username}-{pod_id}.user.lab.sspcloud.fr), 
+regarder la page Experiments. Elle est vide à ce stade, c'est normal
+
+2. Python
+
+```python
+import mlflow
+mlflow_experiment_name = "titanicml"
+mlflow.set_experiment(experiment_name=mlflow_experiment_name)
+```
+
+Retourner sur l'UI et observer la différence
+
+4. 
+
+
