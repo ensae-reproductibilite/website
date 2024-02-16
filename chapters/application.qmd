@@ -1263,10 +1263,9 @@ git push origin dev
 Attendre que le service soit bien lancé. 
 Cela créera un service dont l'URL est de la forme `https://user-{username}-{pod_id}.user.lab.sspcloud.fr`,
 où `pod_id` est un identifiant aléatoire. Ce service `MLFlow` communiquera avec les `VSCode` que vous
-ouvrirez ultérieurement à partir de cet URL ainsi qu'avec le système de stockage `S3`[^tokenMLFlow]
+ouvrirez ultérieurement à partir de cet URL ainsi qu'avec le système de stockage `S3`[^tokenMLFlow].
 
-regarder la page Experiments. Elle est vide à ce stade, c'est normal
-
+2. Regarder la page `Experiments`. Elle est vide à ce stade, c'est normal
 
 [^tokenMLFlow]: Par conséquent, `MLFLow` bénéficie de l'injection automatique des _tokens_
 pour pouvoir lire/écrire sur S3. Ces jetons ont la même durée avant expiration que ceux
@@ -1283,9 +1282,7 @@ automatisée
 2. Clôner votre projet, vous situer sur la branche de travail (nous
 supposerons qu'il s'agit de `dev`).
 
-:::
-
-Python
+4. Depuis un terminal `Python`, lancer les commandes suivantes:
 
 ```python
 import mlflow
@@ -1293,212 +1290,86 @@ mlflow_experiment_name = "titanicml"
 mlflow.set_experiment(experiment_name=mlflow_experiment_name)
 ```
 
-Retourner sur l'UI et observer la différence
+Retourner sur l'UI et observer la différence, à gauche. 
 
-4. Créer un fichier `src/models/log.py` dont le contenu
-est le suivant
+5. Créer un fichier `src/models/log.py`
 
-```{python}
-#| eval: false
-#| file: src/models/log.py
-#| filename: src/models/log.py
-import mlflow
-import os
-
-DATA_URL = os.environ["MLFLOW_TRACKING_URI"]
-
-
-def log_gsvc_to_mlflow(gscv, mlflow_experiment_name):
-    """Log a scikit-learn trained GridSearchCV object as an MLflow experiment."""
-    # Set up MLFlow context
-    mlflow.set_experiment(experiment_name=mlflow_experiment_name)
-
-    for run_idx in range(len(gscv.cv_results_["params"])):
-        # For each hyperparameter combination we trained the model with, we log a run in MLflow
-        run_name = f"run {run_idx}"
-        with mlflow.start_run(run_name=run_name):
-            # Log hyperparameters
-            params = gscv.cv_results_["params"][run_idx]
-            for param in params:
-                mlflow.log_param(param, params[param])
-
-            # Log fit metrics
-            scores = [
-                score
-                for score in gscv.cv_results_
-                if "mean_test" in score or "std_test" in score
-            ]
-            for score in scores:
-                mlflow.log_metric(score, gscv.cv_results_[score][run_idx])
-
-            # Log model as an artifact
-            mlflow.sklearn.log_model(gscv, "gscv_model")
-
-            # Log training data URL
-            mlflow.log_param("data_url", DATA_URL)
+<details>
+<summary>
+Contenu du fichier `src/models/log.py`
+</summary>
+```{.python include="./applications/code/appli22_log.py" filename="src/models/log.py"}
 ```
 
-Modifier `train.py`
+</details>
 
-a. import src.models.log as tl
-b. EXPERIMENT_NAME = "titanicml"
-parser.add_argument(
-    "--appli", type=str, default="appli21", help="Application number"
-)
-c. tl.log_gsvc_to_mlflow(pipe_cross_validation, EXPERIMENT_NAME, APPLI_ID)
 
-4. Open a given run and verify that you can retrieve the various information we wanted to log (hyperparameters, evaluation metrics, training data URL), check that you can download the serialized `scikit-learn` model, and check the `requirements.txt` file to understand how `MLflow` automatically inferred the required `Python` environment
+6. Modifier le fichier `train.py` pour ajouter la ligne
 
-```python
-import mlflow
-logged_model = 'runs:/5fb6b1f4ac404f6ebb723533a856a193/gscv_model'
-
-# Load model as a PyFuncModel.
-loaded_model = mlflow.pyfunc.load_model(logged_model)
-
-# Predict on a Pandas DataFrame.
-import pandas as pd
-loaded_model.predict(pd.DataFrame(data))
+```{.python}
+mlog.log_gsvc_to_mlflow(pipe_cross_validation, EXPERIMENT_NAME, APPLI_ID)
 ```
 
-Modifier le fichier `train.py` 
+avec 
 
-```python
-"""
-Prediction de la survie d'un individu sur le Titanic
-"""
-
-# GESTION ENVIRONNEMENT --------------------------------
-
-from pathlib import Path
-import argparse
-from joblib import dump
-from sklearn.model_selection import GridSearchCV
-
-import src.data.import_data as imp
-import src.features.build_features as bf
-import src.models.train_evaluate as te
-import src.models.log as tl
-
-# PARAMETRES -------------------------------
-
-# Paramètres ligne de commande
-parser = argparse.ArgumentParser(description="Paramètres du random forest")
-parser.add_argument("--n_trees", type=int, default=20, help="Nombre d'arbres")
-parser.add_argument("--appli", type=str, default="appli21", help="Application number")
-args = parser.parse_args()
-
-# Paramètres YAML
-config = imp.import_yaml_config("configuration/config.yaml")
-base_url = (
-    "https://minio.lab.sspcloud.fr/projet-formation/ensae-reproductibilite/data/raw"
-)
-API_TOKEN = config.get("jeton_api")
-LOCATION_TRAIN = config.get("train_path", f"{base_url}/train.csv")
-LOCATION_TEST = config.get("test_path", f"{base_url}/test.csv")
-TEST_FRACTION = config.get("test_fraction", 0.1)
-N_TREES = args.n_trees
-EXPERIMENT_NAME = "titanicml"
-APPLI_ID = "appli21"
-
-# FEATURE ENGINEERING --------------------------------
-
-titanic_raw = imp.import_data(LOCATION_TRAIN)
-
-# Create a 'Title' variable
-titanic_intermediate = bf.feature_engineering(titanic_raw)
-
-
-train, test = te.split_train_test_titanic(
-    titanic_intermediate, fraction_test=TEST_FRACTION
-)
-X_train, y_train = train.drop("Survived", axis="columns"), train["Survived"]
-X_test, y_test = test.drop("Survived", axis="columns"), test["Survived"]
-
-
-def log_local_data(data, filename):
-    data.to_csv(f"data/intermediate/{filename}.csv", index=False)
-
-
-output_dir = Path("data/intermediate")
-output_dir.mkdir(parents=True, exist_ok=True)
-
-log_local_data(X_train, "X_train")
-log_local_data(X_test, "X_test")
-log_local_data(y_train, "y_train")
-log_local_data(y_test, "y_test")
-
-
-# MODELISATION: RANDOM FOREST ----------------------------
-
-pipe = te.build_pipeline(n_trees=N_TREES, categorical_features=["Embarked", "Sex"])
-
-param_grid = {
-    "classifier__n_estimators": [10, 20, 50],
-    "classifier__max_leaf_nodes": [5, 10, 50],
-}
-
-
-pipe_cross_validation = GridSearchCV(
-    pipe,
-    param_grid=param_grid,
-    scoring=["accuracy", "precision", "recall", "f1"],
-    refit="f1",
-    cv=5,
-    n_jobs=5,
-    verbose=1,
-)
-
-
-pipe_cross_validation.fit(X_train, y_train)
-pipe = pipe_cross_validation.best_estimator_
-
-tl.log_gsvc_to_mlflow(pipe_cross_validation, EXPERIMENT_NAME, APPLI_ID)
-
-dump(pipe, "model.joblib")
-`̀``
-
-Créer le fichier `eval.py` 
-
-```python
-import pandas as pd
-import mlflow
-from sklearn.metrics import confusion_matrix, accuracy_score
-
-logged_model = #A MODIFIER
-
-# Load model as a PyFuncModel.
-loaded_model = mlflow.pyfunc.load_model(logged_model)
-
-# Predict on a Pandas DataFrame.
-X_test = pd.read_csv("data/intermediate/X_test.csv")
-y_test = pd.read_csv("data/intermediate/y_test.csv")
-
-print(X_test.head())
-
-y_test_predict = loaded_model.predict(X_test)
-
-# EVALUATE ----------------------------
-
-print(y_test_predict)
-
-matrix = confusion_matrix(y_test, y_test_predict)
-
-print("Accuracy:")
-print(f"{accuracy_score(y_test, y_test_predict):.0%}")
-print("Matrice de confusion:")
-print(matrix)
+```{.python}
+import src.models.log as mlog
 ```
 
-5. Go back to the list of runs by clicking again on the "titanicml" experiment
-6. onglet `Table`, sélectioonner plusieurs expérimentations  Add additional columns using the *Columns* drop-down menu in the *Table* panel
-7. Sort the models in descending order according to the **mean test F1** 
+7. Faire tourner avec le paramètre `--appli appli22`:
+
+```{.bash filename="terminal"}
+python train.py --appli appli22
+```
+
+8. Observer l'évolution de la page `Experiments`. Cliquer sur un des _run_. 
+Observer toutes les métadonnées archivées (hyperparamètres, métriques d'évaluation, `requirements.txt` dont `MLFlow` a fait l'inférence, etc.)
+
+9. Observer le code proposé par `MLFlow` pour récupérer le _run_ en question. Modifier le fichier `eval.py` à partir de cet exemple et du modèle suivant pour utiliser un des modèles archivés dans `MLFlow` 
+
+10. Retourner à la liste des _runs_ en cliquant à nouveau sur _"titanicml"_ dans les expérimentations
+11. Dans l'onglet `Table`, sélectionner plusieurs expérimentations, cliquer sur `Columns` et ajouter `mean_test_f1`. 
+Ajuster la taille des colonnes pour la voir et classer les modèles par score décroissants
+12. Cliquer sur `Compare` après en avoir sélectionné plusieurs. Afficher un _scatterplot_ des performances
+en fonction du nombre d'estimateurs. Conclure. 
+
+:::
 
 
-Intérêt à ce stade: on a archivé (loggé) les performances pour les différents jeux
-de paramètres de notre validation croisée
-Pb: 
-- on entraîne en local, de manière séquentielle
-- on n'archive pas les jeux de données associées à ces modèles (train & test), on 
-doit le faire manuellement, ce qui est pénible
-- on récupère manuellement les modèles,
+::: {.callout-caution collapse="true"}
+## Checkpoint
+
+```{.bash filename="terminal"}
+git stash #<1>
+git checkout appli22
+```
+1. Pour annuler les modifications depuis le dernier _commit_
+
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
+:::
+
+Cette appplication illustre l'un des premiers apports de `MLFlow`: on garde
+une trace de nos expérimentations et on peut déjà mieux comprendre
+la manière dont certains paramètres de notre modèle peuvent influencer
+la qualité de nos prédictions. 
+
+Néanmoins, persistent un certain nombre de voies d'amélioration:
+
+- On entraîne le modèle en local, de manière séquentielle, et en lançant nous-mêmes le script `train.py`
+- On n'archive pas les jeux de données associés à ces modèles (les jeux d'entraînement et de test). On doit alors 
+le faire manuellement si on désire évaluer les performances _ex post_, ce qui est pénible.
+- On récupère manuellement les modèles ce qui n'est pas très pérenne.
+- Notre API n'utilise pas encore l'un des modèles archivé sur `MLFlow`. 
+
+Les prochaines applications permettront d'améliorer ceci.
+
+### Exo modèle en prod
+
+On met un modèle en prod
+On l'utilise dans l'API
+
+### Exo entraînements sur MLFLow
+
+y a que ça de vrai
