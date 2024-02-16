@@ -1210,7 +1210,7 @@ on va utiliser `Quarto` et déployer sur `Github Pages`.
 {{< include "./applications/_appli20.qmd" >}}
 
 
-## Partie 6: adopter une approche MLOps pour améliorer notre modèle
+# Partie 6: adopter une approche MLOps pour améliorer notre modèle
 
 ::: {.callout-caution collapse="true"}
 ## Si vous prenez ce projet fil rouge en cours de route
@@ -1225,92 +1225,68 @@ git push origin dev
 
 :::
 
-1. Modifier `src/models/train_evaluation.py` 
+Nous allons dans cette partie faire de la
+validation croisée. Pour éviter le problème
+du [_data leakage_](https://machinelearningmastery.com/data-leakage-machine-learning/),
+nous proposons de revoir notre _pipeline_ pour 
+exclure la variable `Title` dont certaines modalités
+rares posent problème dans les découpages
+multiples d'échantillons lors de la validation
+croisée. 
 
-```
-def build_pipeline(
-    n_trees: int = 20,
-    numeric_features=["Age", "Fare"],
-    categorical_features=["Title", "Embarked", "Sex"]):
-    """Random forest model for Titanic survival
+## Restructurer le _pipeline_ pour fluidifier la mise en production
 
-    Args:
-        n_trees (int, optional): _description_. Defaults to 20.
 
-    Returns:
-        _type_: _description_
-    """
+{{< include "./applications/_appli21.qmd" >}}
 
-    numeric_transformer = Pipeline(
-        steps=[
-            ("imputer", SimpleImputer(strategy="median")),
-            ("scaler", MinMaxScaler()),
-        ]
-    )
 
-    categorical_transformer = Pipeline(
-        steps=[
-            ("imputer", SimpleImputer(strategy="most_frequent")),
-            ("onehot", OneHotEncoder()),
-        ]
-    )
+## Garder une trace des entraînements de notre modèle grâce au _register_ de `MLFlow`
 
-    preprocessor = ColumnTransformer(
-        transformers=[
-            ("Preprocessing numerical", numeric_transformer, numeric_features),
-            (
-                "Preprocessing categorical",
-                categorical_transformer,
-                categorical_features,
-            ),
-        ]
-    )
+::: {.callout-caution collapse="true"}
+## Si vous prenez ce projet fil rouge en cours de route
 
-    pipe = Pipeline(
-        [
-            ("preprocessor", preprocessor),
-            ("classifier", RandomForestClassifier(n_estimators=n_trees)),
-        ]
-    )
-
-    return pipe
+```{.bash filename="terminal"}
+git checkout appli21
+git checkout -b dev
+git push origin dev
 ```
 
-2. Introduire une validation croisée par _grid search_ dans `train.py`
+![](/checkpoint.jpg){width=80% fig-align="center"}
 
-```python
-pipe = te.build_pipeline(
-    n_trees=N_TREES, categorical_features=["Embarked", "Sex"])
-
-param_grid = {
-    "classifier__n_estimators": [10, 20, 50],
-    "classifier__max_leaf_nodes": [5, 10, 50]
-}
+:::
 
 
-pipe_cross_validation = GridSearchCV(pipe, 
-                         param_grid=param_grid, 
-                         scoring=["accuracy", "precision", "recall", "f1"],
-                         refit="f1",
-                         cv=5, 
-                         n_jobs=5, 
-                         verbose=1)
+::: {.callout-tip}
+## Application 22 : archiver nos entraînements avec `MLFlow`
 
+1. Lancer `MLFlow` depuis l'onflet [Mes services](https://datalab.sspcloud.fr/catalog/automation) du SSPCloud.
+Attendre que le service soit bien lancé. 
+Cela créera un service dont l'URL est de la forme `https://user-{username}-{pod_id}.user.lab.sspcloud.fr`,
+où `pod_id` est un identifiant aléatoire. Ce service `MLFlow` communiquera avec les `VSCode` que vous
+ouvrirez ultérieurement à partir de cet URL ainsi qu'avec le système de stockage `S3`[^tokenMLFlow]
 
-pipe_cross_validation.fit(X_train, y_train)
-pipe = pipe_cross_validation.best_estimator_
-
-```
-
-Tester votre script et corriger
-
-1. Lancer MLFlow depuis l'onflet Mes services
-https://datalab.sspcloud.fr/catalog/automation
-
-Sur l'UI MLFlow (forme https://user-{username}-{pod_id}.user.lab.sspcloud.fr), 
 regarder la page Experiments. Elle est vide à ce stade, c'est normal
 
-2. Python
+
+[^tokenMLFlow]: Par conséquent, `MLFLow` bénéficie de l'injection automatique des _tokens_
+pour pouvoir lire/écrire sur S3. Ces jetons ont la même durée avant expiration que ceux
+de vos services interactifs `VSCode`. Il faut donc supprimer et rouvrir un service `MLFLow`
+régulièrement. La manière d'éviter cela
+est de créer des _service account_ sur [https://minio-console.lab.sspcloud.fr/](https://minio-console.lab.sspcloud.fr/login)
+et de les renseigner sur [la page](https://datalab.sspcloud.fr/project-settings/s3-configs). 
+
+
+2. Une fois le service MLFlow fonctionnel,
+lancer un nouveau `VSCode` pour bénéficier de la configuration
+automatisée
+
+
+
+2. Clôner votre projet, vous situer sur la branche de travail (nous
+supposerons qu'il s'agit de `dev`).
+
+
+Python
 
 ```python
 import mlflow
@@ -1320,6 +1296,210 @@ mlflow.set_experiment(experiment_name=mlflow_experiment_name)
 
 Retourner sur l'UI et observer la différence
 
-4. 
+4. Créer un fichier `src/models/log.py` dont le contenu
+est le suivant
+
+```{python}
+#| eval: false
+#| file: src/models/log.py
+#| filename: src/models/log.py
+import mlflow
+import os
+
+DATA_URL = os.environ["MLFLOW_TRACKING_URI"]
 
 
+def log_gsvc_to_mlflow(gscv, mlflow_experiment_name):
+    """Log a scikit-learn trained GridSearchCV object as an MLflow experiment."""
+    # Set up MLFlow context
+    mlflow.set_experiment(experiment_name=mlflow_experiment_name)
+
+    for run_idx in range(len(gscv.cv_results_["params"])):
+        # For each hyperparameter combination we trained the model with, we log a run in MLflow
+        run_name = f"run {run_idx}"
+        with mlflow.start_run(run_name=run_name):
+            # Log hyperparameters
+            params = gscv.cv_results_["params"][run_idx]
+            for param in params:
+                mlflow.log_param(param, params[param])
+
+            # Log fit metrics
+            scores = [
+                score
+                for score in gscv.cv_results_
+                if "mean_test" in score or "std_test" in score
+            ]
+            for score in scores:
+                mlflow.log_metric(score, gscv.cv_results_[score][run_idx])
+
+            # Log model as an artifact
+            mlflow.sklearn.log_model(gscv, "gscv_model")
+
+            # Log training data URL
+            mlflow.log_param("data_url", DATA_URL)
+```
+
+Modifier `train.py`
+
+a. import src.models.log as tl
+b. EXPERIMENT_NAME = "titanicml"
+parser.add_argument(
+    "--appli", type=str, default="appli21", help="Application number"
+)
+c. tl.log_gsvc_to_mlflow(pipe_cross_validation, EXPERIMENT_NAME, APPLI_ID)
+
+4. Open a given run and verify that you can retrieve the various information we wanted to log (hyperparameters, evaluation metrics, training data URL), check that you can download the serialized `scikit-learn` model, and check the `requirements.txt` file to understand how `MLflow` automatically inferred the required `Python` environment
+
+```python
+import mlflow
+logged_model = 'runs:/5fb6b1f4ac404f6ebb723533a856a193/gscv_model'
+
+# Load model as a PyFuncModel.
+loaded_model = mlflow.pyfunc.load_model(logged_model)
+
+# Predict on a Pandas DataFrame.
+import pandas as pd
+loaded_model.predict(pd.DataFrame(data))
+```
+
+Modifier le fichier `train.py` 
+
+```python
+"""
+Prediction de la survie d'un individu sur le Titanic
+"""
+
+# GESTION ENVIRONNEMENT --------------------------------
+
+from pathlib import Path
+import argparse
+from joblib import dump
+from sklearn.model_selection import GridSearchCV
+
+import src.data.import_data as imp
+import src.features.build_features as bf
+import src.models.train_evaluate as te
+import src.models.log as tl
+
+# PARAMETRES -------------------------------
+
+# Paramètres ligne de commande
+parser = argparse.ArgumentParser(description="Paramètres du random forest")
+parser.add_argument("--n_trees", type=int, default=20, help="Nombre d'arbres")
+parser.add_argument("--appli", type=str, default="appli21", help="Application number")
+args = parser.parse_args()
+
+# Paramètres YAML
+config = imp.import_yaml_config("configuration/config.yaml")
+base_url = (
+    "https://minio.lab.sspcloud.fr/projet-formation/ensae-reproductibilite/data/raw"
+)
+API_TOKEN = config.get("jeton_api")
+LOCATION_TRAIN = config.get("train_path", f"{base_url}/train.csv")
+LOCATION_TEST = config.get("test_path", f"{base_url}/test.csv")
+TEST_FRACTION = config.get("test_fraction", 0.1)
+N_TREES = args.n_trees
+EXPERIMENT_NAME = "titanicml"
+APPLI_ID = "appli21"
+
+# FEATURE ENGINEERING --------------------------------
+
+titanic_raw = imp.import_data(LOCATION_TRAIN)
+
+# Create a 'Title' variable
+titanic_intermediate = bf.feature_engineering(titanic_raw)
+
+
+train, test = te.split_train_test_titanic(
+    titanic_intermediate, fraction_test=TEST_FRACTION
+)
+X_train, y_train = train.drop("Survived", axis="columns"), train["Survived"]
+X_test, y_test = test.drop("Survived", axis="columns"), test["Survived"]
+
+
+def log_local_data(data, filename):
+    data.to_csv(f"data/intermediate/{filename}.csv", index=False)
+
+
+output_dir = Path("data/intermediate")
+output_dir.mkdir(parents=True, exist_ok=True)
+
+log_local_data(X_train, "X_train")
+log_local_data(X_test, "X_test")
+log_local_data(y_train, "y_train")
+log_local_data(y_test, "y_test")
+
+
+# MODELISATION: RANDOM FOREST ----------------------------
+
+pipe = te.build_pipeline(n_trees=N_TREES, categorical_features=["Embarked", "Sex"])
+
+param_grid = {
+    "classifier__n_estimators": [10, 20, 50],
+    "classifier__max_leaf_nodes": [5, 10, 50],
+}
+
+
+pipe_cross_validation = GridSearchCV(
+    pipe,
+    param_grid=param_grid,
+    scoring=["accuracy", "precision", "recall", "f1"],
+    refit="f1",
+    cv=5,
+    n_jobs=5,
+    verbose=1,
+)
+
+
+pipe_cross_validation.fit(X_train, y_train)
+pipe = pipe_cross_validation.best_estimator_
+
+tl.log_gsvc_to_mlflow(pipe_cross_validation, EXPERIMENT_NAME, APPLI_ID)
+
+dump(pipe, "model.joblib")
+`̀``
+
+Créer le fichier `eval.py` 
+
+```python
+import pandas as pd
+import mlflow
+from sklearn.metrics import confusion_matrix, accuracy_score
+
+logged_model = #A MODIFIER
+
+# Load model as a PyFuncModel.
+loaded_model = mlflow.pyfunc.load_model(logged_model)
+
+# Predict on a Pandas DataFrame.
+X_test = pd.read_csv("data/intermediate/X_test.csv")
+y_test = pd.read_csv("data/intermediate/y_test.csv")
+
+print(X_test.head())
+
+y_test_predict = loaded_model.predict(X_test)
+
+# EVALUATE ----------------------------
+
+print(y_test_predict)
+
+matrix = confusion_matrix(y_test, y_test_predict)
+
+print("Accuracy:")
+print(f"{accuracy_score(y_test, y_test_predict):.0%}")
+print("Matrice de confusion:")
+print(matrix)
+```
+
+5. Go back to the list of runs by clicking again on the "titanicml" experiment
+6. onglet `Table`, sélectioonner plusieurs expérimentations  Add additional columns using the *Columns* drop-down menu in the *Table* panel
+7. Sort the models in descending order according to the **mean test F1** 
+
+
+Intérêt à ce stade: on a archivé (loggé) les performances pour les différents jeux
+de paramètres de notre validation croisée
+Pb: 
+- on entraîne en local, de manière séquentielle
+- on n'archive pas les jeux de données associées à ces modèles (train & test), on 
+doit le faire manuellement, ce qui est pénible
+- on récupère manuellement les modèles,
