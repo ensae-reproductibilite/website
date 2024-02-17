@@ -1,9 +1,8 @@
 ---
-title: "Critères d'évaluation"
-author: "Romain Avouac et Lino Galiana"
+title: "Evaluation"
 description: |
   <br>
-  Résumé des critères d'évaluation
+  Modalités d'évaluation du cours
 image: https://minio.lab.sspcloud.fr/lgaliana/generative-art/pythonds/kid.png
 order: 10
 href: chapters/evaluation.html
@@ -11,34 +10,32 @@ eval: false
 echo: false
 ---
 
-Evaluation en **deux parties** : 
+## Modalités
 
-1. **Par groupe de 3** : un **projet** à choisir parmi les 3 parcours (MLOps, app interactive / dashboard, publication reproductible / site web) 
-2. **Seul** : **revue de code**
+L'objectif général de l'évaluation de ce cours est de **mettre en pratique les notions étudiées (bonnes pratiques de développement et mise en production) de manière appliquée et réaliste**, i.e. à travers un projet basé sur une problématique "métier" et des données réelles. Pour cela, l'évaluation sera en deux parties :
 
-## 1️⃣ Critères pour la revue de code
+1. **Par groupe de 3** : un **projet** à choisir parmi les 3 parcours (MLOps, app interactive / dashboard, publication reproductible + site web). Idéalement, on choisira un projet réel, effectué par exemple dans le cadre d'un cours précédent et qui génère un *output* propice à une mise en production.
+2. **Seul** : effectuer une **revue de code** d'un autre projet. Compétence essentielle et souvent attendue d'un *data scientist*, la **revue de code** sera l'occasion de bien intégrer les **bonnes pratiques de développement** (cf. *checklist* ci-dessous) et de faire un **retour bienveillant** sur un autre projet que celui de son groupe.
 
-Sur le projet d'un groupe différent du sien (attribué aléatoirement) : 
+::: {.callout-important}
+## Avertissement
+Ce projet doit mobiliser des données publiquement accessibles. La récupération et structuration de ces données peut faire partie des enjeux du projet mais celles-ci ne doivent pas provenir d'un projet antérieur de votre scolarité pour lequel le partage de données n'est pas possible.
+:::
 
-- ouvrir une *pull request* de revue de code
-- donner une appréciation générale de la conformité du projet à la checklist des bonnes pratiques de développement
-- suggérer des pistes d'amélioration du projet
+## Checklist des bonnes pratiques de développement
 
-
-## 2️⃣ Critères pour le projet
-
-### Checklist des bonnes pratiques de développement
+Les bonnes pratiques de développement ci-dessous sont les **indispensables de ce cours**. Elles doivent être à la fois appliquées dans les **projets de groupe**, et à la base de la **revue de code individuelle**.
 
 - [ ] **Utilisation de `Git`**
-    * Présence d'un fichier `.gitignore` adapté au langage et avec des règles additionnelles pour respecter les bonnes pratiques de versioning
+    * Présence d'un fichier `.gitignore` adapté au langage et avec des règles additionnelles pour respecter les bonnes pratiques de _versioning_
     * Travail collaboratif : utilisation des branches et des *pull requests*
 - [ ]  **Présence d'un fichier `README`** présentant le projet : contexte, objectif, comment l'utiliser ?
 - [ ]  **Présence d'un fichier `LICENSE`** déclarant la licence (_open-source_) d'exploitation du projet.
 - [ ]  **Versioning des packages** : présence d'un fichier `requirements.txt` ou d'un fichier d'environnement `environment.yml` pour `conda`
-- [ ]  **Bonnes pratiques de code**
+- [ ]  **Qualité du code**
     + Respect des standards communautaires : utiliser un _linter_ et/ou un _formatter_
     + Modularité : un script principal qui appelle des modules
-- [ ] **Bonnes pratiques de structure des projets**
+- [ ] **Structure des projets**
     + Respect des standards communautaires (`cookiecutter`)
     + Modularité du projet selon le modèle évoqué dans le cours:
         * Code sur `GitHub`
@@ -47,16 +44,21 @@ Sur le projet d'un groupe différent du sien (attribué aléatoirement) :
 
 ![Proposition de modularité du projet illustrée pour un projet mixte `MLOps` et _dashboard_](/workflow2.png)
 
+
+## Projets
+
+Voici **trois "parcours" possibles** afin de mettre en application les concepts et techniques du cours dans le cadre de projets appliqués. Des projets qui sortiraient de ces parcours-types sont tout à fait possibles et appréciés, il suffit d'en discuter avec les auteurs du cours.
+
 ### Parcours MLOps
 
 ::: {.callout-tip}
 ## Objectif
 
 A partir d'un projet existant ou d'un projet type _contest_ `Kaggle`,
-développer un modèle de ML répondant à une problématique, puis le mettre en production conformément aux principes du _MLOps_.
+développer un modèle de ML répondant à une problématique métier, puis la déployer sur une infrastructure de production conformément aux principes du _MLOps_.
 :::
 
-**Etapes** :
+**Étapes** :
 
 - [ ] Respecter la _checklist_ des bonnes pratiques de développement ;
 - [ ] Développer un modèle de ML qui répond à un besoin métier ;
@@ -72,26 +74,46 @@ développer un modèle de ML répondant à une problématique, puis le mettre en
 
 ::: {.callout-tip}
 ## Objectif
-à partir d'un projet existant ou d'un projet que vous construirez, développer une application interactive / un dashboard répondant à une problématique métier, puis la mettre en production.
+A partir d'un projet existant ou d'un projet que vous construirez,
+développer une application interactive ou un _dashboard_ statique répondant à une problématique métier, puis déployer sur une infrastructure de production.
 :::
 
-**Etapes** :
+**Étapes** :
 
 - [ ] Respecter la _checklist_ des bonnes pratiques de développement
 - [ ] Développer une application interactive `Streamlit` ou un _dashboard_ statique avec `Quarto` répondant à une problématique métier
 - [ ] Créer une image `Docker` permettant d'exposer l'application en local
-- [ ] Déployer l'application sur le `SSP Cloud`
+- [ ] Déployer l'application sur le `SSP Cloud` (application interactive) ou sur `Github Pages` (site statique)
+- [ ] Customiser le thème, le CSS etc. pour mettre en valeur au maximum les résultats de la publication et les messages principaux
+- [ ] Automatiser l'ingestion des données en entrée pour que le site _web_ se mette à jour régulièrement
 - [ ] Industrialiser le déploiement en mode `GitOps` avec `ArgoCD`
 - [ ] Gérer le monitoring de l'application : _logs_, métriques de suivi des performances, etc.
 
-### Parcours publication reproductible
-
-**Etapes** :
+### Parcours *big data*
 
 ::: {.callout-tip}
 ## Objectif
-A partir d'un projet existant ou d'un projet que vous construirez, développer une application interactive / un dashboard répondant à une problématique métier, puis la mettre en production.
+L'objectif de ce parcours est de construire un *pipeline* type *ETL (Extract/Transform/Load)* prenant en entrée une source de données massives afin de les mettre à disposition dans un système de base de données optimisé pour l'analyse. Ce parcours est intéressant pour les étudiant.e.s souhaitant un projet avec une coloration *data engineering* plus marquée.
 :::
+
+**Étapes** :
+
+- [ ] Respecter la _checklist_ des bonnes pratiques de développement
+- [ ] *Extract* : identifier une ou plusieurs sources de données massives ouvertes (idées : [1](https://databank.illinois.edu/datasets/IDB-9610843), [2](https://www.kaggle.com/code/benhamner/competitions-with-largest-datasets)), et réaliser l'ingestion de ces données sur le service de stockage `S3` du `SSP Cloud` ([documentation](https://inseefrlab.github.io/docs.sspcloud.fr/docs/fr/storage.html))
+- [ ] *Transform* : en utilisant une technologie *big data* adopté à la volumétrie des données en entrée (données massives : `Spark`, données volumineuses : `Arrow` / `DuckDB`, toutes disponibles sur le `SSP Cloud`), effectuer des opérations sur les données brutes (filtrages, agrégations, etc.) afin d'en extraire des sous-ensembles de données pertinents pour répondre à une problématique métier
+- [ ] *Load* : charger les tables construites à l'étape précédente dans un système de base de données relationnelle (ex : `PostgreSQL`, disponible dans le catalogue du `SSP Cloud`)
+- [ ] Intégrer l'ensemble des étapes dans un *pipeline* de données avec un orchestrateur de traitements (ex : `Argo Workflows`, disponible dans le catalogue du `SSP Cloud`) afin d'automatiser leur exécution
+- [ ] Construire un *dashboard* minimaliste (par exemple, avec `Superset`, disponible dans le catalogue du `SSP Cloud`) afin de valoriser les données produites
+
+### Parcours publication reproductible
+
+::: {.callout-tip}
+## Objectif
+A partir d'un projet existant ou d'un projet que vous construirez,
+rédiger un rapport reproductible à partir de données afin de répondre à une problématique métier, puis le mettre à disposition à travers un site web automatiquement généré et publié.
+:::
+
+**Étapes** :
 
 - [ ] Respecter la _checklist_ des bonnes pratiques de développement
 - [ ] Rédiger un rapport reproductible avec `Quarto` qui fasse intervenir des données, du code, de la visualisation de données, du texte, etc.
@@ -101,168 +123,12 @@ A partir d'un projet existant ou d'un projet que vous construirez, développer u
 - [ ] Mettre en place des tests automatisés de vérification des standards de qualité du code (_linter_), de détection de fautes d'orthographes/de grammaire, etc.
 - [ ] Générer des slides au format `quarto-revealjs` afin de présenter les principaux résultats de la publication, et les exposer comme une page du site
 
+## Revue de code
 
-<!--------
-old
---------->
+Sur le projet d'un groupe différent du sien (attribué aléatoirement au cours du semestre) : 
 
-```{ojs}
-viewof choice = Inputs.checkbox(
-    d3.group(choice_parameters, d => d.level), 
-    {key: ["Indispensable 👮", "Bien 😎", "Excellent 🤩"], label: "Niveau souhaité"}
-)
-```
+- ouvrir une ***pull request* de revue de code** via un *fork* (cf. [chapitre sur Git](/chapters/git.html) pour la procédure)
+- donner une appréciation générale de la **conformité du projet à la checklist des bonnes pratiques** de développement
+- suggérer des **pistes d'amélioration** du projet
 
-
-
-```{ojs}
-viewof project = Inputs.checkbox(
-    d3.group(
-        choice_parameters.filter(d => d.project != "all").filter(row => uniqueLevels.includes(row.level)),
-        d => d.project
-    ),
-    {key: ["Site web statique", "API", "Application interactive", "Publication reproductible"], label: "Type d'output"}
-)
-```
-
-```{ojs}
-html`<div>${formatToCheckboxLists(
-    liste_tableau.filter(row => uniqueLevels.includes(row.level))
-)}</div>`
-```
-
-
-
-```{ojs}
-viewof choice2 = Inputs.checkbox(
-    d3.group(choice_parameters, d => d.level), 
-    {key: uniqueLevels, label: "Niveau souhaité"}
-)
-```
-
-
-
-```{ojs}
-viewof project2 = Inputs.checkbox(
-    d3.group(
-        choice_parameters.filter(d => d.project != "all").filter(row => uniqueLevels.includes(row.level)),
-        d => d.project
-    ),
-    {key: ["Site web statique", "API", "Application interactive", "Publication reproductible"], label: "Type d'output"}
-)
-```
-
-
-```{ojs}
-html`<div>${
-    generateFolderStructure(
-        liste.filter(row => uniqueLevels2.includes(row.level))
-        )
-}</div>`
-```
-
-<!-----
-intermediaire
----->
-
-
-```{ojs}
-uniqueLevels = Array.from(new Set(choice.flatMap(group => group.map(item => item.level))));
-```
-
-```{ojs}
-uniqueLevels2 = Array.from(new Set(choice2.flatMap(group => group.map(item => item.level))));
-```
-
-
-```{ojs}
-function formatToCheckboxLists(rows) {
-    // Dynamically create levels based on the input data
-    const levels = rows.reduce((acc, row) => {
-        if (!acc[row.level]) {
-            acc[row.level] = [];
-        }
-        acc[row.level].push(row.element);
-        return acc;
-    }, {});
-
-    // Function to create HTML for checkboxes
-    const createCheckboxesHtml = (elements, level) => {
-        if (elements.length === 0) {
-            return ''; // Skip levels with no elements
-        }
-        return `
-            <div>
-                <h3>${level}</h3>
-                <ul>
-                    ${elements.map(element => `<li><input type="checkbox" id="${element}" name="${level}"><label for="${element}">${element}</label></li>`).join('')}
-                </ul>
-            </div>
-        `;
-    };
-
-    // Combine all levels into a single HTML string
-    return Object.entries(levels).map(([level, elements]) => createCheckboxesHtml(elements, level)).join('');
-}
-```
-
-```{ojs}
-function generateFolderStructure(jsonData) {
-    // Create a map to group subfiles by their parent files
-    const fileMap = new Map();
-
-    jsonData.forEach(item => {
-        if (item.file) {
-            // Splitting the file string into an array and trimming spaces
-            const filesArray = item.file.split(',').map(file => file.trim());
-
-            filesArray.forEach(file => {
-                if (!fileMap.has(file)) {
-                    fileMap.set(file, []);
-                }
-                if (item.subfiles) {
-                    // Splitting the subfiles string into an array and trimming spaces
-                    const subfilesArray = item.subfiles.split(',').map(subfile => subfile.trim());
-                    fileMap.get(file).push(...subfilesArray);
-                }
-            });
-        }
-    });
-
-    // Sort parent files
-    const sortedFiles = Array.from(fileMap.keys()).sort((a, b) => a.localeCompare(b));
-
-    let structure = "<pre><code>project\n";
-
-    sortedFiles.forEach((file, index, array) => {
-        const isLastItem = index === array.length - 1;
-        const filePrefix = isLastItem ? "└── " : "├── ";
-        structure += `${filePrefix}${file}\n`;
-
-        const subfiles = fileMap.get(file);
-        if (subfiles.length) {
-            subfiles.forEach((subfile, subIndex, subArray) => {
-                const subIsLastItem = subIndex === subArray.length - 1;
-                const subPrefix = subIsLastItem ? "    └── " : "    ├── ";
-                structure += `${subPrefix}${subfile}\n`;
-            });
-        }
-    });
-
-    structure += "</code></pre>";
-    return structure;
-}
-```
-
-```{ojs}
-db = DuckDBClient.of({
-  input: FileAttachment("evaluation.json")
-})
-choice_parameters = db.query(`SELECT DISTINCT level, project FROM input`)
-liste = db.query(`SELECT * FROM input`)
-liste_tableau = db.query(`SELECT DISTINCT element, level FROM input`)
-```
-
-```{ojs}
-import {bind} from "@observablehq/synchronized-inputs"
-```
+Chaque groupe, ayant reçu des revues de code de son projet, pourra **prendre en compte ces pistes d'améliorations** dans la mesure du temps disponible, par le biais d'une autre *pull request* qui devra référencer celle de la revue de code. Cette dernière partie ne sera cependant pas strictement attendue, elle sera valorisée en **bonus** dans la notation finale.

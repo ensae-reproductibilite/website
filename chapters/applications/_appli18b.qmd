@@ -1,0 +1,113 @@
+::: {.callout-tip}
+## Application 18b: Mettre à disposition l'API (déploiement manuel)
+
+Cette partie nécessite d'avoir à disposition une infrastructure _cloud_. 
+
+- Créer un dossier `deployment` à la racine du projet qui va contenir les fichiers de configuration nécessaires pour déployer sur un cluster `Kubernetes`
+
+- En vous inspirant de la [documentation](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment), y ajouter un premier fichier `deployment.yaml` qui va spécifier la configuration du *Pod* à lancer sur le cluster
+
+<details>
+<summary>Fichier `deployment/deployment.yaml`</summary>
+
+```{.yaml filename="deployment/deployment.yaml"}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: titanic-deployment
+  labels:
+    app: titanic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: titanic
+  template:
+    metadata:
+      labels:
+        app: titanic
+    spec:
+      containers:
+      - name: titanic
+        image: linogaliana/application-correction:latest
+        ports:
+        - containerPort: 5000
+```
+</details>
+
+- En vous inspirant de la [documentation](https://kubernetes.io/fr/docs/concepts/services-networking/service/#d%C3%A9finition-d-un-service), y ajouter un second fichier `service.yaml` qui va créer une ressource `Service` permettant de donner une identité fixe au `Pod` précédemment créé au sein du cluster
+
+<details>
+<summary>Fichier `deployment/service.yaml`</summary>
+
+```{.yaml filename="deployment/service.yaml"}
+apiVersion: v1
+kind: Service
+metadata:
+  name: titanic-service
+spec:
+  selector:
+    app: titanic
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+```
+</details>
+
+- En vous inspirant de la [documentation](https://kubernetes.io/docs/concepts/services-networking/ingress/#the-ingress-resource), y ajouter un troisième fichier `ingress.yaml` qui va créer une ressource `Ingress` permettant d'exposer le service via une URL en dehors du cluster
+
+<details>
+<summary>Fichier `deployment/ingress.yaml`</summary>
+
+```{python}
+#| eval: false
+#| filename: "deployment/ingress.yaml"
+#| source-line-numbers: "10-13"
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: titanic-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - # METTRE URL ICI #<1>
+  rules:
+  - host: # METTRE URL ICI #<2>
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: titanic-service
+            port:
+              number: 80
+```
+1. Mettez l'URL auquel vous voulez exposer votre service. Sur le modèle de `titanic.kub.sspcloud.fr` (mais ne tentez pas celui-là, il est déjà pris 😃)
+2. Mettre ici aussi
+</details>
+
+- Appliquer ces fichiers de configuration sur le cluster : `kubectl apply -f deployment/`
+
+- Si tout a correctement fonctionné, vous devriez pouvoir accéder depuis votre navigateur à l'API à l'URL spécifiée dans le fichier `deployment/ingress.yaml`. Par exemple `https://toto.kub.sspcloud.fr/` si vous avez mis celui-ci plus tôt (et `https://toto.kub.sspcloud.fr/docs` pour la documentation). 
+
+:::
+
+::: {.callout-caution collapse="true"}
+## Checkpoint
+
+```{.bash filename="terminal"}
+git stash #<1>
+git checkout appli18
+```
+1. Pour annuler les modifications depuis le dernier _commit_
+
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
+:::
+

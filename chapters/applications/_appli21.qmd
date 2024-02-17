@@ -1,0 +1,117 @@
+::: {.callout-tip}
+## Application 21 _(optionnelle)_: restructuration de la chaîne
+
+1. Faire les modifications suivantes pour restructurer notre _pipeline_
+afin de mieux distinguer les étapes d'estimation et d'évaluation
+
+<details>
+<summary>
+Modification de `src/models/train_evaluation.py` à effectuer
+</summary>
+
+```{.python include="./applications/code/appli21_pipeline_part1.py" filename="src/models/train_evaluation.py"}
+```
+
+</details> 
+
+<details>
+<summary>
+Modification de `src/features/build_features.py` pour enchaîner les étapes de _feature engineering_
+</summary>
+
+```{.python include="./applications/code/appli21_build_features_part1.py" filename="src/features/build_features.py"}
+```
+
+</details> 
+
+
+<details>
+<summary>
+Modification de `train.py` pour faire une _grid search_
+</summary>
+
+```{.python include="./applications/code/appli21_train_part1.py" filename="train.py"}
+```
+
+</details> 
+
+
+<details>
+<summary>
+Fichier `eval.py` pour évaluer la meilleure validation croisée
+</summary>
+
+```{.python include="./applications/code/appli21_eval_part1.py" filename="eval.py"}
+```
+
+</details> 
+
+<details>
+<summary>
+Modification de `api/main.py` à effectuer
+</summary>
+
+```{.python include="./applications/code/appli21_api_main.py" filename="api/main.py"}
+```
+
+</details> 
+
+2. Tester votre script `train.py` et uploader le meilleur modèle sur S3 de la manière suivante:
+
+```{python}
+#| eval: false
+#| filename: terminal
+#| file: terminal
+mc cp model.joblib s3/<BUCKET_PERSONNEL>/ensae-reproductibilite/model/model.joblib #<1>
+mc anonymous set download s3/<BUCKET_PERSONNEL>/ensae-reproductibilite/ #<2>
+```
+1. _Uploader_ sur `S3`
+2. Ouvrir les droits en lecture de ce fichier pour simplifier la récupération[^token]
+
+où `<BUCKET_PERSONNEL>` est à remplacer par votre nom d'utilisateur sur le SSPCloud
+
+[^token]: Ce n'est pas indispensable si vous avez une manière cohérente de gérer
+vos jetons d'accès aux données dans votre API, par exemple par le biais de _service account_. 
+Néanmoins, pour se faciliter la tâche, on ne va pas se poser de question 
+sur les droits d'accès au modèle. 
+
+3. Tester en local `api/main.py` pour vérifier le caractère fonctionnel de l'API. Les deux modifications
+principales de celle-ci sont les suivantes:
+    + On n'utilise plus la variable `Title` puisque celle-ci a été retirée des données en entrée du modèle
+    + On récupère la version de "production" sur le système de stockage S3, on ne fait plus l'entraînement à chaque initialisation d'un conteneur
+
+4. Modifier `deployment/deployment.yaml` et `.github/workflows/prod.yaml` pour définir
+et utiliser le tag `v0.0.3` de l'image `Docker`
+
+5. Retirer la ligne `python train.py` du fichier `run.sh`
+
+6. Dans `index.qmd`, remplacer la ligne suivante:
+
+```{{ojs}}
+prediction = `https://titanic.kub.sspcloud.fr/predict?pclass=${class_boat}&sex=${gender}&age=${age}&sib_sp=1&parch=1&fare=16.5&embarked=S&has_cabin=1&ticket_len=7`
+```
+
+par celle-ci
+
+```{{ojs}}
+prediction = `https://titanic.kub.sspcloud.fr/predict?pclass=${class_boat}&sex=${gender}&age=${age}&sib_sp=1&parch=1&fare=16.5&embarked=S&has_cabin=1&ticket_len=7`
+```
+
+Faire un _commit_ et un _push_ des modifications
+
+:::
+
+
+::: {.callout-caution collapse="true"}
+## Checkpoint
+
+```{.bash filename="terminal"}
+git stash #<1>
+git checkout appli21
+```
+1. Pour annuler les modifications depuis le dernier _commit_
+
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
+:::

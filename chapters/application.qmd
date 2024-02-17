@@ -1,11 +1,9 @@
 ---
 title: "Application"
-subtitle: "Appliquer pas à pas les concepts étudiés à un projet de data science"
-author: "Romain Avouac et Lino Galiana"
 image: images/rocket.png
 description: |
   Une application fil rouge pour illustrer l'intérêt d'appliquer graduellement les bonnes pratiques dans une optique de mise en production d'une application de data science.
-order: 7
+order: 9
 href: chapters/application.html
 ---
 
@@ -136,8 +134,8 @@ Cette première partie vise à **rendre le projet conforme aux bonnes pratiques*
 
 Elle fait intervenir les notions suivantes : 
 
-- Utilisation du **terminal** (voir [Linux 101](/chapters/linux-101.html)) ;
-- **Qualité du code** (voir [Qualité du code](/chapters/code-quality.html)) ;
+- Utilisation du **terminal** (voir [Linux 101](/chapters/linux-101.qmd)) ;
+- **Qualité du code** (voir [Qualité du code](/chapters/code-quality.qmd)) ;
 - **Architecture de projets** (voir [Architecture des projets](/chapters/projects-architecture.html)) ;
 - **Contrôle de version** avec `Git` (voir [Rappels `Git`](/chapters/git.qmd)) ;
 - **Travail collaboratif** avec `Git` et `GitHub` (voir [Rappels `Git`](/chapters/git.qmd)).
@@ -326,9 +324,10 @@ afin de continuer la démarche de séparer conceptuellement les données du code
 
 Nous allons profiter de la modularisation pour adopter une structure
 applicative pour notre code. Celui-ci n'étant en effet plus lancé
-que la ligne de commande, on peut considérer qu'on construit
+que depuis la ligne de commande, on peut considérer qu'on construit
 une application générique où un script principal (`main.py`)
-encapsule des éléments issus d'autres scripts. 
+encapsule des éléments issus d'autres scripts `Python`. 
+
 
 {{< include "./applications/_appli5.qmd" >}}
 
@@ -447,7 +446,7 @@ de 2e année de l'ENSAE [Python pour la _data science_](https://linogaliana-teac
 :::
 
 
-Le chapitre sur la [structure des projets](/chapters/project-structure.qmd)
+Le chapitre sur la [structure des projets](/chapters/projects-architecture.qmd)
 développe l'idée qu'il est recommandé de converger vers un modèle
 où environnements d'exécution, de stockage du code et des données sont conceptuellement
 séparés. Ce haut niveau d'exigence est un gain de temps important 
@@ -717,7 +716,7 @@ qui ne soient pas renseignées quelque part ;
 sont pas utilisées dans le cadre du projet. 
 
 Le prochain exercice vise à mettre ceci en oeuvre.
-Comme expliqué dans le [chapitre portabilité](/chapters/portabilite.qmd),
+Comme expliqué dans le [chapitre portabilité](/chapters/portability.qmd),
 le choix du gestionnaire d'environnement est laissé
 libre. Il est recommandé de privilégier `venv` si vous découvrez
 la problématique de la portabilité. 
@@ -782,7 +781,7 @@ Nous proposons deux solutions:
 Sinon, elle peut être réalisée en essai-erreur par le biais des services d'intégration continue de `Github` {{< fa brands github >}} ou `Gitlab` {{< fa brands gitlab >}}. Néanmoins, nous présenterons l'utilisation de ces services plus tard, dans la prochaine partie. 
 :::
 
-Maintenant qu'on sait que ce script préparatoire fonctionne, on va le transformer en `Dockerfile` pour anticiper la mise en production.  Comme la syntaxe `Docker` est légèrement différente de la syntaxe `Linux` classique (voir le [chapitre portabilité](/chapters/portabilite.qmd)), il va être nécessaire de changer quelques instructions mais ceci sera très léger.
+Maintenant qu'on sait que ce script préparatoire fonctionne, on va le transformer en `Dockerfile` pour anticiper la mise en production.  Comme la syntaxe `Docker` est légèrement différente de la syntaxe `Linux` classique (voir le [chapitre portabilité](/chapters/portability.qmd)), il va être nécessaire de changer quelques instructions mais ceci sera très léger.
 
 On va tester le `Dockerfile` dans un environnement bac à sable pour ensuite
 pouvoir plus facilement automatiser la construction de l'image
@@ -929,21 +928,33 @@ de valorisations techniques, comme des API,
 mais pour ces derniers il est
 conseillé de privilégier des formats plus _user friendly_. 
 
+::: {.callout-caution collapse="true"}
+## Si vous prenez ce projet fil rouge en cours de route
+
+```{.bash filename="terminal"}
+git checkout appli15
+```
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
+:::
+
+
 Afin de faire le parallèle avec les parcours possibles pour l'évaluation,
 nous allons proposer trois valorisations[^valorisation]:
 
-- Une API facilitant la réutilisation du modèle en "production" ;
-- Un site web statique exploitant cette API pour exposer les prédictions
-à une audience moins technique. Pour illustrer
-les enjeux spécifiques aux applications réactives mises en oeuvre
-avec `Streamlit`, nous proposerons aussi cette valorisation même si, dans
-notre cas, elle n'apportera pas plus que le site statique. 
+- Une [API](https://titanic.kub.sspcloud.fr/docs) facilitant la réutilisation du modèle en "production" ;
+- Un [site web statique](https://ensae-reproductibilite.github.io/application-correction/) exploitant cette API pour exposer les prédictions
+à une audience moins technique.
+
 
 [^valorisation]: Vous n'êtes pas obligés pour l'évaluation de mettre en oeuvre
 les jalons de plusieurs parcours. Néanmoins, vous découvrirez que 
 chaque nouveau pas en avant est moins coûteux que le
 précédent si vous avez mis en oeuvre les réflexes des bonnes
 pratiques.  
+
+
 
 ::: {.callout-warning collapse="true"}
 ## Site statique vs application réactive
@@ -969,316 +980,359 @@ serveur classique en _backend_. La différence principale
 entre ces deux types de serveurs
 réside principalement dans leur fonction et leur utilisation:
 
-- Un serveur web est spécifiquement conçu pour stocker, traiter et livrer des pages web aux clients. Cela inclut des fichiers HTML, CSS, JavaScript, images, etc. Les serveurs web écoutent les requêtes HTTP/HTTPS provenant des navigateurs des utilisateurs et y répondent en envoyant les données demandées.
-- Un serveur _backend_ classique est 
+- Un __serveur web__ est spécifiquement conçu pour stocker, traiter et livrer des pages web aux clients. Cela inclut des fichiers HTML, CSS, JavaScript, images, etc. Les serveurs web écoutent les requêtes HTTP/HTTPS provenant des navigateurs des utilisateurs et y répondent en envoyant les données demandées.
+- Un **serveur _backend_** classique est conçu pour effectuer des opérations en réponse à un _front_, en l'occurrence une page web. 
+Dans le contexte d'une application `Streamlit`, il s'agit d'un serveur avec l'environnement `Python` _ad hoc_ pour
+exécuter le code nécessaire à répondre à toute action d'un utilisateur de l'appliacation. 
 
 :::
 
-## Étape 1: création d'un pipeline `scikit`
 
-Notre code respecte des bonnes pratiques formelles. Cependant, la mise en
+## Étape préliminaire: création d'un _pipeline_ `scikit`
+
+La mise en
 production nécessite d'être exigeant sur la mise en oeuvre opérationnelle
-de notre _pipeline_. 
+de notre _pipeline_. Nous avons néanmoins un _pipeline_ un peu bancal
+car il requiert d'être vigilant dans la manière d'enchaîner les
+étapes de _preprocessing_, d'entraînement et d'évaluation.
 
-Quand  on utilise `scikit`, la bonne pratique est d'utiliser
+Quand on utilise `scikit`, la bonne pratique est d'utiliser
 les [_pipelines_](https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html)
-qui sécurisent les étapes de _feature engineering_ avant la mise en oeuvre d'un modèle (que
-ce soit pour l'entraînement ou le test sur un nouveau jeu de données). 
+qui sécurisent les étapes de _feature engineering_ nécessaires avant la mise en oeuvre d'un modèle, qu'il
+que
+ce soit pour l'entraînement ou pour appliquer les mêmes opérations avec les mêmes paramètres sur 
+sur un nouveau jeu de données avant de faire un _predict_. 
 
 On va donc devoir refactoriser notre application pour utiliser un _pipeline_ `scikit`. 
-Les raisons sont expliquées [ici](https://scikit-learn.org/stable/common_pitfalls.html).
+Les raisons sont expliquées plus en détail [ici](https://scikit-learn.org/stable/common_pitfalls.html).
 Cela aura
-aussi l'avantage de rendre les étapes plus lisibles. 
+également l'avantage de rendre les étapes de notre _pipeline_ plus lisibles lorsqu'on passera à
+l'étape d'industrialisation avec `MLFLow`. 
+
+{{< include "./applications/_appli16.qmd" >}}
 
 
-::: {.callout-tip}
+## Étape 1: développer une API en local
 
-## Application 16: Un _pipeline_ de _machine learning_
-
-- Refactoriser le code de `random_forest_titanic` pour créer 
-un vrai pipeline de _preprocessing_ avant la modélisation
-
-- Simplifier la fonction `split_train_test_titanic`
-en la réduisant au découpage train/test
-
-- Modifier `main.py` pour que ce soit à ce niveau
-qu'a lieu le découpage en train/test, l'entrainement
-et l'évaluation
-du modèle
-
-:::
-
+Le premier livrable devenu classique dans un projet
+impliquant du _machine learning_ est la mise à
+disposition d'un modèle par le biais d'une
+API (voir chapitre sur la [mise en production](/chapters/deployment.qmd)).
+Le _framework_ [`FastAPI`](https://fastapi.tiangolo.com/) va permettre
+de rapidement transformer notre application `Python` en une API fonctionnelle.
 
 ::: {.callout-caution collapse="true"}
-## Checkpoint
+## Si vous prenez ce projet fil rouge en cours de route
 
 ```{.bash filename="terminal"}
 git checkout appli16
 ```
 
-:::
-
-## Étape 2: développer une API en local
-
-::: {.callout-tip}
-
-## Application 17: Mise à disposition sous forme d'API locale
-
-- Créer un nouveau service `SSPCloud` en paramétrant dans l'onglet
-`Networking` le port 5000 ;
-- Cloner le dépôt et se placer au niveau de l'application précédente (`git checkout appli16`)
-- Installer `fastAPI` et `uvicorn` puis les ajouter au `requirements.txt`
-- Renommer le fichier `main.py` en `train.py` et insérer le contenu suivant dedans :
-
-<details>
-<summary>
-Fichier `train.py`
-</summary>
-Récupérer le contenu sur [cette page](https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/appli17/train.py)
-</details>
-
-- Créer le fichier `api.py` permettant d'initialiser l'API:
-
-<details>
-<summary>
-Fichier `api.py`
-</summary>
-Récupérer le contenu sur [cette page](https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/appli17/api.py)
-</details>
-
-- Exécuter `train.py` pour stocker en local le modèle entraîné
-- Ajouter `model.joblib` au `.gitignore`
-- Déployer en local l'API avec la commande
-
-```{.bash filename="terminal"}
-uvicorn api:app --reload --host "0.0.0.0" --port 5000
-```
-
-- A partir du `README` du service, se rendre sur l'URL de déploiement, 
-ajouter `/docs/` à celui-ci et observer la documentation de l'API 
-- Se servir de la documentation pour tester les requêtes `/predict`
-- Récupérer l'URL d'une des requêtes proposées. La tester dans le navigateur
-et depuis `Python` avec `requests` (`requests.get(url).json()`)
+![](/checkpoint.jpg){width=80% fig-align="center"}
 
 :::
+
+
+{{< include "./applications/_appli17.qmd" >}}
+
+
+## Étape 2: déployer l'API de manière manuelle
 
 ::: {.callout-caution collapse="true"}
-## Checkpoint
-
-```{.bash filename="terminal"}
-git checkout appli17
-```
-
-:::
-
-## Étape 3: déployer l'API
-
-A ce stade, nous avons déployé l'API seulement localement, dans le cadre d'un service. Ce mode de déploiement est très pratique pour la phase de développement, afin de s'assurer que l'API fonctionne comme attendu. A présent, il est temps de passer à l'étape de déploiement, qui permettra à notre API d'être accessible via une URL sur le web, et donc aux utilisateurs potentiels de la requêter. Pour se faire, on va utiliser les possibilités offertes par `Kubernetes`, sur lequel est basé le [SSP Cloud](https://datalab.sspcloud.fr).
-
-::: {.callout-tip}
-
-## Application 18: Dockeriser l'API
-
-- Modifier le `Dockerfile` pour tenir compte des changements dans les noms de fichier effecutés dans l'application précédente
-
-- Créer un script `run.sh` à la racine du projet qui lance le script `train.py` puis déploie localement l'API 
-
-<details>
-<summary>Fichier `run.sh`</summary>
-
-```{.bash filename="terminal"}
-#/bin/bash
-
-python3 train.py
-uvicorn api:app --reload --host "0.0.0.0" --port 5000
-```
-</details>
-
-- Donner au script `run.sh` des permissions d'exécution : `chmod +x run.sh`
-
-- Changer l'instruction `CMD` du `Dockerfile` pour exécuter le script `run.sh` au lancement du conteneur
-
-- *Commit* et *push* les changements
-
-- Une fois le CI terminé, récupérer la nouvelle image dans l'environnement de test et vérifier que l'API se déploie correctement
-
-:::
-
-::: {.callout-caution collapse="true"}
-## Checkpoint
+## Si vous prenez ce projet fil rouge en cours de route
 
 ```{.bash filename="terminal"}
 git checkout appli18
 ```
-:::
 
-::: {.callout-tip}
-
-## Application 19: Déployer l'API
-
-- Créer un dossier `deployment` à la racine du projet qui va contenir les fichiers de configuration nécessaires pour déployer sur un cluster `Kubernetes`
-
-- En vous inspirant de la [documentation](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment), y ajouter un premier fichier `deployment.yaml` qui va spécifier la configuration du *Pod* à lancer sur le cluster
-
-<details>
-<summary>Fichier `deployment/deployment.yaml`</summary>
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: titanic-deployment
-  labels:
-    app: titanic
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: titanic
-  template:
-    metadata:
-      labels:
-        app: titanic
-    spec:
-      containers:
-      - name: titanic
-        image: linogaliana/application-correction:latest
-        ports:
-        - containerPort: 5000
-```
-</details>
-
-- En vous inspirant de la [documentation](https://kubernetes.io/fr/docs/concepts/services-networking/service/#d%C3%A9finition-d-un-service), y ajouter un second fichier `service.yaml` qui va créer une ressource `Service` permettant de donner une identité fixe au `Pod` précédemment créé au sein du cluster
-
-<details>
-<summary>Fichier `deployment/service.yaml`</summary>
-
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: titanic-service
-spec:
-  selector:
-    app: titanic
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 5000
-```
-</details>
-
-- En vous inspirant de la [documentation](https://kubernetes.io/docs/concepts/services-networking/ingress/#the-ingress-resource), y ajouter un troisième fichier `ingress.yaml` qui va créer une ressource `Ingress` permettant d'exposer le service via une URL en dehors du cluster
-
-<details>
-<summary>Fichier `deployment/ingress.yaml`</summary>
-
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: titanic-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-spec:
-  ingressClassName: nginx
-  tls:
-  - hosts:
-    - titanic.kub.sspcloud.fr
-  rules:
-  - host: titanic.kub.sspcloud.fr
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: titanic-service
-            port:
-              number: 80
-```
-</details>
-
-- Appliquer ces fichiers de configuration sur le cluster : `kubectl apply -f deployement/`
-
-- Si tout a correctement fonctionné, vous devriez pouvoir accéder à l'API à l'URL spécifiée dans le fichier `deployment/ingress.yaml`
+![](/checkpoint.jpg){width=80% fig-align="center"}
 
 :::
+
+A ce stade, nous avons déployé l'API seulement localement, dans le cadre d'un terminal qui tourne en arrière-plan.
+C'est une mise en production manuelle, pas franchement pérenne. 
+Ce mode de déploiement est très pratique pour la phase de développement, afin de s'assurer que l'API fonctionne comme attendu. 
+Pour pérenniser la mise en production, on va éliminer l'aspect artisanal de celle-ci. 
+
+Il est temps de passer à l'étape de déploiement, qui permettra à notre API d'être accessible via une URL sur le web
+et d'avoir un serveur, en arrière plan, qui effectuera les opérations pour répondre à une
+requête. Pour se faire, on va utiliser les possibilités offertes par `Kubernetes`, sur lequel est basé le [SSP Cloud](https://datalab.sspcloud.fr).
+
+
+{{< include "./applications/_appli18a.qmd" >}}
+
+
+Nous avons préparé la mise à disposition de notre API mais à l'heure
+actuelle elle n'est pas disponible de manière aisée car il est nécessaire
+de lancer manuellement une image `Docker` pour pouvoir y accéder. 
+Ce type de travail est la spécialité de `Kubernetes` que nous allons
+utiliser pour gérer la mise à disposition de notre API. 
+
+{{< include "./applications/_appli18b.qmd" >}}
+
+On peut remarquer quelques voies d'amélioration de notre approche qui
+seront ultérieurement traitées:
+
+- L'entraînement du modèle
+est ré-effectué à chaque lancement d'un nouveau conteneur. 
+On relance donc autant de fois un entraînement qu'on déploie
+de conteneurs pour répondre à nos utilisateurs. Ce sera
+l'objet de la partie MLOps de fiabiliser et optimiser
+cette partie du _pipeline_. 
+- il est nécessaire de (re)lancer manuellement  `kubectl apply -f deployment/`
+à chaque changement de notre code. Autrement dit, lors de cette application,
+on a amélioré
+la fiabilité du lancement de notre API mais un lancement manuel est encore indispensable. 
+Comme dans le reste de ce cours, on va essayer d'éviter un geste manuel pouvant 
+être source d'erreur en privilégiant l'automatisation et l'archivage dans des
+scripts. C'est l'objet de la prochaine étape. 
+
+
+## Etape 3: automatiser le déploiement (déploiement en continu)
 
 ::: {.callout-caution collapse="true"}
-## Checkpoint
+## Si vous prenez ce projet fil rouge en cours de route
 
 ```{.bash filename="terminal"}
 git checkout appli19
 ```
 
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
 :::
 
 
-# Partie 6: un workflow complet de MLOps
+::: {.callout-important}
+## Clarification sur la branche de travail
 
-Ce sera l'an prochain, désolé !
+A partir de maintenant, il est nécessaire de clarifier la
+branche principale sur laquelle nous travaillons. De manière
+traditionnelle, on utilise la branche `main`. Néanmoins,
+pour être cohérent avec les instructions du début, qui étaient 
+de créer une branche `dev`, tous les exemples ultérieures
+partiront de cette hypothèse. 
 
-# Partie 7: livrer un site web de manière automatisée
+Si vous avez fait les applications les unes après les autres, et
+que vous vous situez toujours sur `dev`, vous pouvez passer 
+aux applications suivantes. Si vous avez changé de branche,
+vous pouvez continuer mais en tenir compte dans les exemples ultérieurs.
+
+Si vous avez utilisé un `tag` pour sauter une ou plusieurs étapes, il va
+être nécessaire de se placer sur une branche car vous êtes en _head detached_. 
+Pour cela, après avoir _committé_ les fichiers que vous désirez garder
+
+```{python}
+#| eval: false
+#| file: "terminal"
+#| filename: "terminal"
+$ git branch -D dev #<1>
+$ git checkout -b dev
+$ git push origin dev
+```
+1. Pas indispensable, mais permet de supprimer la branche `dev` si elle existe.
+:::
+
+Qu'est-ce qui peut déclencher une évolution nécessitant de mettre à 
+jour l'ensemble de notre processus de production ? 
+
+Regardons à nouveau notre _pipeline_:
+
+![](/workflow2.png)
+
+Les _inputs_ de notre _pipeline_ sont donc:
+
+- La __configuration__. Ici, on peut considérer que notre YAML de configuration relèvent de cette catégorie  ;
+- Les __données__. Nos données sont statiques et n'ont pas vocation à évoluer. Si c'était le cas, il faudrait en tenir compte dans notre automatisation. ;
+- Le __code__. C'est l'élément principal qui évolue chez nous. On va donc faire en sorte qu'à chaque mise à jour de notre code (un _push_ sur `Github`), les étapes ultérieures (production de l'image `Docker`, etc.) se mettent à compiler. Néanmoins, il va être nécessaire de se discipliner pour ne pas mettre en production n'importe quel code. 
+
+Grâce à `ArgoCD` il est possible d'automatiser la mise en production de notre
+application. Au lieu d'être fait manuellement par l'appel à `kubectl apply`,
+cela se fera en modifiant les instructions présentes dans le dossier `kubernetes/`
+de notre dépôt. Un changement de ces fichiers
+va entraîner le redéploiement automatique en synchronisant avec notre dépôt `Github`.
+
+{{< include "./applications/_appli19a.qmd" >}}
+
+La page n'a pas changé. En pratique, nous n'avons pas vraiment organisé la mise en production
+et `ArgoCD` nécessite un certain formalisme. 
+Dorénavant, il convient de versionner nos
+productions pour déclencher dans `ArgoCD` des opérations. 
+Ce versionnement va se faire à deux niveaux[^gitopsrepo]:
+
+- Dans le fichier `deployment.yaml` où on va spécifier 
+la version de l'image Docker utilisée en production
+- Dans le YAML qui nous permet de _pusher_ une image sur `Dockerhub` (`.github/workflows/prod.yml`),
+on va versionner notre image `Docker`. 
+
+
+[^gitopsrepo]: 
+    Techniquement, il serait plus judicieux de séparer notre
+    projet en deux dépôts: un dépôt pour le code source et un visant à fournir
+    les fichiers YAML pour la mise en production.
+
+    ![](https://inseefrlab.github.io/formation-mlops/slides/img/ci-cd.png)
+
+
+{{< include "./applications/_appli19b.qmd" >}}
+
+
+Notre API est accessible sans problème depuis `Python` ou notre navigateur
+mais si on désire utiliser `JavaScript` pour créer une application
+interactive, on va essuyer un refus à cause du [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
+
+Permettre à n'importe quel client de se connecter à 
+notre API permettra de faire un site web exploitant notre API. 
+Comme c'est un point technique qui ne concerne pas les compétences
+liées à ce cours, nous donnons directement les mises à jour nécessaires
+du projet:
+
+{{< include "./applications/_cors.qmd" >}}
+
+## Etape 4: construire un site web
+
+::: {.callout-caution collapse="true"}
+## Si vous prenez ce projet fil rouge en cours de route
+
+```{.bash filename="terminal"}
+git checkout appli19
+git checkout -b dev
+git push origin dev
+```
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
+:::
 
 On va proposer un nouveau livrable pour parler à un public plus large.
-Pour cela, on va déployer un site web statique qui permet de visualiser
-rapidement les résultats du modèle.
-
-On propose de créer un site web qui permet de comprendre, avec l'appui
-des [valeurs de Shapley](https://christophm.github.io/interpretable-ml-book/shapley.html),
-les facteurs qui auraient pu nous mettre la puce
-à l'oreille sur les destins de Jake et de Rose. 
-
 Pour faire ce site web,
 on va utiliser `Quarto` et déployer sur `Github Pages`.
-Des étapes préliminaires sont réalisées en `Python` 
-puis l'affichage interactif 
-sera contrôlé par du `JavaScript` grâce
-à des [blocs `Observable`](https://quarto.org/docs/interactive/ojs/). 
+
+{{< include "./applications/_appli20.qmd" >}}
+
+
+# Partie 6: adopter une approche MLOps pour améliorer notre modèle
+
+::: {.callout-caution collapse="true"}
+## Si vous prenez ce projet fil rouge en cours de route
+
+```{.bash filename="terminal"}
+git checkout appli20
+git checkout -b dev
+git push origin dev
+```
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
+:::
+
+Nous allons dans cette partie faire de la
+validation croisée. Pour éviter le problème
+du [_data leakage_](https://machinelearningmastery.com/data-leakage-machine-learning/),
+nous proposons de revoir notre _pipeline_ pour 
+exclure la variable `Title` dont certaines modalités
+rares posent problème dans les découpages
+multiples d'échantillons lors de la validation
+croisée. 
+
+## Restructurer le _pipeline_ pour fluidifier la mise en production
+
+
+{{< include "./applications/_appli21.qmd" >}}
+
+
+## Garder une trace des entraînements de notre modèle grâce au _register_ de `MLFlow`
+
+::: {.callout-caution collapse="true"}
+## Si vous prenez ce projet fil rouge en cours de route
+
+```{.bash filename="terminal"}
+git checkout appli21
+git checkout -b dev
+git push origin dev
+```
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
+:::
 
 
 ::: {.callout-tip}
+## Application 22 : archiver nos entraînements avec `MLFlow`
 
-## Application 19: Déploiement automatisé d'un site web
+1. Lancer `MLFlow` depuis l'onflet [Mes services](https://datalab.sspcloud.fr/catalog/automation) du SSPCloud.
+Attendre que le service soit bien lancé. 
+Cela créera un service dont l'URL est de la forme `https://user-{username}-{pod_id}.user.lab.sspcloud.fr`,
+où `pod_id` est un identifiant aléatoire. Ce service `MLFlow` communiquera avec les `VSCode` que vous
+ouvrirez ultérieurement à partir de cet URL ainsi qu'avec le système de stockage `S3`[^tokenMLFlow].
 
-Dans un premier temps, on va créer un projet `Quarto`
-au sein de notre dépôt: 
+2. Regarder la page `Experiments`. Elle est vide à ce stade, c'est normal
 
-- Installer `Quarto` dans votre environnement local (s'il n'est pas déjà disponible) ;
-- Dans le projet, utiliser la commande `quarto create-project` pour initialiser le projet `Quarto` ;
-- Supprimer le fichier automatiquement généré avec l'extension `.qmd` ;
-- Récupérer le contenu du modèle de fichier `Quarto Markdown` [cette page](https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/tree/appli19/index.qmd). Celui-ci permet de générer la page d'accueil de notre site. Enregistrer dans un fichier nommé `index.qmd`
+[^tokenMLFlow]: Par conséquent, `MLFLow` bénéficie de l'injection automatique des _tokens_
+pour pouvoir lire/écrire sur S3. Ces jetons ont la même durée avant expiration que ceux
+de vos services interactifs `VSCode`. Il faut donc supprimer et rouvrir un service `MLFLow`
+régulièrement. La manière d'éviter cela
+est de créer des _service account_ sur [https://minio-console.lab.sspcloud.fr/](https://minio-console.lab.sspcloud.fr/login)
+et de les renseigner sur [la page](https://datalab.sspcloud.fr/project-settings/s3-configs). 
 
-On teste ensuite la compilation en local du fichier:
 
-- Modifier le fichier `train.py` à partir de [cette page](https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/tree/appli19/train.py) pour être en mesure de compiler le fichier 
-- Exécuter le fichier `train.py`
-- En ligne de commande, faire `quarto preview` (ajouter les arguments `--port 5000 --host 0.0.0.0` si vous passez par le `SSPCloud`)
-- Observer le site web généré en local
+2. Une fois le service `MLFlow` fonctionnel,
+lancer un nouveau `VSCode` pour bénéficier de la configuration
+automatisée
 
-Enfin, on va construire et déployer automatiquement ce site web grâce au
-combo `Github Actions` et `Github Pages`:
+2. Clôner votre projet, vous situer sur la branche de travail (nous
+supposerons qu'il s'agit de `dev`).
 
-- Créer une branche `gh-pages` à partir du contenu de [cette page](https://quarto.org/docs/publishing/github-pages.html)
-- Créer un fichier `.github/workflows/website.yaml` avec le contenu de [ce fichier](https://raw.githubusercontent.com/ensae-reproductibilite/application-correction/tree/appli19/.github/workflows/publish.yaml)
+4. Depuis un terminal `Python`, lancer les commandes suivantes:
 
-:::
+```python
+import mlflow
+mlflow_experiment_name = "titanicml"
+mlflow.set_experiment(experiment_name=mlflow_experiment_name)
+```
 
-::: {.callout-note}
+Retourner sur l'UI et observer la différence, à gauche. 
 
-On doit dans cette application modifier le fichier `train.py`
-pour enregistrer en local une duplication du modèle
-de _machine learning_ et de l'ensemble d'entraînement
-car pour ces deux éléments
-on n'est pas allé au bout de la démarche MLOps
-d'enregistrement dans un _model registry_ et un
-_feature store_.
+5. Créer un fichier `src/models/log.py`
 
-Dans la prochaine version de ce cours, qui
-intègrera `MLFlow`, on aura une démarche plus 
-propre car on utilisera bien le modèle de production
-et le jeu d'entrainement associé. 
+<details>
+<summary>
+Contenu du fichier `src/models/log.py`
+</summary>
+```{.python include="./applications/code/appli22_log.py" filename="src/models/log.py"}
+```
+
+</details>
+
+
+6. Modifier le fichier `train.py` pour ajouter la ligne
+
+```{.python}
+mlog.log_gsvc_to_mlflow(pipe_cross_validation, EXPERIMENT_NAME, APPLI_ID)
+```
+
+avec 
+
+```{.python}
+import src.models.log as mlog
+```
+
+7. Faire tourner avec le paramètre `--appli appli22`:
+
+```{.bash filename="terminal"}
+python train.py --appli appli22
+```
+
+8. Observer l'évolution de la page `Experiments`. Cliquer sur un des _run_. 
+Observer toutes les métadonnées archivées (hyperparamètres, métriques d'évaluation, `requirements.txt` dont `MLFlow` a fait l'inférence, etc.)
+
+9. Observer le code proposé par `MLFlow` pour récupérer le _run_ en question. Modifier le fichier `eval.py` à partir de cet exemple et du modèle suivant pour utiliser un des modèles archivés dans `MLFlow` 
+
+10. Retourner à la liste des _runs_ en cliquant à nouveau sur _"titanicml"_ dans les expérimentations
+11. Dans l'onglet `Table`, sélectionner plusieurs expérimentations, cliquer sur `Columns` et ajouter `mean_test_f1`. 
+Ajuster la taille des colonnes pour la voir et classer les modèles par score décroissants
+12. Cliquer sur `Compare` après en avoir sélectionné plusieurs. Afficher un _scatterplot_ des performances
+en fonction du nombre d'estimateurs. Conclure. 
+
 :::
 
 
@@ -1286,7 +1340,36 @@ et le jeu d'entrainement associé.
 ## Checkpoint
 
 ```{.bash filename="terminal"}
-git checkout appli20
+git stash #<1>
+git checkout appli22
 ```
+1. Pour annuler les modifications depuis le dernier _commit_
+
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
 
 :::
+
+Cette appplication illustre l'un des premiers apports de `MLFlow`: on garde
+une trace de nos expérimentations et on peut déjà mieux comprendre
+la manière dont certains paramètres de notre modèle peuvent influencer
+la qualité de nos prédictions. 
+
+Néanmoins, persistent un certain nombre de voies d'amélioration:
+
+- On entraîne le modèle en local, de manière séquentielle, et en lançant nous-mêmes le script `train.py`
+- On n'archive pas les jeux de données associés à ces modèles (les jeux d'entraînement et de test). On doit alors 
+le faire manuellement si on désire évaluer les performances _ex post_, ce qui est pénible.
+- On récupère manuellement les modèles ce qui n'est pas très pérenne.
+- Notre API n'utilise pas encore l'un des modèles archivé sur `MLFlow`. 
+
+Les prochaines applications permettront d'améliorer ceci.
+
+### Exo modèle en prod
+
+On met un modèle en prod
+On l'utilise dans l'API
+
+### Exo entraînements sur MLFLow
+
+y a que ça de vrai

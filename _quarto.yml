@@ -1,48 +1,46 @@
+execute:
+  freeze: false
+
 project:
   type: website
   render:
     - /chapters/*.qmd
-    - /additional/*.qmd
     - index.qmd
   post-render:
     - "cp -rnv static/. _site/"
 
 website:
   title: "Mise en production"
-  sidebar:
-    - id: rappels
-      title: "Les bases"
-      style: 'docked'
-      collapse-level: 2
-      contents: 
-        - chapters/introduction.qmd
-        - chapters/linux-101.qmd
-        - chapters/git.qmd
-    - id: quality
-      title: "Qualité du code"
-      collapse-level: 0
-      contents: 
-        - chapters/code-quality.qmd
-    - href: chapters/portability.qmd
-      text: Portabilité
-
   navbar:
     background: "#447099"
     search: true
     align: center
     collapse-below: lg
     left:
-      - sidebar:rappels
-      - href: chapters/code-quality.qmd
-        text: Qualité du code
-      - href: chapters/projects-architecture.qmd
-        text: Architecture des projets
-      - href: chapters/portability.qmd
-        text: Portabilité
-      - href: chapters/deployment.qmd
-        text: Mise en production
-      - href: chapters/mlops.qmd
-        text: MLOps
+      - href: chapters/introduction.qmd
+        text: Introduction
+      - text: Les bases
+        menu:
+          - href: chapters/linux-101.qmd
+            text: Linux 101
+          - href: chapters/git.qmd
+            text: Git
+      - text: Bonnes pratiques de développement
+        menu:
+          - href: chapters/code-quality.qmd
+            text: Qualité du code
+          - href: chapters/projects-architecture.qmd
+            text: Architecture des projets
+          - href: chapters/portability.qmd
+            text: Portabilité
+      - text: Mise en production
+        menu:
+          - href: chapters/valorisation.qmd
+            text: Valorisation
+          - href: chapters/deployment.qmd
+            text: Déploiement
+          - href: chapters/mlops.qmd
+            text: MLOps
       - href: chapters/application.qmd
         text: Application
       - href: chapters/evaluation.qmd
@@ -64,8 +62,8 @@ format:
     toc: true
 
 eval: false
-sidebar: false
-#code-block-border-left: "#31BAE9"
 
 filters:
   - terminal
+  - line-highlight
+  - include-code-files
