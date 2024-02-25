@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="  Présentation des techniques de déploiement d’une application dans un environnement de production.">
+<meta name="description" content="  Principes de valorisation et de déploiement d’une application dans un environnement de production.">
 
-<title>Mise en production - Déploiement d’une application</title>
+<title>Mise en production - Déploiement</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,40 +20,6 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
-}
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -154,6 +120,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
         <li>
     <a class="dropdown-item" href="../chapters/projects-architecture.html">
+ <span class="dropdown-text">Traitement des données volumineuses</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/big-data.html">
  <span class="dropdown-text">Architecture des projets</span></a>
   </li>  
         <li>
@@ -167,10 +137,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">Mise en production</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-mise-en-production">    
-        <li>
-    <a class="dropdown-item" href="../chapters/valorisation.html">
- <span class="dropdown-text">Valorisation</span></a>
-  </li>  
         <li>
     <a class="dropdown-item" href="../chapters/deployment.html">
  <span class="dropdown-text">Déploiement</span></a>
@@ -222,41 +188,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#la-notion-de-mise-en-production" id="toc-la-notion-de-mise-en-production" class="nav-link active" data-scroll-target="#la-notion-de-mise-en-production">La notion de mise en production</a></li>
-  <li><a href="#lapproche-cicd" id="toc-lapproche-cicd" class="nav-link" data-scroll-target="#lapproche-cicd">L’approche CI/CD</a>
-  <ul class="collapse">
-  <li><a href="#définition" id="toc-définition" class="nav-link" data-scroll-target="#définition">Définition</a></li>
-  <li><a href="#intégration-continue" id="toc-intégration-continue" class="nav-link" data-scroll-target="#intégration-continue">Intégration continue</a>
-  <ul class="collapse">
-  <li><a href="#mise-en-oeuvre-github-actions" id="toc-mise-en-oeuvre-github-actions" class="nav-link" data-scroll-target="#mise-en-oeuvre-github-actions">Mise en oeuvre : <code>GitHub Actions</code></a></li>
-  </ul></li>
-  <li><a href="#déploiement" id="toc-déploiement" class="nav-link" data-scroll-target="#déploiement">Déploiement</a></li>
-  <li><a href="#orchestration" id="toc-orchestration" class="nav-link" data-scroll-target="#orchestration">Orchestration</a></li>
-  </ul></li>
-  <li><a href="#application-au-ml-le-mlops" id="toc-application-au-ml-le-mlops" class="nav-link" data-scroll-target="#application-au-ml-le-mlops">Application au ML : le MLOps</a>
-  <ul class="collapse">
-  <li><a href="#spécificités-liées-à-la-mise-en-prod-de-modèles-de-ml" id="toc-spécificités-liées-à-la-mise-en-prod-de-modèles-de-ml" class="nav-link" data-scroll-target="#spécificités-liées-à-la-mise-en-prod-de-modèles-de-ml">Spécificités liées à la mise en prod de modèles de ML</a></li>
-  <li><a href="#notions-dobservabilité" id="toc-notions-dobservabilité" class="nav-link" data-scroll-target="#notions-dobservabilité">Notions d’observabilité</a></li>
-  <li><a href="#amélioration-continue" id="toc-amélioration-continue" class="nav-link" data-scroll-target="#amélioration-continue">Amélioration continue</a></li>
-  </ul></li>
-  </ul>
-</nav>
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Déploiement d’une application</h1>
+<h1 class="title">Déploiement</h1>
 </div>
 
 <div>
   <div class="description">
-    <p><br> Présentation des techniques de déploiement d’une application dans un environnement de production.</p>
+    <p><br> Principes de valorisation et de déploiement d’une application dans un environnement de production.</p>
   </div>
 </div>
 
@@ -275,178 +219,194 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <details>
 <summary>
-Dérouler les <em>slides</em> ci-dessous ou <a href="https://ensae-reproductibilite.github.io/slides/#/vers-la-mise-en-production">cliquer ici</a> pour afficher les slides en plein écran.
+Dérouler les <em>slides</em> ci-dessous ou <a href="https://ensae-reproductibilite.github.io/slides/#/d%C3%A9ploiement">cliquer ici</a> pour afficher les slides en plein écran.
 </summary>
 <div id="cb1" class="sourceCode">
 <pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
-<iframe class="sourceCode yaml code-with-copy" src="https://ensae-reproductibilite.github.io/slides/#/vers-la-mise-en-production">
+<iframe class="sourceCode yaml code-with-copy" src="https://ensae-reproductibilite.github.io/slides/#/d%C3%A9ploiement">
 </iframe>
 </div>
 </details>
-<section id="la-notion-de-mise-en-production" class="level1">
-<h1>La notion de mise en production</h1>
-<p>Les chapitres précédents nous ont permis de construire un projet de data science à la fois conforme aux bonnes pratiques de développement et portable. Ce faisant, nous avons déjà largement réduit le coût de transition entre notre environnement de développement et un environnement de production. La notion de mise en production désigne précisément cette transition vers un environnement de production, c’est à dire un environnement dans lequel l’application sera <strong>déployée</strong> et donc accessible à ses utilisateurs potentiels, avec une haute disponibilité — idéalement, 24h sur 24.</p>
-<p>Réaliser une mise en production nécessite d’effectuer un certain nombre de choix, plus ou moins contraints. D’abord, il est nécessaire de bien comprendre le besoin métier — qui seront les utilisateurs potentiels de notre application et quels sont leurs besoins — pour déterminer le format de valorisation pertinent pour celle-ci. Par exemple, le format adapté pour mettre à disposition un modèle entraîné de <em>machine learning</em> ne sera pas le même que l’on s’adresse au grand public — auquel cas on s’orientera certainement vers une application interactive simple d’utilisation<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> — ou à une équipe interne de notre organisation qui voudrait effectuer de la prédiction à partir du modèle — cas dans lequel une API requêtable via un langage de programmation s’avérera sans doute plus pertinente. Un second choix à effectuer concerne l’infrastructure de production sur laquelle va être déployée l’application. Si des considérations techniques entrent en compte pour déterminer l’infrastructure pertinente, ce choix est en général contraint pour le <em>data scientist</em> par ce qu’il a à sa disposition au sein de son organisation. Enfin, il est nécessaire de choisir les outils qui vont permettre l’<strong>industrialisation</strong> du projet : automatisation du déploiement, orchestration des traitements, <em>monitoring</em> de la solution en production, etc.</p>
-<p>La diversité des réponses qui peuvent être apportées à chacun de ces choix illustre la complexité du sujet de la mise en production. Il serait bien illusoire de prétendre traiter ici ce sujet avec exhaustivité. Afin de restreindre cette complexité, nous allons effectuer à chaque étape des choix raisonnables, c’est à dire qui représentent des pratiques courantes dans le domaine de la <em>data science</em>. Ainsi, nous allons nous restreindre au cas du déploiement d’un modèle de <em>machine learning</em>, exposé via une API, car il s’agit d’une tâche fréquemment effectuée dans le monde de la <em>data science</em> et sur laquelle il est donc bon d’avoir quelques notions. Comme nous allons effectuer le déploiement sur le <a href="https://datalab.sspcloud.fr">SSP Cloud</a>, l’infrastructure de production sera un cluster <code>Kubernetes</code>. Là encore, cette solution constitue un standard actuel de l’industrie. Enfin, pour ce qui est de l’industrialisation de notre projet, nous choisirons des solutions standards et <em>open-source</em> qui permettent d’implémenter l’<strong>approche CI/CD</strong> (intégration continue / déploiement continu), qui fait référence en la matière. Dans tous les cas, l’enjeu de ce cours est de transmettre les concepts sous-jacents à la mise en production plus que de former à telle ou telle technologie.</p>
-<p>Par rapport au précédent, ce chapitre est assez technique et repose sur une vaste palette d’outils. Notre propos n’est cependant pas de dire que le <em>data scientist</em> doit maîtriser l’ensemble des concepts et outils présentés. Au contraire : avec la complexification des projets et des infrastructures, un ensemble de professions ont émergé — <em>date engineer</em>, <em>dev ops</em>, <em>machine learning engineer</em>, etc. — dont les rôles sont plus spécifiquement centrés sur l’industrialisation des projets. Néanmoins, nous sommes convaincus qu’il est essentiel que le <em>data scientist</em> possède des notions sur le sujet afin de pouvoir jouer le <strong>rôle d’interface</strong> entre le métier et les équipes techniques. Ce chapitre est une tentative de condenser ces différentes notions sous une forme la plus accessible possible.</p>
-<p>Ce chapitre nous amènera à explorer plusieurs écosystèmes, pour lesquels on retrouve quelques <em>buzz-words</em> dont voici les définitions :</p>
-<table class="table">
-<thead>
-<tr class="header">
-<th>Terme</th>
-<th>Définition</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><a href="https://fr.wikipedia.org/wiki/Devops"><code>DevOps</code></a></td>
-<td>mouvement en ingénierie informatique et une pratique technique visant à l’unification du développement logiciel (dev) et de l’administration des infrastructures informatiques (ops)</td>
-</tr>
-<tr class="even">
-<td><a href="https://fr.wikipedia.org/wiki/MLOps"><code>MLOps</code></a></td>
-<td>ensemble de pratiques qui vise à déployer et maintenir des modèles de machine learning en production de manière fiable et efficace</td>
-</tr>
-<tr class="odd">
-<td><code>CI/CD</code></td>
-<td>combinaison des pratiques d’intégration continue et de livraison continue ou de déploiement continu</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="lapproche-cicd" class="level1">
-<h1>L’approche CI/CD</h1>
-<section id="définition" class="level2">
-<h2 class="anchored" data-anchor-id="définition">Définition</h2>
-<blockquote class="blockquote">
-<p>L’intégration continue est un ensemble de pratiques utilisées en génie logiciel consistant à vérifier à chaque modification de code source que le résultat des modifications ne produit pas de régression dans l’application développée. […] Elle permet d’automatiser l’exécution des suites de tests et de voir l’évolution du développement du logiciel.</p>
-</blockquote>
-<blockquote class="blockquote">
-<p>La livraison continue est une approche d’ingénierie logicielle dans laquelle les équipes produisent des logiciels dans des cycles courts, ce qui permet de le mettre à disposition à n’importe quel moment. Le but est de construire, tester et diffuser un logiciel plus rapidement.</p>
-</blockquote>
-<p><img src="../cicd_exemple.png" class="img-fluid"></p>
-<p>L’approche CI/CD garantit une automatisation et une surveillance continues tout au long du cycle de vie d’un projet.</p>
-<p>Cela présente de nombreux avantages:</p>
-<ul>
-<li>on peut anticiper les contraintes de la mise en production grâce à des environnements normalisés partant d’image docker standardisées</li>
-<li>on peut tester les changements apportés à un livrable par un nouveau prototype</li>
-<li>on peut déterminer très rapidement l’introduction de bugs dans un projet.</li>
-</ul>
-</section>
-<section id="intégration-continue" class="level2">
-<h2 class="anchored" data-anchor-id="intégration-continue">Intégration continue</h2>
-<ul>
-<li>Automatisation des phases de build et de test (data validation, model validation..)</li>
-<li>Mise à disposition des artifacts (forme “morte”)</li>
-</ul>
-<section id="mise-en-oeuvre-github-actions" class="level3">
-<h3 class="anchored" data-anchor-id="mise-en-oeuvre-github-actions">Mise en oeuvre : <code>GitHub Actions</code></h3>
-<p>Les actions <code>Github</code> sont un ensemble de règles qui se suivent au format <code>YAML</code>. Cela permet de définir différentes étapes du processus avec, pour chaque étape, des éléments de configuration. Elles permettent de partir d’une configuration minimale (ici une machine <code>ubuntu</code>) et d’appliquer des instructions à la suite, par étape.</p>
+<p>Page en construction.</p>
+<!-- # La notion de mise en production
+
+Les chapitres précédents nous ont permis de construire un projet de data science à la fois conforme aux bonnes pratiques de développement et portable. Ce faisant, nous avons déjà largement réduit le coût de transition entre notre environnement de développement et un environnement de production. La notion de mise en production désigne précisément cette transition vers un environnement de production, c'est à dire un environnement dans lequel l'application sera **déployée** et donc accessible à ses utilisateurs potentiels, avec une haute disponibilité — idéalement, 24h sur 24.
+
+Réaliser une mise en production nécessite d'effectuer un certain nombre de choix, plus ou moins contraints. D'abord, il est nécessaire de bien comprendre le besoin métier — qui seront les utilisateurs potentiels de notre application et quels sont leurs besoins — pour déterminer le format de valorisation pertinent pour celle-ci. Par exemple, le format adapté pour mettre à disposition un modèle entraîné de *machine learning* ne sera pas le même que l'on s'adresse au grand public — auquel cas on s'orientera certainement vers une application interactive simple d'utilisation[^1] — ou à une équipe interne de notre organisation qui voudrait effectuer de la prédiction à partir du modèle — cas dans lequel une API requêtable via un langage de programmation s’avérera sans doute plus pertinente. Un second choix à effectuer concerne l'infrastructure de production sur laquelle va être déployée l'application. Si des considérations techniques entrent en compte pour déterminer l'infrastructure pertinente, ce choix est en général contraint pour le *data scientist* par ce qu'il a à sa disposition au sein de son organisation. Enfin, il est nécessaire de choisir les outils qui vont permettre l'**industrialisation** du projet : automatisation du déploiement, orchestration des traitements, *monitoring* de la solution en production, etc.
+
+[^1]: Pensons au cas récent de `ChatGPT`, qui doit en partie son succès au fait d'avoir réussi à exposer le modèle entraîné via une interface intuitive et réactive.
+
+La diversité des réponses qui peuvent être apportées à chacun de ces choix illustre la complexité du sujet de la mise en production. Il serait bien illusoire de prétendre traiter ici ce sujet avec exhaustivité. Afin de restreindre cette complexité, nous allons effectuer à chaque étape des choix raisonnables, c'est à dire qui représentent des pratiques courantes dans le domaine de la *data science*. Ainsi, nous allons nous restreindre au cas du déploiement d'un modèle de *machine learning*, exposé via une API, car il s'agit d'une tâche fréquemment effectuée dans le monde de la *data science* et sur laquelle il est donc bon d'avoir quelques notions. Comme nous allons effectuer le déploiement sur le [SSP Cloud](https://datalab.sspcloud.fr), l'infrastructure de production sera un cluster `Kubernetes`. Là encore, cette solution constitue un standard actuel de l'industrie. Enfin, pour ce qui est de l'industrialisation de notre projet, nous choisirons des solutions standards et *open-source* qui permettent d'implémenter l'**approche CI/CD** (intégration continue / déploiement continu), qui fait référence en la matière. Dans tous les cas, l'enjeu de ce cours est de transmettre les concepts sous-jacents à la mise en production plus que de former à telle ou telle technologie.
+
+Par rapport au précédent, ce chapitre est assez technique et repose sur une vaste palette d'outils. Notre propos n'est cependant pas de dire que le *data scientist* doit maîtriser l'ensemble des concepts et outils présentés. Au contraire : avec la complexification des projets et des infrastructures, un ensemble de professions ont émergé — *date engineer*, *dev ops*, *machine learning engineer*, etc. — dont les rôles sont plus spécifiquement centrés sur l'industrialisation des projets. Néanmoins, nous sommes convaincus qu'il est essentiel que le *data scientist* possède des notions sur le sujet afin de pouvoir jouer le **rôle d'interface** entre le métier et les équipes techniques. Ce chapitre est une tentative de condenser ces différentes notions sous une forme la plus accessible possible.
+
+Ce chapitre nous amènera à explorer plusieurs écosystèmes, pour lesquels 
+on retrouve quelques _buzz-words_ dont voici les définitions :
+
+| Terme | Définition|
+|------|--------|
+| [`DevOps`](https://fr.wikipedia.org/wiki/Devops) | mouvement en ingénierie informatique et une pratique technique visant à l'unification du développement logiciel (dev) et de l'administration des infrastructures informatiques (ops) |
+| [`MLOps`](https://fr.wikipedia.org/wiki/MLOps) | ensemble de pratiques qui vise à déployer et maintenir des modèles de machine learning en production de manière fiable et efficace |
+| `CI/CD` | combinaison des pratiques d'intégration continue et de livraison continue ou de déploiement continu |
+
+
+# L'approche CI/CD
+
+
+## Définition
+
+> L’intégration continue est un ensemble de pratiques utilisées en génie logiciel consistant à vérifier à chaque modification de code source que le résultat des modifications ne produit pas de régression dans l’application développée. […] Elle permet d’automatiser l’exécution des suites de tests et de voir l’évolution du développement du logiciel.
+
+> La livraison continue est une approche d’ingénierie logicielle dans laquelle les équipes produisent des logiciels dans des cycles courts, ce qui permet de le mettre à disposition à n’importe quel moment. Le but est de construire, tester et diffuser un logiciel plus rapidement.
+
+![](/cicd_exemple.png)
+
+L'approche CI/CD garantit une automatisation et une surveillance continues
+tout au long du cycle de vie d'un projet. 
+
+Cela présente de nombreux avantages:
+
+- on peut anticiper les contraintes de la mise en production grâce à des environnements
+normalisés partant d'image docker standardisées
+- on peut tester les changements apportés à un livrable par un nouveau prototype 
+- on peut déterminer très rapidement l'introduction de bugs dans un projet.
+
+
+## Intégration continue
+
+- Automatisation des phases de build et de test (data validation, model validation..)
+- Mise à disposition des artifacts (forme "morte")
+
+### Mise en oeuvre : `GitHub Actions`
+
+Les actions `Github` sont un ensemble de règles qui se suivent au 
+format `YAML`. Cela permet de définir différentes étapes du processus
+avec, pour chaque étape, des éléments de configuration. 
+Elles permettent de partir d'une configuration minimale
+(ici une machine `ubuntu`) et d'appliquer des instructions à la suite,
+par étape. 
+
 <details>
-<summary>
-Exemple d’action impliquant exclusivement de l’intégration continue (<a href="https://linogaliana.github.io/ensae-reproductibilite-website/chapters/application.html#etape-1-mise-en-place-de-tests-automatis%C3%A9s">application 14</a>)
-</summary>
-<div class="sourceCode" id="cb1" data-code-line-numbers=""><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">name</span><span class="kw">:</span><span class="at"> Python package</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">on</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="at">push</span><span class="kw">]</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">jobs</span><span class="kw">:</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">build</span><span class="kw">:</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">runs-on</span><span class="kw">:</span><span class="at"> ubuntu-latest</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">strategy</span><span class="kw">:</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">matrix</span><span class="kw">:</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">python-version</span><span class="kw">:</span><span class="at"> </span><span class="kw">[</span><span class="st">"3.9"</span><span class="kw">,</span><span class="at"> </span><span class="st">"3.10"</span><span class="kw">,</span><span class="at"> </span><span class="st">"3.11"</span><span class="kw">]</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/checkout@v3</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Set up Python ${{ matrix.python-version }}</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/setup-python@v4</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">python-version</span><span class="kw">:</span><span class="at"> ${{ matrix.python-version }}</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">cache</span><span class="kw">:</span><span class="at"> </span><span class="st">'pip'</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Install dependencies</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>          python -m pip install --upgrade pip</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>          pip install pylint</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>          pip install -r requirements.txt</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Lint</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>          pylint src --fail-under=6</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Test workflow</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="fu">        run</span><span class="kw">: </span><span class="ch">|</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>          python main.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<summary>Exemple d'action impliquant exclusivement de l'intégration continue ([application 14](https://linogaliana.github.io/ensae-reproductibilite-website/chapters/application.html#etape-1-mise-en-place-de-tests-automatis%C3%A9s))</summary>
+```yaml
+name: Python package
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint
+          pip install -r requirements.txt
+      - name: Lint
+        run: |
+          pylint src --fail-under=6
+      - name: Test workflow
+        run: |
+          python main.py
+```
 </details>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>L’intégration continue est aussi au coeur des fonctionnalités de <code>Gitlab</code>. Il s’agissait même d’une fonctionnalité disponible des années avant <code>Github</code>.</p>
-<p>La syntaxe est différente mais le principe est le même : on part d’une machine à la configuration minimale depuis des serveurs mis à disposition et on teste la reproductibilité de son projet.</p>
-</div>
-</div>
-</section>
-</section>
-<section id="déploiement" class="level2">
-<h2 class="anchored" data-anchor-id="déploiement">Déploiement</h2>
-<ul>
-<li>Avantages de déployer sur une infra Cloud</li>
-<li>Fonctionnement basique de Kubernetes</li>
-<li>GitOps</li>
-<li>Implémentation : Kubernetes</li>
-</ul>
-</section>
-<section id="orchestration" class="level2">
-<h2 class="anchored" data-anchor-id="orchestration">Orchestration</h2>
-<ul>
-<li>Modélisation d’un pipeline data sous forme de DAG</li>
-<li>Implémentation : argo-workflow</li>
-</ul>
-<p>Une chaine de production implique plusieurs étapes qui peuvent éventuellement nécessiter plusieurs langages. Ces étapes peuvent être vues comme une suite de transformations.</p>
-<p>La représentation de ces étapes peut être faite à l’aide des diagrammes acycliques dirigés (DAG):</p>
-<p><img src="https://miro.medium.com/max/1400/1*grWvT-3jUcrnbTrsVtRHAg.png" class="img-fluid"></p>
-<p>Un <em>workflow</em> complet sera ainsi reproductible si on peut, en ayant accès aux <em>inputs</em> et à l’ensemble des règles de transformation, reproduire exactement les outputs. Si les inputs ou le code changent, on peut être en mesure de mettre à jour les outputs, si possible sans faire retourner les parties du projet non concernés.</p>
-<p>Une première manière de développer est l’approche manuelle, qui est une tâche digne de Sisyphe:</p>
-<ol type="1">
-<li>Ecriture du code</li>
-<li>Exécution du code jusqu’à sa fin</li>
-<li>Découverte d’une erreur ou mise à jour du code ou des données</li>
-<li>Relance le code dans son ensemble</li>
-</ol>
-<p>Pour éviter ce cycle interminable, on est tenté d’écrire des bases intermédiaires et de ne faire tourner qu’une partie du code. Cette approche, si elle a l’avantage de faire gagner du temps, est néanmoins dangereuse car on peut facilement oublier de mettre à jour une base intermédiaire qui a changé ou au contraire refaire tourner une partie du code qui n’a pas été mise à jour.</p>
-<p>Il existe des méthodes plus fiables pour éviter ces gestes manuels. Celles-ci sont inspirées de <a href="https://www.gnu.org/software/make/">GNU Make</a> et consistent à créer le chemin de dépendance de la chaine de production (lister l’environnement, les inputs et les outputs à produire), à déterminer les chemins affectés par un changement de code ou de données pour ne faire tourner à nouveau que les étapes nécessaires.</p>
-</section>
-</section>
-<section id="application-au-ml-le-mlops" class="level1">
-<h1>Application au ML : le MLOps</h1>
-<ul>
-<li>Implémentation : MLFlow</li>
-</ul>
-<section id="spécificités-liées-à-la-mise-en-prod-de-modèles-de-ml" class="level2">
-<h2 class="anchored" data-anchor-id="spécificités-liées-à-la-mise-en-prod-de-modèles-de-ml">Spécificités liées à la mise en prod de modèles de ML</h2>
-<ul>
-<li>Entrainement : batch ou online</li>
-<li>Batch vs real-time prediction</li>
-<li>Feedback loops expérimentation/déploiement/monitoring</li>
-<li>Exposer le modèle via une API</li>
-</ul>
-</section>
-<section id="notions-dobservabilité" class="level2">
-<h2 class="anchored" data-anchor-id="notions-dobservabilité">Notions d’observabilité</h2>
-<ul>
-<li>Drifts</li>
-<li>Quelles métriques monitorer</li>
-</ul>
-</section>
-<section id="amélioration-continue" class="level2">
-<h2 class="anchored" data-anchor-id="amélioration-continue">Amélioration continue</h2>
-<ul>
-<li>Réentraînement : périodique vs continu</li>
-</ul>
+
+
+::: {.callout-note}
+L'intégration continue est aussi au coeur des fonctionnalités
+de `Gitlab`. Il s'agissait même d'une fonctionnalité disponible
+des années avant `Github`. 
+
+La syntaxe est différente mais le principe est le même : on part
+d'une machine à la configuration minimale depuis des serveurs
+mis à disposition et on teste la reproductibilité de son projet.  
+:::
+
+
+## Déploiement
+
+- Avantages de déployer sur une infra Cloud
+- Fonctionnement basique de Kubernetes
+- GitOps
+- Implémentation : Kubernetes
+
+## Orchestration
+
+- Modélisation d'un pipeline data sous forme de DAG
+- Implémentation : argo-workflow
+
+Une chaine de production implique plusieurs étapes qui peuvent éventuellement 
+nécessiter plusieurs langages. Ces étapes peuvent être vues comme une suite de 
+transformations.
+
+La représentation de ces étapes peut être faite à l'aide des diagrammes
+acycliques dirigés (DAG):
+
+![](https://miro.medium.com/max/1400/1*grWvT-3jUcrnbTrsVtRHAg.png)
+
+Un _workflow_ complet sera ainsi reproductible si on peut, en ayant accès
+aux _inputs_ et à l'ensemble des règles de transformation, reproduire
+exactement les outputs. 
+Si les inputs ou le code changent, on peut être en mesure de mettre à jour
+les outputs, si possible sans faire retourner les parties du projet non
+concernés. 
+
+Une première manière de développer est l'approche manuelle, qui est une tâche
+digne de Sisyphe:
+
+1. Ecriture du code
+2. Exécution du code jusqu'à sa fin
+3. Découverte d'une erreur ou mise à jour du code ou des données
+4. Relance le code dans son ensemble
+
+Pour éviter ce cycle interminable, on est tenté d'écrire des bases
+intermédiaires et de ne faire tourner qu'une partie du code. 
+Cette approche, si elle a l'avantage de faire gagner du temps, est 
+néanmoins dangereuse car on peut facilement oublier de mettre à jour
+une base intermédiaire qui a changé ou au contraire refaire tourner
+une partie du code qui n'a pas été mise à jour. 
+
+Il existe des méthodes plus fiables pour éviter ces gestes manuels. 
+Celles-ci sont inspirées de [GNU Make](https://www.gnu.org/software/make/)
+et consistent à créer le chemin de dépendance de la chaine de production 
+(lister l'environnement, les inputs et les outputs à produire), à déterminer
+les chemins affectés par un changement de code ou de données pour
+ne faire tourner à nouveau que les étapes nécessaires. 
+
+# Application au ML : le MLOps
+
+- Implémentation : MLFlow
+
+## Spécificités liées à la mise en prod de modèles de ML
+
+- Entrainement : batch ou online
+- Batch vs real-time prediction 
+- Feedback loops expérimentation/déploiement/monitoring
+- Exposer le modèle via une API
+
+## Notions d'observabilité
+
+- Drifts
+- Quelles métriques monitorer
+
+## Amélioration continue
+
+- Réentraînement : périodique vs continu
+
+
+
+
+
 <!-- # Qu'est-ce que la mise en production ?
 
 Dans les chapitres précédents, nous avons exploré la manière
@@ -791,18 +751,11 @@ output de l'intégration continue et le déploiement. Cependant, avec
 les scripts présentés dans l'exercice d'application on peut
 avoir une intégration très flexible de `Netlify` dans un pipeline
 plus riche.  -->
+<p>–&gt;</p>
 
 
-</section>
-</section>
 
-
-<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
-
-<ol>
-<li id="fn1"><p>Pensons au cas récent de <code>ChatGPT</code>, qui doit en partie son succès au fait d’avoir réussi à exposer le modèle entraîné via une interface intuitive et réactive.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-</ol>
-</section></div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
