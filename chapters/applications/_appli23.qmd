@@ -1,0 +1,190 @@
+::: {.callout-tip}
+## Application 23a : réutiliser un modèle archivé sur MLFlow
+
+1. A partir du tableau de performance précédent,
+choisir le modèle avec le F1 score maximal. 
+Accéder à celui-ci.
+
+Créer un script dans `mlflow/predict.py` pour
+illustrer l'utilisation d'un modèle
+depuis MLFlow. Nous allons progressivement l'améliorer. 
+
+1. Copier-coller le
+contenu ci-dessous
+afin de se simplifier la création de données en entrée
+de notre code
+
+```{.python filename="mlflow/predict.py"}
+import pandas as pd
+
+def create_data(
+    pclass: int = 3,
+    sex: str = "female",
+    age: float = 29.0,
+    sib_sp: int = 1,
+    parch: int = 1,
+    fare: float = 16.5,
+    embarked: str = "S",
+    has_cabin: int = 1,
+    ticket_len: int = 7
+) -> str:
+    """
+    """
+
+    df = pd.DataFrame(
+        {
+            "Pclass": [pclass],
+            "Sex": [sex],
+            "Age": [age],
+            "SibSp": [sib_sp],
+            "parch": [parch],
+            "Fare": [fare],
+            "Embarked": [embarked],
+            "hasCabin": [has_cabin],
+            "Ticket_Len": [ticket_len] 
+        }
+    )
+
+    return df
+
+data = pd.concat([
+    create_data(),
+    create_data(sex="male")
+])
+```
+
+2. Cliquer sur votre meilleur modèle et introduire dans `mlflow/predict.py` 
+le morceau de code suggéré
+par `MLFlow`, du type de celui-ci:
+
+```{python}
+#| eval: false
+import mlflow
+logged_model = #A CHANGER #<1>
+
+# Load model as a PyFuncModel.
+loaded_model = mlflow.pyfunc.load_model(logged_model)
+
+# Predict on a Pandas DataFrame.
+import pandas as pd
+loaded_model.predict(pd.DataFrame(data))
+```
+1. _Hash_ du modèle
+
+Lancer depuis la ligne de commande ce script et observer l'application obtenue. 
+
+:::
+
+A ce stade, nous avons amélioré la fiabilité de notre modèle car
+nous utilisons le meilleur. Néanmoins, celui-ci 
+n'est pas forcément pratique à récupérer car nous utilisons
+un _hash_ qui certes identifie de manière unique notre modèle
+mais présente l'inconvénient d'être peu intelligible.
+Nous allons passer de l'expérimentation à la mise
+en production en sélectionnant explicitement notre meilleur modèle.  
+
+::: {.callout-tip}
+## Application 23b : passer en production un modèle
+
+1. Dans la page du modèle en question sur `MLFlow`, cliquer sur `Register model`
+et le nommer `titanic`. 
+2. Aller dans l'onglet `Models` et observer le changement par rapport à précédemment. 
+3. Mettre à jour le code dans `mlflow/predict.py` pour utiliser la version en 
+production :
+
+```{.python filename = "mlflow/predict.py"}
+model_name = "titanic"
+model_version = 1
+loaded_model = mlflow.pyfunc.load_model(
+    model_uri=f"models:/{model_name}/{model_version}"
+)
+```
+
+4. Tester cette application. Si celle-ci fonctionne,
+modifier la récupération du modèle dans votre script d'API. 
+
+5. Tester en local cette API mise à jour
+
+```{.shell filename="terminal"}
+uvicorn api.main:app --reload --host "0.0.0.0" --port 5000
+```
+
+6. Ajouter `mlflow` au `requirements.txt`
+
+7. Mettre à jour
+les fichiers `.github/worflows/prod.yaml` et `kubernetes/deployment.yaml`
+pour produire et utiliser le tag `v0.0.5`
+
+```{python}
+#| eval: false
+#| filename: ".github/worflows/prod.yaml"
+#| file: ".github/worflows/prod.yaml"
+
+name: Construction image Docker
+
+on: [push]
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: linogaliana/application-correction:v0.0.7 #<1>
+```
+1. Modifier l'image ici
+
+
+```{python}
+#| eval: false
+# Creating MLflow deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: titanicml
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: titanicml
+  template:
+    metadata:
+      labels:
+        app: titanicml
+    spec:
+      containers:
+        - name: api
+          image: linogaliana/application-correction:v0.0.7 #<1>
+          imagePullPolicy: Always
+          env:
+            - name: MLFLOW_TRACKING_URI
+              value: https://user-{USERNAME}-mlflow.user.lab.sspcloud.fr #<2>
+            - name: MLFLOW_MODEL_NAME
+              value: titanic
+            - name: MLFLOW_MODEL_VERSION
+              value: "1"
+          resources:
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+```
+1. Modifier l'image `Docker`
+2. Modifier l'URL de `MLFlow`
+
+:::
+
