@@ -1367,7 +1367,87 @@ Les prochaines applications permettront d'améliorer ceci.
 
 ### Exo modèle en prod
 
-On met un modèle en prod
+::: {.callout-tip}
+## Application 23a : réutiliser un modèle archivé sur MLFlow
+
+1. A partir du tableau de performance précédent,
+choisir le modèle avec le F1 score maximal. 
+Accéder à celui-ci.
+
+2. Créer un script dans `mlflow/predict.py` avec le contenu ci-dessous pour
+créer les données utiles à 
+
+```{.python}
+def create_data(
+    pclass: int = 3,
+    sex: str = "female",
+    age: float = 29.0,
+    sib_sp: int = 1,
+    parch: int = 1,
+    fare: float = 16.5,
+    embarked: str = "S",
+    has_cabin: int = 1,
+    ticket_len: int = 7
+) -> str:
+    """
+    """
+
+    df = pd.DataFrame(
+        {
+            "Pclass": [pclass],
+            "Sex": [sex],
+            "Age": [age],
+            "SibSp": [sib_sp],
+            "parch": [parch],
+            "Fare": [fare],
+            "Embarked": [embarked],
+            "hasCabin": [has_cabin],
+            "Ticket_Len": [ticket_len] 
+        }
+    )
+
+    return df
+
+data = pd.concat([
+    create_data(),
+    create_data(sex="male")
+])
+```
+:::
+
+pas pratique le hash 
+
+::: {.callout-tip}
+## Application 23b : passer en production un modèle
+
+1. Dans la page du modèle en question sur `MLFlow`, cliquer sur `Register model`
+et le nommer `titanic`. 
+2. Aller dans l'onglet `Models` et observer le changement. 
+3. Remplacer dans 
+`mlflow/predict.py`
+
+```{.python}
+model_name = "titanic"
+model_version = 1
+loaded_model = mlflow.pyfunc.load_model(model_uri=f"models:/{model_name}/{model_version}")
+```
+
+Modifier le code de l'API et faire
+
+```{.shell filename="terminal"}
+uvicorn api.main:app --reload --host "0.0.0.0" --port 5000
+```
+
+Ajouter `mlflow` au `requirements.txt`
+
+.github/worflows/prod.yaml
+deployment.yaml
+
+v0.0.4
+
+:::
+
+
 On l'utilise dans l'API
 
 ### Exo entraînements sur MLFLow
