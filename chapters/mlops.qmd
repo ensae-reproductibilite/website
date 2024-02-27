@@ -6,6 +6,7 @@ description: |
 image: /army.png
 order: 8
 href: chapters/mlops.html
+bibliography: references.bib
 ---
 
 
@@ -17,23 +18,27 @@ Dans le chapitre consacré au déploiement, nous avons vu qu'une majorité des p
 
 # Fondements du MLOps
 
-## L'approche MLOps 
+## Du DevOps au MLOps 
 
 L'approche MLOps s'est construite sur les bases de l'approche DevOps. En cela, on peut considérer qu'il s'agit simplement d'une extension de l'approche DevOps, développée pour répondre aux défis spécifiques liés à la gestion du cycle de vie des modèles de machine learning. Le MLOps intègre les principes de collaboration et d'automatisation propres au DevOps, mais prend également en compte tous les aspects liés aux données et aux modèles de machine learning.
 
+![](/mlops.png){fig-align="center"}
+
 Le MLOps implique l'**automatisation des tâches** telles que la gestion des données, le suivi des **versions des modèles**, leurs **déploiements**, ainsi que l'**évaluation continue** de la performance des modèles en production. De la même manière que le DevOps, le MLOps met l'accent sur la collaboration étroite entre les équipes de développement et d'administration système d'une part, ainsi que les équipes de data science d'autre part. Cette collaboration est clé pour garantir une communication efficace tout au long du cycle de vie du modèle de machine learning.
 
+## Principes du MLOps
+
+On définit généralement les **piliers du MLOps** comme étant [@kreuzberger2023machine] :
+
+- la **reproductibilité** : les résultats de chaque expérimentation, fructueuse comme infructueuse, doivent pouvoir être **reproduits** sans coût. Cela implique d'abord une certaine rigueur dans la gestion des packages, la gestion des environnements, la gestion des librairies système, le contrôle de version du code, etc. De plus, les différentes variables influant l'entraînement d'un modèle (données d'entraînement, hyper-paramètres, etc.) doivent être **versionnées** avec le modèle ;
+
+- l'**automatisation** : afin de favoriser les boucles rétroactives d'amélioration continue, le cycle de vie du modèle (tests, *build*, validation, déploiement) doit être automatisé au maximum. Les outils issus de l'approche DevOps, en particulier l'**intégration et déploiement continus (CI/CD)**, doivent être mobilisés ;
+
+- la **collaboration** : le MLops valoriser une culture de travail collaborative autour des projets de ML, dans laquelle la communication au sein des équipes doit permettre de réduire le travail en silos. Sur le plan technique, les outils MLOps utilisés doivent favoriser le travail collaboratif sur les données, le modèle et le code utilisés par le projet ;
+
+- l'**amélioration continue** : une fois déployé, il est essentiel de s'assurer que le modèle fonctionne bien comme attendu en évaluant ses performances sur des données réelles à l'aide d'outils de **monitoring en continu**. Dans le cas d'une dégradation des performances dans le temps, un **ré-entraînement périodique** ou un **entraînement en continu** du modèle doivent être envisagés.
 
 
-Ainsi, on définit généralement les 5 piliers du MLOps comme étant :
-
-- **la reproductibilité** : chaque expérimentation doit pouvoir être reproduite sans coût (gestion des packages, gestion des environnements, gestion des librairies système, gestion de version du code ...)
-- **la collaboration** : les différentes parties prenantes au projet doivent communiquer afin d'optimiser le cycle de vie du modèle en production
-- **l'automatisation** : le cycle de vie du modèle doit être automatisé au maximum avec des *pipeline* de CI/CD
-- **le contrôle de version des modèles** : chaque modèle doit avoir une version spécifique permettant de connaître sa situation tout au long de son cycle de vie (expérimental, en production, archivé...). De plus, un modèle ne dépend pas seulement des scripts associés, mais également des données utilisées lors de l'entraînement, ce qui rend d'autant plus nécessaire une bonne gestion des versions
-- **la surveillance** : une fois déployé, il est important de s'assurer que le modèle fonctionne bien comme attendu en évaluant ses performances en temps réel
-
-![](/mlops.png){fig-align="center"}
 
 
 
