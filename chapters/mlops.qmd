@@ -3,39 +3,27 @@ title: "MLOps"
 description: |
   <br>
   Introduction aux principes du MLOps pour le passage en production des applications de machine learning.
-image: https://minio.lab.sspcloud.fr/lgaliana/generative-art/mise-en-prod/army.png
+image: /army.png
 order: 8
 href: chapters/mlops.html
 ---
 
 
-Grâce aux chapitres précédents, nous avons appris comment structurer et rendre notre projet de data science reproductible et portable en utilisant l'approche DevOps. Pour de nombreux projets de data science, cette approche peut être suffisante. Cependant, dès lors que nous intégrons un modèle de machine learning à notre projet, l'approche DevOps devient une condition nécessaire mais plus suffisante pour réussir à mettre notre modèle en production. À l'heure actuelle, la grande majorité des modèles de machine learning restent au stade de l'expérimentation, et très peu parviennent à passer en production. Pour faciliter cette transition vers la production, une nouvelle approche a émergé, prenant en compte les spécificités des modèles de machine learning : le MLOps. On peut considérer le MLOps comme la fusion de trois concepts clés, à savoir :
-
-$$
-MLOps = DataOps + DevOps + ModelOps
-$$
-
-Ce chapitre vise à définir cette approche et à présenter plusieurs outils pour l'adopter dans nos projets de data science.
+Dans le chapitre consacré au déploiement, nous avons vu qu'une majorité des projets *data-driven* restaient au stade de l'expérimentation, et qu'une des raisons pour expliquer ce phénomène était l'existence de **frictions** empêchant l'**amélioration continue** des projets. Dans le cadre des projets basés sur des modèles de machine learning, cette problématique devient encore plus cruciale : de tels modèles nécessitent des **ré-entraînements périodiques**, guidés par l'utilisation faite des modèles et les retours des utilisateurs, afin de maintenir à jour leur base de connaissance et de garantir leur pouvoir prédictif, ce qui rend les **aller-retours entre les phases d'expérimentation et de production** nécessairement fréquents. Pour faciliter la mise en place de *pipelines* favorisant ces boucles de rétroaction, une nouvelle approche a émergé : le **MLOps**, qui vise là encore à mobiliser les concepts et outils issus de l'approche **DevOps** tout en les adaptant au contexte et aux spécificités des projets de machine learning.
 
 
-# Du DevOps vers le MLOps
-
-## L'approche DevOps
 
 
-L'approche DevOps, contraction des termes "Development" et "Operations", est une méthodologie de développement logiciel visant à améliorer la collaboration et la communication entre les équipes de développement (Dev) et d'administration système (Ops). Son objectif principal est d'accélérer et d'optimiser le cycle de vie du développement logiciel, de la conception à la production, en favorisant l'automatisation, l'intégration continue et le déploiement continu (voir le chapitre sur la mise en production).
 
-Initiée en 2007, cette approche cherche à éliminer les barrières traditionnelles entre les équipes de développement et celle de l'informatique, favorisant ainsi une culture de responsabilité partagée. Ses principes fondamentaux incluent l'**automatisation** des processus, la **surveillance** continue des performances, la **gestion agile** des changements et la création d'une **boucle de rétroaction** rapide pour améliorer en permanence les processus de développement et d'exploitation.
-
-En résumé, le DevOps vise à créer un écosystème de développement collaboratif, automatisé et orienté vers l'amélioration continue. Le cycle de vie DevOps est souvent décrit à travers ces 8 phases interconnectées : 
-
-![](/devops.png){fig-align="center"}
+# Fondements du MLOps
 
 ## L'approche MLOps 
 
 L'approche MLOps s'est construite sur les bases de l'approche DevOps. En cela, on peut considérer qu'il s'agit simplement d'une extension de l'approche DevOps, développée pour répondre aux défis spécifiques liés à la gestion du cycle de vie des modèles de machine learning. Le MLOps intègre les principes de collaboration et d'automatisation propres au DevOps, mais prend également en compte tous les aspects liés aux données et aux modèles de machine learning.
 
 Le MLOps implique l'**automatisation des tâches** telles que la gestion des données, le suivi des **versions des modèles**, leurs **déploiements**, ainsi que l'**évaluation continue** de la performance des modèles en production. De la même manière que le DevOps, le MLOps met l'accent sur la collaboration étroite entre les équipes de développement et d'administration système d'une part, ainsi que les équipes de data science d'autre part. Cette collaboration est clé pour garantir une communication efficace tout au long du cycle de vie du modèle de machine learning.
+
+
 
 Ainsi, on définit généralement les 5 piliers du MLOps comme étant :
 
@@ -46,6 +34,12 @@ Ainsi, on définit généralement les 5 piliers du MLOps comme étant :
 - **la surveillance** : une fois déployé, il est important de s'assurer que le modèle fonctionne bien comme attendu en évaluant ses performances en temps réel
 
 ![](/mlops.png){fig-align="center"}
+
+
+
+
+
+
 
 # Implémentation de l'approche MLOps avec MLflow
 
@@ -120,6 +114,12 @@ Pour résumer, MLFlow permet :
 - de standardiser son script d'entraînement et donc de pouvoir l'industrialiser, pour réaliser un *fine-tuning* des hyperparamètres, par exemple
 - de *packager* ses modèles, de sorte à pouvoir les requêter de manière simple et harmonisée entre les différents frameworks
 - de stocker ses modèles de manière pertinente en leur affectant des tags et en favorisant le suivi de leur cycle de vie
+
+
+
+
+
+
 
 # Spécificités liées à la mise en production de modèles de ML
 
