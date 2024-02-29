@@ -1384,6 +1384,102 @@ git checkout appli23
 
 :::
 
-### Exo entraînements sur MLFLow
+### Industrialiser les entraînements de nos modèles
 
-y a que ça de vrai
+Pour industrialiser nos entraînements, nous allons créer des processus
+parallèles indépendants pour chaque combinaison de nos hyperparamètres. 
+Pour cela, l'outil pratique sur le SSPCloud est `Argo workflows`. 
+Chaque combinaison d'hyperparamètres sera un processus isolé à l'issue duquel sera
+loggué le résultat dans `MLFlow`. Ces entraînements auront lieu en parallèle. 
+
+
+![](https://inseefrlab.github.io/formation-mlops/slides/img/pokemon_workflow.png)
+
+
+1. Lancer un service Argo Workflows
+2. Dans `mlflow/training.yaml`
+
+```{python}
+#| eval: false
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: titanic-training-workflow-
+spec:
+  entrypoint: main
+  arguments:
+    parameters:
+      # The MLflow tracking server is responsible to log the hyper-parameter and model metrics.
+      - name: mlflow-tracking-uri
+        value: https://user-lgaliana-argo-workflows.user.lab.sspcloud.fr #<1>
+      - name: mlflow-experiment-name
+        value: titanicml #<2>
+      - name: model-training-conf-list
+        value: |
+          [
+            { "dim": 25, "lr": 0.1 },
+            { "dim": 100, "lr": 0.2 },
+            { "dim": 150, "lr": 0.3 }
+          ]
+  templates:
+    # Entrypoint DAG template
+    - name: main
+      dag:
+        tasks:
+          # Task 0: Start pipeline
+          - name: start-pipeline
+            template: start-pipeline-wt
+          # Task 1: Train model with given params
+          - name: train-model-with-params
+            dependencies: [ start-pipeline ]
+            template: run-model-training-wt
+            arguments:
+              parameters:
+                - name: dim
+                  value: "{{item.dim}}"
+                - name: lr
+                  value: "{{item.lr}}"
+            # Pass the inputs to the task using "withParam"
+            withParam: "{{workflow.parameters.model-training-conf-list}}"
+
+    # Now task container templates are defined
+    # Worker template for task 0 : start-pipeline
+    - name: start-pipeline-wt
+      inputs:
+      container:
+        image: busybox
+        command: [ sh, -c ]
+        args: [ "echo Starting pipeline" ]
+
+    # Worker template for task-1 : train model with params
+    - name: run-model-training-wt
+      inputs:
+        parameters:
+          - name: dim
+          - name: lr
+      container:
+        image: inseefrlab/formation-mlops:main
+        imagePullPolicy: Always
+        command: [sh, -c]
+        args: ["mlflow run .
+                --env-manager=local
+                -P remote_server_uri=$MLFLOW_TRACKING_URI
+                -P experiment_name=$MLFLOW_EXPERIMENT_NAME
+                -P dim={{inputs.parameters.dim}}
+                -P lr={{inputs.parameters.lr}}"]
+        env:
+          - name: MLFLOW_TRACKING_URI
+            value: "{{workflow.parameters.mlflow-tracking-uri}}"
+          - name: MLFLOW_EXPERIMENT_NAME
+            value: "{{workflow.parameters.mlflow-experiment-name}}"
+```
+1. Changer
+2. `titanicml`
+
+max_depth
+
+max_features “sqrt”, “log2”
+
+## Pour aller plus loin
+
+Créer un service label studio pour évaluer la qualité du modèle
