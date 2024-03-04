@@ -1140,25 +1140,13 @@ Pour automatiser au maximum la mise en production, on va utiliser un nouvel outi
 
 {{< include "./applications/_appli19a.qmd" >}}
 
-La page n'a pas changé. En pratique, nous n'avons pas vraiment organisé la mise en production
-et `ArgoCD` nécessite un certain formalisme. 
-Dorénavant, il convient de versionner nos
-productions pour déclencher dans `ArgoCD` des opérations. 
-Ce versionnement va se faire à deux niveaux[^gitopsrepo]:
+A présent, nous avons tous les outils à notre disposition pour construire un vrai **pipeline de CI/CD, automatisé de bout en bout**. Il va nous suffire pour cela de mettre à bout les composants :
 
-- Dans le fichier `deployment.yaml` où on va spécifier 
-la version de l'image Docker utilisée en production
-- Dans le YAML qui nous permet de _pusher_ une image sur `Dockerhub` (`.github/workflows/prod.yml`),
-on va versionner notre image `Docker`. 
+- dans la partie 4 de l'application, nous avons construit un **pipeline de CI** : on a donc seulement à faire un commit sur le dépôt de l'application pour lancer l'étape de **build** et de mise à disposition de la nouvelle image sur le `DockerHub` ;
 
+- dans l'application précédente, nous avons construit un **pipeline de CD** : `ArgoCD` suit en permanence l'état du dépôt `GitOps`, tout commit sur ce dernier lancera donc automatiquement un redéploiement de l'application.
 
-[^gitopsrepo]: 
-    Techniquement, il serait plus judicieux de séparer notre
-    projet en deux dépôts: un dépôt pour le code source et un visant à fournir
-    les fichiers YAML pour la mise en production.
-
-    ![](https://inseefrlab.github.io/formation-mlops/slides/img/ci-cd.png)
-
+Il y a donc un élément qui fait la liaison entre ces deux pipelines et qui nous sert de garde-fou en cas d'erreur : la **version de l'application**.
 
 {{< include "./applications/_appli19b.qmd" >}}
 

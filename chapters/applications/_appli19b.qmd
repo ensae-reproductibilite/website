@@ -1,7 +1,87 @@
 ::: {.callout-tip}
-## Projet d'application 19b: Mettre à jour la version en production
+## Application 19b : Mettre à jour la version en production
 
-- Mettre à jour le fichier `deployment/deployment.yaml`
+Jusqu'à maintenant, on a utilisé le tag *latest* pour définir la version de notre application. En pratique, lorsqu'on passe de la phase de développement à celle de production, on a plutôt envie de versionner proprement les versions de l'application afin de savoir ce qui est déployé. On va pour cela utiliser les ***tags*** avec `Git`, qui vont se propager au nommage de l'image `Docker`.
+
+- Modifier le fichier de CI `prod.yml` pour assurer la propagation des tags.
+
+<details>
+<summary>
+
+Fichier `.github/workflows/prod.yml` 
+
+</summary>
+
+```{.yaml filename=".github/workflows/prod.yml"}
+name: Construction image Docker
+
+on: 
+  push:
+    branches:
+      - main
+      - dev
+    tags:
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      -
+        name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: linogaliana/application-correction
+
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+```
+</details>
+
+- Dans le dépôt de l'application, mettre à jour le code dans `api/main.py` pour changer un élément de l'interface de votre documentation.
+Par exemple, mettre en gras un titre. 
+
+```{.python}
+app = FastAPI(
+    title="Prédiction de survie sur le Titanic",
+    description=
+    "<b>Application de prédiction de survie sur le Titanic</b> 🚢 <br>Une version par API pour faciliter la réutilisation du modèle 🚀" +\
+        "<br><br><img src=\"https://media.vogue.fr/photos/5faac06d39c5194ff9752ec9/1:1/w_2404,h_2404,c_limit/076_CHL_126884.jpg\" width=\"200\">"
+    )
+```
+
+- *Commit* et *push* les changements.
+
+- Tagger le commit effectué précédemment et *push* le nouveau tag : 
+
+```{.bash filename="terminal"}
+git tag v1.0.0
+git push --tags
+```
+
+- Vérifier sur le dépôt `GitHub` de l'application que ce *commit* lance bien un pipeline de CI **associé au tag v1.0.0**. Une fois terminé, vérifier sur le `DockerHub` que le tag `v1.0.0` existe bien parmi les tags disponibles de l'image.
+
+La partie CI a correctement fonctionné. Intéressons-nous à présent à la partie CD.
+
+- Sur le dépôt `GitOps` de l'application, mettre à jour la version de l'image à déployer en production dans le fichier `deployment/deployment.yaml`
 
 <details>
 <summary>
@@ -13,7 +93,7 @@ Fichier `deployment/deployment.yaml`
 #| eval: false
 #| file: "deployment/deployment.yaml"
 #| filename: "deployment/deployment.yaml"
-#| source-line-numbers: "20"
+#| source-line-numbers: "19"
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -32,65 +112,18 @@ spec:
     spec:
       containers:
       - name: titanic
-        image: username/application-correction:v0.0.1 #<1>
+        image: linogaliana/application-correction:v1.0.0
         ports:
         - containerPort: 5000
 ```
 1. Remplacer `username` par la valeur adéquate
 </details>
 
-- Après avoir _committé_ et _pushé_, observer dans `ArgoCD` le statut de votre application,
-notamment 
+- Après avoir _committé_ et _pushé_, observer dans `ArgoCD` le statut de votre application. Normalement, l'opérateur devrait avoir automatiquement identifié le changement, et mettre à jour le déploiement pour en tenir compte.
 
 ![](/argocd-waiting.png)
 
-- Comprendre la raison. Ensuite, modifier le fichier `.github/workflows/prod.yml`
-
-<details>
-<summary>
-
-Fichier `.github/workflows/prod.yml` 
-
-</summary>
-```{python}
-#| eval: false
-#| file: ".github/workflows/prod.yml"
-#| filename: ".github/workflows/prod.yml"
-#| source-line-numbers: "26"
-name: Construction image Docker
-
-on: [push]
-
-jobs:
-  docker:
-    runs-on: ubuntu-latest
-    steps:
-      -
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      -
-        name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          push: true
-          tags: username/application-correction:v0.0.1 #<1>
-```
-1. Remplacer `username` par la valeur adéquate
-</details>
-
-- Observer l'évolution de l'état de votre _pipeline_, une fois
-que l'action `Github` est terminée
-
-![](/argocd-success.png)
+- Vérifier que l'API a bien été mise à jour.
 
 :::
 
@@ -100,7 +133,7 @@ que l'action `Github` est terminée
 
 ```{.bash filename="terminal"}
 git stash #<1>
-git checkout appli19
+git checkout appli19b
 ```
 1. Pour annuler les modifications depuis le dernier _commit_
 
