@@ -1145,15 +1145,11 @@ Regardons à nouveau notre _pipeline_:
 
 Les _inputs_ de notre _pipeline_ sont donc:
 
-- La __configuration__. Ici, on peut considérer que notre YAML de configuration relèvent de cette catégorie  ;
+- La __configuration__. Ici, on peut considérer que notre YAML de configuration relève de cette catégorie  ;
 - Les __données__. Nos données sont statiques et n'ont pas vocation à évoluer. Si c'était le cas, il faudrait en tenir compte dans notre automatisation. ;
-- Le __code__. C'est l'élément principal qui évolue chez nous. On va donc faire en sorte qu'à chaque mise à jour de notre code (un _push_ sur `Github`), les étapes ultérieures (production de l'image `Docker`, etc.) se mettent à compiler. Néanmoins, il va être nécessaire de se discipliner pour ne pas mettre en production n'importe quel code. 
+- Le __code__. C'est l'élément principal qui évolue chez nous. Idéalement, on veut automatiser le processus au maximum en faisant en sorte qu'à chaque mise à jour de notre code (un _push_ sur `Github`), les étapes ultérieures (production de l'image `Docker`, etc.) se lancent. Néanmoins, on veut aussi éviter qu'une erreur puisse donner lieu à une mise en production non-fonctionnelle, on va donc maintenir une action manuelle minimale comme garde-fou.
 
-Grâce à `ArgoCD` il est possible d'automatiser la mise en production de notre
-application. Au lieu d'être fait manuellement par l'appel à `kubectl apply`,
-cela se fera en modifiant les instructions présentes dans le dossier `kubernetes/`
-de notre dépôt. Un changement de ces fichiers
-va entraîner le redéploiement automatique en synchronisant avec notre dépôt `Github`.
+Pour automatiser au maximum la mise en production, on va utiliser un nouvel outil : `ArgoCD`. Ainsi, au lieu de devoir appliquer manuellement la commande `kubectl apply` à chaque modification des fichiers de déploiement (présents dans le dossier `kubernetes/`), c'est l'**opérateur** `ArgoCD`, déployé sur le cluster, qui va détecter les changements de configuration du déploiement et les appliquer automatiquement. C'est l'approche dite **GitOps** : le dépôt `Git` du déploiement fait office de **source de vérité unique** de l'état voulu de l'application, tout changement sur ce dernier doit donc se répercuter immédiatement sur le déploiement effectif.
 
 {{< include "./applications/_appli19a.qmd" >}}
 
