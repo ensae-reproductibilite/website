@@ -1,7 +1,6 @@
 ---
-title: "MLOps"
+title: "Introduction aux enjeux du MLOps"
 description: |
-  <br>
   Introduction aux principes du MLOps pour le passage en production des applications de machine learning.
 image: /army.png
 order: 9
@@ -10,9 +9,16 @@ bibliography: references.bib
 ---
 
 
-Dans le chapitre consacré au déploiement, nous avons vu qu'une majorité des projets *data-driven* restaient au stade de l'expérimentation, et qu'une des raisons pour expliquer ce phénomène était l'existence de **frictions** empêchant l'**amélioration continue** des projets. Dans le cadre des projets basés sur des modèles de machine learning, cette problématique devient encore plus cruciale : de tels modèles nécessitent des **ré-entraînements périodiques**, guidés par l'utilisation faite des modèles et les retours des utilisateurs, afin de maintenir à jour leur base de connaissance et de garantir leur pouvoir prédictif, ce qui rend les **aller-retours entre les phases d'expérimentation et de production** nécessairement fréquents. Pour faciliter la mise en place de *pipelines* favorisant ces boucles de rétroaction, une nouvelle approche a émergé : le **MLOps**, qui vise là encore à mobiliser les concepts et outils issus de l'approche **DevOps** tout en les adaptant au contexte et aux spécificités des projets de machine learning.
-
-
+Dans les chapitres précédents,
+nous avons vu qu'une majorité des projets *data-driven* restaient au stade de l'expérimentation, et qu'une des raisons pour expliquer ce phénomène était l'existence de **frictions** empêchant l'**amélioration continue** des projets. 
+Dans le cadre des projets basés sur des modèles de _machine learning_, cette problématique devient encore plus cruciale : 
+en supplément des enjeux sur le cycle de vie de la donnée intervient la dimension supplémentaire du 
+cycle de vie des modèles. 
+Parmi les principaux enjeux,
+une question souvent éludée dans les enseignements ou les nombreuses ressources en ligne sur le _machine learning_
+est la problématique des 
+**ré-entraînements périodiques**, guidés par l'utilisation faite des modèles et les retours des utilisateurs, afin de maintenir à jour la base de connaissance des modèles et ainsi garantir leur pouvoir prédictif. Ce sujet du ré-entraînement des modèles 
+rend les **aller-retours entre les phases d'expérimentation et de production** nécessairement fréquents. Pour faciliter la mise en place de *pipelines* favorisant ces boucles de rétroaction, une nouvelle approche a émergé : le **MLOps**, qui vise là encore à mobiliser les concepts et outils issus de l'approche **_DevOps_** tout en les adaptant au contexte et aux spécificités des projets de machine learning.
 
 
 
@@ -20,39 +26,56 @@ Dans le chapitre consacré au déploiement, nous avons vu qu'une majorité des p
 
 ## Du DevOps au MLOps 
 
-L'approche MLOps s'est construite sur les bases de l'approche DevOps. En cela, on peut considérer qu'il s'agit simplement d'une extension de l'approche DevOps, développée pour répondre aux défis spécifiques liés à la gestion du cycle de vie des modèles de machine learning. Le MLOps intègre les principes de collaboration et d'automatisation propres au DevOps, mais prend également en compte tous les aspects liés aux données et aux modèles de machine learning.
+L'approche _MLOps_ s'est construite sur les bases de l'approche _DevOps_. En cela, on peut considérer qu'il s'agit simplement d'une extension de l'approche _DevOps_, développée pour répondre aux défis spécifiques liés à la gestion du cycle de vie des modèles de machine learning. Le MLOps intègre les principes de collaboration et d'automatisation propres au _DevOps_, mais prend également en compte tous les aspects liés aux données et aux modèles de machine learning.
 
 ![](/mlops.png){fig-align="center"}
 
-Le MLOps implique l'**automatisation des tâches** telles que la gestion des données, le suivi des **versions des modèles**, leurs **déploiements**, ainsi que l'**évaluation continue** de la performance des modèles en production. De la même manière que le DevOps, le MLOps met l'accent sur la collaboration étroite entre les équipes de développement et d'administration système d'une part, ainsi que les équipes de data science d'autre part. Cette collaboration est clé pour garantir une communication efficace tout au long du cycle de vie du modèle de machine learning.
+<details>
+<summary>
+A mettre en regard à la boucle du _DevOps_
+</summary>
+![](https://ensae-reproductibilite.github.io/slides/img/exploration-production.png)
+</details>
+
+Le _MLOps_ implique l'**automatisation des tâches** telles que la gestion des données, le suivi des **versions des modèles**, leurs **déploiements**, ainsi que l'**évaluation continue** de la performance des modèles en production. De la même manière que le _DevOps_, le _MLOps_ met l'accent sur la collaboration étroite entre les équipes de développement et d'administration système d'une part, ainsi que les équipes de data science d'autre part. Cette collaboration est clé pour garantir une communication efficace tout au long du cycle de vie du modèle de _machine learning_ et fludifier le passage entre les étapes d'expérimentation et de passage en production.
 
 ## Principes du MLOps
 
-On définit généralement les **piliers du MLOps** comme étant [@kreuzberger2023machine] :
+Puisque le _MLOps_ est ainsi une extension des principes du _DevOps_ aux enjeux
+du _machine learning_, les principes généraux sont les mêmes que ceux évoqués
+précédemment mais ceux-ci s'adaptent à la problématique de la gestion du 
+cycle de vie d'un modèle:
 
-- la **reproductibilité** : les résultats de chaque expérimentation, fructueuse comme infructueuse, doivent pouvoir être **reproduits** sans coût. Cela implique d'abord une certaine rigueur dans la gestion des packages, la gestion des environnements, la gestion des librairies système, le contrôle de version du code, etc. De plus, les différentes variables influant l'entraînement d'un modèle (données d'entraînement, hyper-paramètres, etc.) doivent être **versionnées** avec le modèle ;
+- la **reproductibilité** : les résultats de chaque expérimentation, fructueuse comme infructueuse, doivent pouvoir être **reproduits** sans coût. Cela implique d'abord une certaine rigueur dans la gestion des packages, la gestion des environnements, la gestion des librairies système, le contrôle de version du code, etc. 
 
-- l'**automatisation** : afin de favoriser les boucles rétroactives d'amélioration continue, le cycle de vie du modèle (tests, *build*, validation, déploiement) doit être automatisé au maximum. Les outils issus de l'approche DevOps, en particulier l'**intégration et déploiement continus (CI/CD)**, doivent être mobilisés ;
+- le __contrôle de version__: au-delà du simple suivi des versions du code, pour reproduire de manière identique
+les résultats d'un code c'est l'ensemble des _inputs_ et paramètres 
+influençant l'entraînement d'un modèle (données d'entraînement, hyper-paramètres, etc.) qui doivent
+être **versionnées** avec le modèle ;
 
-- la **collaboration** : le MLops valoriser une culture de travail collaborative autour des projets de ML, dans laquelle la communication au sein des équipes doit permettre de réduire le travail en silos. Sur le plan technique, les outils MLOps utilisés doivent favoriser le travail collaboratif sur les données, le modèle et le code utilisés par le projet ;
+- l'**automatisation** : afin de favoriser les boucles rétroactives d'amélioration continue, le cycle de vie du modèle (tests, *build*, validation, déploiement) doit être automatisé au maximum. Les outils issus de l'approche _DevOps_, en particulier l'**intégration et déploiement continus (CI/CD)**, doivent être mobilisés ;
+
+- la **collaboration** : valoriser une culture de travail collaborative autour des projets de ML, dans laquelle la communication au sein des équipes doit permettre de réduire le travail en silos et bénéficier des expertises des différents métiers parti prenantes d'un modèle (analystes, _data engineers_, devs..). Sur le plan technique, les outils MLOps utilisés doivent favoriser le travail collaboratif sur les données, le modèle et le code utilisés par le projet ;
 
 - l'**amélioration continue** : une fois déployé, il est essentiel de s'assurer que le modèle fonctionne bien comme attendu en évaluant ses performances sur des données réelles à l'aide d'outils de **monitoring en continu**. Dans le cas d'une dégradation des performances dans le temps, un **ré-entraînement périodique** ou un **entraînement en continu** du modèle doivent être envisagés.
 
 
-
-
-
-
-
+Pour plus de détails, voir @kreuzberger2023machine.
 
 
 # Implémentation de l'approche MLOps avec MLflow
 
 ## Pourquoi MLflow ?
 
-Il existe aujourd'hui de nombreux outils pour orchestrer des tâches et des pipelines de données. Parmi les plus populaires (selon leur ⭐ GitHub), on peut citer [Airflow](https://github.com/apache/airflow), [Luigi](https://github.com/spotify/luigi), [MLflow](https://github.com/mlflow/mlflow), [Argo Workflow](https://github.com/argoproj/argo-workflows), [Prefect](https://github.com/PrefectHQ/prefect) ou encore [Kubeflow](https://github.com/kubeflow/kubeflow). Il est difficile d'affirmer s'il y en a un meilleur qu'un autre ; en réalité, votre choix dépend surtout de votre infrastructure informatique et de votre projet. En l'occurrence ici, nous avons fait le choix d'utiliser MLflow pour sa simplicité d'utilisation, mais aussi parce qu'il semble être le plus adapté aux projets de machine learning. De plus, il est présent dans le catalogue du SSP Cloud, ce qui simplifie grandement son installation. Nous utiliserons également [Argo CD](https://github.com/argoproj/argo-cd) et [Argo Workflow](https://github.com/argoproj/argo-workflows) plutôt qu'[Airflow](https://github.com/apache/airflow) car ils sont optimisés pour les clusters Kubernetes (comme le SSP Cloud !).
+Il existe aujourd'hui de nombreux outils pour orchestrer des tâches et des pipelines de données. Parmi les plus populaires (selon leur ⭐ GitHub), on peut citer [Airflow](https://github.com/apache/airflow), [Luigi](https://github.com/spotify/luigi), [MLflow](https://github.com/mlflow/mlflow), [Argo Workflow](https://github.com/argoproj/argo-workflows), [Prefect](https://github.com/PrefectHQ/prefect) ou encore [Kubeflow](https://github.com/kubeflow/kubeflow), [`BentoML`](https://www.bentoml.com/)... Il est difficile d'affirmer s'il y en a un meilleur qu'un autre ; en réalité, votre choix dépend surtout de votre infrastructure informatique et de votre projet. En l'occurrence ici, nous avons fait le choix d'utiliser `MLflow` pour sa simplicité d'utilisation grâce à une interface web bien faite, parce qu'il intègre l'ensemble du cycle de vie d'un modèle et également parce qu'il s'intègre très bien avec Kubernetes. De plus, il est présent dans le catalogue du SSP Cloud, ce qui simplifie grandement son installation. Afin d'intégrer les dimensions d'intégration et de déploiement
+continus, nous utiliserons également [Argo CD](https://github.com/argoproj/argo-cd) et [Argo Workflow](https://github.com/argoproj/argo-workflows) dans la boucle. Ceux-ci sont privilégiés par
+rapport à [Airflow](https://github.com/apache/airflow) car ils sont optimisés pour les clusters _Kubernetes_ qui représentent aujourd'hui
+la norme des _cloud_ en ligne ou _on premise_.
 
-MLflow est une plateforme qui permet d'optimiser le développement du cycle de vie d'un modèle de machine learning. Elle permet de suivre en détail les différentes expérimentations, de *packager* son code pour garantir la reproductibilité, et de servir un modèle à des utilisateurs. MLFlow possède également une API qui permet d'être compatible avec la majorité des librairies de machine learning (PyTorch, Scikit-learn, XGBoost, etc.) mais également différents langages (Python, R et Java).
+![Vue d'ensemble de `MLFlow`. Source: [https://dzlab.github.io](https://dzlab.github.io/ml/2020/07/12/ml-ci-mlflow/)](https://ensae-reproductibilite.github.io/slides/img/mlflow-overview.png)
+
+`MLflow` est une plateforme qui permet d'optimiser le développement du cycle de vie d'un modèle de _machine learning_. Elle permet de suivre en détail les différentes expérimentations, de *packager* son code pour garantir la reproductibilité, et de servir un modèle à des utilisateurs. `MLFlow` possède également une API qui permet d'être compatible avec la majorité des librairies de _machine learning_ (`PyTorch`, `Scikit-learn`, `XGBoost`, etc.) mais également différents langages (`Python`, `R` et `Java`).
+
 
 
 ## Les projets MLflow
@@ -74,9 +97,6 @@ Projet_ML/
 └── requirements.txt
 ```
 
-
-## Les modèles MLflow
-
 En plus de *packager* son projet, MLflow permet également de *packager* son modèle, **quel que soit** la librairie de machine learning sous-jacente utilisée (parmi celles [compatibles avec MLflow](https://mlflow.org/docs/latest/models.html#built-in-model-flavors), c'est-à-dire toutes les librairies que vous utilisez !). Ainsi, deux modèles entraînés avec des librairies différentes, disons PyTorch et Keras, peuvent être déployés et requêtés de la même manière grâce à cette surcouche ajoutée par MLflow.
 
 ![](/mlflow-models.png){fig-align="center"}
@@ -87,11 +107,44 @@ En plus de *packager* son projet, MLflow permet également de *packager* son mod
 Il est également possible de *packager* son propre modèle personnalisé ! Pour cela vous pouvez suivre le tutoriel présent dans la [documentation](https://mlflow.org/docs/latest/traditional-ml/creating-custom-pyfunc/index.html?highlight=custom%20models).
 :::
 
-## Le serveur de suivi (*tracking server*)
 
-MLflow fournit un serveur de suivi qui comprend à la fois une interface graphique ergonomique ainsi qu'une API permettant de *logger* différents paramètres, métriques, fichiers, etc. durant l'entraînement de votre modèle de machine learning. Le *tracking server* est très utile pour comparer les différentes expérimentations que vous avez effectuées, pour les stocker et également pour être capable de les reproduire. En effet, chaque *run* sauvegarde la source des données utilisées, mais également le commit sur lequel le *run* est basé.
+Autrement dit, un projet MLFlow archive l'ensemble des éléments nécessaires
+pour reproduire un entraînement donné d'un modèle ou pour réutiliser
+celui-ci à tout moment. 
+
+
+
+## Le serveur de suivi (_tracking server_)
+
+Le tracking server est le lieu où sont archivés
+l'ensemble des entraînements d'un modèle. Attention, il ne s'agit pas du 
+serveur sur lequel les modèles sont entraînés mais de celui où les entraînements
+sont archivés après avoir eu lieu. Au-delà de stocker seulement les poids d'un modèle,
+c'est l'ensemble de l'environnement nécessaire qui peut être retrouvé dans ce serveur. 
 
 ![](/tracking-server.png){fig-align="center"}
+
+
+Techniquement, cela prend la forme d'une API et d'une interface utilisateur pour enregistrer les paramètres, les versions du code, les métriques ou encore les artefacts associés à un entraînement.
+
+![Source: Databricks](https://ensae-reproductibilite.github.io/slides/img/mlflow-tracking.png)
+
+En arrière plan, MLFlow va enregistrer tout ceci dans un _bucket_ S3. Néanmoins, l'utilisateur
+n'aura pas à se soucier de cela puisque c'est `MLFLow` qui fera l'interface entre l'utilisateur
+et le système de stockage. Avec son API, `MLFLow` fournit même une manière simplifiée de
+récupérer ces objets archivés, par exemple avec un code prenant la forme
+
+```python
+import mlflow
+model = mlflow.pyfunc.load_model(model_uri="runs:/d16076a3ec534311817565e6527539c")
+```
+
+Le *tracking server* est très utile pour comparer les différentes expérimentations que vous avez effectuées, pour les stocker et également pour être capable de les reproduire. En effet, chaque *run* sauvegarde la source des données utilisées, mais également le _commit_ sur lequel le *run* est basé.
+
+A la manière de `Git` qui permet d'identifier chaque moment de l'histoire d'un projet
+à partir d'un identifiant unique, `MLFlow` permet de récupérer
+chaque entraînement d'un modèle à partir d'un SHA. Néanmoins, en pratique, certains modèles
+ont un statut à part, notamment ceux en production. 
 
 
 ## L'entrepôt de modèles (*model registry*)
@@ -119,10 +172,6 @@ Pour résumer, MLFlow permet :
 - de standardiser son script d'entraînement et donc de pouvoir l'industrialiser, pour réaliser un *fine-tuning* des hyperparamètres, par exemple
 - de *packager* ses modèles, de sorte à pouvoir les requêter de manière simple et harmonisée entre les différents frameworks
 - de stocker ses modèles de manière pertinente en leur affectant des tags et en favorisant le suivi de leur cycle de vie
-
-
-
-
 
 
 
