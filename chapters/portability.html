@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.550">
+<meta name="generator" content="quarto-1.4.551">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -326,7 +326,7 @@ Dérouler les <em>slides</em> ci-dessous ou <a href="https://ensae-reproductibil
 <p>Ces outils vont nous permettre de <strong>normaliser l’environnement afin de produire un projet portable</strong>. Cette étape est primordiale lorsque l’on se préoccupe de la mise en production d’un projet, car elle assure une transition relativement indolore entre l’environnement de développement et celui de production.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://img.devrant.com/devrant/rant/r_174386_yx6zV.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+<p><img src="https://img.devrant.com/devrant/rant/r_174386_yx6zV.jpg" class="img-fluid figure-img"></p>
 <figcaption>Image empruntée à <a href="https://devrant.com/rants/174386/when-i-say-but-it-works-on-my-machine">devrant.com</a></figcaption>
 </figure>
 </div>
@@ -1038,7 +1038,7 @@ Voir le fichier <code>environment.yml</code> généré
 <h1>Les conteneurs 🐋</h1>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="https://external-preview.redd.it/aR6WdUcsrEgld5xUlglgKX_0sC_NlryCPTXIHk5qdu8.jpg?auto=webp&amp;s=5fe64dd318eec71711d87805d43def2765dd83cd" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+<p><img src="https://external-preview.redd.it/aR6WdUcsrEgld5xUlglgKX_0sC_NlryCPTXIHk5qdu8.jpg?auto=webp&amp;s=5fe64dd318eec71711d87805d43def2765dd83cd" class="img-fluid figure-img"></p>
 <figcaption>Image trouvée sur <a href="https://www.reddit.com/r/ProgrammerHumor/comments/cw58z7/it_works_on_my_machine/">reddit</a></figcaption>
 </figure>
 </div>
@@ -1173,7 +1173,7 @@ Mettre à disposition son image <code>Docker</code>
 <p>Ce fichier texte contient une série de commandes qui permettent de construire l’image. Ces fichiers peuvent être plus ou moins complexes selon l’application que l’on cherche à conteneuriser, mais leur structure est assez normalisée.</p>
 <p>L’idée est de partir d’une couche de base (une distribution Linux minimaliste) et y ajouter des couches en fonction des besoins de notre application.</p>
 <p>Pour illustrer cela, analysons ligne à ligne le <code>Dockerfile</code> nécessaire pour construire une image <code>Docker</code> de notre application <code>Flask.</code></p>
-<div id="5819b564" class="cell" data-execution_count="1">
+<div id="127fb011" class="cell" data-execution_count="1">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>Dockerfile</strong></pre>
@@ -1318,7 +1318,7 @@ L’instruction <code>COPY</code>
 </div>
 <div class="sourceCode" id="cb45" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> docker build . <span class="at">-t</span> myflaskapp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="fc40033d" class="cell" data-execution_count="2">
+<div id="22fc54d6" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb46" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>Sending build context to Docker daemon  <span class="fl">4.096</span><span class="er">kB</span></span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>Step <span class="dv">1</span><span class="op">/</span><span class="dv">10</span> : FROM ubuntu:<span class="fl">20.04</span></span>
 <span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a> <span class="op">---&gt;</span> <span class="dv">825</span><span class="er">d55fb6340</span></span>
@@ -1622,6 +1622,24 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/ensae-reproductibilite\.github\.io\/website\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
   function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
@@ -1656,7 +1674,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
     });
   }
   const xrefs = window.document.querySelectorAll('a.quarto-xref');
