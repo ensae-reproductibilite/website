@@ -62,132 +62,37 @@ influençant l'entraînement d'un modèle (données d'entraînement, hyper-param
 
 Pour plus de détails, voir @kreuzberger2023machine.
 
-
-# Implémentation de l'approche MLOps avec MLflow
-
-## Pourquoi MLflow ?
-
-Il existe aujourd'hui de nombreux outils pour orchestrer des tâches et des pipelines de données. Parmi les plus populaires (selon leur ⭐ GitHub), on peut citer [Airflow](https://github.com/apache/airflow), [Luigi](https://github.com/spotify/luigi), [MLflow](https://github.com/mlflow/mlflow), [Argo Workflow](https://github.com/argoproj/argo-workflows), [Prefect](https://github.com/PrefectHQ/prefect) ou encore [Kubeflow](https://github.com/kubeflow/kubeflow), [`BentoML`](https://www.bentoml.com/)... Il est difficile d'affirmer s'il y en a un meilleur qu'un autre ; en réalité, votre choix dépend surtout de votre infrastructure informatique et de votre projet. En l'occurrence ici, nous avons fait le choix d'utiliser `MLflow` pour sa simplicité d'utilisation grâce à une interface web bien faite, parce qu'il intègre l'ensemble du cycle de vie d'un modèle et également parce qu'il s'intègre très bien avec Kubernetes. De plus, il est présent dans le catalogue du SSP Cloud, ce qui simplifie grandement son installation. Afin d'intégrer les dimensions d'intégration et de déploiement
-continus, nous utiliserons également [Argo CD](https://github.com/argoproj/argo-cd) et [Argo Workflow](https://github.com/argoproj/argo-workflows) dans la boucle. Ceux-ci sont privilégiés par
-rapport à [Airflow](https://github.com/apache/airflow) car ils sont optimisés pour les clusters _Kubernetes_ qui représentent aujourd'hui
-la norme des _cloud_ en ligne ou _on premise_.
-
-![Vue d'ensemble de `MLFlow`. Source: [https://dzlab.github.io](https://dzlab.github.io/ml/2020/07/12/ml-ci-mlflow/)](https://ensae-reproductibilite.github.io/slides/img/mlflow-overview.png)
-
-`MLflow` est une plateforme qui permet d'optimiser le développement du cycle de vie d'un modèle de _machine learning_. Elle permet de suivre en détail les différentes expérimentations, de *packager* son code pour garantir la reproductibilité, et de servir un modèle à des utilisateurs. `MLFlow` possède également une API qui permet d'être compatible avec la majorité des librairies de _machine learning_ (`PyTorch`, `Scikit-learn`, `XGBoost`, etc.) mais également différents langages (`Python`, `R` et `Java`).
-
-
-
-## Les projets MLflow
-
-MLflow propose un format pour *packager* son projet de data science afin de favoriser la réutilisation et la reproductibilité du code. Ce format s'appelle tout simplement *[MLflow Project](https://mlflow.org/docs/latest/projects.html)*. Concrètement, un *MLflow project* n'est rien d'autre qu'un répertoire contenant le code et les ressources nécessaires (données, fichiers de configuration...) pour l'exécution de votre projet. Il est résumé par un fichier `MLproject` qui liste les différentes commandes pour exécuter une pipeline ainsi que les dépendances nécessaires. En général, un projet MLflow a la structure suivante :
-
-```
-Projet_ML/
-├── artifacts/
-│   ├── model.bin
-│   └── train_text.txt
-├── code/
-│   ├── main.py
-│   └── preprocessing.py
-├── MLmodel
-├── conda.yaml
-├── python_env.yaml
-├── python_model.pkl
-└── requirements.txt
-```
-
-En plus de *packager* son projet, MLflow permet également de *packager* son modèle, **quel que soit** la librairie de machine learning sous-jacente utilisée (parmi celles [compatibles avec MLflow](https://mlflow.org/docs/latest/models.html#built-in-model-flavors), c'est-à-dire toutes les librairies que vous utilisez !). Ainsi, deux modèles entraînés avec des librairies différentes, disons PyTorch et Keras, peuvent être déployés et requêtés de la même manière grâce à cette surcouche ajoutée par MLflow.
-
-![](/mlflow-models.png){fig-align="center"}
-
-::: {.callout-tip}
-## Tip
-
-Il est également possible de *packager* son propre modèle personnalisé ! Pour cela vous pouvez suivre le tutoriel présent dans la [documentation](https://mlflow.org/docs/latest/traditional-ml/creating-custom-pyfunc/index.html?highlight=custom%20models).
-:::
-
-
-Autrement dit, un projet MLFlow archive l'ensemble des éléments nécessaires
-pour reproduire un entraînement donné d'un modèle ou pour réutiliser
-celui-ci à tout moment. 
-
-
-
-## Le serveur de suivi (_tracking server_)
-
-Le tracking server est le lieu où sont archivés
-l'ensemble des entraînements d'un modèle. Attention, il ne s'agit pas du 
-serveur sur lequel les modèles sont entraînés mais de celui où les entraînements
-sont archivés après avoir eu lieu. Au-delà de stocker seulement les poids d'un modèle,
-c'est l'ensemble de l'environnement nécessaire qui peut être retrouvé dans ce serveur. 
-
-![](/tracking-server.png){fig-align="center"}
-
-
-Techniquement, cela prend la forme d'une API et d'une interface utilisateur pour enregistrer les paramètres, les versions du code, les métriques ou encore les artefacts associés à un entraînement.
-
-![Source: Databricks](https://ensae-reproductibilite.github.io/slides/img/mlflow-tracking.png)
-
-En arrière plan, MLFlow va enregistrer tout ceci dans un _bucket_ S3. Néanmoins, l'utilisateur
-n'aura pas à se soucier de cela puisque c'est `MLFLow` qui fera l'interface entre l'utilisateur
-et le système de stockage. Avec son API, `MLFLow` fournit même une manière simplifiée de
-récupérer ces objets archivés, par exemple avec un code prenant la forme
-
-```python
-import mlflow
-model = mlflow.pyfunc.load_model(model_uri="runs:/d16076a3ec534311817565e6527539c")
-```
-
-Le *tracking server* est très utile pour comparer les différentes expérimentations que vous avez effectuées, pour les stocker et également pour être capable de les reproduire. En effet, chaque *run* sauvegarde la source des données utilisées, mais également le _commit_ sur lequel le *run* est basé.
-
-A la manière de `Git` qui permet d'identifier chaque moment de l'histoire d'un projet
-à partir d'un identifiant unique, `MLFlow` permet de récupérer
-chaque entraînement d'un modèle à partir d'un SHA. Néanmoins, en pratique, certains modèles
-ont un statut à part, notamment ceux en production. 
-
-
-## L'entrepôt de modèles (*model registry*)
-
-Une fois que l'on a effectué différentes expérimentations et pu sélectionner les modèles qui nous satisfont, il est temps de passer à l'étape suivante du cycle de vie d'un modèle. En effet, le modèle choisi doit ensuite pouvoir passer dans un environnement de production ou de pré-production. Or, connaître l'état d'un modèle dans son cycle de vie nécessite une organisation très rigoureuse et n'est pas si aisé. MLflow a développé une fonctionnalité qui permet justement de simplifier cette gestion des versions des modèles grâce à son [Model Registry](https://mlflow.org/docs/latest/model-registry.html). Cet entrepôt permet d'ajouter des tags et des alias à nos modèles pour définir leur position dans leur cycle de vie et ainsi pouvoir les récupérer de manière efficace.
-
-De manière générale, un modèle de machine learning passe par 4 stades qu'il est nécessaire de connaître en tout temps :
-
-1. **Expérimental**
-2. **En évaluation**
-3. **En production**
-4. **Archivé**
-
-![](/mlflow-model-registry.png){fig-align="center"}
-
-## MLflow en résumé
-
-MLflow est donc un projet open-source qui fournit une plateforme pour suivre le cycle de vie d'un modèle de machine learning de bout en bout. Ce n'est pas le seul outil disponible et il n'est peut-être pas le plus adapté à certains de vos projets précis. En revanche, il présente selon nous plusieurs avantages, en premier lieu sa prise en main très simple et sa capacité à répondre aux besoins de l'approche MLOps. Il faut garder à l'esprit que cet environnement est encore très récent et que de nouveaux projets open-source émergent chaque jour, donc il est nécessaire de rester à jour sur les dernières évolutions.
-
-Pour résumer, MLFlow permet :
-
-- de simplifier le suivi de l'entraînement des modèles de machine learning grâce à son API et à son *tracking server*
-- d'intégrer les principaux frameworks de machine learning de manière simple
-- d'intégrer son propre framework si besoin
-- de standardiser son script d'entraînement et donc de pouvoir l'industrialiser, pour réaliser un *fine-tuning* des hyperparamètres, par exemple
-- de *packager* ses modèles, de sorte à pouvoir les requêter de manière simple et harmonisée entre les différents frameworks
-- de stocker ses modèles de manière pertinente en leur affectant des tags et en favorisant le suivi de leur cycle de vie
-
-
-
 # Spécificités liées à la mise en production de modèles de ML
 
 ## 1️⃣ Entraînements des modèles
 
 
-La première étape d'un projet de machine learning correspond à tout ce que l'on effectue jusqu'à l'entraînement des premiers modèles. Cette étape est un processus itératif et fastidieux qui ne suit pas un développement linéaire : les méthodes de récupération des données peuvent être changeantes, le preprocessing peut varier, de même que la sélection des features pour le modèle (feature engineering), et les algorithmes testés peuvent être nombreux... Garder une trace de tous les essais effectués apparaît indispensable afin de savoir ce qui a fonctionné ou non. Cette phase exploratoire est rendue très simple grâce au *Tracking Server* de MLflow. Lors de l'exécution d'un *run*, MLflow enregistre tout un tas de métadonnées qui permettent de retrouver toutes les informations relatives à ce *run* : la date, le hash du commit, les paramètres du modèle, le dataset utilisé, les métriques spécifiées, etc. Cela permet non seulement de comparer les différents essais réalisés, mais aussi d'être capable de reproduire un *run* passé.
+La première étape d'un projet de _machine learning_ correspond à tout ce que l'on effectue jusqu'à l'entraînement des premiers modèles. Cette étape est un processus itératif et fastidieux qui ne suit pas un développement linéaire : les méthodes de récupération des données peuvent être changeantes, le _preprocessing_ peut varier, de même que la sélection des _features_ pour le modèle (_feature engineering_), et les algorithmes testés peuvent être nombreux...
+On est donc aux antipodes des hypothèses habituelles de stabilité nécessaires à l'entraînement
+et la validité externe dans les enseignements de _machine learning_. 
 
-De manière générale, cette phase exploratoire est réalisée par le *data scientist* dans des notebooks. Ces notebooks sont en effet parfaitement adaptés pour cette étape puisqu'ils permettent une grande flexibilité et sont particulièrement commodes pour effectuer des tests. En revanche, lorsque l'on souhaite aller plus loin et que l'on vise une mise en production de son projet, les notebooks ne sont plus adaptés, et cela pour diverses raisons :
+Garder une trace de tous les essais effectués apparaît indispensable afin de savoir ce qui a fonctionné ou non. 
+Le besoin d'archiver ne concerne pas que les métriques de performances associées à un jeu de paramètres. Ceux-ci
+ne sont qu'une partie des ingrédients nécessaires pour aboutir à une estimation. L'ensemble des _inputs_ d'un
+processus de production (code, données, configuration logicielle, etc.) est également à conserver pour
+être en mesure de répliquer une expérimentation. 
 
-- la collaboration est grandement limitée à cause d'une compatibilité très faible avec les outils de contrôle de version standard (git).
-- l'automatisation de pipeline est beaucoup plus compliquée et peu lisible. Il existe cependant des packages qui permettent d'automatiser des *pipelines* de notebooks comme [Elyra](https://github.com/elyra-ai/elyra) par exemple, mais ce n'est clairement pas l'approche que nous vous recommandons.
-- Les *workflows* sont souvent moins clairs et peu reproductibles, avec souvent une organisation peu optimale (toutes les fonctions définies dans le même fichier affectant la lisibilité du code par exemple).
-- Les notebooks offrent généralement une modularité insuffisante lorsque l'on veut travailler avec des composants de machine learning complexes.
+::: {.callout-note}
+## Le _tracking server_ de `MLFlow`, un environnement idéal pour archiver des expérimentations
+
+La phase exploratoire est rendue très simple grâce au *Tracking Server* de `MLFlow`.
+Comme cela sera expliqué ultérieurement, lors de l'exécution d'un *run*,
+MLflow enregistre tout un tas de métadonnées qui permettent de retrouver toutes les informations relatives à ce *run* : la date, le hash du commit, les paramètres du modèle, le dataset utilisé, les métriques spécifiées, etc. Cela permet non seulement de comparer les différents essais réalisés, mais aussi d'être capable de reproduire un *run* passé.
+:::
+
+
+
+De manière générale, cette phase exploratoire est réalisée par le *data scientist* ou le _ML engineer_ dans des _notebooks_. Ces _notebooks_ sont en effet parfaitement adaptés pour cette étape puisqu'ils permettent une grande flexibilité et sont particulièrement commodes pour effectuer des tests. En revanche, lorsque l'on souhaite aller plus loin et que l'on vise une mise en production de son projet, les notebooks ne sont plus adaptés, et cela pour diverses raisons :
+
+- la collaboration est grandement limitée à cause d'une compatibilité très faible avec les outils de contrôle de version standard (notamment `Git`).
+- l'automatisation de _pipeline_ est beaucoup plus compliquée et peu lisible. Il existe certes des packages qui permettent d'automatiser des *pipelines* de notebooks comme [Elyra](https://github.com/elyra-ai/elyra) par exemple, mais ce n'est clairement pas l'approche que nous vous recommandons car les scripts sont beaucoup moins usine à gaz.
+- Les *workflows* sont souvent moins clairs, mal organisés (toutes les fonctions définies dans le même fichier affectant la lisibilité du code par exemple) voire peu reproductibles car les cellules sont rarement ordonnées de sorte à exécuter le code de manière linéaire.
+- Les notebooks offrent généralement une modularité insuffisante lorsque l'on veut travailler avec des composants de _machine learning_ complexes.
 
 Toutes ces raisons nous amènent à vous conseiller de réduire au maximum votre utilisation de notebooks et de restreindre leur utilisation à la phase exploratoire ou à la diffusion de résultats/rapports. Passer le plus tôt possible à des scripts `.py` vous permettra de réduire le coût de la mise en production. Pour reprendre ce qui a déjà été évoqué dans le chapitre [Architecture des projets](/chapters/projects-architecture.qmd), nous vous invitons à favoriser une structure modulaire de sorte à pouvoir industrialiser votre projet.
 
@@ -199,14 +104,16 @@ Le *batch training* est la manière usuelle d'entraîner un modèle de machine l
 
 ### Online training
 
-L'*online training* se présente comme l'antithèse du *batch training*, car il se déroule de manière incrémentale. Dans ce mode d'entraînement, de petits lots de données sont envoyés séquentiellement à l'algorithme, ce qui permet à celui-ci de mettre à jour ses poids à chaque nouvelle donnée reçue. Cette approche permet au modèle de détecter efficacement les variations dans les données en temps réel. Il est toutefois crucial de bien ajuster le learning rate afin d'éviter que le modèle oublie les informations apprises sur les données précédentes. L'un des principaux avantages de cette méthode est sa capacité à permettre un entraînement continu même lorsque le modèle est en production, ce qui se traduit par une réduction des coûts computationnels. De plus, l'*online training* est particulièrement adapté aux situations où les données d'entrée évoluent fréquemment, comme dans le cas des prédictions de cours de bourse. Cependant, sa mise en œuvre dans un contexte de production est bien plus complexe que celle du *batch training*, et les frameworks traditionnels de machine learning tels que Scikit-learn, PyTorch, TensorFlow et Keras ne sont pas compatibles avec cette approche.
+L'*online training* se présente comme l'antithèse du *batch training*, car il se déroule de manière incrémentale. Dans ce mode d'entraînement, de petits lots de données sont envoyés séquentiellement à l'algorithme, ce qui permet à celui-ci de mettre à jour ses poids à chaque nouvelle donnée reçue. Cette approche permet au modèle de détecter efficacement les variations dans les données en temps réel. Il est toutefois crucial de bien ajuster le learning rate afin d'éviter que le modèle oublie les informations apprises sur les données précédentes. L'un des principaux avantages de cette méthode est sa capacité à permettre un entraînement continu même lorsque le modèle est en production, ce qui se traduit par une réduction des coûts computationnels. De plus, l'*online training* est particulièrement adapté aux situations où les données d'entrée évoluent fréquemment, comme dans le cas des prédictions de cours de bourse. Cependant, sa mise en œuvre dans un contexte de production est bien plus complexe que celle du *batch training*, et les _frameworks_ traditionnels de machine learning tels que Scikit-learn, PyTorch, TensorFlow et Keras ne sont pas compatibles avec cette approche.
 
 
 ### Distribuer l'optimisation des hyperparamètres
 
 Une autre spécificité des modèles de machine learning réside dans le nombre important d'hyperparamètres à optimiser, lesquels peuvent sensiblement impacter les performances du modèle. L'approche standard pour réaliser cette optimisation est ce qu'on appelle un *Grid Search*. Il s'agit simplement de lister toutes les combinaisons d'hyperparamètres à tester et d'entraîner successivement des modèles avec ces combinaisons prédéfinies. Il n'est pas difficile de comprendre que cette technique est très coûteuse en temps de calcul lorsque le nombre d'hyperparamètres à optimiser et leurs modalités à tester sont élevés. Cependant, cette optimisation est indispensable pour entraîner le meilleur modèle pour notre tâche, et si s'inspirer de la littérature est crucial pour limiter le domaine d'optimisation de nos hyperparamètres, réaliser un *Grid Search* est une étape incontournable.
 
-Ainsi, pour s'inscrire dans l'approche du MLOps, une bonne méthode est d'automatiser cette optimisation des hyperparamètres en la distribuant sur un cluster (il va sans dire que l'approche MLOps nécessite une infrastructure adéquate !). L'idée est de définir un workflow qui effectue l'entraînement d'un modèle et enregistre les informations dans MLFlow. Pour cela, il existe un moteur de workflow populaire pour orchestrer des tâches parallèles sur un cluster Kubernetes : [Argo Workflow](https://github.com/argoproj/argo-workflows). Le principe est de définir un *workflow* dans lequel chaque étape correspond à un conteneur contenant uniquement ce qui est strictement nécessaire à l'exécution de cette étape. Ainsi, on s'approche de la perfection en ce qui concerne la reproductibilité, car on maîtrise totalement les installations nécessaires à l'exécution de notre entraînement. Un *workflow* à plusieurs étapes peut ainsi être modélisé comme un graphe acyclique orienté, et l'exemple ci-dessous représente un cas d'optimisation d'hyperparamètres :
+Ainsi, pour s'inscrire dans l'approche du MLOps, une bonne méthode est d'automatiser cette optimisation des hyperparamètres en la distribuant sur un _cluster_ lorsqu'on dispose de l'infrastructure adéquate. 
+L'idée est de créer des processus indépendants, chacun liés à une combinaison de nos hyperparamètres, et d'entraîner notre modèle sur ceux-ci puis d'enregister les informations à archiver dans un environnement adéquat, par exemple dans `MLFlow`.
+Il existe un moteur de workflow populaire pour orchestrer des tâches parallèles sur un cluster Kubernetes : [Argo Workflow](https://github.com/argoproj/argo-workflows). Le principe est de définir un *workflow* dans lequel chaque étape correspond à un conteneur contenant uniquement ce qui est strictement nécessaire à l'exécution de cette étape. Ainsi, on s'approche de la perfection en ce qui concerne la reproductibilité, car on maîtrise totalement les installations nécessaires à l'exécution de notre entraînement. Un *workflow* à plusieurs étapes peut ainsi être modélisé comme un graphe acyclique orienté, et l'exemple ci-dessous représente un cas d'optimisation d'hyperparamètres :
 
 ![Workflow d'optimisation d'hyperparamètres en parallèle](/dag-argo-workflow.png){fig-align="center"}
 
@@ -321,3 +228,115 @@ Ainsi, l'approche MLOps engendre aussi des défis managériaux qui impliquent de
 
 
 ![Gouvernance d'un projet de machine learning](/mlops_lifecycle_complete){fig-align="center"}
+
+
+# Implémentation de l'approche MLOps avec MLflow
+
+## Pourquoi MLflow ?
+
+Il existe aujourd'hui de nombreux outils pour orchestrer des tâches et des pipelines de données. Parmi les plus populaires (selon leur ⭐ GitHub), on peut citer [Airflow](https://github.com/apache/airflow), [Luigi](https://github.com/spotify/luigi), [MLflow](https://github.com/mlflow/mlflow), [Argo Workflow](https://github.com/argoproj/argo-workflows), [Prefect](https://github.com/PrefectHQ/prefect) ou encore [Kubeflow](https://github.com/kubeflow/kubeflow), [`BentoML`](https://www.bentoml.com/)... Il est difficile d'affirmer s'il y en a un meilleur qu'un autre ; en réalité, votre choix dépend surtout de votre infrastructure informatique et de votre projet. En l'occurrence ici, nous avons fait le choix d'utiliser `MLflow` pour sa simplicité d'utilisation grâce à une interface web bien faite, parce qu'il intègre l'ensemble du cycle de vie d'un modèle et également parce qu'il s'intègre très bien avec Kubernetes. De plus, il est présent dans le catalogue du SSP Cloud, ce qui simplifie grandement son installation. Afin d'intégrer les dimensions d'intégration et de déploiement
+continus, nous utiliserons également [Argo CD](https://github.com/argoproj/argo-cd) et [Argo Workflow](https://github.com/argoproj/argo-workflows) dans la boucle. Ceux-ci sont privilégiés par
+rapport à [Airflow](https://github.com/apache/airflow) car ils sont optimisés pour les clusters _Kubernetes_ qui représentent aujourd'hui
+la norme des _cloud_ en ligne ou _on premise_.
+
+![Vue d'ensemble de `MLFlow`. Source: [https://dzlab.github.io](https://dzlab.github.io/ml/2020/07/12/ml-ci-mlflow/)](https://ensae-reproductibilite.github.io/slides/img/mlflow-overview.png)
+
+`MLflow` est une plateforme qui permet d'optimiser le développement du cycle de vie d'un modèle de _machine learning_. Elle permet de suivre en détail les différentes expérimentations, de *packager* son code pour garantir la reproductibilité, et de servir un modèle à des utilisateurs. `MLFlow` possède également une API qui permet d'être compatible avec la majorité des librairies de _machine learning_ (`PyTorch`, `Scikit-learn`, `XGBoost`, etc.) mais également différents langages (`Python`, `R` et `Java`).
+
+
+
+## Les projets MLflow
+
+MLflow propose un format pour *packager* son projet de data science afin de favoriser la réutilisation et la reproductibilité du code. Ce format s'appelle tout simplement *[MLflow Project](https://mlflow.org/docs/latest/projects.html)*. Concrètement, un *MLflow project* n'est rien d'autre qu'un répertoire contenant le code et les ressources nécessaires (données, fichiers de configuration...) pour l'exécution de votre projet. Il est résumé par un fichier `MLproject` qui liste les différentes commandes pour exécuter une pipeline ainsi que les dépendances nécessaires. En général, un projet MLflow a la structure suivante :
+
+```
+Projet_ML/
+├── artifacts/
+│   ├── model.bin
+│   └── train_text.txt
+├── code/
+│   ├── main.py
+│   └── preprocessing.py
+├── MLmodel
+├── conda.yaml
+├── python_env.yaml
+├── python_model.pkl
+└── requirements.txt
+```
+
+En plus de *packager* son projet, MLflow permet également de *packager* son modèle, **quel que soit** la librairie de machine learning sous-jacente utilisée (parmi celles [compatibles avec MLflow](https://mlflow.org/docs/latest/models.html#built-in-model-flavors), c'est-à-dire toutes les librairies que vous utilisez !). Ainsi, deux modèles entraînés avec des librairies différentes, disons PyTorch et Keras, peuvent être déployés et requêtés de la même manière grâce à cette surcouche ajoutée par MLflow.
+
+![](/mlflow-models.png){fig-align="center"}
+
+::: {.callout-tip}
+Il est également possible de *packager* son propre modèle personnalisé ! Pour cela vous pouvez suivre le tutoriel présent dans la [documentation](https://mlflow.org/docs/latest/traditional-ml/creating-custom-pyfunc/index.html?highlight=custom%20models).
+:::
+
+
+Autrement dit, un projet MLFlow archive l'ensemble des éléments nécessaires
+pour reproduire un entraînement donné d'un modèle ou pour réutiliser
+celui-ci à tout moment. 
+
+
+
+## Le serveur de suivi (_tracking server_)
+
+Le tracking server est le lieu où sont archivés
+l'ensemble des entraînements d'un modèle. Attention, il ne s'agit pas du 
+serveur sur lequel les modèles sont entraînés mais de celui où les entraînements
+sont archivés après avoir eu lieu. Au-delà de stocker seulement les poids d'un modèle,
+c'est l'ensemble de l'environnement nécessaire qui peut être retrouvé dans ce serveur. 
+
+![](/tracking-server.png){fig-align="center"}
+
+
+Techniquement, cela prend la forme d'une API et d'une interface utilisateur pour enregistrer les paramètres, les versions du code, les métriques ou encore les artefacts associés à un entraînement.
+
+![Source: Databricks](https://ensae-reproductibilite.github.io/slides/img/mlflow-tracking.png)
+
+En arrière plan, MLFlow va enregistrer tout ceci dans un _bucket_ S3. Néanmoins, l'utilisateur
+n'aura pas à se soucier de cela puisque c'est `MLFLow` qui fera l'interface entre l'utilisateur
+et le système de stockage. Avec son API, `MLFLow` fournit même une manière simplifiée de
+récupérer ces objets archivés, par exemple avec un code prenant la forme
+
+```python
+import mlflow
+model = mlflow.pyfunc.load_model(model_uri="runs:/d16076a3ec534311817565e6527539c")
+```
+
+Le *tracking server* est très utile pour comparer les différentes expérimentations que vous avez effectuées, pour les stocker et également pour être capable de les reproduire. En effet, chaque *run* sauvegarde la source des données utilisées, mais également le _commit_ sur lequel le *run* est basé.
+
+A la manière de `Git` qui permet d'identifier chaque moment de l'histoire d'un projet
+à partir d'un identifiant unique, `MLFlow` permet de récupérer
+chaque entraînement d'un modèle à partir d'un SHA. Néanmoins, en pratique, certains modèles
+ont un statut à part, notamment ceux en production. 
+
+
+## L'entrepôt de modèles (*model registry*)
+
+Une fois que l'on a effectué différentes expérimentations et pu sélectionner les modèles qui nous satisfont, il est temps de passer à l'étape suivante du cycle de vie d'un modèle. En effet, le modèle choisi doit ensuite pouvoir passer dans un environnement de production ou de pré-production. Or, connaître l'état d'un modèle dans son cycle de vie nécessite une organisation très rigoureuse et n'est pas si aisé. MLflow a développé une fonctionnalité qui permet justement de simplifier cette gestion des versions des modèles grâce à son [Model Registry](https://mlflow.org/docs/latest/model-registry.html). Cet entrepôt permet d'ajouter des tags et des alias à nos modèles pour définir leur position dans leur cycle de vie et ainsi pouvoir les récupérer de manière efficace.
+
+De manière générale, un modèle de machine learning passe par 4 stades qu'il est nécessaire de connaître en tout temps :
+
+1. **Expérimental**
+2. **En évaluation**
+3. **En production**
+4. **Archivé**
+
+![](/mlflow-model-registry.png){fig-align="center"}
+
+## MLflow en résumé
+
+MLflow est donc un projet open-source qui fournit une plateforme pour suivre le cycle de vie d'un modèle de machine learning de bout en bout. Ce n'est pas le seul outil disponible et il n'est peut-être pas le plus adapté à certains de vos projets précis. En revanche, il présente selon nous plusieurs avantages, en premier lieu sa prise en main très simple et sa capacité à répondre aux besoins de l'approche MLOps. Il faut garder à l'esprit que cet environnement est encore très récent et que de nouveaux projets open-source émergent chaque jour, donc il est nécessaire de rester à jour sur les dernières évolutions.
+
+Pour résumer, MLFlow permet :
+
+- de simplifier le suivi de l'entraînement des modèles de machine learning grâce à son API et à son *tracking server*
+- d'intégrer les principaux frameworks de machine learning de manière simple
+- d'intégrer son propre framework si besoin
+- de standardiser son script d'entraînement et donc de pouvoir l'industrialiser, pour réaliser un *fine-tuning* des hyperparamètres, par exemple
+- de *packager* ses modèles, de sorte à pouvoir les requêter de manière simple et harmonisée entre les différents frameworks
+- de stocker ses modèles de manière pertinente en leur affectant des tags et en favorisant le suivi de leur cycle de vie
+
+
+
