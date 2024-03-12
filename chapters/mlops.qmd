@@ -113,22 +113,25 @@ Une autre spécificité des modèles de machine learning réside dans le nombre 
 
 Ainsi, pour s'inscrire dans l'approche du MLOps, une bonne méthode est d'automatiser cette optimisation des hyperparamètres en la distribuant sur un _cluster_ lorsqu'on dispose de l'infrastructure adéquate. 
 L'idée est de créer des processus indépendants, chacun liés à une combinaison de nos hyperparamètres, et d'entraîner notre modèle sur ceux-ci puis d'enregister les informations à archiver dans un environnement adéquat, par exemple dans `MLFlow`.
+
 Il existe un moteur de workflow populaire pour orchestrer des tâches parallèles sur un cluster Kubernetes : [Argo Workflow](https://github.com/argoproj/argo-workflows). Le principe est de définir un *workflow* dans lequel chaque étape correspond à un conteneur contenant uniquement ce qui est strictement nécessaire à l'exécution de cette étape. Ainsi, on s'approche de la perfection en ce qui concerne la reproductibilité, car on maîtrise totalement les installations nécessaires à l'exécution de notre entraînement. Un *workflow* à plusieurs étapes peut ainsi être modélisé comme un graphe acyclique orienté, et l'exemple ci-dessous représente un cas d'optimisation d'hyperparamètres :
 
 ![Workflow d'optimisation d'hyperparamètres en parallèle](/dag-argo-workflow.png){fig-align="center"}
 
-Cette approche permet d'exécuter facilement en parallèle des tâches intensives en calcul de manière totalement reproductible. Évidemment, l'utilisation de tels workflows ne se limite pas à l'optimisation d'hyperparamètres mais peut également être utilisée pour le preprocessing de données, la création de pipelines d'ETL, etc.
+Cette approche permet d'exécuter facilement en parallèle des tâches intensives en calcul de manière totalement reproductible. Évidemment, l'utilisation de tels workflows ne se limite pas à l'optimisation d'hyperparamètres mais peut également être utilisée pour le preprocessing de données, la création de pipelines d'ETL, etc. D'ailleurs, à l'origine, ces outils ont été pensé pour ces tâches et permettent
+ainsi de définir un processus de données comme un ensemble de transformations sous la forme de diagramme acyclique dirigé (DAG). 
 
 
 ## 2️⃣ Servir un modèle ML à des utilisateurs
 
-Une partie très importante, parfois négligée, des projets de machine learning est la mise à disposition des modèles entraînés à d'autres utilisateurs. Puisque vous avez parfaitement suivi les différents chapitres de ce cours, votre projet est en théorie totalement reproductible. Une manière triviale de transmettre le modèle que vous avez sélectionné serait de partager votre code et toutes les informations nécessaires pour qu'une personne tierce ré-entraîne votre modèle de son côté. Évidemment, ce procédé n'est pas optimal, car il suppose que tous les utilisateurs disposent des ressources/infrastructures/connaissances nécessaires pour réaliser l'entraînement.
+Une partie très importante, parfois négligée, des projets de _machine learning_ est la mise à disposition des modèles entraînés à d'autres utilisateurs. Puisque vous avez parfaitement suivi les différents chapitres de ce cours, votre projet est en théorie totalement reproductible. Une manière triviale de transmettre le modèle que vous avez sélectionné serait de partager votre code et toutes les informations nécessaires pour qu'une personne tierce ré-entraîne votre modèle de son côté. Évidemment, ce procédé n'est pas optimal, car il suppose que tous les utilisateurs disposent des ressources/infrastructures/connaissances nécessaires pour réaliser l'entraînement.
 
 L'objectif est donc de mettre à disposition votre modèle de manière simple et efficace. Pour cela, plusieurs possibilités s'offrent à vous en fonction de votre projet, et il est important de se poser quelques questions préalables :
 
-Quel format est le plus pertinent pour mettre à disposition des utilisateurs ?
-Les prédictions du modèle doivent-elles être réalisées par lots (*batch*) ou en temps réel (*online*) ?
-Quelle infrastructure utiliser pour déployer notre modèle de machine learning ?
+- Quel format est le plus pertinent pour mettre à disposition des utilisateurs ?
+- Les prédictions du modèle doivent-elles être réalisées par lots (*batch*) ou en temps réel (*online*) ?
+- Quelle infrastructure utiliser pour déployer notre modèle de machine learning ?
+
 Dans le cadre de ce cours, nous avons choisi d'utiliser une API REST pour mettre à disposition un modèle de machine learning. Cela nous semble être la méthode la plus adaptée dans une grande majorité des cas, car elle répond à plusieurs critères :
 
 - **Simplicité** : les API REST permettent de créer une porte d'entrée qui peut cacher la complexité sous-jacente du modèle, facilitant ainsi sa mise à disposition.
