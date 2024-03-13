@@ -1,0 +1,60 @@
+::: {.callout-tip}
+## Application préliminaire: forker le dépôt d'exemple
+
+Les premières étapes consistent à mettre en place son environnement de travail sur `Github`:
+
+- Générer un jeton d'accès (*token*) sur `GitHub` afin de permettre l'authentification en ligne de commande à votre compte.
+La procédure est décrite [ici](https://docs.sspcloud.fr/onyxia-guide/controle-de-version#creer-un-jeton-dacces-token). 
+__Vous ne voyez ce jeton qu'une fois, ne fermez pas la page de suite__. 
+
+- Mettez de côté ce jeton en l'enregistrant dans un gestionnaire de mot de passe ou dans 
+l'espace _["Mon compte"](https://datalab.sspcloud.fr/account/third-party-integration)_
+du `SSP Cloud`. 
+
+- Forker le dépôt `Github` : [https://github.com/ensae-reproductibilite/application-correction](https://github.com/ensae-reproductibilite/application-correction) en faisant attention à deux choses:
+    + Renommer le dépôt en `ensae-reproductibilite-application-correction.git` ;
+    + Décocher la case _"Copy the `main` branch only"_ afin de copier également les _tags_ `Git` qui nous permettront de faire les _checkpoint_
+
+
+<details>
+
+<summary>
+Ce que vous devriez voir sur la page de création du _fork_
+</summary>
+
+![](/fork-example.png)
+
+</details>
+
+Il est maintenant possible de ce lancer dans la création de l'environnement de travail:
+
+- Ouvrir un service `VSCode` sur le [SSP Cloud](https://datalab.sspcloud.fr/home). Vous pouvez aller
+dans la page `My Services` et cliquer sur `New service`. Sinon, vous
+pouvez initialiser la création du service en cliquant directement [ici](https://datalab.sspcloud.fr/launcher/ide/vscode-python?autoLaunch=false). __Modifier les options suivantes__:
+    + Dans l'onglet `Kubernetes`, sélectionner le rôle `Admin` ;
+    + Dans l'onglet `Networking`, cliquer sur _"Enable a custom service port"_ et laisser la valeur par défaut 5000 pour le numéro du port
+
+- Clôner __votre__ dépôt `Github` en utilisant le
+terminal depuis `Visual Studio` (`Terminal > New Terminal`) et
+en passant directement le token dans l'URL selon cette structure:
+
+```{.bash filename="terminal"}
+git clone https://$TOKEN@github.com/$USERNAME/application-correction.git
+```
+
+où `$TOKEN` et `$USERNAME` sont à remplacer, respectivement, 
+par le jeton que vous avez généré précédemment et votre nom d'utilisateur.
+
+- Se placer avec le terminal dans le dossier en question : 
+
+```{.bash filename="terminal"}
+cd application-correction
+```
+
+- Se placer sur une branche de travail en faisant:
+
+```{.bash filename="terminal"}
+git checkout -b dev
+```
+
+:::
