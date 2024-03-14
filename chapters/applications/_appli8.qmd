@@ -4,9 +4,11 @@
 
 A partir de la ligne de commande,
 utiliser l'utilitaire [MinIO](https://min.io/docs/minio/linux/reference/minio-mc.html)
-pour copier les données `data/raw/train.csv` et `data/raw/test.csv` vers votre
-bucket personnel, respectivement dans les dossiers `ensae-reproductibilite/data/raw/train.csv`
-et `ensae-reproductibilite/data/raw/test.csv`. 
+pour copier les données `data/raw/data.csv`
+vers votre
+bucket personnel. Les données intermédiaires
+peuvent être laissées en local mais doivent être ajoutées
+au `.gitignore`.
 
 <details>
 <summary>Indice</summary>
@@ -14,11 +16,10 @@ et `ensae-reproductibilite/data/raw/test.csv`.
 Structure à adopter:
 
 ```{.bash filename="terminal"}
-mc cp data/raw/train.csv s3/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/train.csv
-mc cp data/raw/test.csv s3/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/test.csv
+mc cp data/raw/data.csv s3/$BUCKET_PERSONNEL/ensae-reproductibilite/data/raw/data.csv
 ```
 
-en modifiant l'emplacement de votre bucket personnel
+en modifiant `$BUCKET_PERSONNEL`, l'emplacement de votre bucket personnel
 </details>
 
 Pour se simplifier la vie, on va utiliser des URL de téléchargement des fichiers
@@ -31,16 +32,16 @@ Pour cela, en ligne de
 commande, faire:
 
 ```{.bash filename="terminal"}
-mc anonymous set download s3/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/
+mc anonymous set download s3/$BUCKET_PERSONNEL/ensae-reproductibilite/data/raw/
 ```
 
-en modifiant `<BUCKET_PERSONNEL>`. Les URL de téléchargement seront de la forme 
-`https://minio.lab.sspcloud.fr/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/test.csv`
-et `https://minio.lab.sspcloud.fr/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/train.csv`
+en modifiant `$BUCKET_PERSONNEL`. Les URL de téléchargement seront de la forme 
+`https://minio.lab.sspcloud.fr/$BUCKET_PERSONNEL/ensae-reproductibilite/data/raw/data.csv`
 
 - Modifier `configuration/config.yaml` pour utiliser directement les URL dans l'import ;
 - Modifier les valeurs par défaut dans votre code ; 
-- Supprimer les fichiers `.csv` du dossier `data` de votre projet, on n'en a plus besoin vu qu'on les importe de l'extérieur ;
+- Ajouter le dossier `data/` au `.gitignore`
+- Supprimer le dossier `data` de votre projet et faites `git rm --cached -r data` 
 - Vérifier le bon fonctionnement de votre application.
 :::
 
