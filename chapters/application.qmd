@@ -952,7 +952,7 @@ git checkout appli15
 :::
 
 
-{{< include "./applications/_appli17.qmd" >}}
+{{< include "./applications/_appli16.qmd" >}}
 
 
 ## Étape 2: déployer l'API de manière manuelle
@@ -961,7 +961,7 @@ git checkout appli15
 ## Si vous prenez ce projet fil rouge en cours de route
 
 ```{.bash filename="terminal"}
-git checkout appli18
+git checkout appli16
 ```
 
 ![](/checkpoint.jpg){width=80% fig-align="center"}
@@ -978,7 +978,7 @@ et d'avoir un serveur, en arrière plan, qui effectuera les opérations pour ré
 requête. Pour se faire, on va utiliser les possibilités offertes par `Kubernetes`, sur lequel est basé le [SSP Cloud](https://datalab.sspcloud.fr).
 
 
-{{< include "./applications/_appli18a.qmd" >}}
+{{< include "./applications/_appli17.qmd" >}}
 
 
 Nous avons préparé la mise à disposition de notre API mais à l'heure
@@ -987,7 +987,20 @@ de lancer manuellement une image `Docker` pour pouvoir y accéder.
 Ce type de travail est la spécialité de `Kubernetes` que nous allons
 utiliser pour gérer la mise à disposition de notre API. 
 
-{{< include "./applications/_appli18b.qmd" >}}
+{{< include "./applications/_appli18.qmd" >}}
+
+::: {.callout-note title="Gérer le CORS"}
+Notre API est accessible sans problème depuis `Python` ou notre navigateur.
+
+En revanche, si on désire utiliser `JavaScript` pour créer une application
+interactive il est indispensable de mettre
+les lignes un peu obscure sur le CORS dans le fichier `ingress.yaml`. 
+
+Comme c'est un point technique qui ne concerne pas les compétences
+liées à ce cours, nous donnons directement les mises à jour nécessaires
+du projet.
+:::
+
 
 On peut remarquer quelques voies d'amélioration de notre approche qui
 seront ultérieurement traitées:
@@ -1071,19 +1084,6 @@ Il y a donc un élément qui fait la liaison entre ces deux pipelines et qui nou
 
 
 
-::: {.callout-note title="Gérer le CORS"}
-Notre API est accessible sans problème depuis `Python` ou notre navigateur
-mais si on désire utiliser `JavaScript` pour créer une application
-interactive, on va essuyer un refus à cause du [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
-
-Permettre à n'importe quel client de se connecter à 
-notre API permettra de faire un site web exploitant notre API. 
-Comme c'est un point technique qui ne concerne pas les compétences
-liées à ce cours, nous donnons directement les mises à jour nécessaires
-du projet:
-:::
-
-{{< include "./applications/_cors.qmd" >}}
 
 ## Etape 4: construire un site web
 
