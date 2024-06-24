@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Présentation des architectures informatiques et des outils logiciels permettant de faciliter le traitement de données volumineuses.">
+<meta name="description" content="Présentation des principes et des techniques permettant de rendre un projet exécutable sur différents environnements.">
 
-<title>Mise en production - Traitement des données volumineuses</title>
+<title>Mise en production - Portabilité</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -206,12 +206,12 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Traitement des données volumineuses</h1>
+<h1 class="title">Portabilité</h1>
 </div>
 
 <div>
   <div class="description">
-    <p>Présentation des architectures informatiques et des outils logiciels permettant de faciliter le traitement de données volumineuses.</p>
+    <p>Présentation des principes et des techniques permettant de rendre un projet exécutable sur différents environnements.</p>
   </div>
 </div>
 
@@ -228,51 +228,7 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<details>
-<summary>
-Dérouler les <em>slides</em> ci-dessous ou <a href="https://ensae-reproductibilite.github.io/slides/#/traitement-des-donn%C3%A9es-volumineuses">cliquer ici</a> pour afficher les slides en plein écran.
-</summary>
-<div id="cb1" class="sourceCode">
-<pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
-<iframe class="sourceCode yaml code-with-copy" src="https://ensae-reproductibilite.github.io/slides/#/traitement-des-donn%C3%A9es-volumineuses">
-</iframe>
-</div>
-</details>
-<p>Page en construction.</p>
-<!-- # Enjeux
-
-Le phénomène du *big data* est maintenant bien documenté : la génération et la collecte de données par une multitude de sources (capteurs IoT, interactions quotidiennes sur les réseaux sociaux, transactions en ligne, dispositifs mobiles, etc.) démultiplie les volumes de données disponibles pour l'analyse. Les raisons pouvant mener à s'intéresser à de telles données pour des projets de data science sont nombreuses : haute disponibilité, plus grande finesse des phénomènes observés, bases pour l'entraînement de modèles de ML de plus en plus gourmands (comme les LLM), etc.
-
-En contrepartie, le traitement de ces données génère de nouveaux défis. Ces derniers peuvent être résumés par les **"trois V"**, une manière désormais admise de caractériser ces nouvelles sources de données [@sagiroglu2013big] :
-
-- **Volume** : des **volumes massifs de données**, souvent à une échelle bien supérieure à ce que les systèmes traditionnels peuvent traiter efficacement. Par conséquent, de nouvelles architectures de stockage et de traitement sont nécessaires afin de gérer de telles volumétries.
-
-- **Vitesse** : ces données sont généralement produites à **haute fréquence, jusqu’au temps réel**. Là encore, cela nécessite des ajustements dans les architectures et les méthodes de traitement, comme les méthodes de *stream processing* par exemple.
-
-- **Variété** : ces données présentent **des sources et des formats très variés**, allant des bases structurées (données tabulaires) aux données non-structurées (texte, image, vidéo, etc.). Là encore, les techniques de traitement adaptées vont dépendre des formes prises par les données. Dans ce cours, nous nous concentrerons sur des données relativement structurées, dans la mesure où ces dernières restent centrales dans les projets analytiques de data science.
-
-![Source : [AI with Python](https://www.packtpub.com/product/artificial-intelligence-with-python-second-edition/9781839219535)](images/vvv.png){fig-align="center" height=350}
-
-Lorsque l'on envisage de passer en production un projet de data science basé sur des données volumineuses, **l'adoption de bonnes pratiques de développement n'est pas seulement recommandée, elle est indispensable**. En effet, les données volumineuses voire massives introduisent une complexité significative dans tous les aspects du cycle de vie d'un projet de data science, de la collecte et du stockage des données à leur traitement et analyse. Les systèmes doivent être conçus pour non seulement gérer le volume actuel de données, mais aussi pour être **évolutifs** face à une croissance future inévitable. Les bonnes pratiques de développement facilitent cette évolutivité en promouvant des **architectures modulaires**, des codes réutilisables, et des technologies adaptées au traitement des grandes quantités de données.
-
-Face à ces enjeux, le choix des technologies est primordial. Dans ce cours, nous présenterons trois axes principaux qui peuvent guider ces choix : **l'infrastructure informatique**, des **formats de données** adaptés aux données volumineuses, et des ***frameworks*** (solutions logicielles et leur écosystème) utilisés pour le traitement de la donnée.
-
-# Infrastructures
-
-Historiquement, les données ont été stockées dans des bases de données, soit des systèmes de stockage et d'organisation de la donnée. Ces objets ont vu le jour dans les années 1950, et ont connu un essor particulier avec les [bases de données relationnelles](https://fr.wikipedia.org/wiki/Base_de_donn%C3%A9es_relationnelle) dans les années 1980. Cette technologie s'avérant particulièrement adapté au stockage des données "métier" des entreprises, elle a été à la base des ***data warehouses***, qui ont longtemps constitué la référence des infrastructures de stockage de la donnée. Si leur implémentation peut être assez technique, leur principe est simple : des données de sources variées et hétérogènes sont intégrées dans un système de bases de données relationnel selon des règles métier grâce à des processus dits [ETL](https://fr.wikipedia.org/wiki/Extract-transform-load) (extract-transform-load), afin de les rendre directement accessible pour des utilisations ultérieures (analyse statistique, *reporting*, etc.) [@chaudhuri1997overview].
-
-TODO : figure Data Warehouse
-
-
-
-TODO : figure Data Lake
-
-Les *data lakes* jouent un rôle crucial dans la gestion et l'analyse des données volumineuses. Contrairement aux entrepôts de données traditionnels qui nécessitent une structuration et un schéma définis des données avant leur stockage, les data lakes permettent de stocker des données non structurées, semi-structurées et structurées dans leur format brut. Cette flexibilité est essentielle pour les organisations qui traitent une grande variété de types de données et qui nécessitent une plateforme capable d'ingérer des données à la vélocité dictée par les sources de données modernes, telles que les médias sociaux, les appareils IoT (Internet des Objets), et les systèmes transactionnels en ligne.
-
-# Formats de données
-
-# *Frameworks* de traitement
- -->
+<p>Une galerie d’exemple de projets à venir</p>
 
 
 
