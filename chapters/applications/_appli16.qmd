@@ -1,0 +1,74 @@
+::: {.callout-tip}
+
+## Application 16: Mise à disposition sous forme d'API locale
+
+- Installer `fastAPI` et `uvicorn` puis les ajouter au `requirements.txt`
+- Renommer le fichier `main.py` en `train.py`. Dans ce script, ajouter une
+sauvegarde du modèle après l'avoir entraîné, sous le
+format [`joblib`](https://scikit-learn.org/stable/model_persistence.html#python-specific-serialization). 
+- Faire tourner
+
+```{.bash filename="terminal"}
+python train.py
+```
+
+pour enregistrer en local votre modèle de production. 
+
+- Modifier les appels à `main.py` dans votre `Dockerfile` et vos actions `Github`
+sous peine d'essuyer des échecs lors de vos actions `Github` après le prochain _push_. 
+
+- Ajouter `model.joblib` au `.gitignore` car `Git` n'est pas fait pour 
+ce type de fichiers. 
+
+Nous allons maintenant passer au développement de l'API.
+Comme découvrir `FastAPI` n'est pas l'objet de cet enseignement, nous
+donnons directement le modèle pour créer l'API. Si vous
+désirez tester de vous-mêmes, vous pouvez créer votre 
+fichier sans vous référer à l'exemple
+
+- Créer le fichier `api.py` permettant d'initialiser l'API:
+
+<details>
+<summary>
+Fichier `api.py`
+</summary>
+
+```{.python include="./applications/code/appli17_api_main.py" filename="src/models/train_evaluation.py"}
+```
+</details>
+
+- Déployer en local l'API avec la commande
+
+```{.bash filename="terminal"}
+uvicorn api:app --reload --host "0.0.0.0" --port 5000
+```
+
+- A partir du `README` du service, se rendre sur l'URL de déploiement, 
+ajouter `/docs/` à celui-ci et observer la documentation de l'API 
+- Se servir de la documentation pour tester les requêtes `/predict`
+- Récupérer l'URL d'une des requêtes proposées. La tester dans le navigateur
+et depuis `Python` avec `requests` :
+
+```{.python}
+import request
+requests.get(url).json()
+```
+
+- Une fois que vous avez testé, vous pouvez tuer l'application en faisant <kbd>CTRL</kbd>+<kbd>C</kbd>. Retester
+votre bout de code `Python` et comprendre l'origine du problème.
+
+:::
+
+::: {.callout-caution collapse="true"}
+## Checkpoint
+
+```{.bash filename="terminal"}
+git stash #<1>
+git checkout appli17
+```
+1. Pour annuler les modifications depuis le dernier _commit_
+
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
+:::
