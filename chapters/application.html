@@ -251,7 +251,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#étape-1-modularisation" id="toc-étape-1-modularisation" class="nav-link" data-scroll-target="#étape-1-modularisation">Étape 1 : modularisation</a></li>
   <li><a href="#étape-2-adopter-une-architecture-standardisée-de-projet" id="toc-étape-2-adopter-une-architecture-standardisée-de-projet" class="nav-link" data-scroll-target="#étape-2-adopter-une-architecture-standardisée-de-projet">Étape 2 : adopter une architecture standardisée de projet</a></li>
-  <li><a href="#étape-3-indiquer-lenvironnement-minimal-de-reproductibilité" id="toc-étape-3-indiquer-lenvironnement-minimal-de-reproductibilité" class="nav-link" data-scroll-target="#étape-3-indiquer-lenvironnement-minimal-de-reproductibilité">Étape 3: indiquer l’environnement minimal de reproductibilité</a></li>
+  <li><a href="#étape-3-mieux-tracer-notre-chaine-de-production" id="toc-étape-3-mieux-tracer-notre-chaine-de-production" class="nav-link" data-scroll-target="#étape-3-mieux-tracer-notre-chaine-de-production">Étape 3: mieux tracer notre chaine de production</a>
+  <ul class="collapse">
+  <li><a href="#indiquer-lenvironnement-minimal-de-reproductibilité" id="toc-indiquer-lenvironnement-minimal-de-reproductibilité" class="nav-link" data-scroll-target="#indiquer-lenvironnement-minimal-de-reproductibilité">Indiquer l’environnement minimal de reproductibilité</a></li>
+  <li><a href="#tracer-notre-chaîne" id="toc-tracer-notre-chaîne" class="nav-link" data-scroll-target="#tracer-notre-chaîne">Tracer notre chaîne</a></li>
+  </ul></li>
   <li><a href="#stockageS3" id="toc-stockageS3" class="nav-link" data-scroll-target="#stockageS3">Étape 4 : stocker les données de manière externe</a></li>
   </ul></li>
   <li><a href="#partie-2bis-packagisation-de-son-projet-optionnel" id="toc-partie-2bis-packagisation-de-son-projet-optionnel" class="nav-link" data-scroll-target="#partie-2bis-packagisation-de-son-projet-optionnel">Partie 2bis: packagisation de son projet (optionnel)</a>
@@ -1003,8 +1007,10 @@ Checkpoint
 </div>
 </div>
 </section>
-<section id="étape-3-indiquer-lenvironnement-minimal-de-reproductibilité" class="level2">
-<h2 class="anchored" data-anchor-id="étape-3-indiquer-lenvironnement-minimal-de-reproductibilité">Étape 3: indiquer l’environnement minimal de reproductibilité</h2>
+<section id="étape-3-mieux-tracer-notre-chaine-de-production" class="level2">
+<h2 class="anchored" data-anchor-id="étape-3-mieux-tracer-notre-chaine-de-production">Étape 3: mieux tracer notre chaine de production</h2>
+<section id="indiquer-lenvironnement-minimal-de-reproductibilité" class="level3">
+<h3 class="anchored" data-anchor-id="indiquer-lenvironnement-minimal-de-reproductibilité">Indiquer l’environnement minimal de reproductibilité</h3>
 <p>Le script <code>main.py</code> nécessite un certain nombre de packages pour être fonctionnel. Chez vous les packages nécessaires sont bien sûr installés mais êtes-vous assuré que c’est le cas chez la personne qui testera votre code ?</p>
 <p>Afin de favoriser la portabilité du projet, il est d’usage de <em>“fixer l’environnement”</em>, c’est-à-dire d’indiquer dans un fichier toutes les dépendances utilisées ainsi que leurs version. Nous proposons de créer un fichier <code>requirements.txt</code> minimal, sur lequel nous reviendrons dans la partie consacrée aux environnements reproductibles.</p>
 <p>Le fichier <code>requirements.txt</code> est conventionnellement localisé à la racine du projet. Ici on ne va pas fixer les versions, on raffinera ce fichier ultérieurement.</p>
@@ -1057,6 +1063,9 @@ Checkpoint
 </div>
 </div>
 </div>
+</section>
+<section id="tracer-notre-chaîne" class="level3">
+<h3 class="anchored" data-anchor-id="tracer-notre-chaîne">Tracer notre chaîne</h3>
 <p>Quand votre projet passera en production, vous aurez un accès limité à celui-ci. Il est donc important de faire remonter, par le biais du <em>logging</em> des informations critiques sur votre projet qui vous permettront de savoir où il en est (si vous avez accès à la console où il tourne) ou là où il s’est arrêté.</p>
 <p>L’utilisation de <code>print</code> montre rapidement ses limites pour cela. Les informations enregistrées ne persistent pas après la session et sont quelques peu rudimentaires.</p>
 <p>Pour faire du <em>logging</em>, la librairie consacrée depuis longtemps en <code>Python</code> est… <a href="https://docs.python.org/3/library/logging.html"><code>logging</code></a>. On va néanmoins ici proposer d’utiliser <a href="https://github.com/Delgan/loguru"><code>loguru</code></a> qui est un peu plus simple à configurer (l’instanciation du <em>logger</em> est plus aisée)[^citation-loguru] et plus agréable grâce à ses messages en couleurs qui permettent de visuellement trier les informations.</p>
@@ -1080,6 +1089,7 @@ Application 7b: remontée de messages par <em>logging</em>
 </ol>
 </div>
 </div>
+</section>
 </section>
 <section id="stockageS3" class="level2">
 <h2 class="anchored" data-anchor-id="stockageS3">Étape 4 : stocker les données de manière externe</h2>
@@ -1296,20 +1306,20 @@ Note
 Structure visée
 </summary>
 <pre data-code-line-numbers=""><code>ensae-reproductibilite-application
-├── docs                                    ┐ 
-│   ├── main.py                             │ 
+├── docs                                    ┐
+│   ├── main.py                             │
 │   └── notebooks                           │ Package documentation and examples
-│       └── titanic.ipynb                   │ 
+│       └── titanic.ipynb                   │
 ├── configuration                           ┐ Configuration (pas à partager avec Git)
-│   └── config.yaml                         ┘ 
-├── README.md                                
-├── pyproject.toml                          ┐ 
+│   └── config.yaml                         ┘
+├── README.md
+├── pyproject.toml                          ┐
 ├── requirements.txt                        │
-├── titanicml                               │                
+├── titanicml                               │
 │   ├── __init__.py                         │ Package source code, metadata
-│   ├── data                                │ and build instructions 
-│   │   ├── import_data.py                  │  
-│   │   └── test_create_variable_title.py   │   
+│   ├── data                                │ and build instructions
+│   │   ├── import_data.py                  │
+│   │   └── test_create_variable_title.py   │
 │   ├── features                            │
 │   │   └── build_features.py               │
 │   └── models                              │
@@ -1322,21 +1332,21 @@ Structure visée
 Rappel: structure actuelle
 </summary>
 <pre data-code-line-numbers=""><code>ensae-reproductibilite-application
-├── notebooks                                 
-│   └── titanic.ipynb                  
-├── configuration                                 
-│   └── config.yaml                  
-├── main.py                              
-├── README.md                 
-├── requirements.txt                      
-└── src 
-    ├── data                                
-    │   ├── import_data.py                    
-    │   └── test_create_variable_title.py      
-    ├── features                           
-    │   └── build_features.py      
-    └── models                          
-        └── train_evaluate.py              </code></pre>
+├── notebooks
+│   └── titanic.ipynb
+├── configuration
+│   └── config.yaml
+├── main.py
+├── README.md
+├── requirements.txt
+└── src
+    ├── data
+    │   ├── import_data.py
+    │   └── test_create_variable_title.py
+    ├── features
+    │   └── build_features.py
+    └── models
+        └── train_evaluate.py</code></pre>
 </details>
 <p>Il existe plusieurs <em>frameworks</em> pour construire un <em>package</em>. Nous allons privilégier <a href="https://python-poetry.org/"><code>Poetry</code></a> à <a href="https://pypi.org/project/setuptools/"><code>Setuptools</code></a>.</p>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -1364,8 +1374,8 @@ Dérouler pour voir les choix possibles
 <div class="sourceCode" id="cb23" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>author_name [Monty Python]: Daffy Duck</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>package_name [mypkg]: titanicml</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>package_short_description []: Impressive Titanic survival analysis</span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>package_version [<span class="fl">0.1.0</span>]: </span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>python_version [<span class="fl">3.9</span>]: </span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>package_version [<span class="fl">0.1.0</span>]:</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>python_version [<span class="fl">3.9</span>]:</span>
 <span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>Select open_source_license:</span>
 <span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="op">-</span> MIT</span>
 <span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span> <span class="op">-</span> Apache License <span class="fl">2.0</span></span>
@@ -1374,7 +1384,7 @@ Dérouler pour voir les choix possibles
 <span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="dv">5</span> <span class="op">-</span> BSD <span class="dv">3</span><span class="op">-</span>Clause</span>
 <span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="dv">6</span> <span class="op">-</span> Proprietary</span>
 <span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a><span class="dv">7</span> <span class="op">-</span> <span class="va">None</span></span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>Choose <span class="im">from</span> <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span> [<span class="dv">1</span>]: </span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>Choose <span class="im">from</span> <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span> [<span class="dv">1</span>]:</span>
 <span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>Select include_github_actions:</span>
 <span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="op">-</span> no</span>
 <span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span> <span class="op">-</span> ci</span>
@@ -1397,7 +1407,7 @@ Application 10: packagisation <em>(optionnel)</em>
 <li>Renommer le dossier <code>titanicml</code> pour respecter la nouvelle arborescence ;</li>
 <li>Créer un fichier <code>pyproject.toml</code> sur cette base ;</li>
 </ul>
-<div id="ee9ecc21" class="cell" data-execution_count="1">
+<div id="a90dc837" class="cell" data-execution_count="1">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>pyproject.toml</strong></pre>
@@ -1425,7 +1435,7 @@ Application 10: packagisation <em>(optionnel)</em>
 <li>Créer le dossier <code>docs</code> et mettre les fichiers indiqués dedans</li>
 <li>Dans <code>titanicml/</code>, créer un fichier <code>__init__.py</code><a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a></li>
 </ul>
-<div id="d7dfbb5a" class="cell" data-execution_count="2">
+<div id="4f783035" class="cell" data-execution_count="2">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>__init__.py</strong></pre>
@@ -2704,7 +2714,7 @@ Fichier <code>deployment/service.yaml</code>
 <summary>
 Fichier <code>deployment/ingress.yaml</code>
 </summary>
-<div id="8a6cca8d" class="cell" data-source-line-numbers="10-13" data-execution_count="3">
+<div id="7952e722" class="cell" data-source-line-numbers="10-13" data-execution_count="3">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>deployment/ingress.yaml</strong></pre>
@@ -2823,7 +2833,7 @@ Clarification sur la branche de travail
 <p>A partir de maintenant, il est nécessaire de clarifier la branche principale sur laquelle nous travaillons. De manière traditionnelle, on utilise la branche <code>main</code>. Néanmoins, pour être cohérent avec les instructions du début, qui étaient de créer une branche <code>dev</code>, tous les exemples ultérieures partiront de cette hypothèse.</p>
 <p>Si vous avez fait les applications les unes après les autres, et que vous vous situez toujours sur <code>dev</code>, vous pouvez passer aux applications suivantes. Si vous avez changé de branche, vous pouvez continuer mais en tenir compte dans les exemples ultérieurs.</p>
 <p>Si vous avez utilisé un <code>tag</code> pour sauter une ou plusieurs étapes, il va être nécessaire de se placer sur une branche car vous êtes en <em>head detached</em>. Pour cela, après avoir <em>committé</em> les fichiers que vous désirez garder</p>
-<div id="ab717992" class="cell" data-file="terminal" data-execution_count="4">
+<div id="6c16dd93" class="cell" data-file="terminal" data-execution_count="4">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
@@ -2882,7 +2892,7 @@ Application 19a: Automatiser la mise à disposition de l’API (déploiement con
 <li>Ajouter un dossier <code>deployment</code> à votre dépôt <code>GitOps</code>, dans lequel on mettra les trois fichiers de déploiement qui permettent de déployer notre application sur <code>Kubernetes</code> (<code>deployment.yaml</code>, <code>service.yaml</code>, <code>ingress.yaml</code>).</li>
 <li>A la racine de votre dépôt <code>GitOps</code>, créez un fichier <code>application.yml</code> avec le contenu suivant, en prenant bien soin de modifier les lignes surlignées avec les informations pertinentes :</li>
 </ul>
-<div id="8379fbb9" class="cell" data-file="application.yaml" data-source-line-numbers="8-9,13" data-execution_count="5">
+<div id="b2699961" class="cell" data-file="application.yaml" data-source-line-numbers="8-9,13" data-execution_count="5">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>application.yaml</strong></pre>
@@ -3067,7 +3077,7 @@ Application 19b : Mettre à jour la version en production
 <summary>
 <p>Fichier <code>deployment/deployment.yaml</code></p>
 </summary>
-<div id="eac0f06b" class="cell" data-file="deployment/deployment.yaml" data-source-line-numbers="19" data-execution_count="6">
+<div id="b90af734" class="cell" data-file="deployment/deployment.yaml" data-source-line-numbers="19" data-execution_count="6">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>deployment/deployment.yaml</strong></pre>
@@ -3592,7 +3602,7 @@ Modification de <code>api/main.py</code> à effectuer
 <ol start="2" type="1">
 <li>Tester votre script <code>train.py</code> et uploader le meilleur modèle sur S3 de la manière suivante:</li>
 </ol>
-<div id="5b6f6e4d" class="cell" data-file="terminal" data-execution_count="7">
+<div id="a8d306c6" class="cell" data-file="terminal" data-execution_count="7">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
@@ -3896,7 +3906,7 @@ Application 23a : réutiliser un modèle archivé sur MLFlow
 <ol start="2" type="1">
 <li>Cliquer sur votre meilleur modèle et introduire dans <code>mlflow/predict.py</code> le morceau de code suggéré par <code>MLFlow</code>, du type de celui-ci:</li>
 </ol>
-<div id="39682081" class="cell" data-execution_count="8">
+<div id="0a827e55" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="annotated-cell-172" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-172-1"><a href="#annotated-cell-172-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
 <a class="code-annotation-anchor" data-target-cell="annotated-cell-172" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-172-2" class="code-annotation-target"><a href="#annotated-cell-172-2" aria-hidden="true" tabindex="-1"></a>logged_model <span class="op">=</span> <span class="co">#A CHANGER</span></span>
 <span id="annotated-cell-172-3"><a href="#annotated-cell-172-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -3949,7 +3959,7 @@ Application 23b : passer en production un modèle
 <li><p>Ajouter <code>mlflow</code> au <code>requirements.txt</code></p></li>
 <li><p>Mettre à jour les fichiers <code>.github/worflows/prod.yaml</code> et <code>kubernetes/deployment.yaml</code> pour produire et utiliser le tag <code>v0.0.5</code></p></li>
 </ol>
-<div id="f912aa3d" class="cell" data-file=".github/worflows/prod.yaml" data-execution_count="9">
+<div id="1dca10cd" class="cell" data-file=".github/worflows/prod.yaml" data-execution_count="9">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>.github/worflows/prod.yaml</strong></pre>
@@ -3994,7 +4004,7 @@ Application 23b : passer en production un modèle
 </dl>
 </div>
 </div>
-<div id="8bb31ab0" class="cell" data-execution_count="10">
+<div id="aaadd759" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="annotated-cell-176" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-176-1"><a href="#annotated-cell-176-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating MLflow deployment</span></span>
 <span id="annotated-cell-176-2"><a href="#annotated-cell-176-2" aria-hidden="true" tabindex="-1"></a>apiVersion: apps<span class="op">/</span>v1</span>
 <span id="annotated-cell-176-3"><a href="#annotated-cell-176-3" aria-hidden="true" tabindex="-1"></a>kind: Deployment</span>
@@ -4082,7 +4092,7 @@ Checkpoint
 <li>Lancer un service Argo Workflows</li>
 <li>Dans <code>mlflow/training.yaml</code></li>
 </ol>
-<div id="b358453a" class="cell" data-execution_count="11">
+<div id="ac333013" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="annotated-cell-8" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-8-1"><a href="#annotated-cell-8-1" aria-hidden="true" tabindex="-1"></a>apiVersion: argoproj.io<span class="op">/</span>v1alpha1</span>
 <span id="annotated-cell-8-2"><a href="#annotated-cell-8-2" aria-hidden="true" tabindex="-1"></a>kind: Workflow</span>
 <span id="annotated-cell-8-3"><a href="#annotated-cell-8-3" aria-hidden="true" tabindex="-1"></a>metadata:</span>
