@@ -1,9 +1,9 @@
 ::: {.callout-tip}
 
-## Application 7: création du `requirements.txt`
+## Application 7a: création du `requirements.txt`
 
 - Créer un fichier `requirements.txt` avec la liste des packages nécessaires
-- Ajouter une indication dans `README.md` sur l'installation des _packages_ grâce au fichier `requirements.txt` 
+- Ajouter une indication dans `README.md` sur l'installation des _packages_ grâce au fichier `requirements.txt`
 :::
 
 ::: {.callout-caution collapse="true"}
@@ -18,4 +18,24 @@ git checkout appli7
 
 ![](/checkpoint.jpg){width=80% fig-align="center"}
 
+:::
+
+Quand votre projet passera en production, vous aurez un accès limité à celui-ci. Il est donc important de faire remonter, par le biais du _logging_ des informations critiques sur votre projet qui vous permettront de savoir où il en est (si vous avez accès à la console où il tourne) ou là où il s'est arrêté.
+
+L'utilisation de `print` montre rapidement ses limites pour cela. Les informations enregistrées ne persistent pas après la session et sont quelques peu rudimentaires.
+
+Pour faire du _logging_, la librairie consacrée depuis longtemps en `Python` est... [`logging`](https://docs.python.org/3/library/logging.html). On va néanmoins ici proposer d'utiliser [`loguru`](https://github.com/Delgan/loguru) qui est un peu plus simple à configurer (l'instanciation du _logger_ est plus aisée)[^citation-loguru] et plus agréable grâce à ses messages en couleurs qui permettent de visuellement trier les informations.
+
+![](https://raw.githubusercontent.com/Delgan/loguru/master/docs/_static/img/demo.gif)
+
+::: {.callout-tip}
+
+## Application 7b: remontée de messages par _logging_
+
+1. Installer `loguru` et l'ajouter au `requirements.txt`
+2. En s'aidant du `README` du projet sur [`Github`](https://github.com/Delgan/loguru), remplacer nos `print` par différents types de messages (info, success, etc.).
+3. Tester l'exécution du script en ligne de commande et observer vos sorties
+4. Mettre à jour le logger pour enregistrer dans un fichier de _log_. Ajouter celui-ci au `.gitignore` puis tester en ligne de commande votre script. Ouvrir le fichier en question, refaites tourner le script et regardez son évolutoin.
+5. Il est possible avec `loguru` de capturer les erreurs des fonctions grâce au système de cache décrit [ici](https://github.com/Delgan/loguru?tab=readme-ov-file#exceptions-catching-within-threads-or-main).
+Introduire une erreur dans une des fonctions (par exemple dans `split_train_test`) avec un code du type `raise ValueError("Problème ici")`
 :::
