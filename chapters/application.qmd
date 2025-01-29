@@ -394,6 +394,12 @@ Pour faire du _logging_, la librairie consacrée depuis longtemps en `Python` es
 
 ## Étape 4 : stocker les données de manière externe {#stockageS3}
 
+Pour rappel, nous visons la structure de projet suivante:
+
+![](https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/slides/img/environment_clean.png)
+
+L'étape précédente nous a permis d'isoler la configuration. Nous avons conceptuellement isolé les données du code lors des applications précédentes. Cependant, nous n'avons pas été au bout du chemin car le stockage des données reste conjoint à celui du code. Nous allons maintenant dissocier ces deux éléments.
+
 ::: {.callout-warning collapse="true"}
 ## Pour en savoir plus sur le système de stockage `S3`
 
@@ -410,13 +416,16 @@ où environnements d'exécution, de stockage du code et des données sont concep
 séparés. Ce haut niveau d'exigence est un gain de temps important
 lors de la mise en production car au cours de cette dernière, le projet
 est amené à être exécuté sur une infrastructure informatique dédiée
-qu'il est bon d'anticiper.
+qu'il est bon d'anticiper. Schématiquement, nous visons la structure de projet suivante:
+
+![](https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/slides/img/environment_clean.png)
 
 A l'heure actuelle, les données sont stockées dans le dépôt. C'est une
 mauvaise pratique. En premier lieu, `Git` n'est techniquement
 pas bien adapté au stockage de données. Ici ce n'est pas très grave
 car il ne s'agit pas de données volumineuses et ces dernières ne sont
 pas modifiées au cours de notre chaine de traitement.
+
 La raison principale
 est que les données traitées par les _data scientists_
 sont généralement soumises à des clauses de
@@ -439,7 +448,15 @@ environnements de stockage du code et
 des données seront bien plus efficaces pour vous éviter ces problèmes que tout les conseils de
 vigilance que vous pourrez trouver ailleurs.
 
+Plus concrètement, nous allons adopter le pipeline suivant pour notre projet:
+
+![](/website/chapters/applications/figures/pipeline_appli8.png)
+
+Le scénario type est que nous avons une source brute, reçue sous forme de CSV, dont on ne peut changer le format. Il aurait été idéal d'avoir un format plus adapté au traitement de données pour ce fichier mais ce n'était pas de notre ressort. Notre chaine va aller chercher ce fichier, travailler dessus jusqu'à valoriser celui-ci sous la forme de notre matrice de confusion. Si on imagine que notre chaine prend un certain temps, il n'est pas inutile d'écrire des données intermédiaires. Pour faire cela, puisque nous avons la main, autant choisir un format adapté, à savoir le format `Parquet`.
+
+
 {{< include "./applications/_appli8.qmd" >}}
+
 
 # Partie 2bis: packagisation de son projet (optionnel)
 

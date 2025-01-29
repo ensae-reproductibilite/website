@@ -10,6 +10,7 @@ bucket personnel. Les données intermédiaires
 peuvent être laissées en local mais doivent être ajoutées
 au `.gitignore`.
 
+
 <details>
 <summary>Indice</summary>
 
@@ -25,9 +26,10 @@ en modifiant `$BUCKET_PERSONNEL`, l'emplacement de votre bucket personnel
 Pour se simplifier la vie, on va utiliser des URL de téléchargement des fichiers
 (comme si ceux-ci étaient sur n'importe quel espace de stockage) plutôt que d'utiliser
 une librairie `S3` compatible comme `boto3` ou `s3fs`.
+
 Par défaut, le contenu de votre _bucket_ est privé, seul vous y avez accès. Néanmoins,
 vous pouvez rendre accessible à tous en lecture le contenu de votre _bucket_ en
-faisant lui donnant des droits anonymes. 
+faisant lui donnant des droits anonymes.
 Pour cela, en ligne de
 commande, faire:
 
@@ -35,22 +37,46 @@ commande, faire:
 mc anonymous set download s3/$BUCKET_PERSONNEL/ensae-reproductibilite/data/raw/
 ```
 
-en modifiant `$BUCKET_PERSONNEL`. Les URL de téléchargement seront de la forme 
+en modifiant `$BUCKET_PERSONNEL`. Les URL de téléchargement seront de la forme
 `https://minio.lab.sspcloud.fr/$BUCKET_PERSONNEL/ensae-reproductibilite/data/raw/data.csv`
 
-- Modifier `configuration/config.yaml` pour utiliser directement les URL dans l'import ;
-- Modifier les valeurs par défaut dans votre code ; 
-- Ajouter le dossier `data/` au `.gitignore`
-- Supprimer le dossier `data` de votre projet et faites `git rm --cached -r data` 
+En premier lieu, on va améliorer la brique d'ingestion et de préparation des données
+
+- Modifier le fichier `.env` et la variable `data_path` pour utiliser, par défaut, directement l'URL dans l'import;
+- Modifier les valeurs par défaut dans votre code ;
+- Ajouter le dossier `data/` au `.gitignore` ainsi que les fichiers `*.parquet`
+- Supprimer le dossier `data` de votre projet et faites `git rm --cached -r data`
+
+
+Nous allons en profiter pour améliorer nos données intermédiaires. Dans `main.py`, remplacer les chemins par ceux-ci:
+
+```{.python file="main.py"}
+data_path = os.environ.get("data_path", URL_RAW)
+data_train_path = os.environ.get("train_path", "data/derived/train.parquet")
+data_test_path = os.environ.get("test_path", "data/derived/test.parquet")
+```
+
+où `URL_RAW` est le lien de la forme `"https://minio.lab.sspcloud.fr/$BUCKET_PERSONNEL/ensae-reproductibilite/data/raw/data.csv"`
+
+Dans `split_train_test`, remplacer l'écriture des données par ce morceau:
+
+```{.python file="data/pipeline/build_pipeline.py"}
+if train_path:
+    pd.concat([X_train, y_train]).to_parquet(train_path)
+if test_path:
+    pd.concat([X_test, y_test]).to_parquet(test_path)
+```
+
 - Vérifier le bon fonctionnement de votre application.
 
-Maintenant qu'on a arrangé la structure de notre projet, c'est l'occasion 
+
+Maintenant qu'on a arrangé la structure de notre projet, c'est l'occasion
 de supprimer le code qui n'est plus nécessaire au bon fonctionnement de notre
-projet (cela réduit la charge de maintenance[^pourapres]). 
+projet (cela réduit la charge de maintenance[^pourapres]).
 
 Pour vous aider, vous pouvez
 utiliser [`vulture`](https://pypi.org/project/vulture/) de manière itérative
-pour vous assister dans le nettoyage de votre code. 
+pour vous assister dans le nettoyage de votre code.
 
 ```{.bash filename="terminal"}
 vulture main.py src/
@@ -75,7 +101,7 @@ main.py:37: unused variable 'name_count' (60% confidence)
 
 :::
 
-[^pourapres]: Lorsqu'on développe du code qui finalement ne s'avère plus nécessaire, on a souvent un cas de conscience à le supprimer et on préfère le mettre de côté. Au final, ce syndrôme de Diogène est mauvais pour la pérennité du projet : on se retrouve à devoir maintenir une base de code qui n'est, en pratique, pas utilisée. Ce n'est pas un problème de supprimer un code ; si finalement celui-ci s'avère utile, on peut le retrouver grâce à l'historique `Git` et les outils de recherche sur `Github`. Le _package_ `vulture` est très pratique pour diagnostiquer les morceaux de code inutiles dans un projet. 
+[^pourapres]: Lorsqu'on développe du code qui finalement ne s'avère plus nécessaire, on a souvent un cas de conscience à le supprimer et on préfère le mettre de côté. Au final, ce syndrôme de Diogène est mauvais pour la pérennité du projet : on se retrouve à devoir maintenir une base de code qui n'est, en pratique, pas utilisée. Ce n'est pas un problème de supprimer un code ; si finalement celui-ci s'avère utile, on peut le retrouver grâce à l'historique `Git` et les outils de recherche sur `Github`. Le _package_ `vulture` est très pratique pour diagnostiquer les morceaux de code inutiles dans un projet.
 
 ::: {.callout-caution collapse="true"}
 ## Checkpoint
