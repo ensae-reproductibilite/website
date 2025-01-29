@@ -1014,7 +1014,7 @@ Checkpoint
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Application 7: création du <code>requirements.txt</code>
+Application 7a: création du <code>requirements.txt</code>
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -1057,11 +1057,34 @@ Checkpoint
 </div>
 </div>
 </div>
+<p>Quand votre projet passera en production, vous aurez un accès limité à celui-ci. Il est donc important de faire remonter, par le biais du <em>logging</em> des informations critiques sur votre projet qui vous permettront de savoir où il en est (si vous avez accès à la console où il tourne) ou là où il s’est arrêté.</p>
+<p>L’utilisation de <code>print</code> montre rapidement ses limites pour cela. Les informations enregistrées ne persistent pas après la session et sont quelques peu rudimentaires.</p>
+<p>Pour faire du <em>logging</em>, la librairie consacrée depuis longtemps en <code>Python</code> est… <a href="https://docs.python.org/3/library/logging.html"><code>logging</code></a>. On va néanmoins ici proposer d’utiliser <a href="https://github.com/Delgan/loguru"><code>loguru</code></a> qui est un peu plus simple à configurer (l’instanciation du <em>logger</em> est plus aisée)[^citation-loguru] et plus agréable grâce à ses messages en couleurs qui permettent de visuellement trier les informations.</p>
+<p><img src="https://raw.githubusercontent.com/Delgan/loguru/master/docs/_static/img/demo.gif" class="img-fluid"></p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Application 7b: remontée de messages par <em>logging</em>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>Installer <code>loguru</code> et l’ajouter au <code>requirements.txt</code></li>
+<li>En s’aidant du <code>README</code> du projet sur <a href="https://github.com/Delgan/loguru"><code>Github</code></a>, remplacer nos <code>print</code> par différents types de messages (info, success, etc.).</li>
+<li>Tester l’exécution du script en ligne de commande et observer vos sorties</li>
+<li>Mettre à jour le logger pour enregistrer dans un fichier de <em>log</em>. Ajouter celui-ci au <code>.gitignore</code> puis tester en ligne de commande votre script. Ouvrir le fichier en question, refaites tourner le script et regardez son évolutoin.</li>
+<li>Il est possible avec <code>loguru</code> de capturer les erreurs des fonctions grâce au système de cache décrit <a href="https://github.com/Delgan/loguru?tab=readme-ov-file#exceptions-catching-within-threads-or-main">ici</a>. Introduire une erreur dans une des fonctions (par exemple dans <code>split_train_test</code>) avec un code du type <code>raise ValueError("Problème ici")</code></li>
+</ol>
+</div>
+</div>
 </section>
 <section id="stockageS3" class="level2">
 <h2 class="anchored" data-anchor-id="stockageS3">Étape 4 : stocker les données de manière externe</h2>
 <div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1070,7 +1093,7 @@ Pour en savoir plus sur le système de stockage <code>S3</code>
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-21" class="callout-21-contents callout-collapse collapse">
+<div id="callout-22" class="callout-22-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Pour mettre en oeuvre cette étape, il peut être utile de comprendre un peu comme fonctionne le SSP Cloud. Vous devrez suivre la <a href="https://inseefrlab.github.io/docs.sspcloud.fr/docs/fr/storage.html">documentation du SSP Cloud</a> pour la réaliser. Une aide-mémoire est également disponible dans le cours de 2e année de l’ENSAE <a href="https://linogaliana-teaching.netlify.app/reads3/#">Python pour la <em>data science</em></a>.</p>
 </div>
@@ -1143,7 +1166,7 @@ Exemple de sortie
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-23-contents" aria-controls="callout-23" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-24-contents" aria-controls="callout-24" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1152,7 +1175,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-23" class="callout-23-contents callout-collapse collapse">
+<div id="callout-24" class="callout-24-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -1203,7 +1226,7 @@ Application 9: test unitaire <em>(optionnel)</em>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-25-contents" aria-controls="callout-25" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-26-contents" aria-controls="callout-26" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1212,7 +1235,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-25" class="callout-25-contents callout-collapse collapse">
+<div id="callout-26" class="callout-26-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -1374,7 +1397,7 @@ Application 10: packagisation <em>(optionnel)</em>
 <li>Renommer le dossier <code>titanicml</code> pour respecter la nouvelle arborescence ;</li>
 <li>Créer un fichier <code>pyproject.toml</code> sur cette base ;</li>
 </ul>
-<div id="98537a4c" class="cell" data-execution_count="1">
+<div id="ee9ecc21" class="cell" data-execution_count="1">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>pyproject.toml</strong></pre>
@@ -1402,7 +1425,7 @@ Application 10: packagisation <em>(optionnel)</em>
 <li>Créer le dossier <code>docs</code> et mettre les fichiers indiqués dedans</li>
 <li>Dans <code>titanicml/</code>, créer un fichier <code>__init__.py</code><a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a></li>
 </ul>
-<div id="02ee538a" class="cell" data-execution_count="2">
+<div id="d7dfbb5a" class="cell" data-execution_count="2">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>__init__.py</strong></pre>
@@ -1432,7 +1455,7 @@ Application 10: packagisation <em>(optionnel)</em>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-29-contents" aria-controls="callout-29" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-30-contents" aria-controls="callout-30" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1441,7 +1464,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-29" class="callout-29-contents callout-collapse collapse">
+<div id="callout-30" class="callout-30-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -1550,7 +1573,7 @@ Aide pour la question 4
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-31-contents" aria-controls="callout-31" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-32-contents" aria-controls="callout-32" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1559,7 +1582,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-31" class="callout-31-contents callout-collapse collapse">
+<div id="callout-32" class="callout-32-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -1617,7 +1640,7 @@ Application 11b: environnement <code>conda</code>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-33-contents" aria-controls="callout-33" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-34-contents" aria-controls="callout-34" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1626,7 +1649,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-33" class="callout-33-contents callout-collapse collapse">
+<div id="callout-34" class="callout-34-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -1733,7 +1756,7 @@ Script à créer sous le nom <code>install.sh</code>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-35-contents" aria-controls="callout-35" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-36-contents" aria-controls="callout-36" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1742,7 +1765,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-35" class="callout-35-contents callout-collapse collapse">
+<div id="callout-36" class="callout-36-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -1836,7 +1859,7 @@ Script à créer sous le nom <code>install.sh</code>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-37-contents" aria-controls="callout-37" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-38-contents" aria-controls="callout-38" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1845,7 +1868,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-37" class="callout-37-contents callout-collapse collapse">
+<div id="callout-38" class="callout-38-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -2043,7 +2066,7 @@ Note
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-41-contents" aria-controls="callout-41" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-42-contents" aria-controls="callout-42" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2052,7 +2075,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-41" class="callout-41-contents callout-collapse collapse">
+<div id="callout-42" class="callout-42-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -2090,7 +2113,7 @@ Checkpoint
 </ul>
 <p>Nous allons utiliser <code>Github Actions</code> pour cela. Il s’agit de serveurs standardisés mis à disposition gratuitement par <code>Github</code> <i class="fa-brands fa-github" aria-label="github"></i>. <code>Gitlab</code> <i class="fa-brands fa-gitlab" aria-label="gitlab"></i>, l’autre principal acteur du domaine, propose des services similaires. L’implémentation est légèrement différente mais les principes sont identiques.</p>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-42-contents" aria-controls="callout-42" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-43-contents" aria-controls="callout-43" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2099,7 +2122,7 @@ Si vous prenez ce projet fil rouge en cours de route
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-42" class="callout-42-contents callout-collapse collapse">
+<div id="callout-43" class="callout-43-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -2140,7 +2163,7 @@ Application 14: premier script d’intégration continue
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-44-contents" aria-controls="callout-44" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-45-contents" aria-controls="callout-45" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2149,7 +2172,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-44" class="callout-44-contents callout-collapse collapse">
+<div id="callout-45" class="callout-45-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -2271,7 +2294,7 @@ Application 15b (partie optionnelle): Tester l’application
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-48-contents" aria-controls="callout-48" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-49-contents" aria-controls="callout-49" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2280,7 +2303,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-48" class="callout-48-contents callout-collapse collapse">
+<div id="callout-49" class="callout-49-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -2309,7 +2332,7 @@ Checkpoint
 <h1>Partie 5: expérimenter en local des valorisations puis automatiser leur production</h1>
 <p>Nous avons automatisé les étapes intermédiaires de notre projet. Néanmoins nous n’avons pas encore réfléchi à la valorisation à mettre en oeuvre pour notre projet. On va supposer que notre projet s’adresse à des <em>data scientists</em> mais aussi à une audience moins technique. Pour ces premiers, nous pourrions nous contenter de valorisations techniques, comme des API, mais pour ces derniers il est conseillé de privilégier des formats plus <em>user friendly</em>.</p>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-49-contents" aria-controls="callout-49" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-50-contents" aria-controls="callout-50" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2318,7 +2341,7 @@ Si vous prenez ce projet fil rouge en cours de route
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-49" class="callout-49-contents callout-collapse collapse">
+<div id="callout-50" class="callout-50-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -2340,7 +2363,7 @@ Si vous prenez ce projet fil rouge en cours de route
 <li>Un <a href="https://ensae-reproductibilite.github.io/application-correction/">site web statique</a> exploitant cette API pour exposer les prédictions à une audience moins technique.</li>
 </ul>
 <div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-50-contents" aria-controls="callout-50" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-51-contents" aria-controls="callout-51" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2349,7 +2372,7 @@ Site statique vs application réactive
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-50" class="callout-50-contents callout-collapse collapse">
+<div id="callout-51" class="callout-51-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>La solution que nous allons proposer pour les sites statiques, <code>Quarto</code> associé à <code>Github Pages</code>, peut être utilisée dans le cadre des parcours <em>“rapport reproductible”</em> ou <em>“dashboard / application interactive”</em>.</p>
 <p>Pour ce dernier parcours, d’autres approches techniques sont néanmoins possibles, comme <code>Streamlit</code>. Celles-ci sont plus exigeantes sur le plan technique puisqu’elles nécessitent de mettre en production sur des serveurs conteuneurisés (comme la mise en production de l’API) là où le site statique ne nécessite qu’un serveur web, mis à disposition gratuitement par <code>Github</code>.</p>
@@ -2365,7 +2388,7 @@ Site statique vs application réactive
 <h2 class="anchored" data-anchor-id="étape-1-développer-une-api-en-local">Étape 1: développer une API en local</h2>
 <p>Le premier livrable devenu classique dans un projet impliquant du <em>machine learning</em> est la mise à disposition d’un modèle par le biais d’une API (voir chapitre sur la <a href="../chapters/deployment.html">mise en production</a>). Le <em>framework</em> <a href="https://fastapi.tiangolo.com/"><code>FastAPI</code></a> va permettre de rapidement transformer notre application <code>Python</code> en une API fonctionnelle.</p>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-51-contents" aria-controls="callout-51" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-52-contents" aria-controls="callout-52" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2374,7 +2397,7 @@ Si vous prenez ce projet fil rouge en cours de route
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-51" class="callout-51-contents callout-collapse collapse">
+<div id="callout-52" class="callout-52-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -2503,7 +2526,7 @@ Fichier <code>api.py</code>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-53-contents" aria-controls="callout-53" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-54-contents" aria-controls="callout-54" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2512,7 +2535,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-53" class="callout-53-contents callout-collapse collapse">
+<div id="callout-54" class="callout-54-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -2539,7 +2562,7 @@ Checkpoint
 <section id="étape-2-déployer-lapi-de-manière-manuelle" class="level2">
 <h2 class="anchored" data-anchor-id="étape-2-déployer-lapi-de-manière-manuelle">Étape 2: déployer l’API de manière manuelle</h2>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-54-contents" aria-controls="callout-54" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-55-contents" aria-controls="callout-55" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2548,7 +2571,7 @@ Si vous prenez ce projet fil rouge en cours de route
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-54" class="callout-54-contents callout-collapse collapse">
+<div id="callout-55" class="callout-55-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -2681,7 +2704,7 @@ Fichier <code>deployment/service.yaml</code>
 <summary>
 Fichier <code>deployment/ingress.yaml</code>
 </summary>
-<div id="bd35cd01" class="cell" data-source-line-numbers="10-13" data-execution_count="3">
+<div id="8a6cca8d" class="cell" data-source-line-numbers="10-13" data-execution_count="3">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>deployment/ingress.yaml</strong></pre>
@@ -2730,7 +2753,7 @@ Fichier <code>deployment/ingress.yaml</code>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-57-contents" aria-controls="callout-57" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-58-contents" aria-controls="callout-58" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2739,7 +2762,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-57" class="callout-57-contents callout-collapse collapse">
+<div id="callout-58" class="callout-58-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -2800,7 +2823,7 @@ Clarification sur la branche de travail
 <p>A partir de maintenant, il est nécessaire de clarifier la branche principale sur laquelle nous travaillons. De manière traditionnelle, on utilise la branche <code>main</code>. Néanmoins, pour être cohérent avec les instructions du début, qui étaient de créer une branche <code>dev</code>, tous les exemples ultérieures partiront de cette hypothèse.</p>
 <p>Si vous avez fait les applications les unes après les autres, et que vous vous situez toujours sur <code>dev</code>, vous pouvez passer aux applications suivantes. Si vous avez changé de branche, vous pouvez continuer mais en tenir compte dans les exemples ultérieurs.</p>
 <p>Si vous avez utilisé un <code>tag</code> pour sauter une ou plusieurs étapes, il va être nécessaire de se placer sur une branche car vous êtes en <em>head detached</em>. Pour cela, après avoir <em>committé</em> les fichiers que vous désirez garder</p>
-<div id="7ab9cc2a" class="cell" data-file="terminal" data-execution_count="4">
+<div id="ab717992" class="cell" data-file="terminal" data-execution_count="4">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
@@ -2859,7 +2882,7 @@ Application 19a: Automatiser la mise à disposition de l’API (déploiement con
 <li>Ajouter un dossier <code>deployment</code> à votre dépôt <code>GitOps</code>, dans lequel on mettra les trois fichiers de déploiement qui permettent de déployer notre application sur <code>Kubernetes</code> (<code>deployment.yaml</code>, <code>service.yaml</code>, <code>ingress.yaml</code>).</li>
 <li>A la racine de votre dépôt <code>GitOps</code>, créez un fichier <code>application.yml</code> avec le contenu suivant, en prenant bien soin de modifier les lignes surlignées avec les informations pertinentes :</li>
 </ul>
-<div id="c8d2a805" class="cell" data-file="application.yaml" data-source-line-numbers="8-9,13" data-execution_count="5">
+<div id="8379fbb9" class="cell" data-file="application.yaml" data-source-line-numbers="8-9,13" data-execution_count="5">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>application.yaml</strong></pre>
@@ -2910,7 +2933,7 @@ Application 19a: Automatiser la mise à disposition de l’API (déploiement con
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-61-contents" aria-controls="callout-61" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-62-contents" aria-controls="callout-62" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -2919,7 +2942,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-61" class="callout-61-contents callout-collapse collapse">
+<div id="callout-62" class="callout-62-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -3044,7 +3067,7 @@ Application 19b : Mettre à jour la version en production
 <summary>
 <p>Fichier <code>deployment/deployment.yaml</code></p>
 </summary>
-<div id="a1ecf4b7" class="cell" data-file="deployment/deployment.yaml" data-source-line-numbers="19" data-execution_count="6">
+<div id="eac0f06b" class="cell" data-file="deployment/deployment.yaml" data-source-line-numbers="19" data-execution_count="6">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>deployment/deployment.yaml</strong></pre>
@@ -3086,7 +3109,7 @@ Application 19b : Mettre à jour la version en production
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-63-contents" aria-controls="callout-63" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-64-contents" aria-controls="callout-64" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -3095,7 +3118,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-63" class="callout-63-contents callout-collapse collapse">
+<div id="callout-64" class="callout-64-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -3122,7 +3145,7 @@ Checkpoint
 <section id="etape-4-construire-un-site-web" class="level2">
 <h2 class="anchored" data-anchor-id="etape-4-construire-un-site-web">Etape 4: construire un site web</h2>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-64-contents" aria-controls="callout-64" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-65-contents" aria-controls="callout-65" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -3131,7 +3154,7 @@ Si vous prenez ce projet fil rouge en cours de route
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-64" class="callout-64-contents callout-collapse collapse">
+<div id="callout-65" class="callout-65-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -3191,7 +3214,7 @@ Application 20: Création d’un site web pour valoriser le projet
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-66-contents" aria-controls="callout-66" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-67-contents" aria-controls="callout-67" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -3200,7 +3223,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-66" class="callout-66-contents callout-collapse collapse">
+<div id="callout-67" class="callout-67-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -3228,7 +3251,7 @@ Checkpoint
 <section id="partie-6-adopter-une-approche-mlops-pour-améliorer-notre-modèle" class="level1">
 <h1>Partie 6: adopter une approche MLOps pour améliorer notre modèle</h1>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-67-contents" aria-controls="callout-67" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-68-contents" aria-controls="callout-68" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -3237,7 +3260,7 @@ Si vous prenez ce projet fil rouge en cours de route
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-67" class="callout-67-contents callout-collapse collapse">
+<div id="callout-68" class="callout-68-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -3569,7 +3592,7 @@ Modification de <code>api/main.py</code> à effectuer
 <ol start="2" type="1">
 <li>Tester votre script <code>train.py</code> et uploader le meilleur modèle sur S3 de la manière suivante:</li>
 </ol>
-<div id="d90a53bc" class="cell" data-file="terminal" data-execution_count="7">
+<div id="5b6f6e4d" class="cell" data-file="terminal" data-execution_count="7">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
@@ -3612,7 +3635,7 @@ Modification de <code>api/main.py</code> à effectuer
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-69-contents" aria-controls="callout-69" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-70-contents" aria-controls="callout-70" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -3621,7 +3644,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-69" class="callout-69-contents callout-collapse collapse">
+<div id="callout-70" class="callout-70-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -3648,7 +3671,7 @@ Checkpoint
 <section id="garder-une-trace-des-entraînements-de-notre-modèle-grâce-au-register-de-mlflow" class="level2">
 <h2 class="anchored" data-anchor-id="garder-une-trace-des-entraînements-de-notre-modèle-grâce-au-register-de-mlflow">Garder une trace des entraînements de notre modèle grâce au <em>register</em> de <code>MLFlow</code></h2>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-70-contents" aria-controls="callout-70" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-71-contents" aria-controls="callout-71" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -3657,7 +3680,7 @@ Si vous prenez ce projet fil rouge en cours de route
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-70" class="callout-70-contents callout-collapse collapse">
+<div id="callout-71" class="callout-71-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -3769,7 +3792,7 @@ Contenu du fichier <code>src/models/log.py</code>
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-72-contents" aria-controls="callout-72" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-73-contents" aria-controls="callout-73" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -3778,7 +3801,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-72" class="callout-72-contents callout-collapse collapse">
+<div id="callout-73" class="callout-73-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -3873,7 +3896,7 @@ Application 23a : réutiliser un modèle archivé sur MLFlow
 <ol start="2" type="1">
 <li>Cliquer sur votre meilleur modèle et introduire dans <code>mlflow/predict.py</code> le morceau de code suggéré par <code>MLFlow</code>, du type de celui-ci:</li>
 </ol>
-<div id="1bf1744a" class="cell" data-execution_count="8">
+<div id="39682081" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="annotated-cell-172" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-172-1"><a href="#annotated-cell-172-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
 <a class="code-annotation-anchor" data-target-cell="annotated-cell-172" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-172-2" class="code-annotation-target"><a href="#annotated-cell-172-2" aria-hidden="true" tabindex="-1"></a>logged_model <span class="op">=</span> <span class="co">#A CHANGER</span></span>
 <span id="annotated-cell-172-3"><a href="#annotated-cell-172-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -3926,7 +3949,7 @@ Application 23b : passer en production un modèle
 <li><p>Ajouter <code>mlflow</code> au <code>requirements.txt</code></p></li>
 <li><p>Mettre à jour les fichiers <code>.github/worflows/prod.yaml</code> et <code>kubernetes/deployment.yaml</code> pour produire et utiliser le tag <code>v0.0.5</code></p></li>
 </ol>
-<div id="d844ce97" class="cell" data-file=".github/worflows/prod.yaml" data-execution_count="9">
+<div id="f912aa3d" class="cell" data-file=".github/worflows/prod.yaml" data-execution_count="9">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>.github/worflows/prod.yaml</strong></pre>
@@ -3971,7 +3994,7 @@ Application 23b : passer en production un modèle
 </dl>
 </div>
 </div>
-<div id="46a5cf9a" class="cell" data-execution_count="10">
+<div id="8bb31ab0" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="annotated-cell-176" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-176-1"><a href="#annotated-cell-176-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating MLflow deployment</span></span>
 <span id="annotated-cell-176-2"><a href="#annotated-cell-176-2" aria-hidden="true" tabindex="-1"></a>apiVersion: apps<span class="op">/</span>v1</span>
 <span id="annotated-cell-176-3"><a href="#annotated-cell-176-3" aria-hidden="true" tabindex="-1"></a>kind: Deployment</span>
@@ -4018,7 +4041,7 @@ Application 23b : passer en production un modèle
 </div>
 </div>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-75-contents" aria-controls="callout-75" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-76-contents" aria-controls="callout-76" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -4027,7 +4050,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-75" class="callout-75-contents callout-collapse collapse">
+<div id="callout-76" class="callout-76-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -4059,7 +4082,7 @@ Checkpoint
 <li>Lancer un service Argo Workflows</li>
 <li>Dans <code>mlflow/training.yaml</code></li>
 </ol>
-<div id="2106c60b" class="cell" data-execution_count="11">
+<div id="b358453a" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="annotated-cell-8" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-8-1"><a href="#annotated-cell-8-1" aria-hidden="true" tabindex="-1"></a>apiVersion: argoproj.io<span class="op">/</span>v1alpha1</span>
 <span id="annotated-cell-8-2"><a href="#annotated-cell-8-2" aria-hidden="true" tabindex="-1"></a>kind: Workflow</span>
 <span id="annotated-cell-8-3"><a href="#annotated-cell-8-3" aria-hidden="true" tabindex="-1"></a>metadata:</span>
