@@ -9,96 +9,38 @@ puis 2, 10 et 50 arbres.
 :::
 
 L'exercice suivant permet de mettre en application le fait de paramétriser
-un script en utilisant des variables définies dans un fichier YAML. 
+un script en utilisant des variables définies dans un fichier YAML.
 
 
 ::: {.callout-tip}
-## Application 3b: La configuration dans un fichier YAML
+## Application 3b: La configuration dans un fichier dédié
 
-Nous allons mettre 4 paramètres dans notre YAML. Celui-ci prendra la forme suivante:
+1. Installer le package `python-dotenv` que nous allons utiliser pour charger notre jeton d'API à partir d'une variable d'environnement.
+2. A partir de l'exemple de la [documentation](https://pypi.org/project/python-dotenv/), utiliser la fonction `load_dotenv` pour charger dans `Python` nos variables d'environnement à partir d'un fichier (vous pouvez le créer mais ne pas le remplir encore avec les valeurs voulues, ce sera fait ensuite)
+3. Créer la variable et vérifier la sortie de `Python` en faisant tourner `titanic.py` en ligne de commande
 
-```{.yaml filename="config.yaml"}
-jeton_api: ####
-data_path: ####
+
+```{.python filename="titanic.py"}
+jeton_api = os.environ.get("JETON_API", "")
+
+if jeton_api.startswith("$"):
+    print("API token has been configured properly")
+else:
+    print("API token has not been configured")
 ```
 
-Avec `####` des valeurs à remplacer.
-
-1. Créer à la racine du projet un fichier `config.yaml` à partir du
-modèle 👆️ ;
-2. Repérer les valeurs dans le code associé et compléter.
-
-Maintenant, nous allons exploiter ce fichier:
-
-3. Pour éviter d'avoir à le faire plus tard,
-créer une fonction `import_yaml_config` qui prend en argument le
-chemin d'un fichier `YAML`
-et renvoie le contenu de celui-ci en _output_. Vous pouvez suivre
-le conseil du chapitre sur la [Qualité du code](/chapters/code-quality.html)
-en adoptant le _type hinting_ ;
-
-<details>
-<summary>Indice si vous ne trouvez pas comment lire un fichier `YAML`</summary>
-
-Si le fichier s'appelle `toto.yaml`, vous pouvez l'importer de cette manière:
-
-```{python}
-#| eval: false
-with open("toto.yaml", "r", encoding="utf-8") as stream:
-    dict_config = yaml.safe_load(stream)
-```
-
-</details>
-
-4. Dans la fonction `import_yaml_config`,
-créer une condition logique pour tenir compte du fait que le YAML de configuration
-peut ne pas exister[^fileexist] ;
-
-<details>
-<summary>Indice si vous ne savez comment conditionner la création de la configuration à l'existence du fichier</summary>
-
-Voici la ligne qui peut vous aider. L'idéal
-est d'insérer ceci dans `import_yaml_config`:
-
-```{python}
-#| eval: false
-CONFIG_PATH = 'config.yaml'
-config = {}
-if os.path.exists(CONFIG_PATH):
-    # lecture du fichier
-```
-
-</details>
-
-
-5. Utiliser le canevas de code suivant pour créer les variables adéquates
-
-```{python}
-#| eval: false
-API_TOKEN = config.get("jeton_api")
-TRAIN_PATH = config.get("train_path", "train.csv")
-TEST_PATH = config.get("test_path", "test.csv")
-TEST_FRACTION = config.get("test_fraction", .1)
-```
-
-et remplacer dans le code ;
-
-5. Tester en ligne de commande que l'exécution du fichier est toujours
-sans erreur et sinon corriger ;
-6. Refaire un diagnostic avec [`PyLint`](https://pylint.readthedocs.io/en/latest/)
-et corriger les éventuels messages ;
-7. Créer un fichier `.gitignore` (cf. [Chapitre `Git`](/chapters/git.qmd)). Ajouter dans ce fichier `config.yaml`
-car il ne faut pas committer ce fichier. Au passage ajouter `__pycache__/` au `.gitignore`[^pycache], cela
+4. Maintenant introduire la valeur voulue pour le jeton d'API dans le fichier d'environnement lu par `dotenv`
+5. S'il n'existe pas déjà, créer un fichier `.gitignore` (cf. [Chapitre `Git`](/chapters/git.qmd)). Ajouter dans ce fichier `.env` car il ne faut pas committer ce fichier. Au passage ajouter `__pycache__/` au `.gitignore`[^pycache], cela
 évitera d'avoir à le faire ultérieurement ;
-9. Créer un fichier `README.md` où vous indiquez qu'il faut créer un fichier `config.yaml` pour
-pouvoir utiliser l'API. 
+1. Créer un fichier `README.md` où vous indiquez qu'il faut créer un fichier `.env` pour
+pouvoir utiliser l'API.
 
 [^fileexist]: Ici, le jeton d'API n'est pas indispensable pour que le code
     fonctionne. Afin d'éviter une erreur non nécessaire
     lorsqu'on automatisera le processus, on peut
     créer une condition qui vérifie la présence ou non de ce fichier.
     Le script reste donc reproductible même pour un utilisateur n'ayant pas le fichier
-    `secrets.yaml`. 
+    `secrets.yaml`.
 
 [^pycache]: Il est normal d'avoir des dossiers `__pycache__` qui traînent en local : ils se créent automatiquement à l'exécution d'un script en `Python`. Néanmoins, il ne faut pas associer ces fichiers à `Git`, voilà pourquoi on les ajoute au `.gitignore`.
 
