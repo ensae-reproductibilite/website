@@ -36,31 +36,26 @@ log_cli_date_format = "%Y-%m-%d %H:%M:%S"
 #| eval: false
 #| code-summary: "__init__.py"
 #| filename: "__init__.py"
-from .import_data import (
-    import_data, import_yaml_config
+from .data.import_data import (
+    split_and_count
 )
-from .build_features import (
-    create_variable_title,
-    fill_na_titanic,
-    label_encoder_titanic,
-    check_has_cabin,
-    ticket_length
+from .pipeline.build_pipeline import (
+    split_train_test,
+    create_pipeline
 )
-from .train_evaluate import random_forest_titanic
-
+from .models.train_evaluate import (
+    evaluate_model
+)
 __all__ = [
-    "import_data", "import_yaml_config",
-    "create_variable_title",
-    "fill_na_titanic",
-    "label_encoder_titanic",
-    "check_has_cabin",
-    "ticket_length",
-    "random_forest_titanic"
+    "split_and_count",
+    "split_train_test",
+    "create_pipeline",
+    "evaluate_model"
 ]
 ```
 
 - Installer le package en local avec `pip install -e .`
-- Modifier le contenu de `docs/main.py` pour importer les fonctions de notre _package_ `titanicml` et tester en 
+- Modifier le contenu de `docs/main.py` pour importer les fonctions de notre _package_ `titanicml` et tester en
 ligne de commande notre fichier `main.py`
 :::
 
@@ -68,12 +63,12 @@ ligne de commande notre fichier `main.py`
 est un _package_. Il permet de proposer certaines configurations
 lors de l'import du _package_. Il permet également de contrôler
 les objets exportés (c'est-à-dire mis à disposition de l'utilisateur)
-par le _package_ par rapport aux objets internes au _package_. 
-En le laissant vide, nous allons utiliser ce fichier 
-pour importer l'ensemble des fonctions de nos sous-modules. 
+par le _package_ par rapport aux objets internes au _package_.
+En le laissant vide, nous allons utiliser ce fichier
+pour importer l'ensemble des fonctions de nos sous-modules.
 Ce n'est pas la meilleure pratique mais un contrôle plus fin des
 objets exportés demanderait un investissement qui ne vaut, ici, pas
-le coût. 
+le coût.
 
 
 ::: {.callout-caution collapse="true"}
