@@ -4,31 +4,33 @@
 
 A partir de l'exemple présent
 dans la [documentation officielle](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python#using-a-specific-python-version)
-de `Github` {{< fa brands github >}}, on a déjà une base de départ qui peut être modifiée. 
+de `Github` {{< fa brands github >}}, on a déjà une base de départ qui peut être modifiée.
 Les questions suivantes permettront d'automatiser les tests et le diagnostic qualité de
 notre code[^failure]
 
 [^failure]: Il est tout à fait normal de ne pas parvenir à créer une action fonctionnelle
 du premier coup. N'hésitez pas à _pusher_ votre code après chaque question pour vérifier
 que vous parvenez bien à réaliser chaque étape. Sinon vous risquez de devoir corriger
-bout par bout un fichier plus conséquent. 
+bout par bout un fichier plus conséquent.
 
 1. Créer un fichier `.github/workflows/test.yaml` avec le contenu de l'exemple de la documentation
-3. Avec l'aide de la documentation, introduire une étape d'installation des dépendances. 
-Utiliser le fichier `requirements.txt` pour installer les dépendances. 
+3. Avec l'aide de la documentation, introduire une étape d'installation des dépendances.
+Utiliser le fichier `requirements.txt` pour installer les dépendances.
 4. Utiliser `pylint` pour vérifier la qualité du code. Ajouter l'argument `--fail-under=6` pour
 renvoyer une erreur en cas de note trop basse[^hook]
 5. Utiliser une étape appelant notre application en ligne de commande (`python main.py`)
 pour tester que la matrice de confusion s'affiche bien.
-6. Aller voir votre test automatisé dans l'onglet `Actions` de votre dépôt sur `Github`
+6. Créer un secret stockant une valeur du `JETON_API`. Ne le faites pas commencer par un _"$"_ comme ça vous pourrez regarder la log ultérieurement
+7. Aller voir votre test automatisé dans l'onglet `Actions` de votre dépôt sur `Github`
+8. _(optionnel)_: Créer un _artefact_ à partir du fichier de _log_ que vous créez dans `main.py`
 
 [^hook]: Il existe une approche alternative pour faire des tests
     réguliers: les _hooks_ `Git`.
-    Il s'agit de règles qui doivent être satisfaites pour que le 
+    Il s'agit de règles qui doivent être satisfaites pour que le
     fichier puisse être committé. Cela assure que chaque `commit` remplisse
     des critères de qualité afin d'éviter le problème de la procrastination.
-    
-    La [documentation de pylint](https://pylint.pycqa.org/en/latest/user_guide/pre-commit-integration.html) offre des explications supplémentaires. 
+
+    La [documentation de pylint](https://pylint.pycqa.org/en/latest/user_guide/pre-commit-integration.html) offre des explications supplémentaires.
     Ici, nous allons adopter une approche moins ambitieuse en demandant à notre
     action de faire ce travail d'évaluation de la qualité de notre code
 

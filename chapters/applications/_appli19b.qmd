@@ -8,14 +8,14 @@ Jusqu'à maintenant, on a utilisé le tag *latest* pour définir la version de n
 <details>
 <summary>
 
-Fichier `.github/workflows/prod.yml` 
+Fichier `.github/workflows/prod.yml`
 
 </summary>
 
 ```{.yaml filename=".github/workflows/prod.yml"}
 name: Construction image Docker
 
-on: 
+on:
   push:
     branches:
       - main
@@ -39,7 +39,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: linogaliana/application-correction
+          images: linogaliana/application
 
       -
         name: Login to Docker Hub
@@ -58,7 +58,7 @@ jobs:
 </details>
 
 - Dans le dépôt de l'application, mettre à jour le code dans `api/main.py` pour changer un élément de l'interface de votre documentation.
-Par exemple, mettre en gras un titre. 
+Par exemple, mettre en gras un titre.
 
 ```{.python}
 app = FastAPI(
@@ -71,7 +71,7 @@ app = FastAPI(
 
 - *Commit* et *push* les changements.
 
-- Tagger le commit effectué précédemment et *push* le nouveau tag : 
+- Tagger le commit effectué précédemment et *push* le nouveau tag :
 
 ```{.bash filename="terminal"}
 git tag v1.0.0
@@ -87,7 +87,7 @@ La partie CI a correctement fonctionné. Intéressons-nous à présent à la par
 <details>
 <summary>
 
-Fichier `deployment/deployment.yaml` 
+Fichier `deployment/deployment.yaml`
 
 </summary>
 ```{python}
@@ -113,7 +113,7 @@ spec:
     spec:
       containers:
       - name: titanic
-        image: linogaliana/application-correction:v1.0.0
+        image: linogaliana/application:v1.0.0
         ports:
         - containerPort: 5000
 ```
