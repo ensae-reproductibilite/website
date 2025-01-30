@@ -25,7 +25,15 @@ _site/
 Enfin, on va construire et déployer automatiquement ce site web grâce au
 combo `Github Actions` et `Github Pages`:
 
-- Créer une branche `gh-pages` à partir du contenu de [cette page](https://quarto.org/docs/publishing/github-pages.html#source-branch)
+- Créer une branche `gh-pages` à partir des lignes suivantes
+
+```python
+git checkout --orphan gh-pages
+git reset --hard # make sure all changes are committed before running this!
+git commit --allow-empty -m "Initialising gh-pages branch"
+git push origin gh-pages
+```
+
 - Revenir à votre branche
 - Créer un fichier `.github/workflows/website.yaml` avec le contenu de [ce fichier](https://raw.githubusercontent.com/ensae-reproductibilite/application/tree/appli20/.github/workflows/publish.yaml)
 - Modifier le `README` pour indiquer l'URL de votre site web et de votre API

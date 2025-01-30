@@ -4,25 +4,6 @@
 1. Faire les modifications suivantes pour restructurer notre _pipeline_
 afin de mieux distinguer les étapes d'estimation et d'évaluation
 
-<details>
-<summary>
-Modification de `src/models/train_evaluation.py` à effectuer
-</summary>
-
-```{.python include="./applications/code/appli21_pipeline_part1.py" filename="src/models/train_evaluation.py"}
-```
-
-</details> 
-
-<details>
-<summary>
-Modification de `src/features/build_features.py` pour enchaîner les étapes de _feature engineering_
-</summary>
-
-```{.python include="./applications/code/appli21_build_features_part1.py" filename="src/features/build_features.py"}
-```
-
-</details> 
 
 
 <details>
@@ -30,74 +11,117 @@ Modification de `src/features/build_features.py` pour enchaîner les étapes de 
 Modification de `train.py` pour faire une _grid search_
 </summary>
 
-```{.python include="./applications/code/appli21_train_part1.py" filename="train.py"}
+```{.python filename="train.py"}
+"""
+Prediction de la survie d'un individu sur le Titanic
+"""
+
+import os
+from dotenv import load_dotenv
+import argparse
+from loguru import logger
+
+import pathlib
+from joblib import dump
+import pandas as pd
+from sklearn.model_selection import GridSearchCV
+
+from src.pipeline.build_pipeline import split_train_test, create_pipeline
+from src.models.train_evaluate import evaluate_model
+
+
+# ENVIRONMENT CONFIGURATION ---------------------------
+
+logger.add("recording.log", rotation="500 MB")
+load_dotenv()
+
+parser = argparse.ArgumentParser(description="Paramètres du random forest")
+parser.add_argument(
+    "--n_trees", type=int, default=20, help="Nombre d'arbres"
+)
+args = parser.parse_args()
+
+URL_RAW = "https://minio.lab.sspcloud.fr/lgaliana/ensae-reproductibilite/data/raw/data.csv"
+
+n_trees = args.n_trees
+jeton_api = os.environ.get("JETON_API", "")
+data_path = os.environ.get("data_path", URL_RAW)
+data_train_path = os.environ.get("train_path", "data/derived/train.parquet")
+data_test_path = os.environ.get("test_path", "data/derived/test.parquet")
+MAX_DEPTH = None
+MAX_FEATURES = "sqrt"
+
+if jeton_api.startswith("$"):
+    logger.info("API token has been configured properly")
+else:
+    logger.warning("API token has not been configured")
+
+
+# IMPORT ET STRUCTURATION DONNEES --------------------------------
+
+p = pathlib.Path("data/derived/")
+p.mkdir(parents=True, exist_ok=True)
+
+TrainingData = pd.read_csv(data_path)
+
+X_train, X_test, y_train, y_test = split_train_test(
+    TrainingData, test_size=0.1,
+    train_path=data_train_path,
+    test_path=data_test_path
+)
+
+
+# PIPELINE ----------------------------
+
+
+# Create the pipeline
+pipe = create_pipeline(
+    n_trees, max_depth=MAX_DEPTH, max_features=MAX_FEATURES
+)
+
+
+param_grid = {
+    "classifier__n_estimators": [10, 20, 50],
+    "classifier__max_leaf_nodes": [5, 10, 50],
+}
+
+
+pipe_cross_validation = GridSearchCV(
+    pipe,
+    param_grid=param_grid,
+    scoring=["accuracy", "precision", "recall", "f1"],
+    refit="f1",
+    cv=5,
+    n_jobs=5,
+    verbose=1,
+)
+
+
+# ESTIMATION ET EVALUATION ----------------------
+
+logger.info("Training model by cross validation")
+
+
+pipe_cross_validation.fit(X_train, y_train)
+pipe = pipe_cross_validation.best_estimator_
+
+dump(pipe, 'model.joblib')
+
+
+# Evaluate the model
+score, matrix = evaluate_model(pipe, X_test, y_test)
+
+logger.success(f"{score:.1%} de bonnes réponses sur les données de test pour validation")
+logger.debug(20 * "-")
+logger.info("Matrice de confusion")
+logger.debug(matrix)
 ```
 
-</details> 
+</details>
 
-
-<details>
-<summary>
-Fichier `eval.py` pour évaluer la meilleure validation croisée
-</summary>
-
-```{.python include="./applications/code/appli21_eval_part1.py" filename="eval.py"}
-```
-
-</details> 
-
-<details>
-<summary>
-Modification de `api/main.py` à effectuer
-</summary>
-
-```{.python include="./applications/code/appli21_api_main.py" filename="api/main.py"}
-```
-
-</details> 
-
-2. Tester votre script `train.py` et uploader le meilleur modèle sur S3 de la manière suivante:
-
-```{python}
-#| eval: false
-#| filename: terminal
-#| file: terminal
-mc cp model.joblib s3/<BUCKET_PERSONNEL>/ensae-reproductibilite/model/model.joblib #<1>
-mc anonymous set download s3/<BUCKET_PERSONNEL>/ensae-reproductibilite/ #<2>
-```
-1. _Uploader_ sur `S3`
-2. Ouvrir les droits en lecture de ce fichier pour simplifier la récupération[^token]
-
-où `<BUCKET_PERSONNEL>` est à remplacer par votre nom d'utilisateur sur le SSPCloud
-
-[^token]: Ce n'est pas indispensable si vous avez une manière cohérente de gérer
-vos jetons d'accès aux données dans votre API, par exemple par le biais de _service account_. 
-Néanmoins, pour se faciliter la tâche, on ne va pas se poser de question 
-sur les droits d'accès au modèle. 
-
-3. Tester en local `api/main.py` pour vérifier le caractère fonctionnel de l'API. Les deux modifications
-principales de celle-ci sont les suivantes:
-    + On n'utilise plus la variable `Title` puisque celle-ci a été retirée des données en entrée du modèle
-    + On récupère la version de "production" sur le système de stockage S3, on ne fait plus l'entraînement à chaque initialisation d'un conteneur
-
-4. Modifier `deployment/deployment.yaml` et `.github/workflows/prod.yaml` pour définir
-et utiliser le tag `v0.0.3` de l'image `Docker`
-
-5. Retirer la ligne `python train.py` du fichier `run.sh`
-
-6. Dans `index.qmd`, remplacer la ligne suivante:
-
-```{{ojs}}
-prediction = `https://titanic.kub.sspcloud.fr/predict?pclass=${class_boat}&sex=${gender}&age=${age}&sib_sp=1&parch=1&fare=16.5&embarked=S&has_cabin=1&ticket_len=7`
-```
-
-par celle-ci
-
-```{{ojs}}
-prediction = `https://titanic.kub.sspcloud.fr/predict?pclass=${class_boat}&sex=${gender}&age=${age}&sib_sp=1&parch=1&fare=16.5&embarked=S&has_cabin=1&ticket_len=7`
-```
-
-Faire un _commit_ et un _push_ des modifications
+2. Dans le code de l'API (`api/main.py`), changer la version du modèle mis en oeuvre en _"0.2"_
+2. Après avoir committé cette nouvelle version du code applicatif, tagguer ce dépôt avec le tag `v0.0.2`
+3. Modifier `deployment/deployment.yaml` dans le code `GitOps` pour utiliser ce _tag_.
 
 :::
 

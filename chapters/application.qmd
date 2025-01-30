@@ -1162,17 +1162,14 @@ git push origin dev
 
 :::
 
-Nous allons dans cette partie faire de la
-validation croisée. Pour éviter le problème
-du [_data leakage_](https://machinelearningmastery.com/data-leakage-machine-learning/),
-nous proposons de revoir notre _pipeline_ pour
-exclure la variable `Title` dont certaines modalités
-rares posent problème dans les découpages
-multiples d'échantillons lors de la validation
-croisée.
+Maintenant que nous avons tout préparé pour mettre à disposition rapidement un modèle,
+nous pouvons revenir en arrière pour améliorer ce modèle. Pour cela, nous allons mettre en oeuvre une validation croisée.
 
-## Restructurer le _pipeline_ pour fluidifier la mise en production
+Le problème que nous allons rencontrer va être que nous voudrions facilement tracer les évolutions de notre modèle, la qualité prédictive de celui-ci dans différentes situations. Il s'agira d'à nouveau mettre en place du _logging_ mais, cette fois, de suivre la qualité du modèle et pas seulement s'il fonctionne. L'outil `MLFlow` va répondre à ce problème et va, au passage, fluidifier la mise à disposition du modèle de production, c'est-à-dire de celui qu'on désire mettre à disposition du public.
 
+## Revenir sur le code d'entraînement du modèle pour faire de la validation croisée
+
+Pour pouvoir faire ceci, il va falloir changer un tout petit peu notre code applicatif dans sa phase d'entraînement.
 
 {{< include "./applications/_appli21.qmd" >}}
 

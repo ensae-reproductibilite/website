@@ -39,7 +39,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: linogaliana/application
+          images: linogaliana/application #<1>
 
       -
         name: Login to Docker Hub
@@ -55,6 +55,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 ```
+1. Modifier ici !
+
 </details>
 
 - Dans le dépôt de l'application, mettre à jour le code dans `api/main.py` pour changer un élément de l'interface de votre documentation.
@@ -74,15 +76,15 @@ app = FastAPI(
 - Tagger le commit effectué précédemment et *push* le nouveau tag :
 
 ```{.bash filename="terminal"}
-git tag v1.0.0
+git tag v0.0.1
 git push --tags
 ```
 
-- Vérifier sur le dépôt `GitHub` de l'application que ce *commit* lance bien un pipeline de CI **associé au tag v1.0.0**. Une fois terminé, vérifier sur le `DockerHub` que le tag `v1.0.0` existe bien parmi les tags disponibles de l'image.
+- Vérifier sur le dépôt `GitHub` de l'application que ce *commit* lance bien un pipeline de CI **associé au tag v1.0.0**. Une fois terminé, vérifier sur le `DockerHub` que le tag `v0.0.1` existe bien parmi les tags disponibles de l'image.
 
 La partie CI a correctement fonctionné. Intéressons-nous à présent à la partie CD.
 
-- Sur le dépôt `GitOps` de l'application, mettre à jour la version de l'image à déployer en production dans le fichier `deployment/deployment.yaml`
+- Sur le dépôt `GitOps`, mettre à jour la version de l'image à déployer en production dans le fichier `deployment/deployment.yaml`
 
 <details>
 <summary>
@@ -113,11 +115,13 @@ spec:
     spec:
       containers:
       - name: titanic
-        image: linogaliana/application:v1.0.0
+        image: linogaliana/application:v0.0.1 #<1>
         ports:
         - containerPort: 5000
 ```
-1. Remplacer `username` par la valeur adéquate
+1. Remplacer ici par le dépôt applicatif adéquat
+
+
 </details>
 
 - Après avoir _committé_ et _pushé_, observer dans `ArgoCD` le statut de votre application. Normalement, l'opérateur devrait avoir automatiquement identifié le changement, et mettre à jour le déploiement pour en tenir compte.
