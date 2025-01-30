@@ -51,6 +51,7 @@ En premier lieu, on va améliorer la brique d'ingestion et de préparation des d
 Nous allons en profiter pour améliorer nos données intermédiaires. Dans `main.py`, remplacer les chemins par ceux-ci:
 
 ```{.python file="main.py"}
+# main.py
 data_path = os.environ.get("data_path", URL_RAW)
 data_train_path = os.environ.get("train_path", "data/derived/train.parquet")
 data_test_path = os.environ.get("test_path", "data/derived/test.parquet")
@@ -58,9 +59,10 @@ data_test_path = os.environ.get("test_path", "data/derived/test.parquet")
 
 où `URL_RAW` est le lien de la forme `"https://minio.lab.sspcloud.fr/$BUCKET_PERSONNEL/ensae-reproductibilite/data/raw/data.csv"`
 
-Dans `split_train_test`, remplacer l'écriture des données par ce morceau:
+Dans `data/pipeline/build_pipeline.py`, remplacer l'écriture des données par ce morceau:
 
 ```{.python file="data/pipeline/build_pipeline.py"}
+# data/pipeline/build_pipeline.py
 if train_path:
     pd.concat([X_train, y_train]).to_parquet(train_path)
 if test_path:
@@ -88,13 +90,11 @@ Exemple de sortie
 </summary>
 
 ```{.bash filename="terminal"}
-vulture main.py src/
+vulture .
 ```
 
 ```{.python}
-main.py:21: unused variable 'jeton_api' (60% confidence)
-main.py:36: unused variable 'ticket_count' (60% confidence)
-main.py:37: unused variable 'name_count' (60% confidence)
+src/data/import_data.py:3: unused function 'split_and_count' (60% confidence)
 ```
 
 </details>

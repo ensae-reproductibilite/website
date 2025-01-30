@@ -385,7 +385,7 @@ Quand votre projet passera en production, vous aurez un accès limité à celui-
 
 L'utilisation de `print` montre rapidement ses limites pour cela. Les informations enregistrées ne persistent pas après la session et sont quelques peu rudimentaires.
 
-Pour faire du _logging_, la librairie consacrée depuis longtemps en `Python` est... [`logging`](https://docs.python.org/3/library/logging.html). On va néanmoins ici proposer d'utiliser [`loguru`](https://github.com/Delgan/loguru) qui est un peu plus simple à configurer (l'instanciation du _logger_ est plus aisée)[^citation-loguru] et plus agréable grâce à ses messages en couleurs qui permettent de visuellement trier les informations.
+Pour faire du _logging_, la librairie consacrée depuis longtemps en `Python` est... [`logging`](https://docs.python.org/3/library/logging.html). On va néanmoins ici proposer d'utiliser [`loguru`](https://github.com/Delgan/loguru) qui est un peu plus simple à configurer (l'instanciation du _logger_ est plus aisée) et plus agréable grâce à ses messages en couleurs qui permettent de visuellement trier les informations.
 
 ![](https://raw.githubusercontent.com/Delgan/loguru/master/docs/_static/img/demo.gif)
 
@@ -393,10 +393,6 @@ Pour faire du _logging_, la librairie consacrée depuis longtemps en `Python` es
 
 
 ## Étape 4 : stocker les données de manière externe {#stockageS3}
-
-Pour rappel, nous visons la structure de projet suivante:
-
-![](https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/slides/img/environment_clean.png)
 
 L'étape précédente nous a permis d'isoler la configuration. Nous avons conceptuellement isolé les données du code lors des applications précédentes. Cependant, nous n'avons pas été au bout du chemin car le stockage des données reste conjoint à celui du code. Nous allons maintenant dissocier ces deux éléments.
 
@@ -450,7 +446,7 @@ vigilance que vous pourrez trouver ailleurs.
 
 Plus concrètement, nous allons adopter le pipeline suivant pour notre projet:
 
-![](/website/chapters/applications/figures/pipeline_appli8.png)
+![](/chapters/applications/figures/pipeline_appli8.png)
 
 Le scénario type est que nous avons une source brute, reçue sous forme de CSV, dont on ne peut changer le format. Il aurait été idéal d'avoir un format plus adapté au traitement de données pour ce fichier mais ce n'était pas de notre ressort. Notre chaine va aller chercher ce fichier, travailler dessus jusqu'à valoriser celui-ci sous la forme de notre matrice de confusion. Si on imagine que notre chaine prend un certain temps, il n'est pas inutile d'écrire des données intermédiaires. Pour faire cela, puisque nous avons la main, autant choisir un format adapté, à savoir le format `Parquet`.
 
