@@ -1097,13 +1097,21 @@ Qu'est-ce qui peut déclencher une évolution nécessitant de mettre à jour l'e
 
 Regardons à nouveau notre _pipeline_:
 
-![](/workflow2.png)
+![](/drawio/end_point.png)
 
 Les _inputs_ de notre _pipeline_ sont donc:
 
-- La __configuration__. Ici, on peut considérer que notre YAML de configuration relève de cette catégorie  ;
-- Les __données__. Nos données sont statiques et n'ont pas vocation à évoluer. Si c'était le cas, il faudrait en tenir compte dans notre automatisation. ;
+- La __configuration__. Ici, on peut considérer que notre `.env` de configuration ou les secrets renseignés à `Github` relèvent de cette catégorie  ;
+- Les __données__. Nos données sont statiques et n'ont pas vocation à évoluer. Si c'était le cas, il faudrait en tenir compte dans notre automatisation[^versionning-data]. ;
 - Le __code__. C'est l'élément principal qui évolue chez nous. Idéalement, on veut automatiser le processus au maximum en faisant en sorte qu'à chaque mise à jour de notre code (un _push_ sur `Github`), les étapes ultérieures (production de l'image `Docker`, etc.) se lancent. Néanmoins, on veut aussi éviter qu'une erreur puisse donner lieu à une mise en production non-fonctionnelle, on va donc maintenir une action manuelle minimale comme garde-fou.
+
+::: {.callout-tip}
+## Et le _versionning_ des données ?
+
+Ici, nous nous plaçons dans le cas simple où les données brutes reçues sont figées. Ce qui peut changer est la manière dont on constitue nos échantillons train/test. Il sera donc utile de logguer les données en question par le biais de `MLFlow`. Mais il n'est pas nécessaire de versionner les données brutes.
+
+Si celles-ci évoluaient, il pourrait être utile de versionner les données, à la manière dont on le fait pour le code. `Git` n'est pas l'outil approprié pour cela. Parmi les outils populaires de versionning de données, bien intégrés avec S3, il y a sur le SSPCloud [`lakefs`](https://lakefs.io/).
+:::
 
 Pour automatiser au maximum la mise en production, on va utiliser un nouvel outil : `ArgoCD`. Ainsi, au lieu de devoir appliquer manuellement la commande `kubectl apply` à chaque modification des fichiers de déploiement (présents dans le dossier `kubernetes/`), c'est l'**opérateur** `ArgoCD`, déployé sur le cluster, qui va détecter les changements de configuration du déploiement et les appliquer automatiquement. C'est l'approche dite **GitOps** : le dépôt `Git` du déploiement fait office de **source de vérité unique** de l'état voulu de l'application, tout changement sur ce dernier doit donc se répercuter immédiatement sur le déploiement effectif.
 
