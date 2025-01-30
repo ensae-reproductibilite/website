@@ -1,0 +1,62 @@
+:::: {.callout-tip}
+
+## Application 12c : créer un fichier d'installation de A à Z
+
+1. Créer un service `ubuntu` sur le SSP Cloud
+2. Ouvrir un terminal
+3. Cloner le dépôt
+4. Se placer dans le dossier du projet avec `cd`
+5. Se placer au niveau du checkpoint 11a avec `git checkout appli11c`
+6. Via l'explorateur de fichiers, créer le fichier `install.sh` à la racine du projet avec le contenu suivant:
+
+<details>
+<summary>Script à créer sous le nom `install.sh` </summary>
+```{.bash filename="install.sh" no-prefix=true}
+#!/bin/bash
+
+apt-get -y update && apt-get -y install wget
+
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+PATH="/home/onyxia/.local/bin:${PATH}"
+
+uv pip install -r pyproject.toml
+
+uv run main.py1
+```
+</details>
+
+1. Changer les permissions sur le script pour le rendre exécutable
+
+```{.bash filename="terminal"}
+chmod +x install.sh
+```
+
+7. Exécuter le script depuis la ligne de commande avec des droits de super-utilisateur (nécessaires pour installer des *packages* via `apt`)
+
+```{.bash filename="terminal"}
+sudo ./install.sh
+```
+
+8. Vérifier que le script `main.py` fonctionne correctement dans l'environnement virtuel créé
+
+```{.bash filename="terminal"}
+source titanic/bin/activate
+python3 main.py
+```
+
+::::
+
+::: {.callout-caution collapse="true"}
+## Checkpoint
+
+```{.bash filename="terminal"}
+git stash #<1>
+git checkout appli12c
+```
+1. Pour annuler les modifications depuis le dernier _commit_
+
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
+:::

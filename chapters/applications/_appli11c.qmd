@@ -5,12 +5,11 @@
 1. Après avoir installé `uv`, exécuter `uv init .` et supprimer le fichier `hello.py` généré. Ouvrir le `pyproject.toml` et observer sa structure.
 2. Exécuter `uv pip freeze` en ligne de commande et observer la (très) longue
 liste de package
-3. Créer un environnement virtuel `venv` par le biais d'`uv` ([documentation](https://docs.astral.sh/uv/pip/environments/#creating-a-virtual-environment)) sous le nom `titanic`
-4. Créer l'environnement virtuel `titanic` en s'inspirant de [la documentation officielle](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/)[^pythonversion] ou du [chapitre dédié](/chapters/portability.qmd)
-5. Utiliser `ls` pour observer et comprendre le contenu du dossier `titanic/bin` installé
-6. Activer l'environnement et vérifier l'installation de `Python` maintenant utilisée par votre machine
+3. Créer un environnement virtuel `titanic` par le biais d'`uv` ([documentation](https://docs.astral.sh/uv/pip/environments/#creating-a-virtual-environment)) sous le nom `titanic`
+4. Utiliser `ls` pour observer et comprendre le contenu du dossier `titanic/bin` installé
+5. Activer l'environnement et vérifier l'installation de `Python` maintenant utilisée par votre machine
 <!---source titanic/bin/activate && which python---->
-7. Vérifier directement depuis la ligne de commande que `Python` exécute bien une commande[^option] avec:
+6. Vérifier directement depuis la ligne de commande que `Python` exécute bien une commande[^option] avec:
 
 ```{.bash filename="terminal"}
 python -c "print('Hello')"
@@ -18,12 +17,12 @@ python -c "print('Hello')"
 
 7. Faire la même chose mais avec `import pandas as pd`. Maintenant, essayer `uv run main.py` en ligne de commande: comprenez-vous ce qu'il se passe ?
 8. Installer de manière itérative les _packages_ à partir d'`uv add` ([documentation](https://docs.astral.sh/uv/guides/projects/#managing-dependencies)) et en testant avec `uv run main.py`: avez-vous remarqué la vitesse à laquelle cela a été quand vous avez fait `uv add pandas` ?
-9. Observer votre `pyproject.toml`. Regarder le _lockfile_ `uv.lock`.
+9. Observer votre `pyproject.toml`. Regarder le _lockfile_ `uv.lock`. Générer automatiquement le `requirements.txt` en faisant [`pip compile`](https://docs.astral.sh/uv/pip/compile/#locking-requirements) et regarder celui-ci.
 10. Ajouter le dossier `titanic/` au `.gitignore` pour ne pas ajouter ce dossier à `Git`.
 
 
 <details>
-<summary>Aide pour la question 4</summary>
+<summary>Aide pour la question 5</summary>
 
 Après l'activation, vous pouvez vérifier quel `python`
 est utilisé de cette manière
@@ -36,7 +35,7 @@ which python
 
 ::::
 
-[^pythonversion]: Si vous désirez aussi contrôler la version de `Python`, ce qui peut être important
+[^pythonversion2]: Si vous désirez aussi contrôler la version de `Python`, ce qui peut être important
 dans une perspective de portabilité, vous pouvez ajouter une option, par exemple `--python 3.12`. Néanmoins
 nous n'allons pas nous embarasser de cette nuance pour la suite car nous pourrons contrôler
 la version de `Python` plus finement par le biais de `Docker`.
