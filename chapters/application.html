@@ -1068,7 +1068,7 @@ Checkpoint
 <h3 class="anchored" data-anchor-id="tracer-notre-chaîne">Tracer notre chaîne</h3>
 <p>Quand votre projet passera en production, vous aurez un accès limité à celui-ci. Il est donc important de faire remonter, par le biais du <em>logging</em> des informations critiques sur votre projet qui vous permettront de savoir où il en est (si vous avez accès à la console où il tourne) ou là où il s’est arrêté.</p>
 <p>L’utilisation de <code>print</code> montre rapidement ses limites pour cela. Les informations enregistrées ne persistent pas après la session et sont quelques peu rudimentaires.</p>
-<p>Pour faire du <em>logging</em>, la librairie consacrée depuis longtemps en <code>Python</code> est… <a href="https://docs.python.org/3/library/logging.html"><code>logging</code></a>. On va néanmoins ici proposer d’utiliser <a href="https://github.com/Delgan/loguru"><code>loguru</code></a> qui est un peu plus simple à configurer (l’instanciation du <em>logger</em> est plus aisée)[^citation-loguru] et plus agréable grâce à ses messages en couleurs qui permettent de visuellement trier les informations.</p>
+<p>Pour faire du <em>logging</em>, la librairie consacrée depuis longtemps en <code>Python</code> est… <a href="https://docs.python.org/3/library/logging.html"><code>logging</code></a>. On va néanmoins ici proposer d’utiliser <a href="https://github.com/Delgan/loguru"><code>loguru</code></a> qui est un peu plus simple à configurer (l’instanciation du <em>logger</em> est plus aisée) et plus agréable grâce à ses messages en couleurs qui permettent de visuellement trier les informations.</p>
 <p><img src="https://raw.githubusercontent.com/Delgan/loguru/master/docs/_static/img/demo.gif" class="img-fluid"></p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1093,8 +1093,6 @@ Application 7b: remontée de messages par <em>logging</em>
 </section>
 <section id="stockageS3" class="level2">
 <h2 class="anchored" data-anchor-id="stockageS3">Étape 4 : stocker les données de manière externe</h2>
-<p>Pour rappel, nous visons la structure de projet suivante:</p>
-<p><img src="https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/slides/img/environment_clean.png" class="img-fluid"></p>
 <p>L’étape précédente nous a permis d’isoler la configuration. Nous avons conceptuellement isolé les données du code lors des applications précédentes. Cependant, nous n’avons pas été au bout du chemin car le stockage des données reste conjoint à celui du code. Nous allons maintenant dissocier ces deux éléments.</p>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="false" aria-label="Toggle callout">
@@ -1118,7 +1116,7 @@ Pour en savoir plus sur le système de stockage <code>S3</code>
 <p>La raison principale est que les données traitées par les <em>data scientists</em> sont généralement soumises à des clauses de confidentialités (<a href="https://www.cnil.fr/fr/rgpd-de-quoi-parle-t-on">RGPD</a>, <a href="https://www.insee.fr/fr/information/1300624">secret statistique</a>…). Mettre ces données sous contrôle de version c’est prendre le risque de les divulguer à un public non habilité. Il est donc recommandé de privilégier des outils techniques adaptés au stockage de données.</p>
 <p>L’idéal, dans notre cas, est d’utiliser une solution de stockage externe. On va utiliser pour cela <code>MinIO</code>, la solution de stockage de type <code>S3</code> offerte par le SSP Cloud. Cela nous permettra de supprimer les données de <code>Github</code> tout en maintenant la reproductibilité de notre projet <a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a>.</p>
 <p>Plus concrètement, nous allons adopter le pipeline suivant pour notre projet:</p>
-<p><img src="../website/chapters/applications/figures/pipeline_appli8.png" class="img-fluid"></p>
+<p><img src="../chapters/applications/figures/pipeline_appli8.png" class="img-fluid"></p>
 <p>Le scénario type est que nous avons une source brute, reçue sous forme de CSV, dont on ne peut changer le format. Il aurait été idéal d’avoir un format plus adapté au traitement de données pour ce fichier mais ce n’était pas de notre ressort. Notre chaine va aller chercher ce fichier, travailler dessus jusqu’à valoriser celui-ci sous la forme de notre matrice de confusion. Si on imagine que notre chaine prend un certain temps, il n’est pas inutile d’écrire des données intermédiaires. Pour faire cela, puisque nous avons la main, autant choisir un format adapté, à savoir le format <code>Parquet</code>.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1161,15 +1159,17 @@ en modifiant <code>$BUCKET_PERSONNEL</code>, l’emplacement de votre bucket per
 <li>Supprimer le dossier <code>data</code> de votre projet et faites <code>git rm --cached -r data</code></li>
 </ul>
 <p>Nous allons en profiter pour améliorer nos données intermédiaires. Dans <code>main.py</code>, remplacer les chemins par ceux-ci:</p>
-<div class="sourceCode" id="cb15" data-file="main.py" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>data_path <span class="op">=</span> os.environ.get(<span class="st">"data_path"</span>, URL_RAW)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>data_train_path <span class="op">=</span> os.environ.get(<span class="st">"train_path"</span>, <span class="st">"data/derived/train.parquet"</span>)</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>data_test_path <span class="op">=</span> os.environ.get(<span class="st">"test_path"</span>, <span class="st">"data/derived/test.parquet"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb15" data-file="main.py" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># main.py</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>data_path <span class="op">=</span> os.environ.get(<span class="st">"data_path"</span>, URL_RAW)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>data_train_path <span class="op">=</span> os.environ.get(<span class="st">"train_path"</span>, <span class="st">"data/derived/train.parquet"</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>data_test_path <span class="op">=</span> os.environ.get(<span class="st">"test_path"</span>, <span class="st">"data/derived/test.parquet"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>où <code>URL_RAW</code> est le lien de la forme <code>"https://minio.lab.sspcloud.fr/$BUCKET_PERSONNEL/ensae-reproductibilite/data/raw/data.csv"</code></p>
-<p>Dans <code>split_train_test</code>, remplacer l’écriture des données par ce morceau:</p>
-<div class="sourceCode" id="cb16" data-file="data/pipeline/build_pipeline.py" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> train_path:</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    pd.concat([X_train, y_train]).to_parquet(train_path)</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> test_path:</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    pd.concat([X_test, y_test]).to_parquet(test_path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Dans <code>data/pipeline/build_pipeline.py</code>, remplacer l’écriture des données par ce morceau:</p>
+<div class="sourceCode" id="cb16" data-file="data/pipeline/build_pipeline.py" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># data/pipeline/build_pipeline.py</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> train_path:</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    pd.concat([X_train, y_train]).to_parquet(train_path)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> test_path:</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    pd.concat([X_test, y_test]).to_parquet(test_path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <ul>
 <li>Vérifier le bon fonctionnement de votre application.</li>
 </ul>
@@ -1189,11 +1189,9 @@ Exemple de sortie
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
 </div>
-<div class="sourceCode" id="cb18" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> vulture main.py src/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb18" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> vulture .</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="sourceCode" id="cb19" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>main.py:<span class="dv">21</span>: unused variable <span class="st">'jeton_api'</span> (<span class="dv">60</span><span class="op">%</span> confidence)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>main.py:<span class="dv">36</span>: unused variable <span class="st">'ticket_count'</span> (<span class="dv">60</span><span class="op">%</span> confidence)</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>main.py:<span class="dv">37</span>: unused variable <span class="st">'name_count'</span> (<span class="dv">60</span><span class="op">%</span> confidence)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb19" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>src<span class="op">/</span>data<span class="op">/</span>import_data.py:<span class="dv">3</span>: unused function <span class="st">'split_and_count'</span> (<span class="dv">60</span><span class="op">%</span> confidence)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </div>
@@ -1429,7 +1427,7 @@ Application 10: packagisation <em>(optionnel)</em>
 <li>Renommer le dossier <code>titanicml</code> pour respecter la nouvelle arborescence ;</li>
 <li>Créer un fichier <code>pyproject.toml</code> sur cette base ;</li>
 </ul>
-<div id="a2fd7dae" class="cell" data-execution_count="1">
+<div id="f8c3a1ac" class="cell" data-execution_count="1">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>pyproject.toml</strong></pre>
@@ -1457,7 +1455,7 @@ Application 10: packagisation <em>(optionnel)</em>
 <li>Créer le dossier <code>docs</code> et mettre les fichiers indiqués dedans</li>
 <li>Dans <code>titanicml/</code>, créer un fichier <code>__init__.py</code><a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a></li>
 </ul>
-<div id="0c5b9b02" class="cell" data-execution_count="2">
+<div id="b92faacf" class="cell" data-execution_count="2">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>__init__.py</strong></pre>
@@ -2736,7 +2734,7 @@ Fichier <code>deployment/service.yaml</code>
 <summary>
 Fichier <code>deployment/ingress.yaml</code>
 </summary>
-<div id="7cca321b" class="cell" data-source-line-numbers="10-13" data-execution_count="3">
+<div id="5c0b9714" class="cell" data-source-line-numbers="10-13" data-execution_count="3">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>deployment/ingress.yaml</strong></pre>
@@ -2855,7 +2853,7 @@ Clarification sur la branche de travail
 <p>A partir de maintenant, il est nécessaire de clarifier la branche principale sur laquelle nous travaillons. De manière traditionnelle, on utilise la branche <code>main</code>. Néanmoins, pour être cohérent avec les instructions du début, qui étaient de créer une branche <code>dev</code>, tous les exemples ultérieures partiront de cette hypothèse.</p>
 <p>Si vous avez fait les applications les unes après les autres, et que vous vous situez toujours sur <code>dev</code>, vous pouvez passer aux applications suivantes. Si vous avez changé de branche, vous pouvez continuer mais en tenir compte dans les exemples ultérieurs.</p>
 <p>Si vous avez utilisé un <code>tag</code> pour sauter une ou plusieurs étapes, il va être nécessaire de se placer sur une branche car vous êtes en <em>head detached</em>. Pour cela, après avoir <em>committé</em> les fichiers que vous désirez garder</p>
-<div id="8a6ecb2c" class="cell" data-file="terminal" data-execution_count="4">
+<div id="e9657f14" class="cell" data-file="terminal" data-execution_count="4">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
@@ -2914,7 +2912,7 @@ Application 19a: Automatiser la mise à disposition de l’API (déploiement con
 <li>Ajouter un dossier <code>deployment</code> à votre dépôt <code>GitOps</code>, dans lequel on mettra les trois fichiers de déploiement qui permettent de déployer notre application sur <code>Kubernetes</code> (<code>deployment.yaml</code>, <code>service.yaml</code>, <code>ingress.yaml</code>).</li>
 <li>A la racine de votre dépôt <code>GitOps</code>, créez un fichier <code>application.yml</code> avec le contenu suivant, en prenant bien soin de modifier les lignes surlignées avec les informations pertinentes :</li>
 </ul>
-<div id="098f287e" class="cell" data-file="application.yaml" data-source-line-numbers="8-9,13" data-execution_count="5">
+<div id="bf246825" class="cell" data-file="application.yaml" data-source-line-numbers="8-9,13" data-execution_count="5">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>application.yaml</strong></pre>
@@ -3099,7 +3097,7 @@ Application 19b : Mettre à jour la version en production
 <summary>
 <p>Fichier <code>deployment/deployment.yaml</code></p>
 </summary>
-<div id="a3b1b9e2" class="cell" data-file="deployment/deployment.yaml" data-source-line-numbers="19" data-execution_count="6">
+<div id="7800d9bc" class="cell" data-file="deployment/deployment.yaml" data-source-line-numbers="19" data-execution_count="6">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>deployment/deployment.yaml</strong></pre>
@@ -3624,7 +3622,7 @@ Modification de <code>api/main.py</code> à effectuer
 <ol start="2" type="1">
 <li>Tester votre script <code>train.py</code> et uploader le meilleur modèle sur S3 de la manière suivante:</li>
 </ol>
-<div id="6ac18164" class="cell" data-file="terminal" data-execution_count="7">
+<div id="8d30b560" class="cell" data-file="terminal" data-execution_count="7">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
@@ -3928,7 +3926,7 @@ Application 23a : réutiliser un modèle archivé sur MLFlow
 <ol start="2" type="1">
 <li>Cliquer sur votre meilleur modèle et introduire dans <code>mlflow/predict.py</code> le morceau de code suggéré par <code>MLFlow</code>, du type de celui-ci:</li>
 </ol>
-<div id="39fdd17d" class="cell" data-execution_count="8">
+<div id="222e7ed7" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="annotated-cell-174" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-174-1"><a href="#annotated-cell-174-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
 <a class="code-annotation-anchor" data-target-cell="annotated-cell-174" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-174-2" class="code-annotation-target"><a href="#annotated-cell-174-2" aria-hidden="true" tabindex="-1"></a>logged_model <span class="op">=</span> <span class="co">#A CHANGER</span></span>
 <span id="annotated-cell-174-3"><a href="#annotated-cell-174-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -3981,7 +3979,7 @@ Application 23b : passer en production un modèle
 <li><p>Ajouter <code>mlflow</code> au <code>requirements.txt</code></p></li>
 <li><p>Mettre à jour les fichiers <code>.github/worflows/prod.yaml</code> et <code>kubernetes/deployment.yaml</code> pour produire et utiliser le tag <code>v0.0.5</code></p></li>
 </ol>
-<div id="2e0d618e" class="cell" data-file=".github/worflows/prod.yaml" data-execution_count="9">
+<div id="aa53c4da" class="cell" data-file=".github/worflows/prod.yaml" data-execution_count="9">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>.github/worflows/prod.yaml</strong></pre>
@@ -4026,7 +4024,7 @@ Application 23b : passer en production un modèle
 </dl>
 </div>
 </div>
-<div id="b40abb9b" class="cell" data-execution_count="10">
+<div id="9c06b702" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="annotated-cell-178" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-178-1"><a href="#annotated-cell-178-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Creating MLflow deployment</span></span>
 <span id="annotated-cell-178-2"><a href="#annotated-cell-178-2" aria-hidden="true" tabindex="-1"></a>apiVersion: apps<span class="op">/</span>v1</span>
 <span id="annotated-cell-178-3"><a href="#annotated-cell-178-3" aria-hidden="true" tabindex="-1"></a>kind: Deployment</span>
@@ -4114,7 +4112,7 @@ Checkpoint
 <li>Lancer un service Argo Workflows</li>
 <li>Dans <code>mlflow/training.yaml</code></li>
 </ol>
-<div id="1951bb42" class="cell" data-execution_count="11">
+<div id="1135f402" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="annotated-cell-8" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-8-1"><a href="#annotated-cell-8-1" aria-hidden="true" tabindex="-1"></a>apiVersion: argoproj.io<span class="op">/</span>v1alpha1</span>
 <span id="annotated-cell-8-2"><a href="#annotated-cell-8-2" aria-hidden="true" tabindex="-1"></a>kind: Workflow</span>
 <span id="annotated-cell-8-3"><a href="#annotated-cell-8-3" aria-hidden="true" tabindex="-1"></a>metadata:</span>
