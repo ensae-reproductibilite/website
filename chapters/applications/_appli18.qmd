@@ -1,7 +1,7 @@
 ::: {.callout-tip}
 ## Application 18b: Mettre à disposition l'API (déploiement manuel)
 
-Cette partie nécessite d'avoir à disposition une infrastructure _cloud_. 
+Cette partie nécessite d'avoir à disposition une infrastructure _cloud_.
 
 - Créer un dossier `deployment` à la racine du projet qui va contenir les fichiers de configuration nécessaires pour déployer sur un cluster `Kubernetes`
 
@@ -10,7 +10,10 @@ Cette partie nécessite d'avoir à disposition une infrastructure _cloud_.
 <details>
 <summary>Fichier `deployment/deployment.yaml`</summary>
 
-```{.yaml filename="deployment/deployment.yaml"}
+```{python}
+#| eval: false
+#| filename: "deployment/deployment.yaml"
+#| source-line-numbers: "19"
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -29,10 +32,12 @@ spec:
     spec:
       containers:
       - name: titanic
-        image: linogaliana/application-correction:latest
+        image: #<1>
         ports:
         - containerPort: 5000
 ```
+1. Mettre ici l'image `Docker` utilisée, sous la forme `username/image:latest`
+
 </details>
 
 - En vous inspirant de la [documentation](https://kubernetes.io/fr/docs/concepts/services-networking/service/#d%C3%A9finition-d-un-service), y ajouter un second fichier `service.yaml` qui va créer une ressource `Service` permettant de donner une identité fixe au `Pod` précédemment créé au sein du cluster
@@ -70,13 +75,19 @@ metadata:
   name: titanic-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
+    # Enable CORS by adding these annotations
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, DELETE, PATCH, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
 spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - # METTRE URL ICI #<1>
+    - #<1>
   rules:
-  - host: # METTRE URL ICI #<2>
+  - host: #<2>
     http:
       paths:
       - path: /
@@ -88,12 +99,12 @@ spec:
               number: 80
 ```
 1. Mettez l'URL auquel vous voulez exposer votre service. Sur le modèle de `titanic.kub.sspcloud.fr` (mais ne tentez pas celui-là, il est déjà pris 😃)
-2. Mettre ici aussi
+2. Mettre ce même URL ici aussi
 </details>
 
 - Appliquer ces fichiers de configuration sur le cluster : `kubectl apply -f deployment/`
 
-- Si tout a correctement fonctionné, vous devriez pouvoir accéder depuis votre navigateur à l'API à l'URL spécifiée dans le fichier `deployment/ingress.yaml`. Par exemple `https://toto.kub.sspcloud.fr/` si vous avez mis celui-ci plus tôt (et `https://toto.kub.sspcloud.fr/docs` pour la documentation). 
+- Si tout a correctement fonctionné, vous devriez pouvoir accéder depuis votre navigateur à l'API à l'URL spécifiée dans le fichier `deployment/ingress.yaml`. Par exemple `https://toto.kub.sspcloud.fr/` si vous avez mis celui-ci plus tôt (et `https://toto.kub.sspcloud.fr/docs` pour la documentation).
 
 :::
 
