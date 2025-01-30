@@ -1060,19 +1060,12 @@ scripts. C'est l'objet de la prochaine étape.
 ## Etape 3: automatiser le déploiement (déploiement en continu)
 
 ::: {.callout-important}
-## Clarification sur la branche de travail
+## Clarification sur la branche de travail et les _tags_
 
 A partir de maintenant, il est nécessaire de clarifier la
 branche principale sur laquelle nous travaillons. De manière
-traditionnelle, on utilise la branche `main`. Néanmoins,
-pour être cohérent avec les instructions du début, qui étaient
-de créer une branche `dev`, tous les exemples ultérieures
-partiront de cette hypothèse.
-
-Si vous avez fait les applications les unes après les autres, et
-que vous vous situez toujours sur `dev`, vous pouvez passer
-aux applications suivantes. Si vous avez changé de branche,
-vous pouvez continuer mais en tenir compte dans les exemples ultérieurs.
+traditionnelle, on utilise la branche `main`. Si vous avez changé de branche,
+vous pouvez continuer 1/ continuer mais en tenir compte dans les exemples ultérieurs ou 2/ fusionner celle-ci à `main`.
 
 Si vous avez utilisé un `tag` pour sauter une ou plusieurs étapes, il va
 être nécessaire de se placer sur une branche car vous êtes en _head detached_.
@@ -1113,7 +1106,9 @@ Ici, nous nous plaçons dans le cas simple où les données brutes reçues sont 
 Si celles-ci évoluaient, il pourrait être utile de versionner les données, à la manière dont on le fait pour le code. `Git` n'est pas l'outil approprié pour cela. Parmi les outils populaires de versionning de données, bien intégrés avec S3, il y a sur le SSPCloud [`lakefs`](https://lakefs.io/).
 :::
 
-Pour automatiser au maximum la mise en production, on va utiliser un nouvel outil : `ArgoCD`. Ainsi, au lieu de devoir appliquer manuellement la commande `kubectl apply` à chaque modification des fichiers de déploiement (présents dans le dossier `kubernetes/`), c'est l'**opérateur** `ArgoCD`, déployé sur le cluster, qui va détecter les changements de configuration du déploiement et les appliquer automatiquement. C'est l'approche dite **GitOps** : le dépôt `Git` du déploiement fait office de **source de vérité unique** de l'état voulu de l'application, tout changement sur ce dernier doit donc se répercuter immédiatement sur le déploiement effectif.
+Pour automatiser au maximum la mise en production, on va utiliser un nouvel outil : `ArgoCD`. Ainsi, au lieu de devoir appliquer manuellement la commande `kubectl apply` à chaque modification des fichiers de déploiement (présents dans le dossier `kubernetes/`), c'est l'**opérateur** `ArgoCD`, déployé sur le cluster, qui va détecter les changements de configuration du déploiement et les appliquer automatiquement.
+
+C'est l'approche dite **GitOps** : le dépôt `Git` du déploiement fait office de **source de vérité unique** de l'état voulu de l'application, tout changement sur ce dernier doit donc se répercuter immédiatement sur le déploiement effectif.
 
 {{< include "./applications/_appli19a.qmd" >}}
 
