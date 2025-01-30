@@ -1180,109 +1180,17 @@ Pour pouvoir faire ceci, il va falloir changer un tout petit peu notre code appl
 ## Si vous prenez ce projet fil rouge en cours de route
 
 ```{.bash filename="terminal"}
+git stash
 git checkout appli21
-git checkout -b dev
-git push origin dev
 ```
 
 ![](/checkpoint.jpg){width=80% fig-align="center"}
 
 :::
 
+## Enregistrer nos premiers entraînements
 
-::: {.callout-tip}
-## Application 22 : archiver nos entraînements avec `MLFlow`
-
-1. Lancer `MLFlow` depuis l'onflet [Mes services](https://datalab.sspcloud.fr/catalog/automation) du SSPCloud.
-Attendre que le service soit bien lancé.
-Cela créera un service dont l'URL est de la forme `https://user-{username}-{pod_id}.user.lab.sspcloud.fr`,
-où `pod_id` est un identifiant aléatoire. Ce service `MLFlow` communiquera avec les `VSCode` que vous
-ouvrirez ultérieurement à partir de cet URL ainsi qu'avec le système de stockage `S3`[^tokenMLFlow].
-
-2. Regarder la page `Experiments`. Elle est vide à ce stade, c'est normal
-
-[^tokenMLFlow]: Par conséquent, `MLFLow` bénéficie de l'injection automatique des _tokens_
-pour pouvoir lire/écrire sur S3. Ces jetons ont la même durée avant expiration que ceux
-de vos services interactifs `VSCode`. Il faut donc supprimer et rouvrir un service `MLFLow`
-régulièrement. La manière d'éviter cela
-est de créer des _service account_ sur [https://minio-console.lab.sspcloud.fr/](https://minio-console.lab.sspcloud.fr/login)
-et de les renseigner sur [la page](https://datalab.sspcloud.fr/project-settings/s3-configs).
-
-
-2. Une fois le service `MLFlow` fonctionnel,
-lancer un nouveau `VSCode` pour bénéficier de la configuration
-automatisée
-
-2. Clôner votre projet, vous situer sur la branche de travail (nous
-supposerons qu'il s'agit de `dev`).
-
-4. Depuis un terminal `Python`, lancer les commandes suivantes:
-
-```python
-import mlflow
-mlflow_experiment_name = "titanicml"
-mlflow.set_experiment(experiment_name=mlflow_experiment_name)
-```
-
-Retourner sur l'UI et observer la différence, à gauche.
-
-5. Créer un fichier `src/models/log.py`
-
-<details>
-<summary>
-Contenu du fichier `src/models/log.py`
-</summary>
-```{.python include="./applications/code/appli22_log.py" filename="src/models/log.py"}
-```
-
-</details>
-
-
-6. Modifier le fichier `train.py` pour ajouter la ligne
-
-```{.python}
-mlog.log_gsvc_to_mlflow(pipe_cross_validation, EXPERIMENT_NAME, APPLI_ID)
-```
-
-avec
-
-```{.python}
-import src.models.log as mlog
-```
-
-7. Faire tourner avec le paramètre `--appli appli22`:
-
-```{.bash filename="terminal"}
-python train.py --appli appli22
-```
-
-8. Observer l'évolution de la page `Experiments`. Cliquer sur un des _run_.
-Observer toutes les métadonnées archivées (hyperparamètres, métriques d'évaluation, `requirements.txt` dont `MLFlow` a fait l'inférence, etc.)
-
-9. Observer le code proposé par `MLFlow` pour récupérer le _run_ en question. Modifier le fichier `eval.py` à partir de cet exemple et du modèle suivant pour utiliser un des modèles archivés dans `MLFlow`
-
-10. Retourner à la liste des _runs_ en cliquant à nouveau sur _"titanicml"_ dans les expérimentations
-11. Dans l'onglet `Table`, sélectionner plusieurs expérimentations, cliquer sur `Columns` et ajouter `mean_test_f1`.
-Ajuster la taille des colonnes pour la voir et classer les modèles par score décroissants
-12. Cliquer sur `Compare` après en avoir sélectionné plusieurs. Afficher un _scatterplot_ des performances
-en fonction du nombre d'estimateurs. Conclure.
-
-:::
-
-
-::: {.callout-caution collapse="true"}
-## Checkpoint
-
-```{.bash filename="terminal"}
-git stash #<1>
-git checkout appli22
-```
-1. Pour annuler les modifications depuis le dernier _commit_
-
-
-![](/checkpoint.jpg){width=80% fig-align="center"}
-
-:::
+{{< include "./applications/_appli22.qmd" >}}
 
 Cette appplication illustre l'un des premiers apports de `MLFlow`: on garde
 une trace de nos expérimentations et on peut déjà mieux comprendre
