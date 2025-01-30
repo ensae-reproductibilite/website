@@ -1,0 +1,121 @@
+::: {.callout-tip}
+## Application 22 : archiver nos entraînements avec `MLFlow`
+
+1. Lancer `MLFlow` depuis l'onflet [Mes services](https://datalab.sspcloud.fr/catalog/automation) du SSPCloud.
+Attendre que le service soit bien lancé.
+Cela créera un service dont l'URL est de la forme `https://user-{username}.user.lab.sspcloud.fr`. Ce service `MLFlow` communiquera avec les `VSCode` que vous
+ouvrirez ultérieurement à partir de cet URL ainsi qu'avec le système de stockage `S3`[^tokenMLFlow].
+
+1. Regarder la page `Experiments`. Elle ne contient que `Default` à ce stade, c'est normal.
+
+[^tokenMLFlow]: Par conséquent, `MLFLow` bénéficie de l'injection automatique des _tokens_
+pour pouvoir lire/écrire sur S3. Ces jetons ont la même durée avant expiration que ceux
+de vos services interactifs `VSCode`. Il faut donc, par défaut, supprimer et rouvrir un service `MLFLow`
+régulièrement. La manière d'éviter cela
+est de créer des _service account_ sur [https://minio-console.lab.sspcloud.fr/](https://minio-console.lab.sspcloud.fr/login)
+et de les renseigner sur [la page](https://datalab.sspcloud.fr/project-settings/s3-configs).
+
+
+2. Une fois le service `MLFlow` fonctionnel,
+lancer un nouveau `VSCode` pour bénéficier de la connexion
+automatique entre les services interactifs du SSPCloud et les services d'automatisation comme `MLFlow`.
+
+1. Clôner votre projet, vous situer sur la branche de travail.
+
+2. Dans la section de passage des paramètres de notre ligne de commande, introduire ce morceau de code:
+
+```{.python}
+parser = argparse.ArgumentParser(description="Paramètres du random forest")
+parser.add_argument(
+    "--n_trees", type=int, default=20, help="Nombre d'arbres"
+)
+parser.add_argument(
+    "--experiment_name", type=str, default="titanicml", help="MLFlow experiment name"
+)
+args = parser.parse_args()
+```
+
+3. Faire tourner `train.py` en ligne de commande puis retourner sur l'UI de `MLFlow`
+et observer la différence, à gauche.
+
+4. A la fin du script `train.py`, ajouter le code suivant
+
+<details>
+<summary>
+Code à ajouter
+</summary>
+
+```{.python filename="fin de train.py"}
+# LOGGING IN MLFLOW -----------------
+
+input_data_mlflow = mlflow.data.from_pandas(
+    TrainingData, source=data_path, name="Raw dataset"
+)
+training_data_mlflow = mlflow.data.from_pandas(
+    pd.concat([X_train, y_train]), source=data_path, name="Training data"
+)
+
+
+with mlflow.start_run():
+
+    # Log datasets
+    mlflow.log_input(input_data_mlflow, context="raw")
+    mlflow.log_input(training_data_mlflow, context="raw")
+
+    # Log parameters
+    mlflow.log_param("n_trees", n_trees)
+    mlflow.log_param("max_depth", MAX_DEPTH)
+    mlflow.log_param("max_features", MAX_FEATURES)
+
+    # Log best hyperparameters from GridSearchCV
+    best_params = pipe_cross_validation.best_params_
+    for param, value in best_params.items():
+        mlflow.log_param(param, value)
+
+    # Log metrics
+    mlflow.log_metric("accuracy", score)
+
+    # Log confusion matrix as an artifact
+    matrix_path = "confusion_matrix.txt"
+    with open(matrix_path, "w") as f:
+        f.write(str(matrix))
+    mlflow.log_artifact(matrix_path)
+
+    # Log model
+    mlflow.sklearn.log_model(pipe, "model")
+```
+
+</details>
+
+
+5. Tester `train.py` en ligne de commande
+
+6. Observer l'évolution de la page `Experiments`. Cliquer sur un des _run_.
+Observer toutes les métadonnées archivées (hyperparamètres, métriques d'évaluation, `requirements.txt` dont `MLFlow` a fait l'inférence, etc.)
+
+9. Observer le code proposé par `MLFlow` pour récupérer le _run_ en question. Tester celui-ci dans un _notebook_ sur le fichier intermédiaire de test au format `Parquet`
+
+10. En ligne de commande, faites tourner pour une autre valeur de `n_trees`.  Retourner à la liste des _runs_ en cliquant à nouveau sur _"titanicml"_ dans les expérimentations
+
+11. Dans l'onglet `Table`, sélectionner plusieurs expérimentations, cliquer sur `Columns` et ajouter la statistique d'accuracy. Ajuster la taille des colonnes pour la voir et classer les modèles par score décroissants
+
+12. Cliquer sur `Compare` après en avoir sélectionné plusieurs. Afficher un _scatterplot_ des performances
+en fonction du nombre d'estimateurs. Conclure.
+
+:::
+
+
+::: {.callout-caution collapse="true"}
+## Checkpoint
+
+```{.bash filename="terminal"}
+git stash #<1>
+git checkout appli22
+```
+1. Pour annuler les modifications depuis le dernier _commit_
+
+
+![](/checkpoint.jpg){width=80% fig-align="center"}
+
+:::
+
