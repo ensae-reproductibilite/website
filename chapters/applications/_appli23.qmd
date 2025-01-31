@@ -1,23 +1,26 @@
 ::: {.callout-tip}
 ## Application 23 : passer en production un modèle avec MLFlow
 
-1. A partir du tableau de performance précédent,
-choisir le modèle avec le F1 score maximal.
-Accéder à celui-ci.
+1. Si vous avez entraîné plusieurs modèles avec des `n_trees` différents, utiliser l'interface de `MLFlow` pour sélectionner le "meilleur". Cliquer sur le modèle en question et faire l'action _"Register Model"_. L'enregistrer comme le modèle de _"production"_
 
-Créer un script dans `mlflow/predict.py` pour
-illustrer l'utilisation d'un modèle
-depuis MLFlow. Nous allons progressivement l'améliorer.
+2. Rendez-vous sur l'onglet `Models` et observez cet entrepôt de modèles. Cliquez sur le modèle de production. Vous pourrez par ce biais suivre ses différentes versions.
 
-1. Copier-coller le
-contenu ci-dessous
-afin de se simplifier la création de données en entrée
-de notre code
+3. Ouvrir un notebook temporaire et observer le résultat.
 
-```{.python filename="data/import_data.py"}
-import data
+```{.python}
+import mlflow
+import pandas as pd
 
-@logger.catch
+model_name = "production"
+model_version = "latest"
+
+# Load the model from the Model Registry
+model_uri = f"models:/{model_name}/{model_version}"
+logged_model = mlflow.sklearn.load_model(model_uri)
+
+
+# GENERATE PREDICTION DATA ---------------------
+
 def create_data(
     sex: str = "female",
     age: float = 29.0,
@@ -37,13 +40,60 @@ def create_data(
     )
 
     return df
+
+
+data = pd.concat(
+    [create_data(age=40), create_data(sex="male")]
+)
+
+# PREDICTION ---------------------
+
+logged_model.predict(pd.DataFrame(data))
 ```
 
-2. Alléger, au passage, le code de l'API, en modifiant la fonction `predict` par celle-ci:
+4. On va adapter le code applicatif de notre API pour tenir compte de ce modèle de production.
 
-```{python}
-from src.data.import_data import create_data
+```{.python file="api/main.py"}
+"""A simple API to expose our trained RandomForest model for Tutanic survival."""
+from fastapi import FastAPI
+import mlflow
 
+import pandas as pd
+
+# Preload model -------------------
+
+model_name = "production"
+model_version = "latest"
+
+# Load the model from the Model Registry
+model_uri = f"models:/{model_name}/{model_version}"
+model = mlflow.sklearn.load_model(model_uri)
+
+# Define app -------------------------
+
+
+app = FastAPI(
+    title="Prédiction de survie sur le Titanic",
+    description=
+    "Application de prédiction de survie sur le Titanic 🚢 <br>Une version par API pour faciliter la réutilisation du modèle 🚀" +\
+        "<br><br><img src=\"https://media.vogue.fr/photos/5faac06d39c5194ff9752ec9/1:1/w_2404,h_2404,c_limit/076_CHL_126884.jpg\" width=\"200\">"
+    )
+
+
+@app.get("/", tags=["Welcome"])
+def show_welcome_page():
+    """
+    Show welcome page with model name and version.
+    """
+
+    return {
+        "Message": "API de prédiction de survie sur le Titanic",
+        "Model_name": 'Titanic ML',
+        "Model_version": "0.3",
+    }
+
+
+@app.get("/predict", tags=["Predict"])
 async def predict(
     sex: str = "female",
     age: float = 29.0,
@@ -53,11 +103,13 @@ async def predict(
     """
     """
 
-    df = create_data(
-        sex=sex,
-        age=age,
-        fare=fare,
-        embarked=embarked
+    df = pd.DataFrame(
+        {
+            "Sex": [sex],
+            "Age": [age],
+            "Fare": [fare],
+            "Embarked": [embarked],
+        }
     )
 
     prediction = "Survived 🎉" if int(model.predict(df)) == 1 else "Dead ⚰️"
@@ -65,144 +117,69 @@ async def predict(
     return prediction
 ```
 
-3. Par le biais 
+Les changements principaux de ce code sont:
 
-6. Cliquer sur votre meilleur modèle et introduire dans `mlflow/predict.py`
-le morceau de code suggéré
-par `MLFlow`, du type de celui-ci:
+* on va chercher le modèle de production
+* on met à jour la version de notre API pour signaler à nos clients que celle-ci a évolué
+
+6. On va retirer l'entraînement de la séquence d'opération du `Dockerfile`. En supprimant la ligne relative à l'entraînement du modèle, vous devriez avoir
+
+```{.python}
+FROM ubuntu:22.04
+WORKDIR ${HOME}/titanic
+# Install Python
+RUN apt-get -y update && \
+    apt-get install -y python3-pip
+# Install project dependencies
+COPY requirements.txt .
+COPY api ./api
+RUN pip install -r requirements.txt
+COPY src ./src
+CMD ["bash", "-c", "./api/run.sh"]
+```
+
+Mettons en production cette nouvelle version. Cela implique de faire les gestes suivants:
+
+7. Publier un tag `v0.0.3` pour le code applicatif
+
+8. Mettre à jour notre manifeste dans le dépôt `GitOps`. En premier lieu, il faut changer la version de référence pour utiliser le tag `v0.0.3`. De plus, il faut déclarer la variable d'environnement `MLFLOW_TRACKING_URI` qui indique à `Python` l'entrepôt de modèles où aller chercher celui en production. La bonne pratique est de définir ceci hors du code, dans un fichier de configuration donc, ce qui est l'objet de notre manifeste `deployment.yaml`. On peut donc changer de cette manière ce fichier:
 
 ```{python}
-#| eval: false
-import mlflow
-logged_model = #A CHANGER #<1>
-
-# Load model as a PyFuncModel.
-loaded_model = mlflow.pyfunc.load_model(logged_model)
-
-# Predict on a Pandas DataFrame.
-import pandas as pd
-loaded_model.predict(pd.DataFrame(data))
-```
-1. _Hash_ du modèle
-
-Lancer depuis la ligne de commande ce script et observer l'application obtenue.
-
-:::
-
-A ce stade, nous avons amélioré la fiabilité de notre modèle car
-nous utilisons le meilleur. Néanmoins, celui-ci
-n'est pas forcément pratique à récupérer car nous utilisons
-un _hash_ qui certes identifie de manière unique notre modèle
-mais présente l'inconvénient d'être peu intelligible.
-Nous allons passer de l'expérimentation à la mise
-en production en sélectionnant explicitement notre meilleur modèle.
-
-::: {.callout-tip}
-## Application 23b : passer en production un modèle
-
-1. Dans la page du modèle en question sur `MLFlow`, cliquer sur `Register model`
-et le nommer `titanic`.
-2. Aller dans l'onglet `Models` et observer le changement par rapport à précédemment.
-3. Mettre à jour le code dans `mlflow/predict.py` pour utiliser la version en
-production :
-
-```{.python filename = "mlflow/predict.py"}
-model_name = "titanic"
-model_version = 1
-loaded_model = mlflow.pyfunc.load_model(
-    model_uri=f"models:/{model_name}/{model_version}"
-)
-```
-
-4. Tester cette application. Si celle-ci fonctionne,
-modifier la récupération du modèle dans votre script d'API.
-
-5. Tester en local cette API mise à jour
-
-```{.shell filename="terminal"}
-uvicorn api.main:app --reload --host "0.0.0.0" --port 5000
-```
-
-6. Ajouter `mlflow` au `requirements.txt`
-
-7. Mettre à jour
-les fichiers `.github/worflows/prod.yaml` et `kubernetes/deployment.yaml`
-pour produire et utiliser le tag `v0.0.5`
-
-```{python}
-#| eval: false
-#| filename: ".github/worflows/prod.yaml"
-#| file: ".github/worflows/prod.yaml"
-
-name: Construction image Docker
-
-on:
-  push:
-    branches:
-      - main
-      - dev
-
-jobs:
-  docker:
-    runs-on: ubuntu-latest
-    steps:
-      -
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      -
-        name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          push: true
-          tags: linogaliana/application:v0.0.7 #<1>
-```
-1. Modifier l'image ici
-
-
-```{python}
-#| eval: false
-# Creating MLflow deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: titanicml
+  name: titanic-deployment
+  labels:
+    app: titanic
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: titanicml
+      app: titanic
   template:
     metadata:
       labels:
-        app: titanicml
+        app: titanic
     spec:
       containers:
-        - name: api
-          image: linogaliana/application:v0.0.7 #<1>
-          imagePullPolicy: Always
-          env:
-            - name: MLFLOW_TRACKING_URI
-              value: https://user-{USERNAME}-mlflow.user.lab.sspcloud.fr #<2>
-            - name: MLFLOW_MODEL_NAME
-              value: titanic
-            - name: MLFLOW_MODEL_VERSION
-              value: "1"
-          resources:
-            limits:
-              memory: "2Gi"
-              cpu: "1000m"
+      - name: titanic
+        image: linogaliana/application:v0.0.3 #<1>
+        ports:
+        - containerPort: 5000
+        env:
+          - name: MLFLOW_TRACKING_URI
+            value: https://user-${USERNAME}-mlflow.user.lab.sspcloud.fr #<2>
+        resources:
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
 ```
-1. Modifier l'image `Docker`
-2. Modifier l'URL de `MLFlow`
+1. Le _tag_ de notre code applicatif
+2. La variable d'environnement à adapter en fonction de l'adresse du dépôt de modèles utilisé
+
+
+9.  Pour s'assurer que l'application fonctionne bien, on peut aller voir les _logs_ de la machine qui fait tourner notre code. Pour ça, faire `kubectl get pods` et, en supposant que votre service soit nommé `titanic` dans vos fichiers YAML de configuration, récupérer le nom commençant par `titanic-deployment-*` et faire `kubectl logs titanic-deployment-*`
 
 :::
+
 

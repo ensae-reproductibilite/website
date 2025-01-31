@@ -1214,9 +1214,11 @@ Ceci nous gêne pour faire évoluer notre modèle: on ne dissocie pas ce qui rel
 ![](/chapters/applications/figures/pipeline_apres_appli23.png)
 
 
-__TO BE CONTINUED__
-
 {{< include "./applications/_appli23.qmd" >}}
+
+A ce stade, nous avons amélioré la fiabilité de notre application car
+nous utilisons le meilleur modèle. Néanmoins, nos entraînements sont encore manuels. Là encore il y a des gains à avoir car cela paraît pénible à la longue de devoir systématiquement relancer des entraînements manuellement pour tester des variations de tel ou tel paramètre. Heureusement, nous allons pouvoir automatiser ceci également.
+
 
 ::: {.callout-caution collapse="true"}
 ## Checkpoint
@@ -1232,11 +1234,14 @@ git checkout appli23
 
 :::
 
+
+
 ### Industrialiser les entraînements de nos modèles
 
 Pour industrialiser nos entraînements, nous allons créer des processus
 parallèles indépendants pour chaque combinaison de nos hyperparamètres.
 Pour cela, l'outil pratique sur le SSPCloud est `Argo workflows`.
+
 Chaque combinaison d'hyperparamètres sera un processus isolé à l'issue duquel sera
 loggué le résultat dans `MLFlow`. Ces entraînements auront lieu en parallèle.
 
@@ -1265,9 +1270,10 @@ spec:
       - name: model-training-conf-list
         value: |
           [
-            { "dim": 25, "lr": 0.1 },
-            { "dim": 100, "lr": 0.2 },
-            { "dim": 150, "lr": 0.3 }
+            { "n_trees": 10, "max_features": "log2" },
+            { "n_trees": 20, "max_features": "sqrt" },
+            { "n_trees": 20, "max_features": "log2" },
+            { "n_trees": 50, "max_features": "sqrt" },
           ]
   templates:
     # Entrypoint DAG template
@@ -1283,10 +1289,10 @@ spec:
             template: run-model-training-wt
             arguments:
               parameters:
-                - name: dim
-                  value: "{{item.dim}}"
-                - name: lr
-                  value: "{{item.lr}}"
+                - name: max_features
+                  value: "{{item.max_features}}"
+                - name: n_trees
+                  value: "{{item.n_trees}}"
             # Pass the inputs to the task using "withParam"
             withParam: "{{workflow.parameters.model-training-conf-list}}"
 
@@ -1303,18 +1309,18 @@ spec:
     - name: run-model-training-wt
       inputs:
         parameters:
-          - name: dim
-          - name: lr
+          - name: n_trees
+          - name: max_features
       container:
-        image: inseefrlab/formation-mlops:main
+        image: linogaliana/application:v0.0.93 #<3>
         imagePullPolicy: Always
         command: [sh, -c]
-        args: ["mlflow run .
-                --env-manager=local
-                -P remote_server_uri=$MLFLOW_TRACKING_URI
-                -P experiment_name=$MLFLOW_EXPERIMENT_NAME
-                -P dim={{inputs.parameters.dim}}
-                -P lr={{inputs.parameters.lr}}"]
+        args: [
+          "python
+          --experiment_name=$MLFLOW_EXPERIMENT_NAME
+          --n_trees={{inputs.parameters.n_trees}}
+          --max_features={{inputs.parameters.max_features}}"
+          ]
         env:
           - name: MLFLOW_TRACKING_URI
             value: "{{workflow.parameters.mlflow-tracking-uri}}"
@@ -1323,10 +1329,9 @@ spec:
 ```
 1. Changer
 2. `titanicml`
+3. changer
 
-max_depth
 
-max_features “sqrt”, “log2”
 
 ## Pour aller plus loin
 
