@@ -122,20 +122,11 @@ Les changements principaux de ce code sont:
 * on va chercher le modèle de production
 * on met à jour la version de notre API pour signaler à nos clients que celle-ci a évolué
 
-6. On va retirer l'entraînement de la séquence d'opération du `Dockerfile`. En supprimant la ligne relative à l'entraînement du modèle, vous devriez avoir
+6. On va retirer l'entraînement de la séquence d'opération du `api/run.sh`. En supprimant la ligne relative à l'entraînement du modèle, vous devriez avoir
 
 ```{.python}
-FROM ubuntu:22.04
-WORKDIR ${HOME}/titanic
-# Install Python
-RUN apt-get -y update && \
-    apt-get install -y python3-pip
-# Install project dependencies
-COPY requirements.txt .
-COPY api ./api
-RUN pip install -r requirements.txt
-COPY src ./src
-CMD ["bash", "-c", "./api/run.sh"]
+#/bin/bash
+uvicorn api.main:app --reload --host "0.0.0.0" --port 5000
 ```
 
 Mettons en production cette nouvelle version. Cela implique de faire les gestes suivants:

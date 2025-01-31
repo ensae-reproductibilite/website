@@ -1249,8 +1249,9 @@ loggué le résultat dans `MLFlow`. Ces entraînements auront lieu en parallèle
 ![](https://inseefrlab.github.io/formation-mlops/slides/img/pokemon_workflow.png)
 
 
+
 1. Lancer un service Argo Workflows
-2. Dans `mlflow/training.yaml`
+2. Dans le dépôt GitOps, créer un fichier `argo-workflow/manifest.yaml`
 
 ```{python}
 #| eval: false
@@ -1258,8 +1259,10 @@ apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
   generateName: titanic-training-workflow-
+  namespace: user-lgaliana
 spec:
   entrypoint: main
+  serviceAccountName: workflow
   arguments:
     parameters:
       # The MLflow tracking server is responsible to log the hyper-parameter and model metrics.
@@ -1273,7 +1276,7 @@ spec:
             { "n_trees": 10, "max_features": "log2" },
             { "n_trees": 20, "max_features": "sqrt" },
             { "n_trees": 20, "max_features": "log2" },
-            { "n_trees": 50, "max_features": "sqrt" },
+            { "n_trees": 50, "max_features": "sqrt" }
           ]
   templates:
     # Entrypoint DAG template
@@ -1312,24 +1315,25 @@ spec:
           - name: n_trees
           - name: max_features
       container:
-        image: linogaliana/application:v0.0.93 #<3>
+        image: linogaliana/application:v0.0.5 #<3>
         imagePullPolicy: Always
         command: [sh, -c]
         args: [
-          "python
-          --experiment_name=$MLFLOW_EXPERIMENT_NAME
-          --n_trees={{inputs.parameters.n_trees}}
-          --max_features={{inputs.parameters.max_features}}"
+          "python train.py --n_trees={{inputs.parameters.n_trees}} --max_features={{inputs.parameters.max_features}}"
           ]
         env:
           - name: MLFLOW_TRACKING_URI
             value: "{{workflow.parameters.mlflow-tracking-uri}}"
           - name: MLFLOW_EXPERIMENT_NAME
             value: "{{workflow.parameters.mlflow-experiment-name}}"
+          - name: AWS_DEFAULT_REGION
+            value: us-east-1
+          - name: AWS_S3_ENDPOINT
+            value: minio.lab.sspcloud.fr
 ```
-1. Changer
-2. `titanicml`
-3. changer
+1. Changer pour votre entrepot de modèle
+2. Le nom de l'expérimentation `MLFLow` dont nous allons avoir besoin (on propose de continuer sur `titanicml`)
+3. Changer l'application ici
 
 
 
