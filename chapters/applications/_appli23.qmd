@@ -1,5 +1,5 @@
 ::: {.callout-tip}
-## Application 23a : réutiliser un modèle archivé sur MLFlow
+## Application 23 : passer en production un modèle avec MLFlow
 
 1. A partir du tableau de performance précédent,
 choisir le modèle avec le F1 score maximal.
@@ -14,46 +14,60 @@ contenu ci-dessous
 afin de se simplifier la création de données en entrée
 de notre code
 
-```{.python filename="mlflow/predict.py"}
-import pandas as pd
+```{.python filename="data/import_data.py"}
+import data
 
+@logger.catch
 def create_data(
-    pclass: int = 3,
     sex: str = "female",
     age: float = 29.0,
-    sib_sp: int = 1,
-    parch: int = 1,
     fare: float = 16.5,
     embarked: str = "S",
-    has_cabin: int = 1,
-    ticket_len: int = 7
 ) -> str:
     """
     """
 
     df = pd.DataFrame(
         {
-            "Pclass": [pclass],
             "Sex": [sex],
             "Age": [age],
-            "SibSp": [sib_sp],
-            "parch": [parch],
             "Fare": [fare],
             "Embarked": [embarked],
-            "hasCabin": [has_cabin],
-            "Ticket_Len": [ticket_len]
         }
     )
 
     return df
-
-data = pd.concat([
-    create_data(),
-    create_data(sex="male")
-])
 ```
 
-2. Cliquer sur votre meilleur modèle et introduire dans `mlflow/predict.py`
+2. Alléger, au passage, le code de l'API, en modifiant la fonction `predict` par celle-ci:
+
+```{python}
+from src.data.import_data import create_data
+
+async def predict(
+    sex: str = "female",
+    age: float = 29.0,
+    fare: float = 16.5,
+    embarked: str = "S"
+) -> str:
+    """
+    """
+
+    df = create_data(
+        sex=sex,
+        age=age,
+        fare=fare,
+        embarked=embarked
+    )
+
+    prediction = "Survived 🎉" if int(model.predict(df)) == 1 else "Dead ⚰️"
+
+    return prediction
+```
+
+3. Par le biais 
+
+6. Cliquer sur votre meilleur modèle et introduire dans `mlflow/predict.py`
 le morceau de code suggéré
 par `MLFlow`, du type de celui-ci:
 
