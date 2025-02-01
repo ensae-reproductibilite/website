@@ -1,5 +1,5 @@
-::: {.callout-tip}
-## Application préliminaire: forker le dépôt d'exemple
+::: {.application}
+## Application préliminaire 1: forker le dépôt d'exemple
 
 Les premières étapes consistent à mettre en place son environnement de travail sur `Github`:
 
@@ -11,7 +11,7 @@ __Vous ne voyez ce jeton qu'une fois, ne fermez pas la page de suite__.
 l'espace _["Mon compte"](https://datalab.sspcloud.fr/account/third-party-integration)_
 du `SSP Cloud`.
 
-- Forker le dépôt `Github` : [https://github.com/ensae-reproductibilite/application](https://github.com/ensae-reproductibilite/application) en faisant attention à une option :
+- Forker le dépôt `Github` {{< fa brands github >}} : [https://github.com/ensae-reproductibilite/application](https://github.com/ensae-reproductibilite/application) en faisant attention à une option :
     + **Décocher la case _"Copy the `main` branch only"_** afin de copier également les _tags_ `Git` qui nous permettront de faire les _checkpoint_.
 
 
@@ -25,6 +25,17 @@ Ce que vous devriez voir sur la page de création du _fork_
 
 </details>
 
+:::
+
+
+Nous recommandons d'utiliser, tout au long de ce projet, l'environnement de développement `VSCode`. En plus d'être très bien construit, les nombreuses extensions disponibles rendent celui-ci adaptable à tous nos besoins. Comme il s'agit de l'outil sur lequel vous passerez votre quotidien, n'hésitez pas à personnaliser celui-ci grâce aux nombreuses ressources disponibles en ligne[^vscode-server].
+
+[^vscode-server]: Il y a quelques différences entre le VSCode server mis à disposition sur le SSPCloud et la version _desktop_ sur laquelle s'appuient beaucoup de ressources. A quelques extensions prêts (_Data Wrangler_, _Copilot_), les différences sont néanmoins minimes.
+
+
+::: {.application}
+## Application préliminaire 2: mettre en place son environnement de travail
+
 Il est maintenant possible de ce lancer dans la création de l'environnement de travail:
 
 - Ouvrir un service `VSCode` sur le [SSP Cloud](https://datalab.sspcloud.fr/home). Vous pouvez aller
@@ -32,6 +43,7 @@ dans la page `My Services` et cliquer sur `New service`. Sinon, vous
 pouvez initialiser la création du service en cliquant directement [ici](https://datalab.sspcloud.fr/launcher/ide/vscode-python?autoLaunch=false). __Modifier les options suivantes__:
     + Dans l'onglet `Role`, sélectionner le rôle `Admin` ;
     + Dans l'onglet `Networking`, cliquer sur _"Enable a custom service port"_ et laisser la valeur par défaut 5000 pour le numéro du port
+    + _(optionnel)_ Pour préinstaller quelques extensions supplémentaires à celles disponibles par défaut, dans l'onglet `Init`, dans le champ `PersonalInit`, renseigner l'adresse `https://raw.githubusercontent.com/ensae-reproductibilite/website/refs/heads/main/chapters/applications/init.sh`
 
 - Clôner __votre__ dépôt `Github` en utilisant le
 terminal depuis `Visual Studio` (`Terminal > New Terminal`) et
@@ -43,5 +55,46 @@ git clone https://$TOKEN@github.com/$USERNAME/application.git
 
 où `$TOKEN` et `$USERNAME` sont à remplacer, respectivement,
 par le jeton que vous avez généré précédemment et votre nom d'utilisateur.
+
+<details>
+
+<summary>
+Le script d'initialisation proposé
+</summary>
+
+Ce script initialise quelques extensions intéressantes pour le développement de projets utilisant `Python` ou des fichiers textes type `Markdown` ou `YAML`: diagnostic, mise en forme automatisée, etc.
+
+```{.python}
+#!/bin/bash
+
+code-server --install-extension yzhang.markdown-all-in-one
+code-server --install-extension oderwat.indent-rainbow
+code-server --install-extension tamasfe.even-better-toml
+code-server --install-extension aaron-bond.better-comments
+code-server --install-extension github.vscode-github-actions
+
+
+# Replace default flake8 linter with project-preconfigured ruff
+code-server --uninstall-extension ms-python.flake8
+code-server --install-extension charliermarsh.ruff
+
+
+jq '. + {
+    "workbench.colorTheme": "Default Dark Modern",  # Set the theme
+
+    "editor.rulers": [80, 100, 120],  # Add specific vertical rulers
+    "files.trimTrailingWhitespace": true,  # Automatically trim trailing whitespace
+    "files.insertFinalNewline": true,  # Ensure files end with a newline
+
+    "flake8.args": [
+        "--max-line-length=100"  # Max line length for Python linting
+    ]
+
+
+
+}' "$SETTINGS_FILE" > "$SETTINGS_FILE.tmp" && mv "$SETTINGS_FILE.tmp" "$SETTINGS_FILE"
+```
+
+</details>
 
 :::
