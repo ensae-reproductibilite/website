@@ -18,6 +18,8 @@ pour afficher les slides en plein écran.
 
 </details>
 
+# Introduction
+
 L'objectif de cette mise en application est d'**illustrer les différentes étapes qui séparent la phase de développement d'un projet de celle de la mise en production**. Elle permettra de mettre en pratique les différents concepts présentés tout au long du cours.
 
 L'objectif pédagogique principal de cette application est d'adopter un point de vue pragmatique en choisissant des outils et des méthodes de travail qui permettent de réaliser des objectifs ambitieux de valorisation de données. `Python` sera le trait d'union entre les différentes technologies ou infrastructures que nous utiliserons.
@@ -34,22 +36,21 @@ On a un _notebook_ un peu monolithique, qui réalise les étapes classiques d'un
 - Entraînement d'un modèle ;
 - Evaluation du modèle.
 
+## Objectif {-}
+
 **L'objectif est d'améliorer le projet de manière incrémentale jusqu'à pouvoir le mettre en production, en le valorisant sous une forme adaptée et en adoptant une méthode de travail fluidifiant les évolutions futures.**
 
+La @fig-start montre que notre point de départ initial, à savoir un _notebook_, mélange tout. Ceci rend très complexe la mise à jour de notre modèle ou l'exploitation de notre modèle sur de nouvelles données, ce qui est pourtant la raison d'être du _machine learning_ qui est pensé pour l'extrapolation. Si on vous demande de valoriser votre modèle sur de nouvelles données, vous risquez de devoir refaire tourner tout votre _notebook_, avec le risque de ne pas retrouver les mêmes résultats que dans la version précédente.
 
-<details>
-<summary>
-Illustration de notre point de départ
-</summary>
-![](/drawio/starting_point.png)
-</details>
+La @fig-end illustre l'horizon auquel nous aboutirons à la fin de cette application. Nous désynchronisons les étapes d'entraînement et de prédiction, en identifiant mieux les pré-requis de chacunes et en adoptant des briques technologiques adaptées à celles-ci. Les noms présents sur cette figure sont encore obscurs, c'est normal, mais ils vous deviendrons familiers si vous adoptez une infrastructure et une méthode de travail à l'état de l'art.
 
-<details>
-<summary>
-Illustration de l'horizon vers lequel on se dirige
-</summary>
-![](/drawio/end_point.png)
-</details>
+
+![Illustration de notre point de départ](/drawio/starting_point.png){#fig-start width="60%"}
+
+
+![Illustration de l'horizon vers lequel on se dirige](/drawio/end_point.png){#fig-end}
+
+
 
 ::: {.callout-important}
 Il est important de bien lire les consignes et d'y aller progressivement.
@@ -65,8 +66,18 @@ ne sera en effet que le point d'entrée pour l'utilisation d'outils plus exigean
 sur le plan de l'infrastructure: _Argo_, _MLFLow_, etc.
 :::
 
+## Ce que cette application ne couvre pas (pour le moment)
+
+A l'heure actuelle, cette application se concentre sur la mise en oeuvre fiable de l'entraînement de modèles de machine learning. Comme vous pouvez le voir, quand on part d'aussi loin qu'un projet monolithique dans un _notebook_, c'est un travail conséquent d'en arriver à un _pipeline_ pensé pour la production. Cette application vise à vous sensibiliser au fait qu'avoir la @fig-end en tête et adopter une organisation de travail et faire des choix techniques adéquats, vous fera économiser des dizaines voire centaines d'heures lorsque votre modèle aura vocation à passer en production.
+
+A l'heure actuelle, cette application ne se concentre que sur une partie du cycle de vie d'un projet _data_ ; il y a déjà fort à faire. Nous nous concentrons sur l'entraînement et la mise à disposition d'un modèle à des fins opérationnelles. C'est la première partie du cycle de vie d'un modèle. Dans une approche MLOps, il faut également penser la maintenance de ce modèle et les enjeux que représentent l'arrivée continue de nouvelles données, ou le besoin d'en collecter de nouvelles à travers des annotations, sur la qualité prédictive d'un modèle. Toute entreprise qui ne pense pas cet après est vouée à se faire doubler par un nouveau venu. Une prochaine version de cette application permettra certainement d'illustrer certains des enjeux afférants à la vie en production d'un modèle (supervision, annotations...) sur notre cas d'usage.
+
+Il convient aussi de noter que nous ne faisons que parcourir la surface des sujets que nous évoquons. Ce cours, déjà dense, deviendrait indigeste si nous devions présenter chaque outil dans le détail. Nous laissons donc les curieux approfondir chacun des outils que nous présentons pour découvrir comment en tirer le maximum (et si vous avez l'impression que nous oublions des éléments cruciaux, les [_issues_ et _pull requests {{< fa brands github >}}_](https://github.com/ensae-reproductibilite/website) sont bienvenues).
+
 
 # Partie 0 : initialisation du projet
+
+Nous allons prendre comme point de départ un projet livré exclusivement avec un _notebook_, à la manière d'un challenge _Kaggle_. Vous pourrez ainsi voir à quel point ce type de livrable est très loin d'être satisfaisant si on veut que le projet soit réutilisable.
 
 {{< include "./applications/_appli0.qmd" >}}
 
@@ -125,18 +136,17 @@ Ce nettoyage automatique du code permettra, au passage, de restructurer notre
 script de manière plus naturelle.
 
 ::: {.callout-important}
-[`PyLint`](https://pylint.readthedocs.io/en/latest/) et [`Black`](https://black.readthedocs.io/en/stable/)
+[`PyLint`](https://pylint.readthedocs.io/en/latest/), [`Black`](https://black.readthedocs.io/en/stable/) et [`Ruff`](https://docs.astral.sh/ruff/)
 sont des _packages_ `Python` qui
 s'utilisent principalement en ligne de commande.
 
 Si vous avez une erreur qui suggère
-que votre terminal ne connait pas [`PyLint`](https://pylint.readthedocs.io/en/latest/)
-ou [`Black`](https://black.readthedocs.io/en/stable/),
-n'oubliez pas d'exécuter la commande `pip install pylint` ou `pip install black`.
+que votre terminal ne connait pas [`PyLint`](https://pylint.readthedocs.io/en/latest/), [`Black`](https://black.readthedocs.io/en/stable/),
+ou [`Ruff`](https://docs.astral.sh/ruff/), n'oubliez pas d'exécuter la commande `pip install pylint`, `pip install black` ou `pip install ruff`.
 :::
 
 
-Le _linter_ renvoie alors une série d'irrégularités,
+Le _linter_ [`PyLint`](https://pylint.readthedocs.io/en/latest/) renvoie alors une série d'irrégularités,
 en précisant à chaque fois la ligne de l'erreur et le message d'erreur associé (ex : mauvaise identation).
 Il renvoie finalement une note sur 10,
 qui estime la qualité du code à l'aune des standards communautaires évoqués
@@ -206,7 +216,7 @@ python prenom.py --prenom "Zinedine"
 ## Étape 4 : Privilégier la programmation fonctionnelle
 
 Nous allons **mettre en fonctions les parties importantes de l'analyse**.
-Ceci facilitera l'étape ultérieure de modularisation de notre projet.
+Ceci facilitera l'étape ultérieure de modularisation de notre projet. Comme cela est évoqué dans les éléments magistraux de ce cours, l'utilisation de fonctions va rendre notre code plus concis, plus traçable, mieux documenté.
 
 Cet exercice étant chronophage, il n'est __pas obligatoire de le réaliser en entier__. L'important est de
 comprendre la démarche et d'adopter fréquemment une approche fonctionnelle[^POO]. Pour obtenir
@@ -216,7 +226,7 @@ une chaine entièrement fonctionnalisée, vous pouvez reprendre le _checkpoint_.
 un processus, il serait possible d'adopter le paradigme de la __programmation orientée objet (POO)__. Celle-ci est
 plus rebutante et demande plus de temps au développeur. L'arbitrage coût-avantage est négatif pour notre
 exemple, nous proposons donc de nous en passer. Néanmoins, pour une mise en production réelle d'un modèle,
-il est recommandé de l'adopter. C'est d'ailleurs obligatoire avec des [_pipelines_ `scikit`](https://pythonds.linogaliana.fr/pipeline-scikit/).
+il peut être utle de l'adopter car certains _frameworks_, à commencer par les _pipelines_ `scikit`, exigeront certaines classes et méthodes si vous désirez brancher des objets  _ad hoc_ à ceux-ci.
 
 {{< include "./applications/_appli4.qmd" >}}
 
@@ -236,27 +246,25 @@ Ce faisant, on s'est déjà considérablement rapprochés d'un
 possible partage du code : celui-ci est lisible et intelligible.
 Le code est proprement versionné sur un
 dépôt `GitHub`.
+
 Cependant, le projet est encore perfectible: il est encore difficile de rentrer
 dedans si on ne sait pas exactement ce qu'on recherche. L'objectif de cette partie
 est d'isoler les différentes étapes de notre _pipeline_.
 Outre le gain de clarté pour notre projet, nous économiserons beaucoup de peines
 pour la mise en production ultérieure de notre modèle.
 
-<details>
-<summary>
-Illustration de l'état actuel du projet
-</summary>
-![](/schema_post_appli4.png)
-</details>
+
+![Etat du _pipeline_ avant la modularisation](/chapters/applications/figures/pipeline_post_appli4.png)
+
 
 Dans cette partie nous allons continuer les améliorations
 incrémentales de notre projet avec les étapes suivantes:
 
 1. Modularisation du code `Python` pour séparer les différentes
 étapes de notre _pipeline_ ;
-2. Adopter une structure standardisée pour notre projet afin
+1. Adopter une structure standardisée pour notre projet afin
 d'autodocumenter l'organisation de celui-ci ;
-3. Documenter les _packages_ indispensables à l'exécution du code ;
+1. Documenter les _packages_ indispensables à l'exécution du code ;
 4. Stocker les données dans un environnement adéquat
 afin de continuer la démarche de séparer conceptuellement les données du code en de la configuration.
 
