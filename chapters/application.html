@@ -256,6 +256,7 @@ div.callout-application.callout-style-default .callout-icon::before, div.callout
   <ul class="collapse">
   <li><a href="#objectif" id="toc-objectif" class="nav-link" data-scroll-target="#objectif">Objectif</a></li>
   <li><a href="#ce-que-cette-application-ne-couvre-pas-pour-le-moment" id="toc-ce-que-cette-application-ne-couvre-pas-pour-le-moment" class="nav-link" data-scroll-target="#ce-que-cette-application-ne-couvre-pas-pour-le-moment">Ce que cette application ne couvre pas (pour le moment)</a></li>
+  <li><a href="#comment-gérer-les-checkpoints" id="toc-comment-gérer-les-checkpoints" class="nav-link" data-scroll-target="#comment-gérer-les-checkpoints">Comment gérer les <em>checkpoints</em> ?</a></li>
   </ul></li>
   <li><a href="#partie-0-initialisation-du-projet" id="toc-partie-0-initialisation-du-projet" class="nav-link" data-scroll-target="#partie-0-initialisation-du-projet">Partie 0 : initialisation du projet</a></li>
   <li><a href="#partie-1-qualité-du-script" id="toc-partie-1-qualité-du-script" class="nav-link" data-scroll-target="#partie-1-qualité-du-script">Partie 1 : qualité du script</a>
@@ -409,6 +410,10 @@ Important
 <p>A l’heure actuelle, cette application ne se concentre que sur une partie du cycle de vie d’un projet <em>data</em> ; il y a déjà fort à faire. Nous nous concentrons sur l’entraînement et la mise à disposition d’un modèle à des fins opérationnelles. C’est la première partie du cycle de vie d’un modèle. Dans une approche MLOps, il faut également penser la maintenance de ce modèle et les enjeux que représentent l’arrivée continue de nouvelles données, ou le besoin d’en collecter de nouvelles à travers des annotations, sur la qualité prédictive d’un modèle. Toute entreprise qui ne pense pas cet après est vouée à se faire doubler par un nouveau venu. Une prochaine version de cette application permettra certainement d’illustrer certains des enjeux afférants à la vie en production d’un modèle (supervision, annotations…) sur notre cas d’usage.</p>
 <p>Il convient aussi de noter que nous ne faisons que parcourir la surface des sujets que nous évoquons. Ce cours, déjà dense, deviendrait indigeste si nous devions présenter chaque outil dans le détail. Nous laissons donc les curieux approfondir chacun des outils que nous présentons pour découvrir comment en tirer le maximum (et si vous avez l’impression que nous oublions des éléments cruciaux, les <a href="https://github.com/ensae-reproductibilite/website"><em>issues</em> et <em>pull requests <i class="fa-brands fa-github" aria-label="github"></i></em></a> sont bienvenues).</p>
 </section>
+<section id="comment-gérer-les-checkpoints" class="level2">
+<h2 class="anchored" data-anchor-id="comment-gérer-les-checkpoints">Comment gérer les <em>checkpoints</em> ?</h2>
+<p>Pour simplifier la reprise en cours de ce fil rouge, nous proposons un système de <em>checkpoints</em> qui s’appuient sur des <em>tags</em> <code>Git</code>. Ces <em>tags</em> figent le projet tel qu’il est à l’issue d’un exercice donné.</p>
+</section>
 </section>
 <section id="partie-0-initialisation-du-projet" class="level1">
 <h1>Partie 0 : initialisation du projet</h1>
@@ -457,7 +462,7 @@ Application préliminaire 2: mettre en place son environnement de travail
 <ul>
 <li>Dans l’onglet <code>Role</code>, sélectionner le rôle <code>Admin</code> ;</li>
 <li>Dans l’onglet <code>Networking</code>, cliquer sur <em>“Enable a custom service port”</em> et laisser la valeur par défaut 5000 pour le numéro du port</li>
-<li><em>(optionnel)</em> Pour préinstaller quelques extensions supplémentaires à celles disponibles par défaut, dans l’onglet <code>Init</code>, dans le champ <code>PersonalInit</code>, renseigner l’adresse <code>https://raw.githubusercontent.com/ensae-reproductibilite/website/refs/heads/main/chapters/applications/init.sh</code></li>
+<li><em>(optionnel)</em> Pour préinstaller quelques extensions supplémentaires à celles disponibles par défaut, dans l’onglet <code>Init</code>, dans le champ <code>PersonalInit</code>, renseigner l’adresse <a href="https://raw.githubusercontent.com/ensae-reproductibilite/website/refs/heads/main/chapters/applications/init.sh">https://raw.githubusercontent.com/ensae-reproductibilite/website/refs/heads/main/chapters/applications/init.sh</a></li>
 </ul></li>
 <li>Clôner <strong>votre</strong> dépôt <code>Github</code> en utilisant le terminal depuis <code>Visual Studio</code> (<code>Terminal &gt; New Terminal</code>) et en passant directement le token dans l’URL selon cette structure:</li>
 </ul>
@@ -1501,7 +1506,7 @@ Application 10: packagisation <em>(optionnel)</em>
 <li>Renommer le dossier <code>titanicml</code> pour respecter la nouvelle arborescence ;</li>
 <li>Créer un fichier <code>pyproject.toml</code> sur cette base ;</li>
 </ul>
-<div id="e869132a" class="cell" data-execution_count="1">
+<div id="6c92238a" class="cell" data-execution_count="1">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>pyproject.toml</strong></pre>
@@ -1529,7 +1534,7 @@ Application 10: packagisation <em>(optionnel)</em>
 <li>Créer le dossier <code>docs</code> et mettre les fichiers indiqués dedans</li>
 <li>Dans <code>titanicml/</code>, créer un fichier <code>__init__.py</code><a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a></li>
 </ul>
-<div id="4e90ee03" class="cell" data-execution_count="2">
+<div id="3e99c25a" class="cell" data-execution_count="2">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>__init__.py</strong></pre>
@@ -2754,7 +2759,7 @@ Application 18b: Mettre à disposition l’API (déploiement manuel)
 <summary>
 Fichier <code>deployment/deployment.yaml</code>
 </summary>
-<div id="1533d504" class="cell" data-source-line-numbers="19" data-execution_count="3">
+<div id="7871b541" class="cell" data-source-line-numbers="19" data-execution_count="3">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>deployment/deployment.yaml</strong></pre>
@@ -2822,7 +2827,7 @@ Fichier <code>deployment/service.yaml</code>
 <summary>
 Fichier <code>deployment/ingress.yaml</code>
 </summary>
-<div id="518d3221" class="cell" data-source-line-numbers="16-19" data-execution_count="4">
+<div id="233a2147" class="cell" data-source-line-numbers="16-19" data-execution_count="4">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>deployment/ingress.yaml</strong></pre>
@@ -2949,7 +2954,7 @@ Clarification sur la branche de travail et les <em>tags</em>
 <div class="callout-body-container callout-body">
 <p>A partir de maintenant, il est nécessaire de clarifier la branche principale sur laquelle nous travaillons. De manière traditionnelle, on utilise la branche <code>main</code>. Si vous avez changé de branche, vous pouvez continuer 1/ continuer mais en tenir compte dans les exemples ultérieurs ou 2/ fusionner celle-ci à <code>main</code>.</p>
 <p>Si vous avez utilisé un <code>tag</code> pour sauter une ou plusieurs étapes, il va être nécessaire de se placer sur une branche car vous êtes en <em>head detached</em>. Pour cela, après avoir <em>committé</em> les fichiers que vous désirez garder</p>
-<div id="a72f7c76" class="cell" data-file="terminal" data-execution_count="5">
+<div id="24a6dfe0" class="cell" data-file="terminal" data-execution_count="5">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
@@ -3023,7 +3028,7 @@ Application 19a: Automatiser la mise à disposition de l’API (déploiement con
 <li>Ajouter un dossier <code>deployment</code> à votre dépôt <code>GitOps</code>, dans lequel on mettra les trois fichiers de déploiement qui permettent de déployer notre application sur <code>Kubernetes</code> (<code>deployment.yaml</code>, <code>service.yaml</code>, <code>ingress.yaml</code>).</li>
 <li>A la racine de votre dépôt <code>GitOps</code>, créez un fichier <code>application.yml</code> avec le contenu suivant, en prenant bien soin de modifier les lignes surlignées avec les informations pertinentes :</li>
 </ul>
-<div id="8fcd7a7c" class="cell" data-file="application.yaml" data-source-line-numbers="8-9,13" data-execution_count="6">
+<div id="d4436767" class="cell" data-file="application.yaml" data-source-line-numbers="8-9,13" data-execution_count="6">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>application.yaml</strong></pre>
@@ -3219,7 +3224,7 @@ Application 19b : Mettre à jour la version en production
 <summary>
 <p>Fichier <code>deployment/deployment.yaml</code></p>
 </summary>
-<div id="15e3a7d0" class="cell" data-file="deployment/deployment.yaml" data-source-line-numbers="19" data-execution_count="7">
+<div id="9a35f75b" class="cell" data-file="deployment/deployment.yaml" data-source-line-numbers="19" data-execution_count="7">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>deployment/deployment.yaml</strong></pre>
@@ -3912,7 +3917,7 @@ Application 23 : passer en production un modèle avec MLFlow
 <li><p>Publier un tag <code>v0.0.3</code> pour le code applicatif</p></li>
 <li><p>Mettre à jour notre manifeste dans le dépôt <code>GitOps</code>. En premier lieu, il faut changer la version de référence pour utiliser le tag <code>v0.0.3</code>. De plus, il faut déclarer la variable d’environnement <code>MLFLOW_TRACKING_URI</code> qui indique à <code>Python</code> l’entrepôt de modèles où aller chercher celui en production. La bonne pratique est de définir ceci hors du code, dans un fichier de configuration donc, ce qui est l’objet de notre manifeste <code>deployment.yaml</code>. On peut donc changer de cette manière ce fichier:</p></li>
 </ol>
-<div id="1c88f9c7" class="cell" data-execution_count="8">
+<div id="23c2942b" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="annotated-cell-156" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-156-1"><a href="#annotated-cell-156-1" aria-hidden="true" tabindex="-1"></a>apiVersion: apps<span class="op">/</span>v1</span>
 <span id="annotated-cell-156-2"><a href="#annotated-cell-156-2" aria-hidden="true" tabindex="-1"></a>kind: Deployment</span>
 <span id="annotated-cell-156-3"><a href="#annotated-cell-156-3" aria-hidden="true" tabindex="-1"></a>metadata:</span>
@@ -3999,7 +4004,7 @@ Checkpoint
 <li>Lancer un service Argo Workflows</li>
 <li>Dans le dépôt GitOps, créer un fichier <code>argo-workflow/manifest.yaml</code></li>
 </ol>
-<div id="0b0f134d" class="cell" data-execution_count="9">
+<div id="73aca87f" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="annotated-cell-8" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-8-1"><a href="#annotated-cell-8-1" aria-hidden="true" tabindex="-1"></a>apiVersion: argoproj.io<span class="op">/</span>v1alpha1</span>
 <span id="annotated-cell-8-2"><a href="#annotated-cell-8-2" aria-hidden="true" tabindex="-1"></a>kind: Workflow</span>
 <span id="annotated-cell-8-3"><a href="#annotated-cell-8-3" aria-hidden="true" tabindex="-1"></a>metadata:</span>
