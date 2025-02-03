@@ -5,7 +5,7 @@ function checkpoint(args, kwargs)
   local title = args[2] or ('Checkpoint post ' .. appli)
   return pandoc.RawBlock("html", [[
   <div class="callout callout-style-default callout-caution callout-titled">
-    <div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-]] .. appli .. [[-contents" aria-controls="callout-]] .. appli .. [[" aria-expanded="true" aria-label="Toggle callout">
+    <div class="callout-header d-flex align-content-center collapse" data-bs-toggle="collapse" data-bs-target=".callout-]] .. appli .. [[-contents" aria-controls="callout-]] .. appli .. [[" aria-expanded="true" aria-label="Toggle callout">
       <div class="callout-icon-container">
         <i class="callout-icon"></i>
       </div>
@@ -14,7 +14,7 @@ function checkpoint(args, kwargs)
       </div>
       <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
     </div>
-    <div id="callout-]] .. appli .. [[" class="callout-]] .. appli .. [[-contents callout-collapse collapse show" style="">
+    <div id="callout-]] .. appli .. [[" class="callout-]] .. appli .. [[-contents callout-collapse collapse" style="">
       <div class="callout-body-container callout-body">
         <div class="code-with-filename">
           <div class="code-with-filename-file">
