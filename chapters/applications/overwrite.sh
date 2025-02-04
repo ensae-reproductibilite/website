@@ -33,6 +33,7 @@ fi
 
 # Create a backup branch from the current main state
 echo -e "${YELLOW}Creating backup branch '$BACKUP_BRANCH'...${NC}"
+git stash
 git checkout "$MAIN_BRANCH"
 git checkout -b "$BACKUP_BRANCH"
 git push origin "$BACKUP_BRANCH"
@@ -50,4 +51,4 @@ git checkout "$MAIN_BRANCH"
 # git push origin "$MAIN_BRANCH" --force
 
 echo -e "${GREEN}Successfully reset '$MAIN_BRANCH' to tag '$TAG'.${NC}"
-echo -e "If you want to update your remote counterpart, use ${RED}git push origin "$MAIN_BRANCH" --force${NC}"
+echo -e "If you want to update your remote counterpart, use ${BLUE}git push origin "$MAIN_BRANCH" --force${NC}"
