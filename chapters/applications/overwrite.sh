@@ -23,7 +23,7 @@ BACKUP_BRANCH="dev_before_${TAG}"
 
 # Fetch latest updates
 echo -e "${YELLOW}Fetching latest updates...${NC}"
-git fetch --all --tags
+git fetch --all --tags --force
 
 # Ensure the tag exists
 if ! git rev-parse "$TAG" >/dev/null 2>&1; then
@@ -31,9 +31,17 @@ if ! git rev-parse "$TAG" >/dev/null 2>&1; then
   exit 1
 fi
 
+if git rev-parse --verify "$BACKUP_BRANCH" >/dev/null 2>&1; then
+    git checkout -d "$BACKUP_BRANCH"
+else
+    echo "Branch $BACKUP_BRANCH does not exist."
+fi
+
+
 # Create a backup branch from the current main state
 echo -e "${YELLOW}Creating backup branch '$BACKUP_BRANCH'...${NC}"
-git stash
+
+git reset --hard
 git checkout "$MAIN_BRANCH"
 git checkout -b "$BACKUP_BRANCH"
 git push origin "$BACKUP_BRANCH"
