@@ -144,8 +144,10 @@ et le _formatter_ [`Black`](https://github.com/psf/black).
 Si vous désirez un outil deux en un, il est possible d'utiliser [`Ruff`](https://github.com/astral-sh/ruff-vscode)
 en complément ou substitut.
 
+
 Ce nettoyage automatique du code permettra, au passage, de restructurer notre
 script de manière plus naturelle.
+
 
 ::: {.callout-important}
 [`PyLint`](https://pylint.readthedocs.io/en/latest/), [`Black`](https://black.readthedocs.io/en/stable/) et [`Ruff`](https://docs.astral.sh/ruff/)
@@ -175,6 +177,8 @@ jetons d'API et chemin des fichiers.
 
 
 ## Étape 3: gestion des paramètres
+
+{{< checkpoint appli2 "Reprendre à partir d'ici" "true" "pre-appli3" >}}
 
 L'exécution du code et les résultats obtenus
 dépendent de certains paramètres définis dans le code. L'étude de résultats
@@ -645,6 +649,8 @@ Choose from 1, 2, 3 [1]:
 
 # Partie 3 : construction d'un projet portable et reproductible {#partie3}
 
+{{< checkpoint appli8 "Reprendre à partir d'ici" "true" "pre-appli10" >}}
+
 Dans la partie précédente,
 on a appliqué de manière incrémentale de nombreuses bonnes pratiques vues
 dans les chapitres [Qualité du code](/chapters/code-quality.html)
@@ -843,16 +849,7 @@ propose des services similaires. L'implémentation est légèrement différente
 mais les principes sont identiques.
 
 
-::: {.callout-caution collapse="true"}
-## Si vous prenez ce projet fil rouge en cours de route
-
-```{.bash filename="terminal"}
-git checkout appli13
-```
-
-![](/checkpoint.jpg){width=80% fig-align="center"}
-
-:::
+{{< checkpoint appli13 "Reprendre à partir d'ici" "true" "pre-appli14" >}}
 
 
 ## Étape 1: mise en place de tests automatisés
@@ -923,20 +920,8 @@ de valorisations techniques, comme des API,
 mais pour ces derniers il est
 conseillé de privilégier des formats plus _user friendly_.
 
-::: {.callout-caution collapse="true"}
-## Si vous prenez ce projet fil rouge en cours de route
-
-```{.bash filename="terminal"}
-git checkout appli15
-```
-
-![](/checkpoint.jpg){width=80% fig-align="center"}
-
-:::
-
-
 Afin de faire le parallèle avec les parcours possibles pour l'évaluation,
-nous allons proposer trois valorisations[^valorisation]:
+nous allons proposer deux valorisations[^valorisation]:
 
 - Une [API](https://titanic.kub.sspcloud.fr/docs) facilitant la réutilisation du modèle en "production" ;
 - Un [site web statique](https://ensae-reproductibilite.github.io/application/) exploitant cette API pour exposer les prédictions
@@ -992,16 +977,8 @@ API (voir chapitre sur la [mise en production](/chapters/deployment.qmd)).
 Le _framework_ [`FastAPI`](https://fastapi.tiangolo.com/) va permettre
 de rapidement transformer notre application `Python` en une API fonctionnelle.
 
-::: {.callout-caution collapse="true"}
-## Si vous prenez ce projet fil rouge en cours de route
 
-```{.bash filename="terminal"}
-git checkout appli15
-```
-
-![](/checkpoint.jpg){width=80% fig-align="center"}
-
-:::
+{{< checkpoint appli15 "Reprendre à partir d'ici" "true" "pre-appli16" >}}
 
 
 {{< include "./applications/_appli16.qmd" >}}
@@ -1009,16 +986,8 @@ git checkout appli15
 
 ## Étape 2: déployer l'API de manière manuelle
 
-::: {.callout-caution collapse="true"}
-## Si vous prenez ce projet fil rouge en cours de route
+{{< checkpoint appli16 "Reprendre à partir d'ici" "true" "pre-appli17" >}}
 
-```{.bash filename="terminal"}
-git checkout appli16
-```
-
-![](/checkpoint.jpg){width=80% fig-align="center"}
-
-:::
 
 A ce stade, nous avons déployé l'API seulement localement, dans le cadre d'un terminal qui tourne en arrière-plan.
 C'est une mise en production manuelle, pas franchement pérenne.
@@ -1049,14 +1018,7 @@ interactive il est indispensable de mettre
 les lignes un peu obscure sur le CORS dans le fichier `ingress.yaml`.
 
 Comme c'est un point technique qui ne concerne pas les compétences
-liées à ce cours, nous donnons directement les mises à jour nécessaires
-du projet.
-
-Ceci consiste principalement à ajouter la ligne suivante au fichier `ingress.yaml` :
-
-```
-nginx.ingress.kubernetes.io/enable-cors: "true"
-```
+liées à ce cours, nous avons donné directement les lignes correspondantes dans ce fichier.
 
 :::
 
@@ -1119,6 +1081,7 @@ Les _inputs_ de notre _pipeline_ sont donc:
 - La __configuration__. Ici, on peut considérer que notre `.env` de configuration ou les secrets renseignés à `Github` relèvent de cette catégorie  ;
 - Les __données__. Nos données sont statiques et n'ont pas vocation à évoluer. Si c'était le cas, il faudrait en tenir compte dans notre automatisation[^versionning-data]. ;
 - Le __code__. C'est l'élément principal qui évolue chez nous. Idéalement, on veut automatiser le processus au maximum en faisant en sorte qu'à chaque mise à jour de notre code (un _push_ sur `Github`), les étapes ultérieures (production de l'image `Docker`, etc.) se lancent. Néanmoins, on veut aussi éviter qu'une erreur puisse donner lieu à une mise en production non-fonctionnelle, on va donc maintenir une action manuelle minimale comme garde-fou.
+
 
 ::: {.callout-note}
 ## Et le _versionning_ des données ?
