@@ -347,7 +347,7 @@ div.callout-application.callout-style-default .callout-icon::before, div.callout
 <ul>
 <li>elle part d’un répertoire racine (le dossier qui contient tous les autres) ;</li>
 <li>contient des dossiers ;</li>
-<li>les dossiers peuvent contenir à leur tout des dossiers (sous-dossiers) ou des fichiers.</li>
+<li>les dossiers peuvent contenir à leur tour des dossiers (sous-dossiers) ou des fichiers.</li>
 </ul>
 <p>Intéressons nous à la structure du <em>filesystem</em> Linux standard.</p>
 <p><a href="../linux_fs.jpg"><img src="../linux_fs.jpg" height="300"></a></p>
@@ -525,7 +525,13 @@ div.callout-application.callout-style-default .callout-icon::before, div.callout
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>HOME<span class="op">=/</span>home<span class="op">/</span>coder</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>LANG<span class="op">=</span>en_US.UTF<span class="op">-</span><span class="dv">8</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>CONDA_PYTHON_EXE<span class="op">=/</span>home<span class="op">/</span>coder<span class="op">/</span>local<span class="op">/</span><span class="bu">bin</span><span class="op">/</span>conda<span class="op">/</span><span class="bu">bin</span><span class="op">/</span>python</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Cette liste illustre la variété des utilisations des variables d’environnements : - la variable <code>$SHELL</code> précise l’exécutable utilisé pour lancer le terminal ; - la variable <code>$HOME</code> donne l’emplacement du répertoire utilisateur. En fait, le symbole <code>~</code> que l’on a rencontré plus haut référence cette même variable ; - la variable <code>LANG</code> spécifie la <em>locale</em>, un concept qui permet de définir la langue et l’encodage utilisés par défaut par Linux ; - la variable <code>CONDA_PYTHON_EXE</code> existe uniquement parce que l’on a installé <code>conda</code> comme système de gestion de packages <code>Python</code>. C’est l’existance de cette variable qui fait que la commande <code>python mon_script.py</code> va utiliser comme binaire la version de <code>Python</code> qui nous intéresse.</p>
+<p>Cette liste illustre la variété des utilisations des variables d’environnements :</p>
+<ul>
+<li>la variable <code>$SHELL</code> précise l’exécutable utilisé pour lancer le terminal ;</li>
+<li>la variable <code>$HOME</code> donne l’emplacement du répertoire utilisateur. En fait, le symbole <code>~</code> que l’on a rencontré plus haut référence cette même variable ;</li>
+<li>la variable <code>LANG</code> spécifie la <em>locale</em>, un concept qui permet de définir la langue et l’encodage utilisés par défaut par Linux ;</li>
+<li>la variable <code>CONDA_PYTHON_EXE</code> existe uniquement parce que l’on a installé <code>conda</code> comme système de gestion de packages <code>Python</code>. C’est l’existence de cette variable qui fait que la commande <code>python mon_script.py</code> va utiliser comme binaire la version de <code>Python</code> qui nous intéresse.</li>
+</ul>
 <p>Une variable d’environnement essentielle, et que l’on est fréquemment amené à modifier dans les applications de data science, est la variable <code>$PATH</code>. Elle consiste en une concaténation de chemins absolus, séparés par <code>:</code>, qui spécifie les dossiers dans lesquels Linux va chercher les exécutables lorsque l’on lance une commande, ainsi que l’ordre de la recherche. Regardons la valeur du <code>$PATH</code> sur le terminal du service VSCode.</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -649,7 +655,7 @@ div.callout-application.callout-style-default .callout-icon::before, div.callout
 <span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  tree</span>
 <span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="dv">0</span> upgraded, <span class="dv">1</span> newly installed, <span class="dv">0</span> to remove <span class="kw">and</span> <span class="dv">0</span> <span class="kw">not</span> upgraded.</span>
 <span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Désinstaller un package est également simple : c’est l’opération inverse. Par sécurité, le terminal vous demande si vous êtes sûr de votre choix en vous demandant de tapper la lettre y ou la lettre n.&nbsp;On peut passer automatiquement cette étape en ajoutant le paramètre <code>-y</code></p>
+<p>Désinstaller un package est également simple : c’est l’opération inverse. Par sécurité, le terminal vous demande si vous êtes sûr de votre choix en vous demandant de tapper la lettre y (yes) ou la lettre n.&nbsp;On peut passer automatiquement cette étape en ajoutant le paramètre <code>-y</code></p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
@@ -682,7 +688,9 @@ div.callout-application.callout-style-default .callout-icon::before, div.callout
 <h2 class="anchored" data-anchor-id="tricks"><em>Tricks</em></h2>
 <p>On l’a dit et redit : devenir à l’aise avec le terminal Linux est essentiel et demande de la pratique. Il existe néanmoins quelques astuces qui peuvent grandement simplifier la vie et donc faciliter la prise de bonnes habitudes.</p>
 <p>La première est l’<strong>autocomplétion</strong>. Dès lors que vous écrivez une commande contenant un nom d’exécutable, un chemin sur le <em>filesystem</em>, ou autre, n’hésitez pas à utiliser la touche <code>TAB</code> (touche au-dessus de celle qui verrouille la majuscule) de votre clavier. Dans la majorité des cas, cela va vous faire gagner un temps précieux.</p>
-<p>Une seconde astuce, qui n’en est pas vraiment une, est de lire la <strong>documentation</strong> d’une commande lorsque l’on n’est pas sûr de sa syntaxe ou des paramètres admissibles. Via le terminal, la documentation d’une commande peut être affichée en exécutant <code>man</code> suivie de la commande en question, par exemple : <code>man cp</code>. Comme il n’est pas toujours très pratique de lire de longs textes dans un petit terminal, on peut également chercher la documentation d’une commande sur le site <a href="https://man7.org/linux/man-pages/index.html">man7</a>.</p>
+<p>La deuxième est de parcourir l’<strong>historique</strong> de commandes : la flèche vers le haut (↑) permet de parcourir l’historique des commandes que vous avez précédemment exécutées. Chaque fois que vous appuyez sur cette touche, le terminal affiche la dernière commande exécutée, en remontant dans l’historique à chaque appui supplémentaire.</p>
+<p>La troisième, dans le même esprit que la deuxième mais plus élaborée, est la <strong>recherche</strong> inverse dans l’historique de commandes avec les touches <code>Ctrl+R</code>. Lorsque vous appuyez sur <code>Ctrl+R</code>, une invite de recherche apparaît. Vous pouvez alors commencer à taper des caractères de la commande que vous recherchez. Le terminal cherchera dans l’historique des commandes la dernière commande correspondant à ce que vous avez tapé, et la montrera à l’écran. Si ce n’est pas la commande exacte que vous cherchez, vous pouvez continuer à taper pour affiner la recherche ou appuyer à nouveau sur <code>Ctrl+R</code> pour rechercher la commande précédente correspondant à vos critères.</p>
+<p>Une quatrième astuce, qui n’en est pas vraiment une, est de lire la <strong>documentation</strong> d’une commande lorsque l’on n’est pas sûr de sa syntaxe ou des paramètres admissibles. Via le terminal, la documentation d’une commande peut être affichée en exécutant <code>man</code> suivie de la commande en question, par exemple : <code>man cp</code>. Comme il n’est pas toujours très pratique de lire de longs textes dans un petit terminal, on peut également chercher la documentation d’une commande sur le site <a href="https://man7.org/linux/man-pages/index.html">man7</a>.</p>
 
 
 </section>
