@@ -948,11 +948,11 @@ Application 4 (optionnelle): pourquoi utiliser un <em>pipeline</em> <code>Scikit
 </div>
 <div class="callout-body-container callout-body">
 <ul>
-<li>Le <em>pipeline</em> <code>Scikit</code> d’estimation et d’évaluation vous a été donné tel quel. Regardez le code équivalent dans <code>Scikit</code> ci-dessous:</li>
+<li>Le <em>pipeline</em> <code>Scikit</code> d’estimation et d’évaluation vous a été donné tel quel. Regardez, ci-dessous, le code équivalent sans utiliser de <em>pipeline</em> <code>Scikit</code>:</li>
 </ul>
 <details>
 <summary>
-Le code équivalent sans <em>pipeline</em>
+<p>Le code équivalent sans <em>pipeline</em></p>
 </summary>
 <div class="sourceCode" id="cb8" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.impute <span class="im">import</span> SimpleImputer</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> MinMaxScaler, OneHotEncoder</span>
@@ -1018,8 +1018,12 @@ Le code équivalent sans <em>pipeline</em>
 </details>
 <ul>
 <li><p>Voyez-vous l’intérêt de l’approche par <em>pipeline</em> en termes de lisibilité, évolutivité et fiabilité ?</p></li>
-<li><p>Créer un <em>notebook</em> brouillon commençant par le code suivant:</p></li>
+<li><p>Créer un <em>notebook</em> qui servira de brouillon. Y introduire le code suivant:</p></li>
 </ul>
+<details>
+<summary>
+<p>Le code à copier-coller dans un <em>notebook</em></p>
+</summary>
 <div class="sourceCode" id="cb9" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> OneHotEncoder, MinMaxScaler</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestClassifier</span>
@@ -1080,6 +1084,7 @@ Le code équivalent sans <em>pipeline</em>
 <span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a>pipe.fit(X_train, y_train)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <ul>
 <li><p>Afficher ce pipeline dans une cellule de votre <em>notebook</em>. Cela vous aide-t-il mieux à comprendre les différentes étapes du <em>pipeline</em> de modélisation ?</p></li>
 <li><p>Comment pouvez-vous accéder aux étapes de <em>preprocessing</em> ?</p></li>
@@ -1090,6 +1095,10 @@ pipe['preprocessor'] ou pipe[:-1]
 <ul>
 <li>Comment pouvez-vous faire pour appliquer le <em>pipeline</em> de <em>preprocessing</em> des variables numériques (et uniquement celui-ci) à ce <em>DataFrame</em> ?</li>
 </ul>
+<details>
+<summary>
+<p>Le <em>DataFrame</em> à créer pour appliquer un bout de notre <em>pipeline</em></p>
+</summary>
 <div class="sourceCode" id="cb10" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>new_data <span class="op">=</span> {</span>
@@ -1098,6 +1107,7 @@ pipe['preprocessor'] ou pipe[:-1]
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>new_data <span class="op">=</span> pd.DataFrame(new_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <!-------
 preprocessor_numeric = pipe['preprocessor']['Preprocessing numerical']
 new_data_preprocessed = preprocessor_numeric.transform(new_data)
@@ -1145,6 +1155,10 @@ pd.DataFrame(
 <ul>
 <li>Imaginons que vous ayez déjà des données préprocessées:</li>
 </ul>
+<details>
+<summary>
+<p>Créer des données <em>préprocessées</em></p>
+</summary>
 <div class="sourceCode" id="cb12" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1161,6 +1175,7 @@ pd.DataFrame(
 <span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    columns <span class="op">=</span> preprocessor_numeric.get_feature_names_out()</span>
 <span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>preprocessed_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <ul>
 <li>Déterminer le score en prédiction sur ces données</li>
 </ul>
@@ -1911,7 +1926,7 @@ Application 10: packagisation <em>(optionnel)</em>
 <li>Renommer le dossier <code>titanicml</code> pour respecter la nouvelle arborescence ;</li>
 <li>Créer un fichier <code>pyproject.toml</code> sur cette base ;</li>
 </ul>
-<div id="b1574be4" class="cell" data-execution_count="1">
+<div id="31781f2c" class="cell" data-execution_count="1">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>pyproject.toml</strong></pre>
@@ -1939,7 +1954,7 @@ Application 10: packagisation <em>(optionnel)</em>
 <li>Créer le dossier <code>docs</code> et mettre les fichiers indiqués dedans</li>
 <li>Dans <code>titanicml/</code>, créer un fichier <code>__init__.py</code><a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a></li>
 </ul>
-<div id="7e8cdf3a" class="cell" data-execution_count="2">
+<div id="8909499f" class="cell" data-execution_count="2">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>__init__.py</strong></pre>
@@ -3349,7 +3364,7 @@ Application 18b: Mettre à disposition l’API (déploiement manuel)
 <summary>
 Fichier <code>deployment/deployment.yaml</code>
 </summary>
-<div id="8f9e35c6" class="cell" data-source-line-numbers="19" data-execution_count="3">
+<div id="74473fc7" class="cell" data-source-line-numbers="19" data-execution_count="3">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>deployment/deployment.yaml</strong></pre>
@@ -3417,7 +3432,7 @@ Fichier <code>deployment/service.yaml</code>
 <summary>
 Fichier <code>deployment/ingress.yaml</code>
 </summary>
-<div id="9947d490" class="cell" data-source-line-numbers="16-19" data-execution_count="4">
+<div id="96945b3b" class="cell" data-source-line-numbers="16-19" data-execution_count="4">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>deployment/ingress.yaml</strong></pre>
@@ -3550,7 +3565,7 @@ Clarification sur la branche de travail et les <em>tags</em>
 <div class="callout-body-container callout-body">
 <p>A partir de maintenant, il est nécessaire de clarifier la branche principale sur laquelle nous travaillons. De manière traditionnelle, on utilise la branche <code>main</code>. Si vous avez changé de branche, vous pouvez continuer 1/ continuer mais en tenir compte dans les exemples ultérieurs ou 2/ fusionner celle-ci à <code>main</code>.</p>
 <p>Si vous avez utilisé un <code>tag</code> pour sauter une ou plusieurs étapes, il va être nécessaire de se placer sur une branche car vous êtes en <em>head detached</em>. Pour cela, après avoir <em>committé</em> les fichiers que vous désirez garder</p>
-<div id="e61fe329" class="cell" data-file="terminal" data-execution_count="5">
+<div id="e483020e" class="cell" data-file="terminal" data-execution_count="5">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
@@ -3624,7 +3639,7 @@ Application 19a: Automatiser la mise à disposition de l’API (déploiement con
 <li>Ajouter un dossier <code>deployment</code> à votre dépôt <code>GitOps</code>, dans lequel on mettra les trois fichiers de déploiement qui permettent de déployer notre application sur <code>Kubernetes</code> (<code>deployment.yaml</code>, <code>service.yaml</code>, <code>ingress.yaml</code>).</li>
 <li>A la racine de votre dépôt <code>GitOps</code>, créez un fichier <code>application.yml</code> avec le contenu suivant, en prenant bien soin de modifier les lignes surlignées avec les informations pertinentes :</li>
 </ul>
-<div id="b572a57e" class="cell" data-file="application.yaml" data-source-line-numbers="8-9,13" data-execution_count="6">
+<div id="ac027394" class="cell" data-file="application.yaml" data-source-line-numbers="8-9,13" data-execution_count="6">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>application.yaml</strong></pre>
@@ -3828,7 +3843,7 @@ Application 19b : Mettre à jour la version en production
 <summary>
 <p>Fichier <code>deployment/deployment.yaml</code></p>
 </summary>
-<div id="9e732ab9" class="cell" data-file="deployment/deployment.yaml" data-source-line-numbers="19" data-execution_count="7">
+<div id="728cc0a2" class="cell" data-file="deployment/deployment.yaml" data-source-line-numbers="19" data-execution_count="7">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>deployment/deployment.yaml</strong></pre>
@@ -4553,7 +4568,7 @@ Application 23 : passer en production un modèle avec MLFlow
 <li><p>Publier un tag <code>v0.0.3</code> pour le code applicatif</p></li>
 <li><p>Mettre à jour notre manifeste dans le dépôt <code>GitOps</code>. En premier lieu, il faut changer la version de référence pour utiliser le tag <code>v0.0.3</code>. De plus, il faut déclarer la variable d’environnement <code>MLFLOW_TRACKING_URI</code> qui indique à <code>Python</code> l’entrepôt de modèles où aller chercher celui en production. La bonne pratique est de définir ceci hors du code, dans un fichier de configuration donc, ce qui est l’objet de notre manifeste <code>deployment.yaml</code>. On peut donc changer de cette manière ce fichier:</p></li>
 </ol>
-<div id="e1c7ba6e" class="cell" data-execution_count="8">
+<div id="6fd58f65" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="annotated-cell-128" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-128-1"><a href="#annotated-cell-128-1" aria-hidden="true" tabindex="-1"></a>apiVersion: apps<span class="op">/</span>v1</span>
 <span id="annotated-cell-128-2"><a href="#annotated-cell-128-2" aria-hidden="true" tabindex="-1"></a>kind: Deployment</span>
 <span id="annotated-cell-128-3"><a href="#annotated-cell-128-3" aria-hidden="true" tabindex="-1"></a>metadata:</span>
@@ -4640,7 +4655,7 @@ Checkpoint
 <li>Lancer un service Argo Workflows</li>
 <li>Dans le dépôt GitOps, créer un fichier <code>argo-workflow/manifest.yaml</code></li>
 </ol>
-<div id="e9898da6" class="cell" data-execution_count="9">
+<div id="5b627e14" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="annotated-cell-8" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-8-1"><a href="#annotated-cell-8-1" aria-hidden="true" tabindex="-1"></a>apiVersion: argoproj.io<span class="op">/</span>v1alpha1</span>
 <span id="annotated-cell-8-2"><a href="#annotated-cell-8-2" aria-hidden="true" tabindex="-1"></a>kind: Workflow</span>
 <span id="annotated-cell-8-3"><a href="#annotated-cell-8-3" aria-hidden="true" tabindex="-1"></a>metadata:</span>
