@@ -1,9 +1,143 @@
+Pour commencer, cet exercice fait un petit pas de côté pour faire comprendre la manière dont les _pipelines_ scikit sont un outil au service des bonnes pratiques.
+
+::: {.application}
+## Application 4 (optionnelle): pourquoi utiliser un _pipeline_ `Scikit` ?
+
+* Le _pipeline_ `Scikit` d'estimation et d'évaluation vous a été donné tel quel. Regardez, ci-dessous, le code équivalent sans utiliser de _pipeline_ `Scikit`:
+
+<details>
+
+<summary>
+
+Le code équivalent sans _pipeline_
+
+</summary>
+
+```{.python include="./applications/code/_appli4_no_pipeline.py"}
+```
+
+</details>
+
+* Voyez-vous l'intérêt de l'approche par _pipeline_ en termes de lisibilité, évolutivité et fiabilité ?
+
+* Créer un _notebook_ qui servira de brouillon. Y introduire le code suivant:
+
+<details>
+
+<summary>
+
+Le code à copier-coller dans un _notebook_
+
+</summary>
+
+```{.python include="./applications/code/_appli4_pipeline.py"}
+```
+
+</details>
+
+* Afficher ce pipeline dans une cellule de votre _notebook_. Cela vous aide-t-il mieux à comprendre les différentes étapes du _pipeline_ de modélisation ?
+
+* Comment pouvez-vous accéder aux étapes de _preprocessing_ ?
+
+<!-------
+pipe['preprocessor'] ou pipe[:-1]
+--------->
+
+* Comment pouvez-vous faire pour appliquer le _pipeline_ de _preprocessing_ des variables numériques (et uniquement celui-ci) à ce _DataFrame_ ?
+
+<details>
+
+<summary>
+
+Le _DataFrame_ à créer pour appliquer un bout de notre _pipeline_
+
+</summary>
+
+```python
+import numpy as np
+
+new_data = {
+    "Age": [22, np.nan, 35, 28, np.nan],
+    "Fare": [7.25, 8.05, np.nan, 13.00, 15.50]
+}
+
+new_data = pd.DataFrame(new_data)
+```
+
+</details>
+
+<!-------
+preprocessor_numeric = pipe['preprocessor']['Preprocessing numerical']
+new_data_preprocessed = preprocessor_numeric.transform(new_data)
+
+pd.DataFrame(
+    new_data_preprocessed,
+    columns=preprocessor_numeric[:-1].get_feature_names_out()
+)
+--------->
+
+* Normalement ce code ne devrait pas prendre plus d'une demie-douzaine de lignes. Sans _pipeline_ le code équivalent, beaucoup plus verbeux et moins fiable, ressemble à celui-ci
+
+<details>
+
+<summary>
+Le code équivalent, sans _pipeline_
+</summary>
+
+```{.python include="./applications/code/_appli4_no_pipeline_numerical_feature.py"}
+```
+
+
+</details>
+
+* Imaginons que vous ayez déjà des données préprocessées:
+
+<details>
+
+<summary>
+
+Créer des données _préprocessées_
+
+</summary>
+
+```python
+import numpy as np
+import pandas as pd
+
+new_data = pd.DataFrame({
+    "Age": [25, np.nan, 40, 33, np.nan],
+    "Fare": [10.50, 7.85, np.nan, 22.00, 12.75],
+    "Embarked": ["S", "C", np.nan, "Q", "S"],
+    "Sex": ["male", "female", "male", np.nan, "female"]
+})
+new_y = np.random.randint(0, 2, size=len(new_data))
+
+preprocessed_data = pd.DataFrame(
+    pipe[:-1].transform(new_data),
+    columns = preprocessor_numeric.get_feature_names_out()
+)
+preprocessed_data
+```
+
+</details>
+
+* Déterminer le score en prédiction sur ces données
+
+<!------
+pipe[-1].score(preprocessed_data, new_y)
+------->
+
+:::
+
+Maintenant, revenons à notre chaine de production et appliquons des fonctions pour la rendre plus lisible, plus fiable et plus modulaire.
+
 ::: {.application}
 ## Application 4: adoption des standards de programmation fonctionnelle
 
 Cette application peut être chronophage, vous pouvez aller plus ou moins
 loin dans la fonctionalisation de votre script en fonction du temps dont vous
 disposez.
+
 
 * Créer une fonction générique pour réduire la redondance de code
  dans l'étape d'exploration des données où on utilise `split` ;
