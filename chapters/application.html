@@ -1699,9 +1699,9 @@ en modifiant <code>$BUCKET_PERSONNEL</code>, l’emplacement de votre bucket per
 <p>Pour se simplifier la vie, dans les prochaines applications, on va utiliser des URL de téléchargement des fichiers (comme si ceux-ci étaient sur n’importe quel espace de stockage) plutôt que d’utiliser une librairie <code>S3</code> compatible comme <code>boto3</code> ou <code>s3fs</code>.</p>
 <p>Néanmoins, il est utile de les utiliser une fois pour comprendre la logique. Pour aller plus loin sur ces librairies, vous pouvez consulter <a href="https://pythonds.linogaliana.fr/content/modern-ds/s3.html#cas-pratique-stocker-les-donn%C3%A9es-de-son-projet-sur-le-ssp-cloud">cette page</a> du cours de 2A de <em>Python pour la data science</em>.</p>
 <p>Pour commencer, on va lister les fichiers se trouvant dans un <em>bucket</em>. En ligne de commande, sur notre poste local, on ferait <code>ls</code> (<a href="../chapters/linux-101.html">cf.&nbsp;Linux 101</a>). Cela ne va pas beaucoup différer avec les librairies <em>cloud native</em>:</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">Avec <code>s3fs</code></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Avec <code>mc</code></a></li></ul>
-<div class="tab-content" data-group="language">
+<div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <p>Dans un <em>notebook</em>, copier-coller ce code, le modifier et exécuter:</p>
 <div class="sourceCode" id="annotated-cell-35" data-code-line-numbers=""><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-35-1"><a href="#annotated-cell-35-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> s3fs</span>
@@ -1767,9 +1767,9 @@ Application 8b: ajout de données sur le système de stockage <code>S3</code>
 <span data-code-cell="annotated-cell-37" data-code-lines="2" data-code-annotation="2">Changer en fonction du chemin voulu</span>
 </dd>
 </dl>
-<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
+<div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Avec <code>Pandas</code> et <code>s3fs</code></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Avec <code>Pyarrow</code> et <code>s3fs</code></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false">Avec <code>DuckDB</code></a></li></ul>
-<div class="tab-content" data-group="language">
+<div class="tab-content">
 <div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <div class="sourceCode" id="cb18" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> s3fs</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -1827,7 +1827,6 @@ Application 8b: ajout de données sur le système de stockage <code>S3</code>
 <span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>MY_BUCKET <span class="op">=</span> <span class="st">"mon_nom_utilisateur_sspcloud"</span></span>
 <span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>path_data <span class="op">=</span> <span class="st">"data/python-ENSAE/dvf.parquet"</span></span>
 <span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>pd.read_csv(<span class="ss">f"s3://$</span><span class="sc">{</span>MY_BUCKET<span class="sc">}</span><span class="ss">/$</span><span class="sc">{</span>path_data<span class="sc">}</span><span class="ss">"</span>, filesystem<span class="op">=</span>fs) <span class="co">#remplacer par read_parquet</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>:::</p>
 <div class="callout callout-style-default callout-application callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -2153,7 +2152,7 @@ Application 10: packagisation <em>(optionnel)</em>
 <li>Renommer le dossier <code>titanicml</code> pour respecter la nouvelle arborescence ;</li>
 <li>Créer un fichier <code>pyproject.toml</code> sur cette base ;</li>
 </ul>
-<div id="a3b90c7a" class="cell" data-execution_count="1">
+<div id="25a38fad" class="cell" data-execution_count="1">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>pyproject.toml</strong></pre>
@@ -2181,7 +2180,7 @@ Application 10: packagisation <em>(optionnel)</em>
 <li>Créer le dossier <code>docs</code> et mettre les fichiers indiqués dedans</li>
 <li>Dans <code>titanicml/</code>, créer un fichier <code>__init__.py</code><a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a></li>
 </ul>
-<div id="42f04f3c" class="cell" data-execution_count="2">
+<div id="fcab5af8" class="cell" data-execution_count="2">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>__init__.py</strong></pre>
@@ -3591,7 +3590,7 @@ Application 18b: Mettre à disposition l’API (déploiement manuel)
 <summary>
 Fichier <code>deployment/deployment.yaml</code>
 </summary>
-<div id="d324b202" class="cell" data-source-line-numbers="19" data-execution_count="3">
+<div id="9bd594b6" class="cell" data-source-line-numbers="19" data-execution_count="3">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>deployment/deployment.yaml</strong></pre>
@@ -3659,7 +3658,7 @@ Fichier <code>deployment/service.yaml</code>
 <summary>
 Fichier <code>deployment/ingress.yaml</code>
 </summary>
-<div id="fec59103" class="cell" data-source-line-numbers="16-19" data-execution_count="4">
+<div id="59de844a" class="cell" data-source-line-numbers="16-19" data-execution_count="4">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>deployment/ingress.yaml</strong></pre>
@@ -3792,7 +3791,7 @@ Clarification sur la branche de travail et les <em>tags</em>
 <div class="callout-body-container callout-body">
 <p>A partir de maintenant, il est nécessaire de clarifier la branche principale sur laquelle nous travaillons. De manière traditionnelle, on utilise la branche <code>main</code>. Si vous avez changé de branche, vous pouvez continuer 1/ continuer mais en tenir compte dans les exemples ultérieurs ou 2/ fusionner celle-ci à <code>main</code>.</p>
 <p>Si vous avez utilisé un <code>tag</code> pour sauter une ou plusieurs étapes, il va être nécessaire de se placer sur une branche car vous êtes en <em>head detached</em>. Pour cela, après avoir <em>committé</em> les fichiers que vous désirez garder</p>
-<div id="a5a69d2f" class="cell" data-file="terminal" data-execution_count="5">
+<div id="3a54a633" class="cell" data-file="terminal" data-execution_count="5">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
@@ -3866,7 +3865,7 @@ Application 19a: Automatiser la mise à disposition de l’API (déploiement con
 <li>Ajouter un dossier <code>deployment</code> à votre dépôt <code>GitOps</code>, dans lequel on mettra les trois fichiers de déploiement qui permettent de déployer notre application sur <code>Kubernetes</code> (<code>deployment.yaml</code>, <code>service.yaml</code>, <code>ingress.yaml</code>).</li>
 <li>A la racine de votre dépôt <code>GitOps</code>, créez un fichier <code>application.yml</code> avec le contenu suivant, en prenant bien soin de modifier les lignes surlignées avec les informations pertinentes :</li>
 </ul>
-<div id="30c8979a" class="cell" data-file="application.yaml" data-source-line-numbers="8-9,13" data-execution_count="6">
+<div id="7af05553" class="cell" data-file="application.yaml" data-source-line-numbers="8-9,13" data-execution_count="6">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>application.yaml</strong></pre>
@@ -4070,7 +4069,7 @@ Application 19b : Mettre à jour la version en production
 <summary>
 <p>Fichier <code>deployment/deployment.yaml</code></p>
 </summary>
-<div id="5edb8cc7" class="cell" data-file="deployment/deployment.yaml" data-source-line-numbers="19" data-execution_count="7">
+<div id="8034e1ec" class="cell" data-file="deployment/deployment.yaml" data-source-line-numbers="19" data-execution_count="7">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>deployment/deployment.yaml</strong></pre>
@@ -4795,7 +4794,7 @@ Application 23 : passer en production un modèle avec MLFlow
 <li><p>Publier un tag <code>v0.0.3</code> pour le code applicatif</p></li>
 <li><p>Mettre à jour notre manifeste dans le dépôt <code>GitOps</code>. En premier lieu, il faut changer la version de référence pour utiliser le tag <code>v0.0.3</code>. De plus, il faut déclarer la variable d’environnement <code>MLFLOW_TRACKING_URI</code> qui indique à <code>Python</code> l’entrepôt de modèles où aller chercher celui en production. La bonne pratique est de définir ceci hors du code, dans un fichier de configuration donc, ce qui est l’objet de notre manifeste <code>deployment.yaml</code>. On peut donc changer de cette manière ce fichier:</p></li>
 </ol>
-<div id="b2932e09" class="cell" data-execution_count="8">
+<div id="dc5bcb83" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="annotated-cell-136" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-136-1"><a href="#annotated-cell-136-1" aria-hidden="true" tabindex="-1"></a>apiVersion: apps<span class="op">/</span>v1</span>
 <span id="annotated-cell-136-2"><a href="#annotated-cell-136-2" aria-hidden="true" tabindex="-1"></a>kind: Deployment</span>
 <span id="annotated-cell-136-3"><a href="#annotated-cell-136-3" aria-hidden="true" tabindex="-1"></a>metadata:</span>
@@ -4882,7 +4881,7 @@ Checkpoint
 <li>Lancer un service Argo Workflows</li>
 <li>Dans le dépôt GitOps, créer un fichier <code>argo-workflow/manifest.yaml</code></li>
 </ol>
-<div id="7eec46f4" class="cell" data-execution_count="9">
+<div id="e6d7c06d" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="annotated-cell-12" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-12-1"><a href="#annotated-cell-12-1" aria-hidden="true" tabindex="-1"></a>apiVersion: argoproj.io<span class="op">/</span>v1alpha1</span>
 <span id="annotated-cell-12-2"><a href="#annotated-cell-12-2" aria-hidden="true" tabindex="-1"></a>kind: Workflow</span>
 <span id="annotated-cell-12-3"><a href="#annotated-cell-12-3" aria-hidden="true" tabindex="-1"></a>metadata:</span>
