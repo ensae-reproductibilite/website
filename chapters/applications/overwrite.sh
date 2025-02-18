@@ -71,7 +71,7 @@ echo -e "${YELLOW}Creating backup branch '$BACKUP_BRANCH'...${NC}"
 git reset --hard
 git checkout "$MAIN_BRANCH"
 git checkout -b "$BACKUP_BRANCH"
-git push origin "$BACKUP_BRANCH"
+git push origin "$BACKUP_BRANCH" --force
 echo -e "${GREEN}Backup branch '$BACKUP_BRANCH' created.${NC}"
 
 # Overwrite main with the tag
@@ -85,4 +85,4 @@ git checkout "$MAIN_BRANCH"
 # Uncomment the line below to actually push the changes
 
 echo -e "${GREEN}Successfully reset '$MAIN_BRANCH' to tag '$TAG'.${NC}"
-echo -e "If you want to update your remote counterpart, use ${BLUE}git push origin "$MAIN_BRANCH" --force${NC}"
+#echo -e "If you want to update your remote counterpart, use ${BLUE}git push origin "$MAIN_BRANCH" --force${NC}"
