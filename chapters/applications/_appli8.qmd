@@ -1,8 +1,8 @@
-::: {.application}
+:::: {.application}
 
-## Application 8: utilisation d'un système de stockage distant
+## Application 8a: ajout de données sur le système de stockage `S3`
 
-A partir de la ligne de commande,
+Pour commencer, à partir de la ligne de commande,
 utiliser l'utilitaire [MinIO](https://min.io/docs/minio/linux/reference/minio-mc.html)
 pour copier les données `data/raw/data.csv`
 vers votre
@@ -23,54 +23,198 @@ mc cp data/raw/data.csv s3/$BUCKET_PERSONNEL/ensae-reproductibilite/data/raw/dat
 en modifiant `$BUCKET_PERSONNEL`, l'emplacement de votre bucket personnel
 </details>
 
-Pour se simplifier la vie, on va utiliser des URL de téléchargement des fichiers
+Pour se simplifier la vie, dans les prochaines applications,
+on va utiliser des URL de téléchargement des fichiers
 (comme si ceux-ci étaient sur n'importe quel espace de stockage) plutôt que d'utiliser
 une librairie `S3` compatible comme `boto3` ou `s3fs`.
 
-Par défaut, le contenu de votre _bucket_ est privé, seul vous y avez accès. Néanmoins,
-vous pouvez rendre accessible à tous en lecture le contenu de votre _bucket_ en
-faisant lui donnant des droits anonymes.
-Pour cela, en ligne de
-commande, faire:
+Néanmoins, il est utile de les utiliser une fois pour comprendre la logique. Pour aller plus loin sur ces librairies, vous pouvez consulter [cette page](https://pythonds.linogaliana.fr/content/modern-ds/s3.html#cas-pratique-stocker-les-donn%C3%A9es-de-son-projet-sur-le-ssp-cloud) du cours de 2A de _Python pour la data science_.
+
+Pour commencer, on va lister les fichiers se trouvant dans un _bucket_. En ligne de commande, sur notre poste local, on ferait `ls` ([cf. Linux 101](/chapters/linux-101.qmd)). Cela ne va pas beaucoup différer avec les librairies _cloud native_:
+
+::: {.panel-tabset group="language"}
+
+## Avec `s3fs`
+
+Dans un _notebook_, copier-coller ce code, le modifier et exécuter:
+
+```{.python}
+import s3fs
+
+fs = s3fs.S3FileSystem(client_kwargs={"endpoint_url": "https://minio.lab.sspcloud.fr"})
+
+MY_BUCKET = "mon_nom_utilisateur_sspcloud" #<1>
+CHEMIN = "ensae-reproductibilite/data/raw" #<2>
+fs.ls(f"s3://{MY_BUCKET}/{CHEMIN}")
+```
+1. Changer avec le bucket
+2. Changer en fonction du chemin voulu
+
+
+## Avec `mc`
+
+Dans un terminal, copier-coller ligne à ligne ce code, le modifier et exécuter:
+
+
+```{.python}
+import s3fs
+
+MY_BUCKET="mon_nom_utilisateur_sspcloud" #<1>
+CHEMIN = "ensae-reproductibilite/data/raw" #<2>
+mc ls s3/${MY_BUCKET}/${CHEMIN}
+```
+1. Changer avec le bucket
+2. Changer en fonction du chemin voulu
+
+
+:::
+
+::::
+
+
+On va maintenant lire directement une donnée stockée sur `S3`. Pour illustrer le fait que cela change peu notre code d'être sur un système cloud avec les librairies adaptées, on va lire directement un fichier `CSV` stocké sur le `SSPCloud`, sans passer par un fichier en local.
+
+:::: {.application}
+
+## Application 8b: ajout de données sur le système de stockage `S3`
+
+```{.python}
+MY_BUCKET = "mon_nom_utilisateur_sspcloud" #<1>
+CHEMIN = "ensae-reproductibilite/data/raw" #<2>
+```
+1. Changer avec le bucket
+2. Changer en fonction du chemin voulu
+
+::: {.panel-tabset group="language"}
+
+## Avec `Pandas` et `s3fs`
+
+```{.python}
+import s3fs
+import pandas as pd
+
+fs = s3fs.S3FileSystem(client_kwargs={"endpoint_url": "https://minio.lab.sspcloud.fr"})
+
+with fs.open(f"s3://{MY_BUCKET}/{CHEMIN}") as f:
+    df = pd.read_csv(f)
+
+df
+```
+
+## Avec `Pyarrow` et `s3fs`
+
+```{.python}
+import s3fs
+from pyarrow import csv
+
+fs = s3fs.S3FileSystem(client_kwargs={"endpoint_url": "https://minio.lab.sspcloud.fr"})
+
+with fs.open(f"s3://{MY_BUCKET}/{CHEMIN}") as f:
+    df = csv.read_csv(f)
+
+df
+```
+
+## Avec `DuckDB`
+
+```{.python}
+import os
+import duckdb
+
+con = duckdb.connect(database=":memory:")
+
+con.execute(
+    f"""
+CREATE SECRET secret (
+    TYPE S3,
+    KEY_ID '{os.environ["AWS_ACCESS_KEY_ID"]}',
+    SECRET '{os.environ["AWS_SECRET_ACCESS_KEY"]}',
+    ENDPOINT 'minio.lab.sspcloud.fr',
+    SESSION_TOKEN '{os.environ["AWS_SESSION_TOKEN"]}',
+    REGION 'us-east-1',
+    URL_STYLE 'path',
+    SCOPE 's3://{MY_BUCKET}/'
+);
+"""
+)
+
+query_definition = f"SELECT * FROM read_csv('s3://{MY_BUCKET}/{CHEMIN}')"
+con.sql(query_definition)
+```
+
+:::
+
+::::
+
+
+
+```python
+import s3fs
+
+fs = s3fs.S3FileSystem(client_kwargs={"endpoint_url": "https://minio.lab.sspcloud.fr"})
+
+MY_BUCKET = "mon_nom_utilisateur_sspcloud"
+path_data = "data/python-ENSAE/dvf.parquet"
+pd.read_csv(f"s3://${MY_BUCKET}/${path_data}", filesystem=fs) #remplacer par read_parquet
+```
+
+:::
+
+::: {.application}
+## Application 8c: privilégier le format `Parquet` dans notre chaîne
+
+Dans `main.py`, remplacer le format csv initialement prévu par un format parquet:
+
+```{.python file="main.py"}
+data_train_path = os.environ.get("train_path", "data/derived/train.parquet")
+data_test_path = os.environ.get("test_path", "data/derived/test.parquet")
+```
+
+Et modifier l'écriture des données pour utiliser `to_parquet` plutôt que `to_csv` pour écrire les fichiers intermédiaires:
+
+```{.python file="main.py"}
+pd.concat([X_train, y_train], axis = 1).to_parquet(data_train_path)
+pd.concat([X_test, y_test], axis = 1).to_parquet(data_test_path)
+```
+
+
+:::
+
+
+::: {.application}
+
+## Application 8d: partage de données sur le système de stockage `S3`
+
+Par défaut, le contenu de votre _bucket_ est privé, seul vous y avez accès. Pour pouvoir lire votre donnée, vos
+applications externes devront utiliser des jetons vous identifiant. Ici, comme nous utilisons une donnée publique,
+vous pouvez rendre accessible celle-ci à tous en lecture. Dans le jargon S3, cela signifie donner un accès anonyme à votre donnée.
+
+Le modèle de commande à utiliser dans le terminal est le suivant:
 
 ```{.bash filename="terminal"}
 mc anonymous set download s3/$BUCKET_PERSONNEL/ensae-reproductibilite/data/raw/
 ```
 
-en modifiant `$BUCKET_PERSONNEL`. Les URL de téléchargement seront de la forme
+en modifiant `$BUCKET_PERSONNEL` et le chemin en son sein (`/ensae-reproductibilite/data/raw/`). Les URL de téléchargement seront de la forme
 `https://minio.lab.sspcloud.fr/$BUCKET_PERSONNEL/ensae-reproductibilite/data/raw/data.csv`
 
-En premier lieu, on va améliorer la brique d'ingestion et de préparation des données
 
-- Modifier le fichier `.env` et la variable `data_path` pour utiliser, par défaut, directement l'URL dans l'import;
-- Modifier les valeurs par défaut dans votre code ;
+- Remplacer la définition de  `data_path` pour utiliser, par défaut, directement l'URL dans l'import. Modifier, si cela est pertinent, aussi votre fichier `.env`.
+
+```{.python file="main.py"}
+URL_RAW = "" #<1>
+data_path = os.environ.get("data_path", URL_RAW)
+```
+1. Modifier avec `URL_RAW` un lien de la forme `"https://minio.lab.sspcloud.fr/$BUCKET_PERSONNEL/ensae-reproductibilite/data/raw/data.csv"`
+
+
 - Ajouter le dossier `data/` au `.gitignore` ainsi que les fichiers `*.parquet`
 - Supprimer le dossier `data` de votre projet et faites `git rm --cached -r data`
 
-
-Nous allons en profiter pour améliorer nos données intermédiaires. Dans `main.py`, remplacer les chemins par ceux-ci:
-
-```{.python file="main.py"}
-# main.py
-data_path = os.environ.get("data_path", URL_RAW)
-data_train_path = os.environ.get("train_path", "data/derived/train.parquet")
-data_test_path = os.environ.get("test_path", "data/derived/test.parquet")
-```
-
-où `URL_RAW` est le lien de la forme `"https://minio.lab.sspcloud.fr/$BUCKET_PERSONNEL/ensae-reproductibilite/data/raw/data.csv"`
-
-Dans `data/pipeline/build_pipeline.py`, remplacer l'écriture des données par ce morceau:
-
-```{.python file="data/pipeline/build_pipeline.py"}
-# data/pipeline/build_pipeline.py
-if train_path:
-    pd.concat([X_train, y_train], axis=1).to_parquet(train_path)
-if test_path:
-    pd.concat([X_test, y_test], axis=1).to_parquet(test_path)
-```
-
 - Vérifier le bon fonctionnement de votre application.
 
+
+:::
 
 Maintenant qu'on a arrangé la structure de notre projet, c'est l'occasion
 de supprimer le code qui n'est plus nécessaire au bon fonctionnement de notre
@@ -81,7 +225,8 @@ utiliser [`vulture`](https://pypi.org/project/vulture/) de manière itérative
 pour vous assister dans le nettoyage de votre code.
 
 ```{.bash filename="terminal"}
-vulture main.py src/
+pip install vulture
+vulture .
 ```
 
 <details>
@@ -95,11 +240,11 @@ vulture .
 
 ```{.python}
 src/data/import_data.py:3: unused function 'split_and_count' (60% confidence)
+src/pipeline/build_pipeline.py:12: unused function 'split_train_test' (60% confidence)
 ```
 
 </details>
 
-:::
 
 [^pourapres]: Lorsqu'on développe du code qui finalement ne s'avère plus nécessaire, on a souvent un cas de conscience à le supprimer et on préfère le mettre de côté. Au final, ce syndrôme de Diogène est mauvais pour la pérennité du projet : on se retrouve à devoir maintenir une base de code qui n'est, en pratique, pas utilisée. Ce n'est pas un problème de supprimer un code ; si finalement celui-ci s'avère utile, on peut le retrouver grâce à l'historique `Git` et les outils de recherche sur `Github`. Le _package_ `vulture` est très pratique pour diagnostiquer les morceaux de code inutiles dans un projet.
 

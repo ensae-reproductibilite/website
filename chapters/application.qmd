@@ -420,6 +420,18 @@ Pour faire du _logging_, la librairie consacrée depuis longtemps en `Python` es
 
 ## Étape 4 : stocker les données de manière externe {#stockageS3}
 
+Pour cette partie, il faut avoir un service `VSCode` dont les jetons d'authentification à `S3` sont valides. Pour cela, si vous êtes sur le `SSPCloud`, le plus simple est de recréer un nouveau service avec le bouton suivant
+
+<a href="https://datalab.sspcloud.fr/launcher/ide/vscode-python?name=ENSAE%20Mise%20en%20production&version=2.1.24&s3=region-ec97c721&init.personalInit=«https%3A%2F%2Fraw.githubusercontent.com%2Fensae-reproductibilite%2Fwebsite%2Frefs%2Fheads%2Fmain%2Fchapters%2Fapplications%2Finit.sh»&kubernetes.role=«admin»&networking.user.enabled=true&autoLaunch=false" target="_blank" rel="noopener" data-original-href="https://datalab.sspcloud.fr/launcher/ide/vscode-python?name=ENSAE%20Mise%20en%20production&version=2.1.24&s3=region-ec97c721&init.personalInit=«https%3A%2F%2Fraw.githubusercontent.com%2Fensae-reproductibilite%2Fwebsite%2Frefs%2Fheads%2Fmain%2Fchapters%2Fapplications%2Finit.sh»&kubernetes.role=«admin»&networking.user.enabled=true&autoLaunch=false"><img src="https://img.shields.io/badge/SSP%20Cloud-Lancer_avec_VSCode-blue?logo=visualstudiocode&amp;logoColor=blue" alt="Onyxia"></a>
+
+et remplir l'onglet `Git` comme ça votre `VSCode` sera pré à l'emploi (cf. application 0).
+
+Une fois que vous avez un `VSCode` fonctionnel, il est possible de reprendre cette application fil rouge depuis le _checkpoint_ précédent.
+
+{{< checkpoint appli7 "Reprendre à partir d'ici" "true" "pre-appli8" >}}
+
+Enfin, il vous suffira d'ouvrir un terminal et faire `pip install -r requirements.txt && python main.py` pour pouvoir démarrer l'application.
+
 L'étape précédente nous a permis d'isoler la configuration. Nous avons conceptuellement isolé les données du code lors des applications précédentes. Cependant, nous n'avons pas été au bout du chemin car le stockage des données reste conjoint à celui du code. Nous allons maintenant dissocier ces deux éléments.
 
 ::: {.callout-warning collapse="true"}
@@ -475,6 +487,7 @@ Plus concrètement, nous allons adopter le pipeline suivant pour notre projet:
 ![](/chapters/applications/figures/pipeline_appli8.png)
 
 Le scénario type est que nous avons une source brute, reçue sous forme de CSV, dont on ne peut changer le format. Il aurait été idéal d'avoir un format plus adapté au traitement de données pour ce fichier mais ce n'était pas de notre ressort. Notre chaine va aller chercher ce fichier, travailler dessus jusqu'à valoriser celui-ci sous la forme de notre matrice de confusion. Si on imagine que notre chaine prend un certain temps, il n'est pas inutile d'écrire des données intermédiaires. Pour faire cela, puisque nous avons la main, autant choisir un format adapté, à savoir le format `Parquet`.
+
 
 
 {{< include "./applications/_appli8.qmd" >}}
