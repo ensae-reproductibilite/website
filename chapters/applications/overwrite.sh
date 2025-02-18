@@ -20,7 +20,7 @@ fi
 TAG=$1
 MAIN_BRANCH="main"
 BACKUP_BRANCH="dev_before_${TAG}"
-FORK_REMOTE="https://ensae-reproductibilite/application.git"
+FORK_REMOTE="https://github.com/ensae-reproductibilite/application.git"
 
 # Get the current remote URL
 CURRENT_REMOTE=$(git remote get-url origin)
