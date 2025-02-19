@@ -16,11 +16,12 @@ au `.gitignore`.
 
 Structure à adopter:
 
-```{.bash filename="terminal"}
-mc cp data/raw/data.csv s3/$BUCKET_PERSONNEL/ensae-reproductibilite/data/raw/data.csv
+```{.python filename="terminal"}
+BUCKET_PERSONNEL="nom_utilisateur_sspcloud"
+mc cp data/raw/data.csv s3/${BUCKET_PERSONNEL}/ensae-reproductibilite/data/raw/data.csv
 ```
 
-en modifiant `$BUCKET_PERSONNEL`, l'emplacement de votre bucket personnel
+en modifiant la variable `BUCKET_PERSONNEL`, l'emplacement de votre bucket personnel
 </details>
 
 Pour se simplifier la vie, dans les prochaines applications,
@@ -90,7 +91,7 @@ Dans un _notebook_, copier-coller et mettre à jour ces deux variables qui seron
 
 ```{.python}
 MY_BUCKET = "mon_nom_utilisateur_sspcloud" #<1>
-CHEMIN = "ensae-reproductibilite/data/raw" #<2>
+CHEMIN_FICHIER = "ensae-reproductibilite/data/raw/data.csv" #<2>
 ```
 1. Changer avec le bucket
 2. Changer en fonction du chemin voulu
@@ -105,7 +106,7 @@ import pandas as pd
 
 fs = s3fs.S3FileSystem(client_kwargs={"endpoint_url": "https://minio.lab.sspcloud.fr"})
 
-with fs.open(f"s3://{MY_BUCKET}/{CHEMIN}") as f:
+with fs.open(f"s3://{MY_BUCKET}/{CHEMIN_FICHIER}") as f:
     df = pd.read_csv(f)
 
 df
@@ -119,7 +120,7 @@ from pyarrow import csv
 
 fs = s3fs.S3FileSystem(client_kwargs={"endpoint_url": "https://minio.lab.sspcloud.fr"})
 
-with fs.open(f"s3://{MY_BUCKET}/{CHEMIN}") as f:
+with fs.open(f"s3://{MY_BUCKET}/{CHEMIN_FICHIER}") as f:
     df = csv.read_csv(f)
 
 df
@@ -148,7 +149,7 @@ CREATE SECRET secret (
 """
 )
 
-query_definition = f"SELECT * FROM read_csv('s3://{MY_BUCKET}/{CHEMIN}')"
+query_definition = f"SELECT * FROM read_csv('s3://{MY_BUCKET}/{CHEMIN_FICHIER}')"
 df = con.sql(query_definition)
 
 df
@@ -158,17 +159,25 @@ df
 
 Pour illustrer le fonctionnement encore plus simple de S3 avec les fichiers `Parquet`, on propose de copier un `Parquet` mis à disposition dans un _bucket_ collectiv vers votre _bucket_ personnel:
 
-```python
-mc cp s3/projet-formation/bonnes-pratiques/data/REGION=11/part-0.parquet s3/$BUCKET_PERSONNEL/ensae-reproductibilite/data/example/rp.parquet
-```
+```{.python}
+BUCKET_PERSONNEL="nom_utilisateur_sspcloud" #<1>
 
-en remplaçant `$BUCKET_PERSONNEL` par la valeur voulue.
+curl -o rp.parquet "https://minio.lab.sspcloud.fr/projet-formation/bonnes-pratiques/data/REGION=11/part-0.parquet" #<2>
+
+mc cp rp.parquet s3/${BUCKET_PERSONNEL}/ensae-reproductibilite/data/example/rp.parquet
+
+rm rp.parquet
+```
+1. Remplacer par le nom de votre _bucket_.
+2. Télécharger le fichier `Parquet` mis à dispositoin
+3. Copier dans le _bucket_ voulu
+4. Effacer le fichier copié temporairement en local
 
 Pour lire ceux-ci, tester les exemples de code suivants:
 
 ```{.python}
 MY_BUCKET = "mon_nom_utilisateur_sspcloud" #<1>
-CHEMIN = "ensae-reproductibilite/data/example/rp.parquet"
+CHEMIN_FICHIER = "ensae-reproductibilite/data/example/rp.parquet"
 ```
 1. Remplacer ici par la valeur appropriée
 
@@ -182,7 +191,7 @@ import pandas as pd
 
 fs = s3fs.S3FileSystem(client_kwargs={"endpoint_url": "https://minio.lab.sspcloud.fr"})
 
-df = pd.read_parquet(f"s3://{MY_BUCKET}/{CHEMIN}", filesystem=fs)
+df = pd.read_parquet(f"s3://{MY_BUCKET}/{CHEMIN_FICHIER}", filesystem=fs)
 
 df
 ```
@@ -195,7 +204,7 @@ import pyarrow.parquet as pq
 
 s3 = pa.fs.S3FileSystem(endpoint_override ="https://minio.lab.sspcloud.fr")
 
-df = pq.read_table(f"{MY_BUCKET}/{CHEMIN}", filesystem=s3)
+df = pq.read_table(f"{MY_BUCKET}/{CHEMIN_FICHIER}", filesystem=s3)
 
 df
 ```
@@ -223,7 +232,7 @@ CREATE SECRET secret (
 """
 )
 
-query_definition = f"SELECT * FROM read_parquet('s3://{MY_BUCKET}/{CHEMIN}')"
+query_definition = f"SELECT * FROM read_parquet('s3://{MY_BUCKET}/{CHEMIN_FICHIER}')"
 df = con.sql(query_definition)
 
 df
@@ -249,7 +258,7 @@ data_test_path = os.environ.get("test_path", "data/derived/test.parquet")
 
 Et modifier l'écriture des données pour utiliser `to_parquet` plutôt que `to_csv` pour écrire les fichiers intermédiaires:
 
-```{.python file="main.py"}
+```{.python filename="main.py"}
 pd.concat([X_train, y_train], axis = 1).to_parquet(data_train_path)
 pd.concat([X_test, y_test], axis = 1).to_parquet(data_test_path)
 ```
@@ -269,11 +278,16 @@ vous pouvez rendre accessible celle-ci à tous en lecture. Dans le jargon S3, ce
 Le modèle de commande à utiliser dans le terminal est le suivant:
 
 ```{.bash filename="terminal"}
-mc anonymous set download s3/$BUCKET_PERSONNEL/ensae-reproductibilite/data/raw/
-```
+BUCKET_PERSONNEL="nom_utilisateur_sspcloud" #<1>
 
-en modifiant `$BUCKET_PERSONNEL` et le chemin en son sein (`/ensae-reproductibilite/data/raw/`). Les URL de téléchargement seront de la forme
-`https://minio.lab.sspcloud.fr/$BUCKET_PERSONNEL/ensae-reproductibilite/data/raw/data.csv`
+mc anonymous set download s3/${BUCKET_PERSONNEL}/ensae-reproductibilite/data/raw/
+```
+1. Remplacer par le nom de votre _bucket_.
+
+
+
+Les URL de téléchargement seront de la forme
+`https://minio.lab.sspcloud.fr/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/data.csv`
 
 
 - Remplacer la définition de  `data_path` pour utiliser, par défaut, directement l'URL dans l'import. Modifier, si cela est pertinent, aussi votre fichier `.env`.
@@ -282,7 +296,7 @@ en modifiant `$BUCKET_PERSONNEL` et le chemin en son sein (`/ensae-reproductibil
 URL_RAW = "" #<1>
 data_path = os.environ.get("data_path", URL_RAW)
 ```
-1. Modifier avec `URL_RAW` un lien de la forme `"https://minio.lab.sspcloud.fr/$BUCKET_PERSONNEL/ensae-reproductibilite/data/raw/data.csv"`
+1. Modifier avec `URL_RAW` un lien de la forme `"https://minio.lab.sspcloud.fr/${BUCKET_PERSONNEL}/ensae-reproductibilite/data/raw/data.csv"` (ne laissez pas `${BUCKET_PERSONNEL}`, remplacez par la vraie valeur!).
 
 
 - Ajouter le dossier `data/` au `.gitignore` ainsi que les fichiers `*.parquet`
@@ -301,7 +315,7 @@ Pour vous aider, vous pouvez
 utiliser [`vulture`](https://pypi.org/project/vulture/) de manière itérative
 pour vous assister dans le nettoyage de votre code.
 
-```{.bash filename="terminal"}
+```{.python filename="terminal"}
 pip install vulture
 vulture .
 ```
