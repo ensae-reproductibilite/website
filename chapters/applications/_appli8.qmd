@@ -72,11 +72,21 @@ mc ls s3/${MY_BUCKET}/${CHEMIN}
 ::::
 
 
-On va maintenant lire directement une donnée stockée sur `S3`. Pour illustrer le fait que cela change peu notre code d'être sur un système cloud avec les librairies adaptées, on va lire directement un fichier `CSV` stocké sur le `SSPCloud`, sans passer par un fichier en local.
+On va maintenant lire directement une donnée stockée sur `S3`. Pour illustrer le fait que cela change peu notre code d'être sur un système _cloud_ avec les librairies adaptées, on va lire directement un fichier `CSV` stocké sur le `SSPCloud`, sans passer par un fichier en local[^fss3].
+
+[^fss3]: Alors oui, c'est vrai, `s3` se distingue d'un système de fichiers classiques comme on peut le lire dans certains _posts_ énervés sur la question (par exemple sur [Reddit](https://www.reddit.com/r/aws/comments/dplfoa/why_is_s3fs_such_a_bad_idea/?tl=fr)). Mais du point de vue de l'utilisateur `Python` plutôt que de l'architecte _cloud_, on va avoir assez peu de différence avec un système de fichier local. C'est pour le mieux, cela réduit la difficulté à rentrer dans cette technologie.
 
 :::: {.application}
 
-## Application 8b: ajout de données sur le système de stockage `S3`
+## Application 8b: importer une donnée depuis un système de stockage `S3`
+
+Pour illustrer la cohérence avec un système de fichier local, voici trois solutions pour lire le fichier que vous venez de mettre sur `S3`. Attention, il faut avoir des jetons de connexion à `S3` à jour. Si vous avez cette erreur
+
+> A client error (InvalidAccessKeyId) occurred when calling the ListBuckets operation: The AWS Access Key Id you provided does not exist in our records.
+
+c'est que vos identifiants de connexion ne sont plus à jour (pour des raisons de sécurité, ils sont régulièrement renouvelés). Dans ce cas, recréez un service `VSCode` avec le bouton proposé plus haut.
+
+Dans un _notebook_, copier-coller et mettre à jour ces deux variables qui seront utilisées dans différents exemples:
 
 ```{.python}
 MY_BUCKET = "mon_nom_utilisateur_sspcloud" #<1>
@@ -139,24 +149,83 @@ CREATE SECRET secret (
 )
 
 query_definition = f"SELECT * FROM read_csv('s3://{MY_BUCKET}/{CHEMIN}')"
-con.sql(query_definition)
+df = con.sql(query_definition)
+
+df
+```
+
+:::
+
+Copier un exemple de fichier `Parquet` mis à disposition dans votre bucket personnel,
+
+```python
+mc cp s3/projet-formation/bonnes-pratiques/data/REGION=11/part-0.parquet s3/$BUCKET_PERSONNEL/ensae-reproductibilite/data/example/rp.parquet
+```
+
+en remplaçant `$BUCKET_PERSONNEL` par la valeur voulue.
+
+Tester ces exemples de code
+
+::: {.panel-tabset}
+
+## Avec `Pandas` et `s3fs`
+
+```{.python}
+import s3fs
+import pandas as pd
+
+fs = s3fs.S3FileSystem(client_kwargs={"endpoint_url": "https://minio.lab.sspcloud.fr"})
+
+df = pd.read_csv(f"s3://{MY_BUCKET}/{CHEMIN}", filesystem=fs)
+
+df
+```
+
+## Avec `Pyarrow` et `s3fs`
+
+```{.python}
+from pyarrow import csv, fs
+import pyarrow.parquet as pq
+
+s3 = fs(endpoint_override ="https://minio.lab.sspcloud.fr")
+
+df = pq.read_table("{MY_BUCKET}/{CHEMIN}", filesystem=s3)
+
+df
+```
+
+## Avec `DuckDB`
+
+```{.python}
+import os
+import duckdb
+
+con = duckdb.connect(database=":memory:")
+
+con.execute(
+    f"""
+CREATE SECRET secret (
+    TYPE S3,
+    KEY_ID '{os.environ["AWS_ACCESS_KEY_ID"]}',
+    SECRET '{os.environ["AWS_SECRET_ACCESS_KEY"]}',
+    ENDPOINT 'minio.lab.sspcloud.fr',
+    SESSION_TOKEN '{os.environ["AWS_SESSION_TOKEN"]}',
+    REGION 'us-east-1',
+    URL_STYLE 'path',
+    SCOPE 's3://{MY_BUCKET}/'
+);
+"""
+)
+
+query_definition = f"SELECT * FROM read_parquet('s3://{MY_BUCKET}/{CHEMIN}')"
+df = con.sql(query_definition)
+
+df
 ```
 
 :::
 
 ::::
-
-
-
-```python
-import s3fs
-
-fs = s3fs.S3FileSystem(client_kwargs={"endpoint_url": "https://minio.lab.sspcloud.fr"})
-
-MY_BUCKET = "mon_nom_utilisateur_sspcloud"
-path_data = "data/python-ENSAE/dvf.parquet"
-pd.read_csv(f"s3://${MY_BUCKET}/${path_data}", filesystem=fs) #remplacer par read_parquet
-```
 
 
 

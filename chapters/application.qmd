@@ -453,6 +453,16 @@ Si vous voulez aller plus loin dans la découverte du format `Parquet`, vous pou
 :::
 
 
+::: {.callout-important collapse="true"}
+## Et si vous utilisez une infrastructure _cloud_ qui n'est pas le `SSPCloud` ? (une idée saugrenue mais sait-on jamais)
+
+Les exemples à venir peuvent très bien être répliqués sur n'importe quel _cloud provider_ qui propose une solution de type `S3`, qu'il s'agisse d'un _cloud provider_ privé (AWS, GCP, Azure, etc.) ou d'une réinstanciation _ad hoc_ du projet [`Onyxia`](https://www.onyxia.sh/), le logiciel derrière le `SSPCloud`.
+
+Pour un système de stockage `S3`, il suffit de changer les paramètres de connexion de `s3fs` (_endpoint_, _region_, etc.). Pour les stockages sur `GCP`, les codes sont presque équivalents, il suffit de remplacer la librairie [`s3fs`](https://pypi.org/project/s3fs/) par [`gcfs`](https://github.com/fsspec/gcsfs); ces deux librairies sont en fait des briques d'un standard plus général de gestion de systèmes de fichiers en `Python` [`ffspec`](https://filesystem-spec.readthedocs.io/en/latest/).
+
+:::
+
+
 Le chapitre sur la [structure des projets](/chapters/projects-architecture.qmd)
 développe l'idée qu'il est recommandé de converger vers un modèle
 où environnements d'exécution, de stockage du code et des données sont conceptuellement
@@ -497,7 +507,11 @@ Plus concrètement, nous allons adopter le pipeline suivant pour notre projet:
 
 Le scénario type est que nous avons une source brute, reçue sous forme de CSV, dont on ne peut changer le format. Il aurait été idéal d'avoir un format plus adapté au traitement de données pour ce fichier mais ce n'était pas de notre ressort. Notre chaine va aller chercher ce fichier, travailler dessus jusqu'à valoriser celui-ci sous la forme de notre matrice de confusion. Si on imagine que notre chaine prend un certain temps, il n'est pas inutile d'écrire des données intermédiaires. Pour faire cela, puisque nous avons la main, autant choisir un format adapté, à savoir le format `Parquet`.
 
+Cette application va se dérouler en trois temps:
 
+1. _Upload_ de notre source brute (CSV) sur S3
+2. Illustration de l'usage des librairies _cloud native_ pour lire celle-ci
+3. Partage public de cette donnée pour la rendre accessible de manière plus simple à nos futures applications.
 
 {{< include "./applications/_appli8.qmd" >}}
 
