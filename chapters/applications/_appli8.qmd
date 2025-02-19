@@ -156,7 +156,7 @@ df
 
 :::
 
-Copier un exemple de fichier `Parquet` mis à disposition dans votre bucket personnel,
+Pour illustrer le fonctionnement encore plus simple de S3 avec les fichiers `Parquet`, on propose de copier un `Parquet` mis à disposition dans un _bucket_ collectiv vers votre _bucket_ personnel:
 
 ```python
 mc cp s3/projet-formation/bonnes-pratiques/data/REGION=11/part-0.parquet s3/$BUCKET_PERSONNEL/ensae-reproductibilite/data/example/rp.parquet
@@ -164,7 +164,13 @@ mc cp s3/projet-formation/bonnes-pratiques/data/REGION=11/part-0.parquet s3/$BUC
 
 en remplaçant `$BUCKET_PERSONNEL` par la valeur voulue.
 
-Tester ces exemples de code
+Pour lire ceux-ci, tester les exemples de code suivants:
+
+```{.python}
+MY_BUCKET = "mon_nom_utilisateur_sspcloud" #<1>
+CHEMIN = "ensae-reproductibilite/data/example/rp.parquet"
+```
+1. Remplacer ici par la valeur appropriée
 
 ::: {.panel-tabset}
 
@@ -176,7 +182,7 @@ import pandas as pd
 
 fs = s3fs.S3FileSystem(client_kwargs={"endpoint_url": "https://minio.lab.sspcloud.fr"})
 
-df = pd.read_csv(f"s3://{MY_BUCKET}/{CHEMIN}", filesystem=fs)
+df = pd.read_parquet(f"s3://{MY_BUCKET}/{CHEMIN}", filesystem=fs)
 
 df
 ```
@@ -184,12 +190,12 @@ df
 ## Avec `Pyarrow` et `s3fs`
 
 ```{.python}
-from pyarrow import csv, fs
+import pyarrow as pa
 import pyarrow.parquet as pq
 
-s3 = fs(endpoint_override ="https://minio.lab.sspcloud.fr")
+s3 = pa.fs.S3FileSystem(endpoint_override ="https://minio.lab.sspcloud.fr")
 
-df = pq.read_table("{MY_BUCKET}/{CHEMIN}", filesystem=s3)
+df = pq.read_table(f"{MY_BUCKET}/{CHEMIN}", filesystem=s3)
 
 df
 ```
@@ -224,6 +230,8 @@ df
 ```
 
 :::
+
+Pour aller plus loin sur le format `Parquet`, notamment découvrir comment importer des données partitionnées, vous pouvez traduire en `Python` les exemples issus de la [formation aux bonnes pratiques avec `R`](https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/slides/complete.html#/application-3-2) de l'Insee.
 
 ::::
 
