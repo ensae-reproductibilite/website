@@ -311,13 +311,12 @@ dans le projet dans quelques temps.
 
 ```
 ├── .gitignore
+├── .env
 ├── data.csv
 ├── train.csv
 ├── test.csv
 ├── README.md
-├── config.yaml
-├── import_data.py
-├── build_features.py
+├── build_pipeline.py
 ├── train_evaluate.py
 ├── titanic.ipynb
 └── main.py
@@ -362,6 +361,7 @@ Structure recommandée
 ```
 application
 ├── main.py
+├── .env
 ├── README.md
 ├── data
 │   ├── raw
@@ -369,13 +369,9 @@ application
 │   └── derived
 │       ├── test.csv
 │       └── train.csv
-├── configuration
-│   └── config.yaml
 ├── notebooks
 │   └── titanic.ipynb
 └── src
-    ├── data
-    │   └── import_data.py
     ├── pipeline
     │   └── build_pipeline.py
     └── models
@@ -413,9 +409,12 @@ Quand votre projet passera en production, vous aurez un accès limité à celui-
 
 L'utilisation de `print` montre rapidement ses limites pour cela. Les informations enregistrées ne persistent pas après la session et sont quelques peu rudimentaires.
 
-Pour faire du _logging_, la librairie consacrée depuis longtemps en `Python` est... [`logging`](https://docs.python.org/3/library/logging.html). On va néanmoins ici proposer d'utiliser [`loguru`](https://github.com/Delgan/loguru) qui est un peu plus simple à configurer (l'instanciation du _logger_ est plus aisée) et plus agréable grâce à ses messages en couleurs qui permettent de visuellement trier les informations.
+Pour faire du _logging_, la librairie consacrée depuis longtemps en `Python` est... [`logging`](https://docs.python.org/3/library/logging.html). Il existe aussi une librairie nommée [`loguru`](https://github.com/Delgan/loguru) qui est un peu plus simple à configurer (l'instanciation du _logger_ est plus aisée) et plus agréable grâce à ses messages en couleurs qui permettent de visuellement trier les informations.
 
 ![](https://raw.githubusercontent.com/Delgan/loguru/master/docs/_static/img/demo.gif)
+
+L'exercice suivant peut être fait avec les deux librairies, cela ne change pas grand chose. Les prochaines applications repartiront de la version utilisant la librairie standard `logging`.
+
 
 {{< include "./applications/_appli7b.qmd" >}}
 
