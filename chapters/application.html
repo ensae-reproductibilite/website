@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.40">
+<meta name="generator" content="quarto-1.6.42">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -70,10 +70,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-57f86f76a34a3b5fcd4725c815234fdf.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-bd706bf7cc79ec682822fd2bf903aab3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <link href="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.css" rel="stylesheet">
 <link href="../site_libs/quarto-contrib/fontawesome6-1.2.0/all.min.css" rel="stylesheet">
 <link href="../site_libs/quarto-contrib/fontawesome6-1.2.0/latex-fontsize.css" rel="stylesheet">
@@ -1202,26 +1202,11 @@ Application 4: adoption des standards de programmation fonctionnelle
 <div class="callout-body-container callout-body">
 <p>Cette application peut être chronophage, vous pouvez aller plus ou moins loin dans la fonctionalisation de votre script en fonction du temps dont vous disposez.</p>
 <ul>
-<li>Créer une fonction générique pour réduire la redondance de code dans l’étape d’exploration des données où on utilise <code>split</code> ;</li>
-<li>Créer une fonction qui réalise le <em>split train/test</em> en fonction d’un paramètre représentant la proportion de l’échantillon de test et d’arguments optionnels sur les chemins d’écriture des deux échantillons en csv.</li>
 <li>Créer une fonction qui intègre les différentes étapes du <em>pipeline</em> (preprocessing et définition du modèle). Cette fonction prend en paramètre le nombre d’arbres (argument obligatoire) et des arguments optionnels supplémentaires (les colonnes sur lesquelles s’appliquent les différentes étapes du <em>pipeline</em>, <code>max_depth</code> et <code>max_features</code>).</li>
 <li>Créer une fonction d’évaluation renvoyant le score obtenu et la matrice de confusion, à l’issue d’une estimation (mais cette estimation est faite en amont de la fonction, pas au sein de celle-ci)</li>
 <li>Déplacer toutes les fonctions ensemble, en début de script. Si besoin, ajouter des paramètres à votre fichier d’environnement pour créer de nouvelles variables comme les chemins des données.</li>
+<li>En profiter pour supprimer le code zombie qu’on a gardé jusqu’à présent mais qui ne correspond pas vraiment à des opérations utiles à notre chaine de production</li>
 </ul>
-</div>
-</div>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Important
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Le fait d’appliquer des fonctions a déjà amélioré la fiabilité du processus en réduisant le nombre d’erreurs de copier-coller. Néanmoins, pour vraiment fiabiliser le processus, il faudrait utiliser un <em>pipeline</em> de transformations de données.</p>
-<p>Ceci n’est pas encore au programme du cours mais le sera dans une prochaine version.</p>
 </div>
 </div>
   <div class="callout callout-style-default callout-caution callout-titled">
@@ -1265,7 +1250,7 @@ rm -f update.sh</code><button title="Copy to Clipboard" class="code-copy-button"
     </div>
   </div>
   
-<p>Cela ne se remarque pas encore vraiment car nous avons de nombreuses définitions de fonctions mais notre chaine de production est beaucoup plus concise (le script fait environ 300 lignes dont 250 de définitions de fonctions génériques). Cette auto-discipline facilitera grandement les étapes ultérieures. Cela aurait été néanmoins beaucoup moins coûteux en temps d’adopter ces bons gestes de manière plus précoce.</p>
+<p>Cela ne se remarque pas encore vraiment car nous avons de nombreuses définitions de fonctions mais notre chaine de production est beaucoup plus concise (le script fait environ 150 lignes dont une centaine issues de définitions de fonctions génériques). Cette auto-discipline facilitera grandement les étapes ultérieures. Cela aurait été néanmoins beaucoup moins coûteux en temps d’adopter ces bons gestes de manière plus précoce.</p>
 </section>
 </section>
 <section id="partie2" class="level1">
@@ -1301,9 +1286,8 @@ Application 5: modularisation
 <ul>
 <li>Déplacer les fonctions dans une série de fichiers dédiés:
 <ul>
-<li><code>import_data.py</code>: fonctions d’import et d’exploration de données</li>
-<li><code>build_features.py</code>: fonctions regroupant la définition des échantillons d’apprentissage et de test ainsi que le <em>pipeline</em></li>
-<li><code>train_evaluate.py</code>: fonctions d’évaluation du modèle</li>
+<li><code>build_pipeline.py</code>: script avec la définition du <em>pipeline</em></li>
+<li><code>train_evaluate.py</code>: script avec les fonctions d’évaluation du projet</li>
 </ul></li>
 <li>Spécifier les dépendances (i.e.&nbsp;les packages à importer) dans les modules pour que ceux-ci puissent s’exécuter indépendamment ;</li>
 <li>Renommer <code>titanic.py</code> en <code>main.py</code> pour suivre la convention de nommage des projets <code>Python</code> ;</li>
@@ -1316,6 +1300,9 @@ Application 5: modularisation
 </div>
 <div class="sourceCode" id="cb13" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> python main.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<ul>
+<li>Optionnel: profitez en pour mettre un petit coup de <em>formatter</em> à votre projet, si vous ne l’avez pas fait régulièrement.</li>
+</ul>
 </div>
 </div>
   <div class="callout callout-style-default callout-caution callout-titled">
@@ -1632,7 +1619,7 @@ rm -f update.sh</code><button title="Copy to Clipboard" class="code-copy-button"
 <p>Enfin, il vous suffira d’ouvrir un terminal et faire <code>pip install -r requirements.txt &amp;&amp; python main.py</code> pour pouvoir démarrer l’application.</p>
 <p>L’étape précédente nous a permis d’isoler la configuration. Nous avons conceptuellement isolé les données du code lors des applications précédentes. Cependant, nous n’avons pas été au bout du chemin car le stockage des données reste conjoint à celui du code. Nous allons maintenant dissocier ces deux éléments.</p>
 <div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1641,14 +1628,14 @@ Pour en savoir plus sur le système de stockage <code>S3</code>
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-17" class="callout-17-contents callout-collapse collapse">
+<div id="callout-16" class="callout-16-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Pour mettre en oeuvre cette étape, il peut être utile de comprendre un peu comme fonctionne le SSP Cloud. Vous devrez suivre la <a href="https://inseefrlab.github.io/docs.sspcloud.fr/docs/fr/storage.html">documentation du SSP Cloud</a> pour la réaliser. Une aide-mémoire est également disponible dans le cours de 2e année de l’ENSAE <a href="https://linogaliana-teaching.netlify.app/reads3/#">Python pour la <em>data science</em></a>.</p>
 </div>
 </div>
 </div>
 <div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1657,7 +1644,7 @@ Pour en savoir plus sur le format <code>Parquet</code>
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-18" class="callout-18-contents callout-collapse collapse">
+<div id="callout-17" class="callout-17-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>L’objectif de cette application est de montrer comment utiliser le format <code>Parquet</code> dans une chaîne production ; un objectif somme toute modeste.</p>
 <p>Si vous voulez aller plus loin dans la découverte du format <code>Parquet</code>, vous pouvez consulter <a href="https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/slides/complete.html#/application-3-2">cette ressource <code>R</code></a> très similaire à ce cours (oui elle est faite par les mêmes auteurs…) et essayer de faire les exercices avec votre librairie <code>Python</code> de prédilection (<code>PyArrow</code> ou <code>DuckDB</code>)</p>
@@ -1665,7 +1652,7 @@ Pour en savoir plus sur le format <code>Parquet</code>
 </div>
 </div>
 <div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -1674,7 +1661,7 @@ Et si vous utilisez une infrastructure <em>cloud</em> qui n’est pas le <code>S
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-19" class="callout-19-contents callout-collapse collapse">
+<div id="callout-18" class="callout-18-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Les exemples à venir peuvent très bien être répliqués sur n’importe quel <em>cloud provider</em> qui propose une solution de type <code>S3</code>, qu’il s’agisse d’un <em>cloud provider</em> privé (AWS, GCP, Azure, etc.) ou d’une réinstanciation <em>ad hoc</em> du projet <a href="https://www.onyxia.sh/"><code>Onyxia</code></a>, le logiciel derrière le <code>SSPCloud</code>.</p>
 <p>Pour un système de stockage <code>S3</code>, il suffit de changer les paramètres de connexion de <code>s3fs</code> (<em>endpoint</em>, <em>region</em>, etc.). Pour les stockages sur <code>GCP</code>, les codes sont presque équivalents, il suffit de remplacer la librairie <a href="https://pypi.org/project/s3fs/"><code>s3fs</code></a> par <a href="https://github.com/fsspec/gcsfs"><code>gcfs</code></a>; ces deux librairies sont en fait des briques d’un standard plus général de gestion de systèmes de fichiers en <code>Python</code> <a href="https://filesystem-spec.readthedocs.io/en/latest/"><code>ffspec</code></a>.</p>
@@ -2268,7 +2255,7 @@ Application 10: packagisation <em>(optionnel)</em>
 <li>Renommer le dossier <code>titanicml</code> pour respecter la nouvelle arborescence ;</li>
 <li>Créer un fichier <code>pyproject.toml</code> sur cette base ;</li>
 </ul>
-<div id="9d4f7306" class="cell" data-execution_count="1">
+<div id="091993ef" class="cell" data-execution_count="1">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>pyproject.toml</strong></pre>
@@ -2296,7 +2283,7 @@ Application 10: packagisation <em>(optionnel)</em>
 <li>Créer le dossier <code>docs</code> et mettre les fichiers indiqués dedans</li>
 <li>Dans <code>titanicml/</code>, créer un fichier <code>__init__.py</code><a href="#fn10" class="footnote-ref" id="fnref10" role="doc-noteref"><sup>10</sup></a></li>
 </ul>
-<div id="3250e8ed" class="cell" data-execution_count="2">
+<div id="b85f6cc0" class="cell" data-execution_count="2">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>__init__.py</strong></pre>
@@ -3425,7 +3412,7 @@ rm -f update.sh</code><button title="Copy to Clipboard" class="code-copy-button"
 <li>Un <a href="https://ensae-reproductibilite.github.io/application/">site web statique</a> exploitant cette API pour exposer les prédictions à une audience moins technique.</li>
 </ul>
 <div class="callout callout-style-default callout-warning callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-40-contents" aria-controls="callout-40" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-39-contents" aria-controls="callout-39" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -3434,7 +3421,7 @@ Site statique vs application réactive
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-40" class="callout-40-contents callout-collapse collapse">
+<div id="callout-39" class="callout-39-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>La solution que nous allons proposer pour les sites statiques, <code>Quarto</code> associé à <code>Github Pages</code>, peut être utilisée dans le cadre des parcours <em>“rapport reproductible”</em> ou <em>“dashboard / application interactive”</em>.</p>
 <p>Pour ce dernier parcours, d’autres approches techniques sont néanmoins possibles, comme <code>Streamlit</code>. Celles-ci sont plus exigeantes sur le plan technique puisqu’elles nécessitent de mettre en production sur des serveurs conteuneurisés (comme la mise en production de l’API) là où le site statique ne nécessite qu’un serveur web, mis à disposition gratuitement par <code>Github</code>.</p>
@@ -3794,7 +3781,7 @@ Application 18b: Mettre à disposition l’API (déploiement manuel)
 <summary>
 Fichier <code>deployment/deployment.yaml</code>
 </summary>
-<div id="ea2a20fe" class="cell" data-source-line-numbers="19" data-execution_count="3">
+<div id="ea7cd88e" class="cell" data-source-line-numbers="19" data-execution_count="3">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>deployment/deployment.yaml</strong></pre>
@@ -3862,7 +3849,7 @@ Fichier <code>deployment/service.yaml</code>
 <summary>
 Fichier <code>deployment/ingress.yaml</code>
 </summary>
-<div id="04372efb" class="cell" data-source-line-numbers="16-19" data-execution_count="4">
+<div id="c4ddf5f8" class="cell" data-source-line-numbers="16-19" data-execution_count="4">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>deployment/ingress.yaml</strong></pre>
@@ -3958,7 +3945,7 @@ rm -f update.sh</code><button title="Copy to Clipboard" class="code-copy-button"
   </div>
   
 <div class="callout callout-style-default callout-note callout-titled" title="Gérer le CORS">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-44-contents" aria-controls="callout-44" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-43-contents" aria-controls="callout-43" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -3967,7 +3954,7 @@ Gérer le CORS
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-44" class="callout-44-contents callout-collapse collapse">
+<div id="callout-43" class="callout-43-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Notre API est accessible sans problème depuis <code>Python</code> ou notre navigateur.</p>
 <p>En revanche, si on désire utiliser <code>JavaScript</code> pour créer une application interactive il est indispensable de mettre les lignes un peu obscure sur le CORS dans le fichier <code>ingress.yaml</code>.</p>
@@ -3995,7 +3982,7 @@ Clarification sur la branche de travail et les <em>tags</em>
 <div class="callout-body-container callout-body">
 <p>A partir de maintenant, il est nécessaire de clarifier la branche principale sur laquelle nous travaillons. De manière traditionnelle, on utilise la branche <code>main</code>. Si vous avez changé de branche, vous pouvez continuer 1/ continuer mais en tenir compte dans les exemples ultérieurs ou 2/ fusionner celle-ci à <code>main</code>.</p>
 <p>Si vous avez utilisé un <code>tag</code> pour sauter une ou plusieurs étapes, il va être nécessaire de se placer sur une branche car vous êtes en <em>head detached</em>. Pour cela, après avoir <em>committé</em> les fichiers que vous désirez garder</p>
-<div id="6b120249" class="cell" data-file="terminal" data-execution_count="5">
+<div id="bb9c278f" class="cell" data-file="terminal" data-execution_count="5">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
@@ -4069,7 +4056,7 @@ Application 19a: Automatiser la mise à disposition de l’API (déploiement con
 <li>Ajouter un dossier <code>deployment</code> à votre dépôt <code>GitOps</code>, dans lequel on mettra les trois fichiers de déploiement qui permettent de déployer notre application sur <code>Kubernetes</code> (<code>deployment.yaml</code>, <code>service.yaml</code>, <code>ingress.yaml</code>).</li>
 <li>A la racine de votre dépôt <code>GitOps</code>, créez un fichier <code>application.yml</code> avec le contenu suivant, en prenant bien soin de modifier les lignes surlignées avec les informations pertinentes :</li>
 </ul>
-<div id="8a38daf5" class="cell" data-file="application.yaml" data-source-line-numbers="8-9,13" data-execution_count="6">
+<div id="0c5ce8b6" class="cell" data-file="application.yaml" data-source-line-numbers="8-9,13" data-execution_count="6">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>application.yaml</strong></pre>
@@ -4273,7 +4260,7 @@ Application 19b : Mettre à jour la version en production
 <summary>
 <p>Fichier <code>deployment/deployment.yaml</code></p>
 </summary>
-<div id="a0b19537" class="cell" data-file="deployment/deployment.yaml" data-source-line-numbers="19" data-execution_count="7">
+<div id="9219c555" class="cell" data-file="deployment/deployment.yaml" data-source-line-numbers="19" data-execution_count="7">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>deployment/deployment.yaml</strong></pre>
@@ -4364,7 +4351,7 @@ rm -f update.sh</code><button title="Copy to Clipboard" class="code-copy-button"
 <section id="etape-4-construire-un-site-web" class="level2">
 <h2 class="anchored" data-anchor-id="etape-4-construire-un-site-web">Etape 4: construire un site web</h2>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-49-contents" aria-controls="callout-49" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-48-contents" aria-controls="callout-48" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -4373,7 +4360,7 @@ Si vous prenez ce projet fil rouge en cours de route
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-49" class="callout-49-contents callout-collapse collapse">
+<div id="callout-48" class="callout-48-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -4484,7 +4471,7 @@ rm -f update.sh</code><button title="Copy to Clipboard" class="code-copy-button"
 <section id="partie-6-adopter-une-approche-mlops-pour-améliorer-notre-modèle" class="level1">
 <h1>Partie 6: adopter une approche MLOps pour améliorer notre modèle</h1>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-51-contents" aria-controls="callout-51" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-50-contents" aria-controls="callout-50" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -4493,7 +4480,7 @@ Si vous prenez ce projet fil rouge en cours de route
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-51" class="callout-51-contents callout-collapse collapse">
+<div id="callout-50" class="callout-50-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -4690,7 +4677,7 @@ rm -f update.sh</code><button title="Copy to Clipboard" class="code-copy-button"
 <section id="garder-une-trace-des-entraînements-de-notre-modèle-grâce-au-register-de-mlflow" class="level2">
 <h2 class="anchored" data-anchor-id="garder-une-trace-des-entraînements-de-notre-modèle-grâce-au-register-de-mlflow">Garder une trace des entraînements de notre modèle grâce au <em>register</em> de <code>MLFlow</code></h2>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-53-contents" aria-controls="callout-53" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-52-contents" aria-controls="callout-52" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -4699,7 +4686,7 @@ Si vous prenez ce projet fil rouge en cours de route
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-53" class="callout-53-contents callout-collapse collapse">
+<div id="callout-52" class="callout-52-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -4998,7 +4985,7 @@ Application 23 : passer en production un modèle avec MLFlow
 <li><p>Publier un tag <code>v0.0.3</code> pour le code applicatif</p></li>
 <li><p>Mettre à jour notre manifeste dans le dépôt <code>GitOps</code>. En premier lieu, il faut changer la version de référence pour utiliser le tag <code>v0.0.3</code>. De plus, il faut déclarer la variable d’environnement <code>MLFLOW_TRACKING_URI</code> qui indique à <code>Python</code> l’entrepôt de modèles où aller chercher celui en production. La bonne pratique est de définir ceci hors du code, dans un fichier de configuration donc, ce qui est l’objet de notre manifeste <code>deployment.yaml</code>. On peut donc changer de cette manière ce fichier:</p></li>
 </ol>
-<div id="35b7c060" class="cell" data-execution_count="8">
+<div id="f2b1ba73" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="annotated-cell-144" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-144-1"><a href="#annotated-cell-144-1" aria-hidden="true" tabindex="-1"></a>apiVersion: apps<span class="op">/</span>v1</span>
 <span id="annotated-cell-144-2"><a href="#annotated-cell-144-2" aria-hidden="true" tabindex="-1"></a>kind: Deployment</span>
 <span id="annotated-cell-144-3"><a href="#annotated-cell-144-3" aria-hidden="true" tabindex="-1"></a>metadata:</span>
@@ -5044,7 +5031,7 @@ Application 23 : passer en production un modèle avec MLFlow
 </div>
 <p>A ce stade, nous avons amélioré la fiabilité de notre application car nous utilisons le meilleur modèle. Néanmoins, nos entraînements sont encore manuels. Là encore il y a des gains à avoir car cela paraît pénible à la longue de devoir systématiquement relancer des entraînements manuellement pour tester des variations de tel ou tel paramètre. Heureusement, nous allons pouvoir automatiser ceci également.</p>
 <div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-56-contents" aria-controls="callout-56" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-55-contents" aria-controls="callout-55" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -5053,7 +5040,7 @@ Checkpoint
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-56" class="callout-56-contents callout-collapse collapse">
+<div id="callout-55" class="callout-55-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -5085,7 +5072,7 @@ Checkpoint
 <li>Lancer un service Argo Workflows</li>
 <li>Dans le dépôt GitOps, créer un fichier <code>argo-workflow/manifest.yaml</code></li>
 </ol>
-<div id="b1c49309" class="cell" data-execution_count="9">
+<div id="f0e27820" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="annotated-cell-11" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-11-1"><a href="#annotated-cell-11-1" aria-hidden="true" tabindex="-1"></a>apiVersion: argoproj.io<span class="op">/</span>v1alpha1</span>
 <span id="annotated-cell-11-2"><a href="#annotated-cell-11-2" aria-hidden="true" tabindex="-1"></a>kind: Workflow</span>
 <span id="annotated-cell-11-3"><a href="#annotated-cell-11-3" aria-hidden="true" tabindex="-1"></a>metadata:</span>
