@@ -143,7 +143,7 @@ pq.write_table(pa.Table.from_pandas(df_filtered), "data/RPindividus_24.parquet")
 
 Ces exercices vont utiliser des décorateurs `Python`, c'est-à-dire des fonctions qui surchargent le comportement d'une autre fonction. En l'occurrence, nous allons créer une fonction exécutant une chaine d'opérations et la surcharger avec une autre chargée de contrôler l'usage mémoire et le temps d'exécution.
 
-:::{.application collapse="false" icon=false}
+:::{.application collapse="false"}
 # Partie 1 : Du `CSV` au `Parquet`
 
 * Créer un notebook `benchmark_parquet.ipynb` afin de réaliser les différentes comparaisons de performance de l'application
@@ -158,26 +158,35 @@ Ces exercices vont utiliser des décorateurs `Python`, c'est-à-dire des fonctio
   from functools import wraps
   import warnings
 
-  # Decorator to measure execution time and memory usage
-  def measure_performance(func, return_output=False):
-      @wraps(func)
-      def wrapper(return_output=False, *args, **kwargs):
-          warnings.filterwarnings("ignore")
-          start_time = time.time()
-          mem_usage = memory_usage((func, args, kwargs), interval=0.1)
-          end_time = time.time()
-          warnings.filterwarnings("always")
+    def convert_size(size_bytes):
+    if size_bytes == 0:
+        return "0B"
+    size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+    i = int(math.floor(math.log(size_bytes, 1024)))
+    p = math.pow(1024, i)
+    s = round(size_bytes / p, 2)
+    return "%s %s" % (s, size_name[i])
 
-          exec_time = end_time - start_time
-          peak_mem = max(mem_usage)  # Peak memory usage
-          exec_time_formatted = f"\033[92m{exec_time:.4f} sec\033[0m"
-          peak_mem_formatted = f"\033[92m{peak_mem:.2f} MB\033[0m"
+    # Decorator to measure execution time and memory usage
+    def measure_performance(func, return_output=False):
+        @wraps(func)
+        def wrapper(return_output=False, *args, **kwargs):
+            warnings.filterwarnings("ignore")
+            start_time = time.time()
+            mem_usage = memory_usage((func, args, kwargs), interval=0.1)
+            end_time = time.time()
+            warnings.filterwarnings("always")
 
-          print(f"{func.__name__} - Execution Time: {exec_time_formatted} | Peak Memory Usage: {peak_mem_formatted}")
-          if return_output is True:
-              return func(*args, **kwargs)
+            exec_time = end_time - start_time
+            peak_mem = max(mem_usage)  # Peak memory usage
+            exec_time_formatted = f"\033[92m{exec_time:.4f} sec\033[0m"
+            peak_mem_formatted = f"\033[92m{convert_size(1024*peak_mem)}\033[0m"
 
-      return wrapper
+            print(f"{func.__name__} - Execution Time: {exec_time_formatted} | Peak Memory Usage: {peak_mem_formatted}")
+            if return_output is True:
+                return func(*args, **kwargs)
+
+        return wrapper
   ```
 
 * La requête suivante permet de calculer les données pour construire une pyramide des âges sur un département donné, à partir du fichier `CSV` du recensement. La tester dans votre _notebook_:
@@ -227,11 +236,21 @@ Ces exercices vont utiliser des décorateurs `Python`, c'est-à-dire des fonctio
 #| eval: false
 #| code-fold: true
 #| code-summary: "Code complet de l'application"
+import math
 import pandas as pd
 import time
 from memory_profiler import memory_usage
 from functools import wraps
 import warnings
+
+def convert_size(size_bytes):
+   if size_bytes == 0:
+       return "0B"
+   size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+   i = int(math.floor(math.log(size_bytes, 1024)))
+   p = math.pow(1024, i)
+   s = round(size_bytes / p, 2)
+   return "%s %s" % (s, size_name[i])
 
 # Decorator to measure execution time and memory usage
 def measure_performance(func, return_output=False):
@@ -246,7 +265,7 @@ def measure_performance(func, return_output=False):
         exec_time = end_time - start_time
         peak_mem = max(mem_usage)  # Peak memory usage
         exec_time_formatted = f"\033[92m{exec_time:.4f} sec\033[0m"
-        peak_mem_formatted = f"\033[92m{peak_mem:.2f} MB\033[0m"
+        peak_mem_formatted = f"\033[92m{convert_size(1024*peak_mem)}\033[0m"
 
         print(f"{func.__name__} - Execution Time: {exec_time_formatted} | Peak Memory Usage: {peak_mem_formatted}")
         if return_output is True:
@@ -283,7 +302,74 @@ process_parquet()
 
 _❓️ Quelle semble être la limite de la fonction `read_parquet` ?_
 
-On gagne déjà un temps conséquent en lecture mais on ne bénéficie pas vraiment de l'optimisation permise par `Parquet` car on transforme les données directement en `DataFrame` `Pandas`. On n'utilise donc pas l'une des fonctionnalités principales du format `Parquet` qui explique ses excellentes performances: le _predicatep pushdown_.
+On gagne déjà un temps conséquent en lecture mais on ne bénéficie pas vraiment de l'optimisation permise par `Parquet` car on transforme les données directement après la lecture en `DataFrame` `Pandas`. On n'utilise donc pas l'une des fonctionnalités principales du format `Parquet`, qui explique ses excellentes performances: le _predicate pushdown_ qui consiste à optimiser notre traitement pour faire remonter, le plus tôt possible, les filtres sur les colonnes pour ne garder que celles vraiment utilisées dans le traitement.
+
+
+
+::: {.application collapse="false"}
+## Partie 2 : Exploiter la *lazy evaluation* et les optimisations d'`Arrow` ou de `DuckDB`
+
+La partie précédente a montré un **gain de temps considérable** du passage de `CSV` à `Parquet`. Néanmoins, l'**utilisation mémoire était encore très élevée** alors qu'on utilise de fait qu'une infime partie du fichier.
+
+Dans cette partie, on va voir comment utiliser la ***lazy evaluation*** et les **optimisations du plan d'exécution** effectuées par `Arrow` pour exploiter pleinement la puissance du format `Parquet`.
+
+* Ouvrir le fichier  `data/RPindividus_24.parquet` avec [pyarrow.dataset](https://arrow.apache.org/docs/python/dataset.html). Regarder la classe de l'objet obtenu.
+* Tester le code ci-dessous pour lire un échantillon de données:
+
+```{python}
+#| eval: false
+dataset.scanner()
+    .head(5)
+    .to_pandas()
+```
+
+Comprenez-vous la différence avec précédemment ? Observez dans la documentation la méthode `to_table` : comprenez-vous son principe ?
+
+* Construire une fonction `summarize_parquet_arrow` (resp. `summarize_parquet_duckdb`) qui importe cette fois les données avec la fonction [pyarrow.dataset](https://arrow.apache.org/docs/python/dataset.html) (resp. avec `DuckDB`) et effectue l'agrégation voulue
+* Comparer les performances (temps d'exécution et allocation mémoire) des trois méthodes (`Parquet` lu et processé avec `Pandas`, `Arrow` et `DuckDB`) grâce à notre fonction.
+
+```{python}
+#| eval: false
+#| code-fold: true
+#| code-summary: "Code complet de l'application"
+
+import duckdb
+import pyarrow.dataset as ds
+
+@measure_performance
+def summarize_parquet_duckdb(*args, **kwargs):
+    con = duckdb.connect(":memory:")
+    query = """
+    FROM read_parquet('data/RPindividus_24.parquet')
+    SELECT SUM(IPONDI),AGED, DEPT AS n_indiv
+    GROUP BY AGED, DEPT
+    """
+
+    return (con.sql(query).to_df())
+
+@measure_performance
+def summarize_parquet_arrow(*args, **kwargs):
+
+    dataset = ds.dataset("data/RPindividus_24.parquet", format="parquet")
+    table = dataset.to_table()
+    grouped_table = (
+        table
+        .group_by(["AGED", "DEPT"])
+        .aggregate([("IPONDI", "sum")])
+        .rename_columns(["AGED", "DEPT", "n_indiv"])
+        .to_pandas()
+    )
+
+    return (
+        grouped_table
+    )
+
+process_parquet()
+summarize_parquet_duckdb()
+summarize_parquet_arrow()
+```
+
+:::
 
 
 
