@@ -109,4 +109,182 @@ La meilleure manière de se convaincre de l'apport du format `Parquet` consiste 
 
 # Applications
 
-A venir
+Tout au long de cette application, nous allons voir comment utiliser le format `Parquet` de la manière la plus efficiente possible. Afin de comparer les différents formats et méthodes d'utilisation, nous allons **comparer le temps d'exécution et l'usage mémoire d'une requête standard**. Commençons déjà, sur un premier exemple avec une donnée légère, pour comparer les formats `CSV` et `Parquet`.
+
+Pour cela, nous allons avoir besoin de récupérer des données au format `Parquet`. Nous proposons d'utiliser les données détaillées et anonymisées du recensement de la population française: environ 20 millions de lignes pour 80 colonnes. Le code pour récupérer celles-ci est donné ci-dessous
+
+```{.python}
+#| code-fold: true
+#| code-summary: "Code pour récupérer les données"
+import pyarrow.parquet as pq
+import pyarrow as pa
+import os
+
+# Définir le fichier de destination
+filename_table_individu = "data/RPindividus.parquet"
+
+# Copier le fichier depuis le stockage distant (remplacer par une méthode adaptée si nécessaire)
+os.system("mc cp s3/projet-formation/bonnes-pratiques/data/RPindividus.parquet data/RPindividus.parquet") #<1>
+
+# Charger le fichier Parquet
+table = pq.read_table(filename_table_individu)
+df = table.to_pandas()
+
+# Filtrer les données pour REGION == "24"
+df_filtered = df.loc[df["REGION"] == "24"]
+
+# Sauvegarder en CSV
+df_filtered.to_csv("data/RPindividus_24.csv", index=False)
+
+# Sauvegarder en Parquet
+pq.write_table(pa.Table.from_pandas(df_filtered), "data/RPindividus_24.parquet")
+```
+1. Cette ligne de code utilise l'utilitaire Minio Client disponible sur le `SSPCloud`. Si vous n'êtes pas sur cette infrastructure, vous devrez remplacer cette ligne par une ligne téléchargeant cette donnée à partir de l'URL [https://projet-formation.minio.lab.sspcloud.fr/bonnes-pratiques/data/RPindividus.parquet](https://projet-formation.minio.lab.sspcloud.fr/bonnes-pratiques/data/RPindividus.parquet). Vous pouvez le faire en pur `Python` avec `requests` ou, si vous avez `curl` installé, par l'intermédiaire de `Python` avec la commande `os.system("curl -o data/RPindividus.parquet https://projet-formation/bonnes-pratiques/data/RPindividus.parquet")`.
+
+Ces exercices vont utiliser des décorateurs `Python`, c'est-à-dire des fonctions qui surchargent le comportement d'une autre fonction. En l'occurrence, nous allons créer une fonction exécutant une chaine d'opérations et la surcharger avec une autre chargée de contrôler l'usage mémoire et le temps d'exécution.
+
+:::{.application collapse="false" icon=false}
+# Partie 1 : Du `CSV` au `Parquet`
+
+* Créer un notebook `benchmark_parquet.ipynb` afin de réaliser les différentes comparaisons de performance de l'application
+* Créons notre décorateur, en charge de _benchmarker_ le code `Python`:
+
+  ```{python}
+  #| eval: false
+  #| code-fold: true
+  #| code-summary: "Dérouler pour retrouver le code du décorateur permettant de mesurer la performance"
+  import time
+  from memory_profiler import memory_usage
+  from functools import wraps
+  import warnings
+
+  # Decorator to measure execution time and memory usage
+  def measure_performance(func, return_output=False):
+      @wraps(func)
+      def wrapper(return_output=False, *args, **kwargs):
+          warnings.filterwarnings("ignore")
+          start_time = time.time()
+          mem_usage = memory_usage((func, args, kwargs), interval=0.1)
+          end_time = time.time()
+          warnings.filterwarnings("always")
+
+          exec_time = end_time - start_time
+          peak_mem = max(mem_usage)  # Peak memory usage
+          exec_time_formatted = f"\033[92m{exec_time:.4f} sec\033[0m"
+          peak_mem_formatted = f"\033[92m{peak_mem:.2f} MB\033[0m"
+
+          print(f"{func.__name__} - Execution Time: {exec_time_formatted} | Peak Memory Usage: {peak_mem_formatted}")
+          if return_output is True:
+              return func(*args, **kwargs)
+
+      return wrapper
+  ```
+
+* La requête suivante permet de calculer les données pour construire une pyramide des âges sur un département donné, à partir du fichier `CSV` du recensement. La tester dans votre _notebook_:
+
+  ```{python}
+  #| eval: false
+  #| code-fold: true
+  #| code-summary: "Dérouler pour récupérer le code de lecture du CSV"
+  import pandas as pd
+
+  # Charger le fichier CSV
+  df = pd.read_csv("data/RPindividus_24.csv")
+  res = (
+      df.loc[df["DEPT"] == 36]
+      .groupby(["AGED", "DEPT"])["IPONDI"]
+      .sum().reset_index()
+      .rename(columns={"IPONDI": "n_indiv"})
+  )
+  ```
+
+* Reprendre ce code pour encapsuler ces opérations dans une fonction `process_csv_appli1` :
+
+  ```{python}
+  #| eval: false
+  #| code-fold: true
+  #| code-summary: "Dérouler pour récupérer le code pour mesurer les performances de la lecture en CSV"
+
+  # Apply the decorator to functions
+  @measure_performance
+  def process_csv_appli1(*args, **kwargs):
+      df = pd.read_csv("data/RPindividus_24.csv")
+      return (
+          df.loc[df["DEPT"] == 36]
+          .groupby(["AGED", "DEPT"])["IPONDI"]
+          .sum().reset_index()
+          .rename(columns={"IPONDI": "n_indiv"})
+      )
+  ```
+
+* Exécuter `process_csv_appli1()` et `process_csv_appli1(return_output=True)`
+
+* Sur le même modèle, construire une fonction `process_parquet_appli1` basée cette fois sur le fichier `data/RPindividus_24.parquet` chargé avec la fonction [read_parquet](https://pandas.pydata.org/docs/reference/api/pandas.read_parquet.html) de `Pandas`
+* Comparer les performances (temps d'exécution et allocation mémoire) de ces deux méthodes grâce à la fonction.
+
+
+```{python}
+#| eval: false
+#| code-fold: true
+#| code-summary: "Code complet de l'application"
+import pandas as pd
+import time
+from memory_profiler import memory_usage
+from functools import wraps
+import warnings
+
+# Decorator to measure execution time and memory usage
+def measure_performance(func, return_output=False):
+    @wraps(func)
+    def wrapper(return_output=False, *args, **kwargs):
+        warnings.filterwarnings("ignore")
+        start_time = time.time()
+        mem_usage = memory_usage((func, args, kwargs), interval=0.1)
+        end_time = time.time()
+        warnings.filterwarnings("always")
+
+        exec_time = end_time - start_time
+        peak_mem = max(mem_usage)  # Peak memory usage
+        exec_time_formatted = f"\033[92m{exec_time:.4f} sec\033[0m"
+        peak_mem_formatted = f"\033[92m{peak_mem:.2f} MB\033[0m"
+
+        print(f"{func.__name__} - Execution Time: {exec_time_formatted} | Peak Memory Usage: {peak_mem_formatted}")
+        if return_output is True:
+            return func(*args, **kwargs)
+
+    return wrapper
+
+# Apply the decorator to functions
+@measure_performance
+def process_csv(*args, **kwargs):
+    df = pd.read_csv("data/RPindividus_24.csv")
+    return (
+        df.loc[df["DEPT"] == 36]
+        .groupby(["AGED", "DEPT"])["IPONDI"]
+        .sum().reset_index()
+        .rename(columns={"IPONDI": "n_indiv"})
+    )
+
+@measure_performance
+def process_parquet(*args, **kwargs):
+    df = pd.read_parquet("data/RPindividus_24.parquet")
+    return (
+        df.loc[df["DEPT"] == "36"]
+        .groupby(["AGED", "DEPT"])["IPONDI"]
+        .sum().reset_index()
+        .rename(columns={"IPONDI": "n_indiv"})
+    )
+
+process_csv()
+process_parquet()
+```
+
+:::
+
+_❓️ Quelle semble être la limite de la fonction `read_parquet` ?_
+
+On gagne déjà un temps conséquent en lecture mais on ne bénéficie pas vraiment de l'optimisation permise par `Parquet` car on transforme les données directement en `DataFrame` `Pandas`. On n'utilise donc pas l'une des fonctionnalités principales du format `Parquet` qui explique ses excellentes performances: le _predicatep pushdown_.
+
+
+
+
