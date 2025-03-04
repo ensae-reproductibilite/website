@@ -113,9 +113,13 @@ Tout au long de cette application, nous allons voir comment utiliser le format `
 
 Pour cela, nous allons avoir besoin de récupérer des données au format `Parquet`. Nous proposons d'utiliser les données détaillées et anonymisées du recensement de la population française: environ 20 millions de lignes pour 80 colonnes. Le code pour récupérer celles-ci est donné ci-dessous
 
-```{.python}
-#| code-fold: true
-#| code-summary: "Code pour récupérer les données"
+<details>
+<summary>
+Code pour récupérer les données
+</summary>
+
+```{python}
+#| eval: false
 import pyarrow.parquet as pq
 import pyarrow as pa
 import os
@@ -139,7 +143,25 @@ df_filtered.to_csv("data/RPindividus_24.csv", index=False)
 # Sauvegarder en Parquet
 pq.write_table(pa.Table.from_pandas(df_filtered), "data/RPindividus_24.parquet")
 ```
-1. Cette ligne de code utilise l'utilitaire Minio Client disponible sur le `SSPCloud`. Si vous n'êtes pas sur cette infrastructure, vous devrez remplacer cette ligne par une ligne téléchargeant cette donnée à partir de l'URL [https://projet-formation.minio.lab.sspcloud.fr/bonnes-pratiques/data/RPindividus.parquet](https://projet-formation.minio.lab.sspcloud.fr/bonnes-pratiques/data/RPindividus.parquet). Vous pouvez le faire en pur `Python` avec `requests` ou, si vous avez `curl` installé, par l'intermédiaire de `Python` avec la commande `os.system("curl -o data/RPindividus.parquet https://projet-formation/bonnes-pratiques/data/RPindividus.parquet")`.
+1. Cette ligne de code utilise l'utilitaire Minio Client disponible sur le `SSPCloud`. Si vous n'êtes pas sur cette infrastructure, vous pouvez vous référer à la boite dédiée
+
+::: {.callout-important collapse="true"}
+## Si vous n'êtes pas sur le `SSPCloud`
+
+Vous devrez remplacer la ligne
+
+```{.python}
+os.system("mc cp s3/projet-formation/bonnes-pratiques/data/RPindividus.parquet data/RPindividus.parquet")
+```
+
+qui utilise l'outil en ligne de commande `mc` par un code téléchargeant cette donnée à partir de l'URL [https://projet-formation.minio.lab.sspcloud.fr/bonnes-pratiques/data/RPindividus.parquet](https://projet-formation.minio.lab.sspcloud.fr/bonnes-pratiques/data/RPindividus.parquet).
+
+Il y a de nombreuses manières de faire. Vous pouvez par exemple le faire en pur `Python` avec `requests`. Si vous avez `curl` installé, vous pouvez aussi l'utiliser. Par l'intermédiaire de `Python`, cela donnera la commande `os.system("curl -o data/RPindividus.parquet https://projet-formation/bonnes-pratiques/data/RPindividus.parquet")`.
+
+:::
+
+</details>
+
 
 Ces exercices vont utiliser des décorateurs `Python`, c'est-à-dire des fonctions qui surchargent le comportement d'une autre fonction. En l'occurrence, nous allons créer une fonction exécutant une chaine d'opérations et la surcharger avec une autre chargée de contrôler l'usage mémoire et le temps d'exécution.
 
@@ -318,14 +340,16 @@ Dans cette partie, on va voir comment utiliser la ***lazy evaluation*** et les *
 
 ```{python}
 #| eval: false
-dataset.scanner()
+(
+    dataset.scanner()
     .head(5)
     .to_pandas()
+)
 ```
 
 Comprenez-vous la différence avec précédemment ? Observez dans la documentation la méthode `to_table` : comprenez-vous son principe ?
 
-* Construire une fonction `summarize_parquet_arrow` (resp. `summarize_parquet_duckdb`) qui importe cette fois les données avec la fonction [pyarrow.dataset](https://arrow.apache.org/docs/python/dataset.html) (resp. avec `DuckDB`) et effectue l'agrégation voulue
+* Construire une fonction `summarize_parquet_arrow` (resp. `summarize_parquet_duckdb`) qui importe cette fois les données avec la fonction [`pyarrow.dataset`](https://arrow.apache.org/docs/python/dataset.html) (resp. avec `DuckDB`) et effectue l'agrégation voulue.
 * Comparer les performances (temps d'exécution et allocation mémoire) des trois méthodes (`Parquet` lu et processé avec `Pandas`, `Arrow` et `DuckDB`) grâce à notre fonction.
 
 ```{python}
@@ -341,7 +365,7 @@ def summarize_parquet_duckdb(*args, **kwargs):
     con = duckdb.connect(":memory:")
     query = """
     FROM read_parquet('data/RPindividus_24.parquet')
-    SELECT SUM(IPONDI),AGED, DEPT AS n_indiv
+    SELECT AGED, DEPT, SUM(IPONDI) AS n_indiv
     GROUP BY AGED, DEPT
     """
 
@@ -371,6 +395,180 @@ summarize_parquet_arrow()
 
 :::
 
+Avec l'évaluation différée, on obtient donc un processus en plusieurs temps:
+
+* `Arrow` ou `DuckDB` reçoit des instructions, les optimise, exécute les requêtes
+* Seules les données en sortie de cette chaîne sont renvoyées à `Python`
+
+![](https://linogaliana.github.io/parquet-recensement-tutomate/img/duckdb-delegation1.png)
 
 
+## Application 3 {.smaller}
+
+::: {.application collapse="false"}
+# Partie 3a : Et si on filtrait sur les lignes ?
+
+Ajoutez une étape de filtre sur les lignes dans nos requêtes:
+
+* Avec `DuckDB`, vous devez modifier la requête avec un `WHERE DEPT IN ('18', '28', '36')`
+* Avec `Arrow`, vous devez modifier l'étape `to_table` de cette manière: `dataset.to_table(filter=pc.field("DEPT").isin(['18', '28', '36']))`
+
+
+```{python}
+#| eval: false
+#| code-fold: true
+#| code-summary: "Correction de cet exercice"
+import pyarrow.dataset as ds
+import pyarrow.compute as pc
+import duckdb
+
+@measure_performance
+def summarize_filter_parquet_arrow(*args, **kwargs):
+
+    dataset = ds.dataset("data/RPindividus.parquet", format="parquet")
+    table = dataset.to_table(filter=pc.field("DEPT").isin(['18', '28', '36']))
+    grouped_table = (
+        table
+        .group_by(["AGED", "DEPT"])
+        .aggregate([("IPONDI", "sum")])
+        .rename_columns(["AGED", "DEPT", "n_indiv"])
+        .to_pandas()
+    )
+
+    return (
+        grouped_table
+    )
+
+@measure_performance
+def summarize_filter_parquet_duckdb(*args, **kwargs):
+    con = duckdb.connect(":memory:")
+    query = """
+    FROM read_parquet('data/RPindividus_24.parquet')
+    SELECT AGED, DEPT, SUM(IPONDI) AS n_indiv
+    WHERE DEPT IN ('11','31','34')
+    GROUP BY AGED, DEPT
+    """
+
+    return (con.sql(query).to_df())
+
+
+summarize_filter_parquet_arrow()
+summarize_filter_parquet_duckdb()
+```
+
+:::
+
+*❓️ Pourquoi ne gagne-t-on pas de temps avec nos filtres sur les lignes (voire pourquoi en perdons nous?) comme c'est le cas avec les filtres sur les colonnes ?*
+
+La donnée n'est pas organisée par blocs de lignes comme elle l'est pas bloc de colonne. Heureusement, il existe pour cela un moyen: le partitionnement !
+
+::: {.application collapse="false"}
+# Partie 3 : Le `Parquet` partitionné
+
+La *lazy evaluation* et les optimisations d'`Arrow` apportent des gain de performance considérables. Mais on peut encore faire mieux ! Lorsqu'on sait qu'on va être amené à **filter régulièrement les données selon une variable d'intérêt**, on a tout intérêt à **partitionner** le fichier `Parquet` selon cette variable.
+
+1. Parcourir la documentation de la fonction [`pyarrow.parquet.write_to_dataset`](https://arrow.apache.org/docs/python/parquet.html#writing-to-partitioned-datasets) pour comprendre comment spécifier une clé de partitionnement lors de l’écriture d’un fichier `Parquet`. Plusieurs méthodes sont possibles.
+
+2. Importer la table complète des individus du recensement depuis `"data/RPindividus.parquet"` avec la fonction [`pyarrow.dataset.dataset`](https://arrow.apache.org/docs/python/generated/pyarrow.dataset.dataset.html) et l'exporter en une table partitionnée `"data/RPindividus_partitionne.parquet"`, partitionnée par la région (`REGION`) et le département (`DEPT`).
+
+3. Observer l’arborescence des fichiers de la table exportée pour voir comment la partition a été appliquée.
+
+4. Modifier nos fonctions d'import, filtre et agrégations via `Arrow` ou `DuckDB` pour utiliser, cette fois, le `Parquet` partitionné. Comparer à l'utilisation du fichier non partitionné.
+
+```{.python}
+import pyarrow.parquet as pq
+dataset = ds.dataset(
+    "data/RPindividus.parquet", format="parquet"
+).to_table()
+
+pq.write_to_dataset(
+    dataset,
+    root_path="data/RPindividus_partitionne",
+    partition_cols=["REGION", "DEPT"]
+)
+```
+
+```{.python}
+import pyarrow.dataset as ds
+import pyarrow.compute as pc
+import duckdb
+
+@measure_performance
+def summarize_filter_parquet_partitioned_arrow(*args, **kwargs):
+
+    dataset = ds.dataset("data/RPindividus_partitionne/", partitioning="hive")
+    table = dataset.to_table(filter=pc.field("DEPT").isin(['18', '28', '36']))
+
+    grouped_table = (
+        table
+        .group_by(["AGED", "DEPT"])
+        .aggregate([("IPONDI", "sum")])
+        .rename_columns(["AGED", "DEPT", "n_indiv"])
+        .to_pandas()
+    )
+
+    return (
+        grouped_table
+    )
+
+@measure_performance
+def summarize_filter_parquet_complete_arrow(*args, **kwargs):
+
+    dataset = ds.dataset("data/RPindividus.parquet")
+    table = dataset.to_table(filter=pc.field("DEPT").isin(['18', '28', '36']))
+
+    grouped_table = (
+        table
+        .group_by(["AGED", "DEPT"])
+        .aggregate([("IPONDI", "sum")])
+        .rename_columns(["AGED", "DEPT", "n_indiv"])
+        .to_pandas()
+    )
+
+    return (
+        grouped_table
+    )
+
+
+@measure_performance
+def summarize_filter_parquet_complete_duckdb(*args, **kwargs):
+    con = duckdb.connect(":memory:")
+    query = """
+    FROM read_parquet('data/RPindividus.parquet')
+    SELECT AGED, DEPT, SUM(IPONDI) AS n_indiv
+    WHERE DEPT IN ('11','31','34')
+    GROUP BY AGED, DEPT
+    """
+
+    return (con.sql(query).to_df())
+
+
+@measure_performance
+def summarize_filter_parquet_partitioned_duckdb(*args, **kwargs):
+    con = duckdb.connect(":memory:")
+    query = """
+    FROM read_parquet('data/RPindividus_partitionne/**/*.parquet', hive_partitioning = True)
+    SELECT AGED, DEPT, SUM(IPONDI) AS n_indiv
+    WHERE DEPT IN ('11','31','34')
+    GROUP BY AGED, DEPT
+    """
+
+    return (con.sql(query).to_df())
+
+
+summarize_filter_parquet_complete_arrow()
+summarize_filter_parquet_partitioned_arrow()
+summarize_filter_parquet_complete_duckdb()
+summarize_filter_parquet_partitioned_duckdb()
+```
+
+
+:::
+
+*❓️ Dans le cadre d'une mise à disposition de données en `Parquet`, comment bien choisir la/les clé(s) de partitionnement ? Quelle est la limite à garder en tête ?*
+
+
+
+
+## Pour aller plus loin
 
