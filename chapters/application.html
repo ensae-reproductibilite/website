@@ -3179,6 +3179,50 @@ rm -f update.sh</code><button title="Copy to Clipboard" class="code-copy-button"
 </section>
 <section id="partie-4-automatisation-avec-lintégration-continue" class="level1">
 <h1>Partie 4 : automatisation avec l’intégration continue</h1>
+  <div class="callout callout-style-default callout-caution callout-titled">
+    <div class="callout-header d-flex align-content-center collapse" data-bs-toggle="collapse" data-bs-target=".callout-pre-appli13-contents" aria-controls="callout-appli13" aria-expanded="true" aria-label="Toggle callout">
+      <div class="callout-icon-container">
+        <i class="callout-icon"></i>
+      </div>
+      <div class="callout-title-container flex-fill">
+        Reprendre à partir d'ici      </div>
+      <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+    </div>
+    <div id="callout-pre-appli13" class="callout-pre-appli13-contents callout-collapse collapse" style="">
+      <div class="callout-body-container callout-body">
+
+        <b>Si vous n'avez plus de <code>VSCode</code> actif avec la configuration proposée dans l'application préliminaire</b>, vous pouvez repartir de ce service:<br><center>    <a href="https://datalab.sspcloud.fr/launcher/ide/vscode-python?name=ENSAE%20Mise%20en%20production&amp;version=2.1.24&amp;s3=region-ec97c721&amp;init.personalInit=«https%3A%2F%2Fraw.githubusercontent.com%2Fensae-reproductibilite%2Fwebsite%2Frefs%2Fheads%2Fmain%2Fchapters%2Fapplications%2Finit.sh»&amp;kubernetes.role=«admin»&amp;networking.user.enabled=true&amp;autoLaunch=false" target="_blank" rel="noopener" data-original-href="https://datalab.sspcloud.fr/launcher/ide/vscode-python?name=ENSAE%20Mise%20en%20production&amp;version=2.1.24&amp;s3=region-ec97c721&amp;init.personalInit=«https%3A%2F%2Fraw.githubusercontent.com%2Fensae-reproductibilite%2Fwebsite%2Frefs%2Fheads%2Fmain%2Fchapters%2Fapplications%2Finit.sh»&amp;kubernetes.role=«admin»&amp;networking.user.enabled=true&amp;autoLaunch=false">
+      <img src="https://img.shields.io/badge/SSP%20Cloud-Lancer_avec_VSCode-blue?logo=visualstudiocode&amp;logoColor=blue" alt="Onyxia">
+    </a>
+    </center><br>Et ensuite, après avoir clôné le dépôt<br><br>
+        <div class="code-with-filename">
+          <div class="code-with-filename-file">
+            <pre><strong>terminal</strong></pre>
+          </div>
+          <div class="sourceCode" data-filename="terminal">
+            <pre class="sourceCode python code-annotated code-with-copy"><code class="sourceCode python">curl -sSL https://raw.githubusercontent.com/ensae-reproductibilite/website/refs/heads/main/chapters/applications/overwrite.sh -o update.sh &amp;&amp; chmod +x update.sh
+./update.sh appli13<a class="code-annotation-anchor" data-target-cell="annotated-cell-appli13" data-target-annotation="2" onclick="event.preventDefault();">2</a>
+rm -f update.sh</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+          </div>
+        </div>
+        <dl class="code-annotation-container-grid">
+          <dt>1</dt>
+          <dd>Récupérer le script de <em>checkpoint</em></dd>
+          <dt>2</dt>
+          <dd>Avancer à l’état à l’issue de l’application appli13</dd>
+          <dt>3</dt>
+          <dd>Nettoyer derrière nous</dd>
+        </dl>
+
+        <div class="quarto-figure quarto-figure-center">
+          <figure class="figure">
+            <p><img src="../checkpoint.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%"></p>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </div>
+  
 <p>Imaginez que vous êtes au restaurant et qu’on ne vous serve pas le plat mais seulement la recette et que, de plus, on vous demande de préparer le plat chez vous avec les ingrédients dans votre frigo. Vous seriez quelque peu déçu. En revanche, si vous avez goûté au plat, que vous êtes un réel cordon bleu et qu’on vous donne la recette pour refaire ce plat ultérieurement, peut-être que vous appréciriez plus.</p>
 <p>Cette analogie illustre l’enjeu de définir le public cible et ses attentes afin de fournir un livrable adapté. Une image <code>Docker</code> est un livrable qui n’est pas forcément intéressant pour tous les publics. Certains préféreront avoir un plat bien préparé qu’une recette ; certains apprécieront avoir une image <code>Docker</code> mais d’autres ne seront pas en mesure de construire celle-ci ou ne sauront pas la faire fonctionner. Une image <code>Docker</code> est plus souvent un moyen pour faciliter la mise en service d’une production qu’une fin en soi.</p>
 <p>Nous allons donc proposer plusieurs types de livrables plus classiques par la suite. Ceux-ci correspondront mieux aux attendus des publics utilisateurs de services construits à partir de techniques de <em>data science</em>. <code>Docker</code> est néanmoins un passage obligé car l’ensemble des types de livrables que nous allons explorer reposent sur la standardisation permise par les conteneurs.</p>
@@ -4990,7 +5034,7 @@ Application 23 : passer en production un modèle avec MLFlow
 <li><p>Publier un tag <code>v0.0.3</code> pour le code applicatif</p></li>
 <li><p>Mettre à jour notre manifeste dans le dépôt <code>GitOps</code>. En premier lieu, il faut changer la version de référence pour utiliser le tag <code>v0.0.3</code>. De plus, il faut déclarer la variable d’environnement <code>MLFLOW_TRACKING_URI</code> qui indique à <code>Python</code> l’entrepôt de modèles où aller chercher celui en production. La bonne pratique est de définir ceci hors du code, dans un fichier de configuration donc, ce qui est l’objet de notre manifeste <code>deployment.yaml</code>. On peut donc changer de cette manière ce fichier:</p></li>
 </ol>
-<div id="b492f416" class="cell" data-execution_count="1">
+<div id="5b5d0479" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="annotated-cell-140" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-140-1"><a href="#annotated-cell-140-1" aria-hidden="true" tabindex="-1"></a>apiVersion: apps<span class="op">/</span>v1</span>
 <span id="annotated-cell-140-2"><a href="#annotated-cell-140-2" aria-hidden="true" tabindex="-1"></a>kind: Deployment</span>
 <span id="annotated-cell-140-3"><a href="#annotated-cell-140-3" aria-hidden="true" tabindex="-1"></a>metadata:</span>
