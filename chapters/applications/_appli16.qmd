@@ -3,7 +3,8 @@
 ## Application 16: Mise à disposition sous forme d'API locale
 
 - Installer `fastAPI` et `uvicorn` puis les ajouter au `requirements.txt`
-- Renommer le fichier `main.py` en `train.py`. Dans ce script, ajouter une
+- Renommer le fichier `main.py` en `train.py`.
+- Dans ce script, ajouter une
 sauvegarde du modèle après l'avoir entraîné, sous le
 format [`joblib`](https://scikit-learn.org/stable/model_persistence.html#python-specific-serialization).
 - Faire tourner
@@ -24,26 +25,26 @@ Nous allons maintenant passer au développement de l'API.
 Comme découvrir `FastAPI` n'est pas l'objet de cet enseignement, nous
 donnons directement le modèle pour créer l'API. Si vous
 désirez tester de vous-mêmes, vous pouvez créer votre
-fichier sans vous référer à l'exemple
+fichier sans vous référer à l'exemple.
 
-- Créer le fichier `api.py` permettant d'initialiser l'API:
+- Créer le fichier `app/api.py` permettant d'initialiser l'API:
 
 <details>
 <summary>
 Fichier `api.py`
 </summary>
 
-```{.python include="./applications/code/appli17_api_main.py" filename="src/models/train_evaluation.py"}
+```{.python include="./applications/code/appli17_api_main.py" filename="api.py"}
 ```
 </details>
 
-- Déployer en local l'API avec la commande
+- Construire et déployer en local l'API avec la commande
 
 ```{.bash filename="terminal"}
 uvicorn api:app --reload --host "0.0.0.0" --port 5000
 ```
 
-- A partir du `README` du service, se rendre sur l'URL de déploiement,
+- En retournant sur la page [Mes Services](https://datalab.sspcloud.fr/my-services) du `SSPCloud`, ouvrir le `README` de votre service[^forward-port]. Se rendre sur l'URL de déploiement,
 ajouter `/docs/` à celui-ci et observer la documentation de l'API
 - Se servir de la documentation pour tester les requêtes `/predict`
 - Récupérer l'URL d'une des requêtes proposées. La tester dans le navigateur
@@ -59,6 +60,7 @@ votre bout de code `Python` et comprendre l'origine du problème.
 
 :::
 
+[^forward-port]: Puisque vous êtes connectés à un serveur distant, le [_localhost_](https://fr.wikipedia.org/wiki/Localhost) de votre `VSCode` n'est pas celui de votre ordinateur. Les applications locales lancées par `VSCode`, par exemple l'API, ne sont pas locales pour vous. Il faut donc trouver une manière d'y accéder à distance. Le SSPCloud propose automatiquement une redirection du _localhost_ du conteneur sur lequel tourne votre VSCode vers un URL pérenne, à condition d'avoir bien défini le port en question. C'est pour cette raison que vous avez dû indiquer les arguments `--host "0.0.0.0"`  et `--port 5000` pour pouvoir exposer, temporairement, à internet votre application.
 
 {{< checkpoint appli16 >}}
 
