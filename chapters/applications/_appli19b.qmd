@@ -12,54 +12,54 @@ Fichier `.github/workflows/prod.yml`
 
 </summary>
 
-```{.yaml filename=".github/workflows/prod.yml"}
-name: Construction image Docker
+  ```{.yaml filename=".github/workflows/prod.yml"}
+  name: Construction image Docker
 
-on:
-  push:
-    branches:
-      - main
-      - dev
-    tags:
-      - 'v*.*.*'
+  on:
+    push:
+      branches:
+        - main
+        - dev
+      tags:
+        - 'v*.*.*'
 
-jobs:
-  docker:
-    runs-on: ubuntu-latest
-    steps:
-      -
-        name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+  jobs:
+    docker:
+      runs-on: ubuntu-latest
+      steps:
+        -
+          name: Set up QEMU
+          uses: docker/setup-qemu-action@v3
+        -
+          name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v3
 
-      -
-        name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: linogaliana/application #<1>
+        -
+          name: Docker meta
+          id: meta
+          uses: docker/metadata-action@v5
+          with:
+            images: linogaliana/application #<1>
 
-      -
-        name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Build and push
-        uses: docker/build-push-action@v5
-        with:
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-```
-1. Modifier ici !
+        -
+          name: Login to Docker Hub
+          uses: docker/login-action@v3
+          with:
+            username: ${{ secrets.DOCKERHUB_USERNAME }}
+            password: ${{ secrets.DOCKERHUB_TOKEN }}
+        -
+          name: Build and push
+          uses: docker/build-push-action@v5
+          with:
+            push: true
+            tags: ${{ steps.meta.outputs.tags }}
+            labels: ${{ steps.meta.outputs.labels }}
+  ```
+  1. Modifier ici !
 
 </details>
 
-- Dans le dépôt de l'application, mettre à jour le code dans `api/main.py` pour changer un élément de l'interface de votre documentation.
+- Dans le dépôt de l'application, mettre à jour le code dans `app/main.py` pour changer un élément de l'interface de votre documentation.
 Par exemple, mettre en gras un titre.
 
 ```{.python}
@@ -73,7 +73,7 @@ app = FastAPI(
 
 - *Commit* et *push* les changements.
 
-- Tagger le commit effectué précédemment et *push* le nouveau tag :
+- _Tagger_ le commit effectué précédemment et *push* le nouveau tag :
 
 ```{.bash filename="terminal"}
 git tag v0.0.1
@@ -93,33 +93,30 @@ Fichier `deployment/deployment.yaml`
 
 </summary>
 
-```{.python}
-#| file: "deployment/deployment.yaml"
-#| filename: "deployment/deployment.yaml"
-#| source-line-numbers: "19"
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: titanic-deployment
-  labels:
-    app: titanic
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
+  ```{.python file="deployment/deployment.yaml" filename="deployment/deployment.yaml" source-line-numbers="19"}
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: titanic-deployment
+    labels:
       app: titanic
-  template:
-    metadata:
-      labels:
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
         app: titanic
-    spec:
-      containers:
-      - name: titanic
-        image: linogaliana/application:v0.0.1 #<1>
-        ports:
-        - containerPort: 5000
-```
-1. Remplacer ici par le dépôt applicatif adéquat
+    template:
+      metadata:
+        labels:
+          app: titanic
+      spec:
+        containers:
+        - name: titanic
+          image: linogaliana/application:v0.0.1 #<1>
+          ports:
+          - containerPort: 5000
+  ```
+  1. Remplacer ici par le dépôt applicatif adéquat
 
 
 </details>

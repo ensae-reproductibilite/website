@@ -1,9 +1,7 @@
 ::: {.application}
 ## Application 17: Dockeriser l'API (intégration continue)
 
-- Pour rendre la structure du projet plus lisible, déplacer `api.py` -> `api/main.py`
-
-- Créer un script `api/run.sh` à la racine du projet qui lance le script `train.py` puis déploie localement l'API
+- Créer un script `app/run.sh` à la racine du projet qui lance le script `train.py` puis déploie localement l'API
 
 <details>
 <summary>Fichier `run.sh`</summary>
@@ -12,17 +10,17 @@
 #/bin/bash
 
 python3 train.py
-uvicorn api.main:app --reload --host "0.0.0.0" --port 5000
+uvicorn app.api:app --reload --host "0.0.0.0" --port 5000
 ```
 </details>
 
 - Donner au script `api/run.sh` des permissions d'exécution : `chmod +x api/run.sh`
 
-- Ajouter `COPY api ./api` pour avoir les fichiers nécessaires au lancement dans l'API dans l'image
+- Ajouter `COPY app ./app` pour avoir les fichiers nécessaires au lancement dans l'API dans l'image
 
 - Modifier `COPY train.py .` pour tenir compte du nouveau nom du fichier
 
-- Changer l'instruction `CMD` du `Dockerfile` pour exécuter le script `api/run.sh` au lancement du conteneur (`CMD ["bash", "-c", "./api/run.sh"]`)
+- Changer l'instruction `CMD` du `Dockerfile` pour exécuter le script `api/run.sh` au lancement du conteneur (`CMD ["bash", "-c", "./app/run.sh"]`)
 
 - Mettre à jour votre `requirements.txt` pour tenir compte des nouveaux _packages_ utilisés
 
