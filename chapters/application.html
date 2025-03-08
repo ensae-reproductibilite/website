@@ -4447,32 +4447,33 @@ Application 20: Création d’un site web pour valoriser le projet
 <div class="sourceCode" id="cb69" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> quarto create project website mysite</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ul>
-<li>Faire remonter d’un niveau <code>_quarto.yml</code></li>
-<li>Supprimer <code>about.qmd</code>, déplacer <code>index.qmd</code> vers la racine de notre projet.</li>
-<li>Remplacer le contenu de <code>index.qmd</code> par <a href="https://raw.githubusercontent.com/ensae-reproductibilite/application/tree/appli19/index.qmd">celui-ci</a> et retirer <code>about.qmd</code> des fichiers à compiler.</li>
-<li>Déplacer <code>styles.css</code> à la racine du projet</li>
-<li>Mettre à jour le <code>.gitignore</code> avec les instructions suivantes</li>
-</ul>
+<li><p>Faire remonter d’un niveau <code>_quarto.yml</code></p></li>
+<li><p>Supprimer <code>about.qmd</code>, déplacer <code>index.qmd</code> vers la racine de notre projet.</p></li>
+<li><p>Remplacer le contenu de <code>index.qmd</code> par <a href="https://raw.githubusercontent.com/ensae-reproductibilite/application/tree/appli19/index.qmd">celui-ci</a> et retirer <code>about.qmd</code> des fichiers à compiler.</p></li>
+<li><p>Déplacer <code>styles.css</code> à la racine du projet</p></li>
+<li><p>Mettre à jour le <code>.gitignore</code> avec les instructions suivantes</p>
 <div class="sourceCode" id="cb70" data-file=".gitignore" data-no-prefix="true" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="ex">/.quarto/</span></span>
 <span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="ex">*.html</span></span>
 <span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a><span class="ex">*_files</span></span>
-<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a><span class="ex">_site/</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<ul>
-<li>En ligne de commande, faire <code>quarto preview</code> (ajouter les arguments <code>--port 5000 --host 0.0.0.0</code> si vous passez par le <code>SSPCloud</code>)</li>
-<li>Observer le site web généré en local</li>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a><span class="ex">_site/</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p>En ligne de commande, faire <code>quarto preview</code> (ajouter les arguments <code>--port 5000 --host 0.0.0.0</code> si vous passez par le <code>SSPCloud</code>)</p></li>
+<li><p>Observer le site web généré en local</p></li>
 </ul>
 <p>Enfin, on va construire et déployer automatiquement ce site web grâce au combo <code>Github Actions</code> et <code>Github Pages</code>:</p>
 <ul>
-<li>Créer une branche <code>gh-pages</code> à partir des lignes suivantes</li>
-</ul>
-<div class="sourceCode" id="cb71" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>git checkout <span class="op">--</span>orphan gh<span class="op">-</span>pages</span>
+<li><p>Créer une branche <code>gh-pages</code> à partir des lignes suivantes</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb71" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>git checkout <span class="op">--</span>orphan gh<span class="op">-</span>pages</span>
 <span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>git reset <span class="op">--</span>hard <span class="co"># make sure all changes are committed before running this!</span></span>
 <span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>git commit <span class="op">--</span>allow<span class="op">-</span>empty <span class="op">-</span>m <span class="st">"Initialising gh-pages branch"</span></span>
 <span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>git push origin gh<span class="op">-</span>pages</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<ul>
-<li>Revenir à votre branche principale (<code>main</code> normalement)</li>
-<li>Créer un fichier <code>.github/workflows/website.yaml</code> avec le contenu de <a href="https://raw.githubusercontent.com/ensae-reproductibilite/application/tree/appli20/.github/workflows/publish.yaml">ce fichier</a></li>
-<li>Modifier le <code>README</code> pour indiquer l’URL de votre site web et de votre API</li>
+</div></li>
+<li><p>Revenir à votre branche principale (<code>main</code> normalement)</p></li>
+<li><p>Créer un fichier <code>.github/workflows/website.yaml</code> avec le contenu de <a href="https://raw.githubusercontent.com/ensae-reproductibilite/application/tree/appli20/.github/workflows/publish.yaml">ce fichier</a></p></li>
+<li><p>Modifier le <code>README</code> pour indiquer l’URL de votre site web et de votre API</p></li>
 </ul>
 </div>
 </div>
@@ -5069,44 +5070,44 @@ Application 23 : passer en production un modèle avec MLFlow
 <li><p>Publier un tag <code>v0.0.3</code> pour le code applicatif</p></li>
 <li><p>Mettre à jour notre manifeste dans le dépôt <code>GitOps</code>. En premier lieu, il faut changer la version de référence pour utiliser le tag <code>v0.0.3</code>. De plus, il faut déclarer la variable d’environnement <code>MLFLOW_TRACKING_URI</code> qui indique à <code>Python</code> l’entrepôt de modèles où aller chercher celui en production. La bonne pratique est de définir ceci hors du code, dans un fichier de configuration donc, ce qui est l’objet de notre manifeste <code>deployment.yaml</code>. On peut donc changer de cette manière ce fichier:</p></li>
 </ol>
-<div id="d6d89de5" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="annotated-cell-137" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-137-1"><a href="#annotated-cell-137-1" aria-hidden="true" tabindex="-1"></a>apiVersion: apps<span class="op">/</span>v1</span>
-<span id="annotated-cell-137-2"><a href="#annotated-cell-137-2" aria-hidden="true" tabindex="-1"></a>kind: Deployment</span>
-<span id="annotated-cell-137-3"><a href="#annotated-cell-137-3" aria-hidden="true" tabindex="-1"></a>metadata:</span>
-<span id="annotated-cell-137-4"><a href="#annotated-cell-137-4" aria-hidden="true" tabindex="-1"></a>  name: titanic<span class="op">-</span>deployment</span>
-<span id="annotated-cell-137-5"><a href="#annotated-cell-137-5" aria-hidden="true" tabindex="-1"></a>  labels:</span>
-<span id="annotated-cell-137-6"><a href="#annotated-cell-137-6" aria-hidden="true" tabindex="-1"></a>    app: titanic</span>
-<span id="annotated-cell-137-7"><a href="#annotated-cell-137-7" aria-hidden="true" tabindex="-1"></a>spec:</span>
-<span id="annotated-cell-137-8"><a href="#annotated-cell-137-8" aria-hidden="true" tabindex="-1"></a>  replicas: <span class="dv">1</span></span>
-<span id="annotated-cell-137-9"><a href="#annotated-cell-137-9" aria-hidden="true" tabindex="-1"></a>  selector:</span>
-<span id="annotated-cell-137-10"><a href="#annotated-cell-137-10" aria-hidden="true" tabindex="-1"></a>    matchLabels:</span>
-<span id="annotated-cell-137-11"><a href="#annotated-cell-137-11" aria-hidden="true" tabindex="-1"></a>      app: titanic</span>
-<span id="annotated-cell-137-12"><a href="#annotated-cell-137-12" aria-hidden="true" tabindex="-1"></a>  template:</span>
-<span id="annotated-cell-137-13"><a href="#annotated-cell-137-13" aria-hidden="true" tabindex="-1"></a>    metadata:</span>
-<span id="annotated-cell-137-14"><a href="#annotated-cell-137-14" aria-hidden="true" tabindex="-1"></a>      labels:</span>
-<span id="annotated-cell-137-15"><a href="#annotated-cell-137-15" aria-hidden="true" tabindex="-1"></a>        app: titanic</span>
-<span id="annotated-cell-137-16"><a href="#annotated-cell-137-16" aria-hidden="true" tabindex="-1"></a>    spec:</span>
-<span id="annotated-cell-137-17"><a href="#annotated-cell-137-17" aria-hidden="true" tabindex="-1"></a>      containers:</span>
-<span id="annotated-cell-137-18"><a href="#annotated-cell-137-18" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> name: titanic</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-137" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-137-19" class="code-annotation-target"><a href="#annotated-cell-137-19" aria-hidden="true" tabindex="-1"></a>        image: linogaliana<span class="op">/</span>application:v0<span class="fl">.0.3</span></span>
-<span id="annotated-cell-137-20"><a href="#annotated-cell-137-20" aria-hidden="true" tabindex="-1"></a>        ports:</span>
-<span id="annotated-cell-137-21"><a href="#annotated-cell-137-21" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> containerPort: <span class="dv">5000</span></span>
-<span id="annotated-cell-137-22"><a href="#annotated-cell-137-22" aria-hidden="true" tabindex="-1"></a>        env:</span>
-<span id="annotated-cell-137-23"><a href="#annotated-cell-137-23" aria-hidden="true" tabindex="-1"></a>          <span class="op">-</span> name: MLFLOW_TRACKING_URI</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-137" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-137-24" class="code-annotation-target"><a href="#annotated-cell-137-24" aria-hidden="true" tabindex="-1"></a>            value: https:<span class="op">//</span>user<span class="op">-</span>${USERNAME}<span class="op">-</span>mlflow.user.lab.sspcloud.fr</span>
-<span id="annotated-cell-137-25"><a href="#annotated-cell-137-25" aria-hidden="true" tabindex="-1"></a>        resources:</span>
-<span id="annotated-cell-137-26"><a href="#annotated-cell-137-26" aria-hidden="true" tabindex="-1"></a>          limits:</span>
-<span id="annotated-cell-137-27"><a href="#annotated-cell-137-27" aria-hidden="true" tabindex="-1"></a>            memory: <span class="st">"2Gi"</span></span>
-<span id="annotated-cell-137-28"><a href="#annotated-cell-137-28" aria-hidden="true" tabindex="-1"></a>            cpu: <span class="st">"1000m"</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cca47e7a" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="annotated-cell-138" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-138-1"><a href="#annotated-cell-138-1" aria-hidden="true" tabindex="-1"></a>apiVersion: apps<span class="op">/</span>v1</span>
+<span id="annotated-cell-138-2"><a href="#annotated-cell-138-2" aria-hidden="true" tabindex="-1"></a>kind: Deployment</span>
+<span id="annotated-cell-138-3"><a href="#annotated-cell-138-3" aria-hidden="true" tabindex="-1"></a>metadata:</span>
+<span id="annotated-cell-138-4"><a href="#annotated-cell-138-4" aria-hidden="true" tabindex="-1"></a>  name: titanic<span class="op">-</span>deployment</span>
+<span id="annotated-cell-138-5"><a href="#annotated-cell-138-5" aria-hidden="true" tabindex="-1"></a>  labels:</span>
+<span id="annotated-cell-138-6"><a href="#annotated-cell-138-6" aria-hidden="true" tabindex="-1"></a>    app: titanic</span>
+<span id="annotated-cell-138-7"><a href="#annotated-cell-138-7" aria-hidden="true" tabindex="-1"></a>spec:</span>
+<span id="annotated-cell-138-8"><a href="#annotated-cell-138-8" aria-hidden="true" tabindex="-1"></a>  replicas: <span class="dv">1</span></span>
+<span id="annotated-cell-138-9"><a href="#annotated-cell-138-9" aria-hidden="true" tabindex="-1"></a>  selector:</span>
+<span id="annotated-cell-138-10"><a href="#annotated-cell-138-10" aria-hidden="true" tabindex="-1"></a>    matchLabels:</span>
+<span id="annotated-cell-138-11"><a href="#annotated-cell-138-11" aria-hidden="true" tabindex="-1"></a>      app: titanic</span>
+<span id="annotated-cell-138-12"><a href="#annotated-cell-138-12" aria-hidden="true" tabindex="-1"></a>  template:</span>
+<span id="annotated-cell-138-13"><a href="#annotated-cell-138-13" aria-hidden="true" tabindex="-1"></a>    metadata:</span>
+<span id="annotated-cell-138-14"><a href="#annotated-cell-138-14" aria-hidden="true" tabindex="-1"></a>      labels:</span>
+<span id="annotated-cell-138-15"><a href="#annotated-cell-138-15" aria-hidden="true" tabindex="-1"></a>        app: titanic</span>
+<span id="annotated-cell-138-16"><a href="#annotated-cell-138-16" aria-hidden="true" tabindex="-1"></a>    spec:</span>
+<span id="annotated-cell-138-17"><a href="#annotated-cell-138-17" aria-hidden="true" tabindex="-1"></a>      containers:</span>
+<span id="annotated-cell-138-18"><a href="#annotated-cell-138-18" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> name: titanic</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-138" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-138-19" class="code-annotation-target"><a href="#annotated-cell-138-19" aria-hidden="true" tabindex="-1"></a>        image: linogaliana<span class="op">/</span>application:v0<span class="fl">.0.3</span></span>
+<span id="annotated-cell-138-20"><a href="#annotated-cell-138-20" aria-hidden="true" tabindex="-1"></a>        ports:</span>
+<span id="annotated-cell-138-21"><a href="#annotated-cell-138-21" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> containerPort: <span class="dv">5000</span></span>
+<span id="annotated-cell-138-22"><a href="#annotated-cell-138-22" aria-hidden="true" tabindex="-1"></a>        env:</span>
+<span id="annotated-cell-138-23"><a href="#annotated-cell-138-23" aria-hidden="true" tabindex="-1"></a>          <span class="op">-</span> name: MLFLOW_TRACKING_URI</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-138" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-138-24" class="code-annotation-target"><a href="#annotated-cell-138-24" aria-hidden="true" tabindex="-1"></a>            value: https:<span class="op">//</span>user<span class="op">-</span>${USERNAME}<span class="op">-</span>mlflow.user.lab.sspcloud.fr</span>
+<span id="annotated-cell-138-25"><a href="#annotated-cell-138-25" aria-hidden="true" tabindex="-1"></a>        resources:</span>
+<span id="annotated-cell-138-26"><a href="#annotated-cell-138-26" aria-hidden="true" tabindex="-1"></a>          limits:</span>
+<span id="annotated-cell-138-27"><a href="#annotated-cell-138-27" aria-hidden="true" tabindex="-1"></a>            memory: <span class="st">"2Gi"</span></span>
+<span id="annotated-cell-138-28"><a href="#annotated-cell-138-28" aria-hidden="true" tabindex="-1"></a>            cpu: <span class="st">"1000m"</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-annotation">
 <dl class="code-annotation-container-grid">
-<dt data-target-cell="annotated-cell-137" data-target-annotation="1">1</dt>
+<dt data-target-cell="annotated-cell-138" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-cell="annotated-cell-137" data-code-lines="19" data-code-annotation="1">Le <em>tag</em> de notre code applicatif</span>
+<span data-code-cell="annotated-cell-138" data-code-lines="19" data-code-annotation="1">Le <em>tag</em> de notre code applicatif</span>
 </dd>
-<dt data-target-cell="annotated-cell-137" data-target-annotation="2">2</dt>
+<dt data-target-cell="annotated-cell-138" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-cell="annotated-cell-137" data-code-lines="24" data-code-annotation="2">La variable d’environnement à adapter en fonction de l’adresse du dépôt de modèles utilisé</span>
+<span data-code-cell="annotated-cell-138" data-code-lines="24" data-code-annotation="2">La variable d’environnement à adapter en fonction de l’adresse du dépôt de modèles utilisé</span>
 </dd>
 </dl>
 </div>
@@ -5130,13 +5131,13 @@ Checkpoint
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
 </div>
-<div class="sourceCode" id="annotated-cell-138" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-annotation-code code-with-copy code-annotated"><code class="sourceCode bash"><a class="code-annotation-anchor" data-target-cell="annotated-cell-138" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-138-1" class="code-annotation-target"><a href="#annotated-cell-138-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git stash</span>
-<span id="annotated-cell-138-2"><a href="#annotated-cell-138-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git checkout appli23</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="annotated-cell-139" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-annotation-code code-with-copy code-annotated"><code class="sourceCode bash"><a class="code-annotation-anchor" data-target-cell="annotated-cell-139" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-139-1" class="code-annotation-target"><a href="#annotated-cell-139-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git stash</span>
+<span id="annotated-cell-139-2"><a href="#annotated-cell-139-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git checkout appli23</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <dl class="code-annotation-container-grid">
-<dt data-target-cell="annotated-cell-138" data-target-annotation="1">1</dt>
+<dt data-target-cell="annotated-cell-139" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-cell="annotated-cell-138" data-code-lines="1" data-code-annotation="1">Pour annuler les modifications depuis le dernier <em>commit</em></span>
+<span data-code-cell="annotated-cell-139" data-code-lines="1" data-code-annotation="1">Pour annuler les modifications depuis le dernier <em>commit</em></span>
 </dd>
 </dl>
 <div class="quarto-figure quarto-figure-center">
