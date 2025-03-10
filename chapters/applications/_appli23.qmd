@@ -7,53 +7,65 @@
 
 3. Ouvrir un notebook temporaire et observer le résultat.
 
-    ```{.python file="Dans une cellule de notebook" code-fold="true" code-summary="Exemple de code à tester"}
-    import mlflow
-    import pandas as pd
-
-    model_name = "production"
-    model_version = "latest"
-
-    # Load the model from the Model Registry
-    model_uri = f"models:/{model_name}/{model_version}"
-    logged_model = mlflow.sklearn.load_model(model_uri)
+<details>
+<summary>
+Exemple de code à tester
+</summary>
 
 
-    # GENERATE PREDICTION DATA ---------------------
+```{.python file="Dans une cellule de notebook"}
+import mlflow
+import pandas as pd
 
-    def create_data(
-        sex: str = "female",
-        age: float = 29.0,
-        fare: float = 16.5,
-        embarked: str = "S",
-    ) -> str:
-        """
-        """
+model_name = "production"
+model_version = "latest"
 
-        df = pd.DataFrame(
-            {
-                "Sex": [sex],
-                "Age": [age],
-                "Fare": [fare],
-                "Embarked": [embarked],
-            }
-        )
+# Load the model from the Model Registry
+model_uri = f"models:/{model_name}/{model_version}"
+logged_model = mlflow.sklearn.load_model(model_uri)
 
-        return df
+# GENERATE PREDICTION DATA ---------------------
 
+def create_data(
+    sex: str = "female",
+    age: float = 29.0,
+    fare: float = 16.5,
+    embarked: str = "S",
+) -> str:
+    """
+    """
 
-    data = pd.concat(
-        [create_data(age=40), create_data(sex="male")]
+    df = pd.DataFrame(
+        {
+            "Sex": [sex],
+            "Age": [age],
+            "Fare": [fare],
+            "Embarked": [embarked],
+        }
     )
 
-    # PREDICTION ---------------------
+    return df
 
-    logged_model.predict(pd.DataFrame(data))
-    ```
+
+data = pd.concat(
+    [create_data(age=40), create_data(sex="male")]
+)
+
+# PREDICTION ---------------------
+
+logged_model.predict(pd.DataFrame(data))
+```
+
+</details>
 
 4. On va adapter le code applicatif de notre API pour tenir compte de ce modèle de production.
 
-    ```{.python file="app/api.py" code-fold="true" code-summary=""}
+<details>
+<summary>
+Voir le script `app/api.py` proposé
+</summary>
+
+    ```{.python file="app/api.py"}
     """A simple API to expose our trained RandomForest model for Tutanic survival."""
     from fastapi import FastAPI
     import mlflow
@@ -117,12 +129,14 @@
         return prediction
     ```
 
+</details>
+
 Les changements principaux de ce code sont:
 
 * on va chercher le modèle de production
 * on met à jour la version de notre API pour signaler à nos clients que celle-ci a évolué
 
-6. On va retirer l'entraînement de la séquence d'opération du `api/run.sh`. En supprimant la ligne relative à l'entraînement du modèle, vous devriez avoir
+5. On va retirer l'entraînement de la séquence d'opération du `api/run.sh`. En supprimant la ligne relative à l'entraînement du modèle, vous devriez avoir
 
     ```{.python}
     #/bin/bash
@@ -131,50 +145,57 @@ Les changements principaux de ce code sont:
 
 Mettons en production cette nouvelle version. Cela implique de faire les gestes suivants:
 
-7. _Commit_ de ce changement dans `main`
+6. _Commit_ de ce changement dans `main`
 
-8. Publier un tag `v0.0.3` pour le code applicatif
+7. Publier un tag `v0.0.3` pour le code applicatif
 
-9. Mettre à jour notre manifeste dans le dépôt `GitOps`.
+8. Mettre à jour notre manifeste dans le dépôt `GitOps`.
    * En premier lieu, il faut changer la version de référence pour utiliser le tag `v0.0.3`.
    * De plus, il faut déclarer la variable d'environnement `MLFLOW_TRACKING_URI` qui indique à `Python` l'entrepôt de modèles où aller chercher celui en production. La bonne pratique est de définir ceci hors du code, dans un fichier de configuration donc, ce qui est l'objet de notre manifeste `deployment.yaml`. On peut donc changer de cette manière ce fichier:
 
-```{python}
+<details>
+<summary>
+Le modèle `deployment.yaml` proposé
+</summary>
+
+```{.python}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: titanic-deployment
-  labels:
+name: titanic-deployment
+labels:
     app: titanic
 spec:
-  replicas: 1
-  selector:
+replicas: 1
+selector:
     matchLabels:
-      app: titanic
-  template:
+    app: titanic
+template:
     metadata:
-      labels:
+    labels:
         app: titanic
     spec:
-      containers:
-      - name: titanic
+    containers:
+    - name: titanic
         image: linogaliana/application:v0.0.3 #<1>
         ports:
         - containerPort: 5000
         env:
-          - name: MLFLOW_TRACKING_URI
+        - name: MLFLOW_TRACKING_URI
             value: https://user-${USERNAME}-mlflow.user.lab.sspcloud.fr #<2>
         resources:
-          limits:
+        limits:
             memory: "2Gi"
             cpu: "1000m"
 ```
 1. Le _tag_ de notre code applicatif
-2. La variable d'environnement à adapter en fonction de l'adresse du dépôt de modèles utilisé. Remplacer par votre URL `MLFlow`.
+2. La variable d'environnement à adapter en fonction de l'adresse du dépôt demodèles utilisé. Remplacer par votre URL `MLFlow`.
 
+</details>
 
 11.  Pour s'assurer que l'application fonctionne bien, on peut aller voir les _logs_ de la machine qui fait tourner notre code. Pour ça, faire `kubectl get pods` et, en supposant que votre service soit nommé `titanic` dans vos fichiers YAML de configuration, récupérer le nom commençant par `titanic-deployment-*` et faire `kubectl logs titanic-deployment-*`
 
 :::
 
 
+{{< checkpoint appli23 >}}

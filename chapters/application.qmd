@@ -1208,7 +1208,6 @@ Néanmoins, persistent un certain nombre de voies d'amélioration dans notre _pi
 - On entraîne le modèle en local, de manière séquentielle, et en lançant nous-mêmes le script `train.py`.
 - Pis encore, à l'heure actuelle, cette étape d'estimation n'est pas séparée de la mise à disposition du modèle par le biais de notre API. On archive des modèles mais on les utilise pas ultérieurement.
 
-
 Les prochaines applications permettront d'améliorer ceci.
 
 ## Consommation d'un modèle archivé sur `MLFlow`
@@ -1225,125 +1224,65 @@ Ceci nous gêne pour faire évoluer notre modèle: on ne dissocie pas ce qui rel
 {{< include "./applications/_appli23.qmd" >}}
 
 A ce stade, nous avons amélioré la fiabilité de notre application car
-nous utilisons le meilleur modèle. Néanmoins, nos entraînements sont encore manuels. Là encore il y a des gains à avoir car cela paraît pénible à la longue de devoir systématiquement relancer des entraînements manuellement pour tester des variations de tel ou tel paramètre. Heureusement, nous allons pouvoir automatiser ceci également.
+nous utilisons le meilleur modèle. Néanmoins, nos entraînements sont encore manuels. Là encore il y a des gains possibles car cela paraît pénible à la longue de devoir systématiquement relancer des entraînements manuellement pour tester des variations de tel ou tel paramètre. Heureusement, nous allons pouvoir automatiser ceci également.
 
 
-::: {.callout-caution collapse="true"}
-## Checkpoint
 
-```{.bash filename="terminal"}
-git stash #<1>
-git checkout appli23
-```
-1. Pour annuler les modifications depuis le dernier _commit_
+## Industrialiser les entraînements de nos modèles
+
+Pour industrialiser nos entraînements, nous allons créer des processus parallèles indépendants pour chaque combinaison de nos hyperparamètres.
+
+Ce travail nous amène de l'approche _pipeline_ à mi chemin entre _data science_ et _data engineering_. Il existe plusieurs outils pour faire ceci, généralement issus de la sphère du _data engineering_. L'outil le plus complet sur le `SSPCloud`, bien intégré à l'écosystème `Kubernetes`, est [`Argo Workflows`](https://argoproj.github.io/workflows/)[^airflow].
+
+[^airflow]: Il existe d'autres outils d'ordonnancement de _pipelines_ très utilisés dans l'industrie, notamment [`Airflow`](https://airflow.apache.org/).
+
+    Ce dernier est plus utilisé, en pratique, qu'`Argo Workflow` mais, même s'il est disponible sur le `SSPCloud` aussi, est moins pensé autour de `Kubernetes` que l'est `Argo`.
+
+    Pour mieux comprendre la différence entre `Argo` et `Airflow`, la philosphie différente de ces deux outils et leurs avantages comparatifs, cette courte vidéo est intéressante:
+
+      {{< video https://www.youtube.com/watch?v=w98X_0LwKWw >}}
 
 
-![](/checkpoint.jpg){width=80% fig-align="center"}
+Chaque combinaison d'hyperparamètres sera un processus isolé à l'issue duquel sera loggué le résultat dans `MLFlow`. Ces entraînements auront lieu en parallèle.
 
+Nous allons construire, dans les deux prochaines applications, un _pipeline_ simple prenant cette forme[^forme-pipeline]:
+
+::: {#fig-pipeline layout-ncol=2}
+
+![Via `Argo Workflows`](/chapters/applications/figures/pipeline_ml.png){#fig-pipeline-argo fig-align="center"}
+
+![Via `Github Actions`](/chapters/applications/figures/pipeline_github.png){#fig-pipeline-github fig-align="center"}
+
+_Pipeline_ d'entraînement de nos modèles avec deux outils d'automatisation différents
 :::
 
+[^forme-pipeline]: Il serait bien sûr possible d'aller beaucoup plus loin dans la définition du _pipeline_.
+
+    Par exemple, il est possible, si le _framework_ utilisé pour la modélisation n'intègre pas la notion de _pipeline_ au niveau de `Python` de faire ceci au niveau d'`Argo`. Cela donnerait un _pipeline_ prenant cette forme:
+
+    ![](https://inseefrlab.github.io/formation-mlops/slides/img/pokemon_workflow.png)
+
+    Néanmoins, ici, nous utilisons `Scikit` qui permet d'intégrer le _preprocessing_ comme une étape de modélisation. Nous n'avons donc pas d'intérêt à définir ceci comme une tâche autonome, raison pour laquelle notre _pipeline_ apparaît plus simple.
+
+L'outil permettant une intégration native de notre _pipeline_ dans l'infrastructure _cloud_ (`SSPCloud`) que nous avons utilisée jusqu'à présent est `Argo Workflows`. Néanmoins, pour illustrer la modularité de notre chaîne, permise par l'adoption de `Docker`, nous allons montrer que les serveurs d'intégration continue de `Github` peuvent très bien servir d'environnement d'exécution, sans rien perdre de ce que nous avons mis en oeuvre précédemment (_logging_ des modèles dans `MLFlow`, récupération de données depuis `S3`, etc.)
 
 
-### Industrialiser les entraînements de nos modèles
+{{< include "./applications/_appli24.qmd" >}}
 
-Pour industrialiser nos entraînements, nous allons créer des processus
-parallèles indépendants pour chaque combinaison de nos hyperparamètres.
-Pour cela, l'outil pratique sur le SSPCloud est `Argo workflows`.
+Nous pouvons maintenant passer à la version `Github`. Celle-ci est optionnelle car elle vient surtout démontrer l'intérêt d'avoir une chaine modulaire et la dissociation que cela permet entre l'environnement d'exécution et les autres environnements nécessaires à notre chaine (notamment le stockage code et le _logging_).
 
-Chaque combinaison d'hyperparamètres sera un processus isolé à l'issue duquel sera
-loggué le résultat dans `MLFlow`. Ces entraînements auront lieu en parallèle.
-
-
-![](https://inseefrlab.github.io/formation-mlops/slides/img/pokemon_workflow.png)
-
-
-
-1. Lancer un service Argo Workflows
-2. Dans le dépôt GitOps, créer un fichier `argo-workflow/manifest.yaml`
-
-```{.python}
-apiVersion: argoproj.io/v1alpha1
-kind: Workflow
-metadata:
-  generateName: titanic-training-workflow-
-  namespace: user-lgaliana
-spec:
-  entrypoint: main
-  serviceAccountName: workflow
-  arguments:
-    parameters:
-      # The MLflow tracking server is responsible to log the hyper-parameter and model metrics.
-      - name: mlflow-tracking-uri
-        value: https://user-lgaliana-argo-workflows.user.lab.sspcloud.fr #<1>
-      - name: mlflow-experiment-name
-        value: titanicml #<2>
-      - name: model-training-conf-list
-        value: |
-          [
-            { "n_trees": 10, "max_features": "log2" },
-            { "n_trees": 20, "max_features": "sqrt" },
-            { "n_trees": 20, "max_features": "log2" },
-            { "n_trees": 50, "max_features": "sqrt" }
-          ]
-  templates:
-    # Entrypoint DAG template
-    - name: main
-      dag:
-        tasks:
-          # Task 0: Start pipeline
-          - name: start-pipeline
-            template: start-pipeline-wt
-          # Task 1: Train model with given params
-          - name: train-model-with-params
-            dependencies: [ start-pipeline ]
-            template: run-model-training-wt
-            arguments:
-              parameters:
-                - name: max_features
-                  value: "{{item.max_features}}"
-                - name: n_trees
-                  value: "{{item.n_trees}}"
-            # Pass the inputs to the task using "withParam"
-            withParam: "{{workflow.parameters.model-training-conf-list}}"
-
-    # Now task container templates are defined
-    # Worker template for task 0 : start-pipeline
-    - name: start-pipeline-wt
-      inputs:
-      container:
-        image: busybox
-        command: [ sh, -c ]
-        args: [ "echo Starting pipeline" ]
-
-    # Worker template for task-1 : train model with params
-    - name: run-model-training-wt
-      inputs:
-        parameters:
-          - name: n_trees
-          - name: max_features
-      container:
-        image: linogaliana/application:v0.0.5 #<3>
-        imagePullPolicy: Always
-        command: [sh, -c]
-        args: [
-          "python train.py --n_trees={{inputs.parameters.n_trees}} --max_features={{inputs.parameters.max_features}}"
-          ]
-        env:
-          - name: MLFLOW_TRACKING_URI
-            value: "{{workflow.parameters.mlflow-tracking-uri}}"
-          - name: MLFLOW_EXPERIMENT_NAME
-            value: "{{workflow.parameters.mlflow-experiment-name}}"
-          - name: AWS_DEFAULT_REGION
-            value: us-east-1
-          - name: AWS_S3_ENDPOINT
-            value: minio.lab.sspcloud.fr
-```
-1. Changer pour votre entrepot de modèle
-2. Le nom de l'expérimentation `MLFLow` dont nous allons avoir besoin (on propose de continuer sur `titanicml`)
-3. Changer l'application ici
+{{< include "./applications/_appli25.qmd" >}}
 
 
 
-## Pour aller plus loin
+# Pour aller plus loin
 
-Créer un service label studio pour évaluer la qualité du modèle
+Nous n'avons géré qu'une partie du cycle de vie d'un projet _data_, à savoir l'entraînement et la mise à disposition d'un modèle. Comme nous partions de très long, ce sprint avait plutôt l'allure d'un marathon. Néanmoins, nous avons maintenant un projet très flexible qui pourrait permettre d'aller plus loin et d'intégrer d'autres aspects du cycle de vie d'un projet _data_.
+
+En premier lieu, pour suivre la vie d'un modèle en production (enjeu de l'[observabilité](https://www.giskard.ai/glossary/model-observability)), il faut collecter de nouvelles données annotées. Si cette collecte n'est pas naturelle (de nouveaux enregistrement du _label_ sont automatiques), il faut généralement mettre en oeuvre de l'annotation humaine ou des _feedbacks_. Parmi les outils disponibles sur le `SSPCloud` pour cela, il existe [`Label Studio`](https://labelstud.io/).
+
+En second lieu, on a encore une chaîne de production où peu de profils non _tech_ peuvent s'insérer. On pourrait vouloir la rendre plus accessible: soit en améliorant notre _output_ site web, soit en mettant en oeuvre des _dashboards_ plus orientés _BI_, pensés pour des profils moins techniques mais ayant une place dans la chaîne de valeur _data_ comme les _data analysts_. Pour cela, il existe des outils sur le `SSPCloud` comme [`Apache Superset`](https://superset.apache.org/).
+
+Gardons aussi à l'esprit que notre chaine dépend de données tabulaires simples avec un objectif assez modeste: mettre à disposition un modèle de classification dans un cadre supervisé. Si on avait un _use case_ différent ou des données plus complexes - par exemple des remontées de données en temps réel ou encore des données textuelles - nous adopterions probablement un _pipeline_ ou des briques technologiques différents à certaines étapes. Néanmoins, la philosophie serait probablement la même : avoir une chaine modulaire, avec les outils technologiques les plus efficaces à chaque maillon, et `Python` et `Kubernetes` pour, dans les ténèbres, les lier.
+
+

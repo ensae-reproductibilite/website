@@ -1,0 +1,84 @@
+::: {.application}
+## Application 25 (optionnelle) : `Github Actions` comme ordonnanceur
+
+Pour que `Github` sache où aller chercher `MLFlow` et `S3` et comment s'y identifier, il va falloir lui donner un certain de variables d'environnement. Il est __hors de question de mettre celles-ci dans le code__. Heureusement, `Github` propose la possibilité de renseigner des _secrets_: nous allons utiliser ceux-ci.
+
+1. Aller dans les paramètres de votre projet `GitOps` et dans la section `Secrets and variables`
+
+2. Vous allez avoir besoin de créer les secrets suivants:
+    * `MLFLOW_TRACKING_PASSWORD`
+    * `AWS_ACCESS_KEY_ID`
+    * `AWS_SECRET_ACCESS_KEY`
+    * `AWS_SESSION_TOKEN`
+
+Les valeurs à renseigner sont à récupérer à différents endroits:
+
+* Pour les secrets liés à `S3` (`AWS_*`), ceux-ci sont dans l'espace [Mon compte](https://datalab.sspcloud.fr/account/storage) du `SSPCloud`. Ils ont une durée de validité limitée: si vous devez refaire tourner le code dans quelques jours, il faudra les mettre à jour (ou passer par un compte de service comme indiqué précédemment)
+* Le mot de passe de `MLFlow` est dans le `README` de votre service, qui s'affiche quand vous cliquez sur le bouton `Ouvrir` depuis la page [Mes services](https://datalab.sspcloud.fr/my-services)
+
+
+3. Reprendre ce modèle d'action à mettre dans votre dépôt `GitOps` (`.github/workflows/train.yaml` par exemple).
+
+<details>
+<summary>
+Modèle d'action `Github`
+</summary>
+
+
+```{.python}
+name: Titanic Model Training
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  start-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start Pipeline
+        run: echo "Starting pipeline"
+
+  train-model:
+    needs: start-pipeline
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        model-config:
+          - { n_trees: 10, max_features: "log2" }
+          - { n_trees: 20, max_features: "sqrt" }
+          - { n_trees: 20, max_features: "log2" }
+          - { n_trees: 50, max_features: "sqrt" }
+    container:
+      image: ***/application:v0.0.4 #<1>
+    env:
+      MLFLOW_TRACKING_URI: "https://user-lgaliana-mlflow.user.lab.sspcloud.fr/"
+      MLFLOW_EXPERIMENT_NAME: "titanicml"
+      MLFLOW_TRACKING_PASSWORD: "${{ secrets.MLFLOW_TRACKING_PASSWORD }}"
+      AWS_DEFAULT_REGION: "us-east-1"
+      AWS_S3_ENDPOINT: "minio.lab.sspcloud.fr"
+      AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}"
+      AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+      AWS_SESSION_TOKEN: "${{ secrets.AWS_SESSION_TOKEN }}"
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+            repository: 'ensae-reproductibilite/application' #<2>
+            ref: appli24
+
+      - name: Train Model
+        run: |
+          python3 train.py --n_trees=${{ matrix.model-config.n_trees }} --max_features=${{ matrix.model-config.max_features }}
+```
+1. Mettre votre image ici. Si vous n'en avez pas, vous pouvez mettre `linogaliana/application:v0.0.4`
+2. On reprend le code applicatif de l'application précédente. Vous pouvez remplacer par votre dépôt et une référence adaptée si vous préférez
+
+</details>
+
+4. _Pusher_ et observer l'UI de `Github` depuis l'onglet `Actions`. Vous devriez retrouver @fig-pipeline-github dans celle-ci.
+
+:::
