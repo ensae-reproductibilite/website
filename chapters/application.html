@@ -4899,9 +4899,8 @@ Application 23 : passer en production un modèle avec MLFlow
 <ol type="1">
 <li><p>Si vous avez entraîné plusieurs modèles avec des <code>n_trees</code> différents, utiliser l’interface de <code>MLFlow</code> pour sélectionner le “meilleur”. Cliquer sur le modèle en question et faire l’action <em>“Register Model”</em>. L’enregistrer comme le modèle de <em>“production”</em></p></li>
 <li><p>Rendez-vous sur l’onglet <code>Models</code> et observez cet entrepôt de modèles. Cliquez sur le modèle de production. Vous pourrez par ce biais suivre ses différentes versions.</p></li>
-<li><p>Ouvrir un notebook temporaire et observer le résultat.</p></li>
-</ol>
-<div class="sourceCode" id="cb75" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
+<li><p>Ouvrir un notebook temporaire et observer le résultat.</p>
+<div class="sourceCode" id="cb75" data-file="Dans une cellule de notebook" data-code-fold="true" data-code-summary="Exemple de code à tester" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
 <span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>model_name <span class="op">=</span> <span class="st">"production"</span></span>
@@ -4941,11 +4940,9 @@ Application 23 : passer en production un modèle avec MLFlow
 <span id="cb75-38"><a href="#cb75-38" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb75-39"><a href="#cb75-39" aria-hidden="true" tabindex="-1"></a><span class="co"># PREDICTION ---------------------</span></span>
 <span id="cb75-40"><a href="#cb75-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb75-41"><a href="#cb75-41" aria-hidden="true" tabindex="-1"></a>logged_model.predict(pd.DataFrame(data))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<ol start="4" type="1">
-<li>On va adapter le code applicatif de notre API pour tenir compte de ce modèle de production.</li>
-</ol>
-<div class="sourceCode" id="cb76" data-file="app/api.py" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""A simple API to expose our trained RandomForest model for Tutanic survival."""</span></span>
+<span id="cb75-41"><a href="#cb75-41" aria-hidden="true" tabindex="-1"></a>logged_model.predict(pd.DataFrame(data))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p>On va adapter le code applicatif de notre API pour tenir compte de ce modèle de production.</p>
+<div class="sourceCode" id="cb76" data-file="app/api.py" data-code-fold="true" data-code-summary="" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""A simple API to expose our trained RandomForest model for Tutanic survival."""</span></span>
 <span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastapi <span class="im">import</span> FastAPI</span>
 <span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
 <span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -5005,60 +5002,66 @@ Application 23 : passer en production un modèle avec MLFlow
 <span id="cb76-58"><a href="#cb76-58" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb76-59"><a href="#cb76-59" aria-hidden="true" tabindex="-1"></a>    prediction <span class="op">=</span> <span class="st">"Survived 🎉"</span> <span class="cf">if</span> <span class="bu">int</span>(model.predict(df)) <span class="op">==</span> <span class="dv">1</span> <span class="cf">else</span> <span class="st">"Dead ⚰️"</span></span>
 <span id="cb76-60"><a href="#cb76-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb76-61"><a href="#cb76-61" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> prediction</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb76-61"><a href="#cb76-61" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> prediction</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ol>
 <p>Les changements principaux de ce code sont:</p>
 <ul>
 <li>on va chercher le modèle de production</li>
 <li>on met à jour la version de notre API pour signaler à nos clients que celle-ci a évolué</li>
 </ul>
 <ol start="6" type="1">
-<li>On va retirer l’entraînement de la séquence d’opération du <code>api/run.sh</code>. En supprimant la ligne relative à l’entraînement du modèle, vous devriez avoir</li>
-</ol>
+<li><p>On va retirer l’entraînement de la séquence d’opération du <code>api/run.sh</code>. En supprimant la ligne relative à l’entraînement du modèle, vous devriez avoir</p>
 <div class="sourceCode" id="cb77" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="co">#/bin/bash</span></span>
-<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>uvicorn api.main:app <span class="op">--</span><span class="bu">reload</span> <span class="op">--</span>host <span class="st">"0.0.0.0"</span> <span class="op">--</span>port <span class="dv">5000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>uvicorn app.api:app <span class="op">--</span><span class="bu">reload</span> <span class="op">--</span>host <span class="st">"0.0.0.0"</span> <span class="op">--</span>port <span class="dv">5000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ol>
 <p>Mettons en production cette nouvelle version. Cela implique de faire les gestes suivants:</p>
 <ol start="7" type="1">
+<li><p><em>Commit</em> de ce changement dans <code>main</code></p></li>
 <li><p>Publier un tag <code>v0.0.3</code> pour le code applicatif</p></li>
-<li><p>Mettre à jour notre manifeste dans le dépôt <code>GitOps</code>. En premier lieu, il faut changer la version de référence pour utiliser le tag <code>v0.0.3</code>. De plus, il faut déclarer la variable d’environnement <code>MLFLOW_TRACKING_URI</code> qui indique à <code>Python</code> l’entrepôt de modèles où aller chercher celui en production. La bonne pratique est de définir ceci hors du code, dans un fichier de configuration donc, ce qui est l’objet de notre manifeste <code>deployment.yaml</code>. On peut donc changer de cette manière ce fichier:</p></li>
+<li><p>Mettre à jour notre manifeste dans le dépôt <code>GitOps</code>.</p>
+<ul>
+<li>En premier lieu, il faut changer la version de référence pour utiliser le tag <code>v0.0.3</code>.</li>
+<li>De plus, il faut déclarer la variable d’environnement <code>MLFLOW_TRACKING_URI</code> qui indique à <code>Python</code> l’entrepôt de modèles où aller chercher celui en production. La bonne pratique est de définir ceci hors du code, dans un fichier de configuration donc, ce qui est l’objet de notre manifeste <code>deployment.yaml</code>. On peut donc changer de cette manière ce fichier:</li>
+</ul></li>
 </ol>
-<div id="ea6952ac" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="annotated-cell-134" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-134-1"><a href="#annotated-cell-134-1" aria-hidden="true" tabindex="-1"></a>apiVersion: apps<span class="op">/</span>v1</span>
-<span id="annotated-cell-134-2"><a href="#annotated-cell-134-2" aria-hidden="true" tabindex="-1"></a>kind: Deployment</span>
-<span id="annotated-cell-134-3"><a href="#annotated-cell-134-3" aria-hidden="true" tabindex="-1"></a>metadata:</span>
-<span id="annotated-cell-134-4"><a href="#annotated-cell-134-4" aria-hidden="true" tabindex="-1"></a>  name: titanic<span class="op">-</span>deployment</span>
-<span id="annotated-cell-134-5"><a href="#annotated-cell-134-5" aria-hidden="true" tabindex="-1"></a>  labels:</span>
-<span id="annotated-cell-134-6"><a href="#annotated-cell-134-6" aria-hidden="true" tabindex="-1"></a>    app: titanic</span>
-<span id="annotated-cell-134-7"><a href="#annotated-cell-134-7" aria-hidden="true" tabindex="-1"></a>spec:</span>
-<span id="annotated-cell-134-8"><a href="#annotated-cell-134-8" aria-hidden="true" tabindex="-1"></a>  replicas: <span class="dv">1</span></span>
-<span id="annotated-cell-134-9"><a href="#annotated-cell-134-9" aria-hidden="true" tabindex="-1"></a>  selector:</span>
-<span id="annotated-cell-134-10"><a href="#annotated-cell-134-10" aria-hidden="true" tabindex="-1"></a>    matchLabels:</span>
-<span id="annotated-cell-134-11"><a href="#annotated-cell-134-11" aria-hidden="true" tabindex="-1"></a>      app: titanic</span>
-<span id="annotated-cell-134-12"><a href="#annotated-cell-134-12" aria-hidden="true" tabindex="-1"></a>  template:</span>
-<span id="annotated-cell-134-13"><a href="#annotated-cell-134-13" aria-hidden="true" tabindex="-1"></a>    metadata:</span>
-<span id="annotated-cell-134-14"><a href="#annotated-cell-134-14" aria-hidden="true" tabindex="-1"></a>      labels:</span>
-<span id="annotated-cell-134-15"><a href="#annotated-cell-134-15" aria-hidden="true" tabindex="-1"></a>        app: titanic</span>
-<span id="annotated-cell-134-16"><a href="#annotated-cell-134-16" aria-hidden="true" tabindex="-1"></a>    spec:</span>
-<span id="annotated-cell-134-17"><a href="#annotated-cell-134-17" aria-hidden="true" tabindex="-1"></a>      containers:</span>
-<span id="annotated-cell-134-18"><a href="#annotated-cell-134-18" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> name: titanic</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-134" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-134-19" class="code-annotation-target"><a href="#annotated-cell-134-19" aria-hidden="true" tabindex="-1"></a>        image: linogaliana<span class="op">/</span>application:v0<span class="fl">.0.3</span></span>
-<span id="annotated-cell-134-20"><a href="#annotated-cell-134-20" aria-hidden="true" tabindex="-1"></a>        ports:</span>
-<span id="annotated-cell-134-21"><a href="#annotated-cell-134-21" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> containerPort: <span class="dv">5000</span></span>
-<span id="annotated-cell-134-22"><a href="#annotated-cell-134-22" aria-hidden="true" tabindex="-1"></a>        env:</span>
-<span id="annotated-cell-134-23"><a href="#annotated-cell-134-23" aria-hidden="true" tabindex="-1"></a>          <span class="op">-</span> name: MLFLOW_TRACKING_URI</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-134" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-134-24" class="code-annotation-target"><a href="#annotated-cell-134-24" aria-hidden="true" tabindex="-1"></a>            value: https:<span class="op">//</span>user<span class="op">-</span>${USERNAME}<span class="op">-</span>mlflow.user.lab.sspcloud.fr</span>
-<span id="annotated-cell-134-25"><a href="#annotated-cell-134-25" aria-hidden="true" tabindex="-1"></a>        resources:</span>
-<span id="annotated-cell-134-26"><a href="#annotated-cell-134-26" aria-hidden="true" tabindex="-1"></a>          limits:</span>
-<span id="annotated-cell-134-27"><a href="#annotated-cell-134-27" aria-hidden="true" tabindex="-1"></a>            memory: <span class="st">"2Gi"</span></span>
-<span id="annotated-cell-134-28"><a href="#annotated-cell-134-28" aria-hidden="true" tabindex="-1"></a>            cpu: <span class="st">"1000m"</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="87958fd2" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="annotated-cell-131" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-131-1"><a href="#annotated-cell-131-1" aria-hidden="true" tabindex="-1"></a>apiVersion: apps<span class="op">/</span>v1</span>
+<span id="annotated-cell-131-2"><a href="#annotated-cell-131-2" aria-hidden="true" tabindex="-1"></a>kind: Deployment</span>
+<span id="annotated-cell-131-3"><a href="#annotated-cell-131-3" aria-hidden="true" tabindex="-1"></a>metadata:</span>
+<span id="annotated-cell-131-4"><a href="#annotated-cell-131-4" aria-hidden="true" tabindex="-1"></a>  name: titanic<span class="op">-</span>deployment</span>
+<span id="annotated-cell-131-5"><a href="#annotated-cell-131-5" aria-hidden="true" tabindex="-1"></a>  labels:</span>
+<span id="annotated-cell-131-6"><a href="#annotated-cell-131-6" aria-hidden="true" tabindex="-1"></a>    app: titanic</span>
+<span id="annotated-cell-131-7"><a href="#annotated-cell-131-7" aria-hidden="true" tabindex="-1"></a>spec:</span>
+<span id="annotated-cell-131-8"><a href="#annotated-cell-131-8" aria-hidden="true" tabindex="-1"></a>  replicas: <span class="dv">1</span></span>
+<span id="annotated-cell-131-9"><a href="#annotated-cell-131-9" aria-hidden="true" tabindex="-1"></a>  selector:</span>
+<span id="annotated-cell-131-10"><a href="#annotated-cell-131-10" aria-hidden="true" tabindex="-1"></a>    matchLabels:</span>
+<span id="annotated-cell-131-11"><a href="#annotated-cell-131-11" aria-hidden="true" tabindex="-1"></a>      app: titanic</span>
+<span id="annotated-cell-131-12"><a href="#annotated-cell-131-12" aria-hidden="true" tabindex="-1"></a>  template:</span>
+<span id="annotated-cell-131-13"><a href="#annotated-cell-131-13" aria-hidden="true" tabindex="-1"></a>    metadata:</span>
+<span id="annotated-cell-131-14"><a href="#annotated-cell-131-14" aria-hidden="true" tabindex="-1"></a>      labels:</span>
+<span id="annotated-cell-131-15"><a href="#annotated-cell-131-15" aria-hidden="true" tabindex="-1"></a>        app: titanic</span>
+<span id="annotated-cell-131-16"><a href="#annotated-cell-131-16" aria-hidden="true" tabindex="-1"></a>    spec:</span>
+<span id="annotated-cell-131-17"><a href="#annotated-cell-131-17" aria-hidden="true" tabindex="-1"></a>      containers:</span>
+<span id="annotated-cell-131-18"><a href="#annotated-cell-131-18" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> name: titanic</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-131" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-131-19" class="code-annotation-target"><a href="#annotated-cell-131-19" aria-hidden="true" tabindex="-1"></a>        image: linogaliana<span class="op">/</span>application:v0<span class="fl">.0.3</span></span>
+<span id="annotated-cell-131-20"><a href="#annotated-cell-131-20" aria-hidden="true" tabindex="-1"></a>        ports:</span>
+<span id="annotated-cell-131-21"><a href="#annotated-cell-131-21" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> containerPort: <span class="dv">5000</span></span>
+<span id="annotated-cell-131-22"><a href="#annotated-cell-131-22" aria-hidden="true" tabindex="-1"></a>        env:</span>
+<span id="annotated-cell-131-23"><a href="#annotated-cell-131-23" aria-hidden="true" tabindex="-1"></a>          <span class="op">-</span> name: MLFLOW_TRACKING_URI</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-131" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-131-24" class="code-annotation-target"><a href="#annotated-cell-131-24" aria-hidden="true" tabindex="-1"></a>            value: https:<span class="op">//</span>user<span class="op">-</span>${USERNAME}<span class="op">-</span>mlflow.user.lab.sspcloud.fr</span>
+<span id="annotated-cell-131-25"><a href="#annotated-cell-131-25" aria-hidden="true" tabindex="-1"></a>        resources:</span>
+<span id="annotated-cell-131-26"><a href="#annotated-cell-131-26" aria-hidden="true" tabindex="-1"></a>          limits:</span>
+<span id="annotated-cell-131-27"><a href="#annotated-cell-131-27" aria-hidden="true" tabindex="-1"></a>            memory: <span class="st">"2Gi"</span></span>
+<span id="annotated-cell-131-28"><a href="#annotated-cell-131-28" aria-hidden="true" tabindex="-1"></a>            cpu: <span class="st">"1000m"</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-annotation">
 <dl class="code-annotation-container-grid">
-<dt data-target-cell="annotated-cell-134" data-target-annotation="1">1</dt>
+<dt data-target-cell="annotated-cell-131" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-cell="annotated-cell-134" data-code-lines="19" data-code-annotation="1">Le <em>tag</em> de notre code applicatif</span>
+<span data-code-cell="annotated-cell-131" data-code-lines="19" data-code-annotation="1">Le <em>tag</em> de notre code applicatif</span>
 </dd>
-<dt data-target-cell="annotated-cell-134" data-target-annotation="2">2</dt>
+<dt data-target-cell="annotated-cell-131" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-cell="annotated-cell-134" data-code-lines="24" data-code-annotation="2">La variable d’environnement à adapter en fonction de l’adresse du dépôt de modèles utilisé</span>
+<span data-code-cell="annotated-cell-131" data-code-lines="24" data-code-annotation="2">La variable d’environnement à adapter en fonction de l’adresse du dépôt de modèles utilisé. Remplacer par votre URL <code>MLFlow</code>.</span>
 </dd>
 </dl>
 </div>
