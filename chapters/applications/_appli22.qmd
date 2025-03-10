@@ -35,63 +35,68 @@ parser.add_argument(
 args = parser.parse_args()
 ```
 
-3. Faire tourner `train.py` en ligne de commande puis retourner sur l'UI de `MLFlow`
-et observer la différence, à gauche.
-
-4. A la fin du script `train.py`, ajouter le code suivant
+3. A la fin du script `train.py`, ajouter le code suivant
 
 <details>
 <summary>
 Code à ajouter
 </summary>
 
-```{.python filename="fin de train.py"}
-# LOGGING IN MLFLOW -----------------
+    ```{.python filename="fin de train.py"}
+    # LOGGING IN MLFLOW -----------------
 
-input_data_mlflow = mlflow.data.from_pandas(
-    TrainingData, source=data_path, name="Raw dataset"
-)
-training_data_mlflow = mlflow.data.from_pandas(
-    pd.concat([X_train, y_train], axis=1), source=data_path, name="Training data"
-)
+    mlflow_server = os.getenv("MLFLOW_TRACKING_URI")
+
+    logger.info(f"Saving experiment in {mlflow_server}")
+
+    mlflow.set_tracking_uri(mlflow_server)
+    mlflow.set_experiment(args.experiment_name)
 
 
-with mlflow.start_run():
+    input_data_mlflow = mlflow.data.from_pandas(
+        TrainingData, source=data_path, name="Raw dataset"
+    )
+    training_data_mlflow = mlflow.data.from_pandas(
+        pd.concat([X_train, y_train], axis=1), source=data_path, name="Training data"
+    )
 
-    # Log datasets
-    mlflow.log_input(input_data_mlflow, context="raw")
-    mlflow.log_input(training_data_mlflow, context="raw")
 
-    # Log parameters
-    mlflow.log_param("n_trees", n_trees)
-    mlflow.log_param("max_depth", MAX_DEPTH)
-    mlflow.log_param("max_features", MAX_FEATURES)
+    with mlflow.start_run():
 
-    # Log best hyperparameters from GridSearchCV
-    best_params = pipe_cross_validation.best_params_
-    for param, value in best_params.items():
-        mlflow.log_param(param, value)
+        # Log datasets
+        mlflow.log_input(input_data_mlflow, context="raw")
+        mlflow.log_input(training_data_mlflow, context="raw")
 
-    # Log metrics
-    mlflow.log_metric("accuracy", score)
+        # Log parameters
+        mlflow.log_param("n_trees", n_trees)
+        mlflow.log_param("max_depth", MAX_DEPTH)
+        mlflow.log_param("max_features", MAX_FEATURES)
 
-    # Log confusion matrix as an artifact
-    matrix_path = "confusion_matrix.txt"
-    with open(matrix_path, "w") as f:
-        f.write(str(matrix))
-    mlflow.log_artifact(matrix_path)
+        # Log best hyperparameters from GridSearchCV
+        best_params = pipe_cross_validation.best_params_
+        for param, value in best_params.items():
+            mlflow.log_param(param, value)
 
-    # Log model
-    mlflow.sklearn.log_model(pipe, "model")
-```
+        # Log metrics
+        mlflow.log_metric("accuracy", score)
+
+        # Log confusion matrix as an artifact
+        matrix_path = "confusion_matrix.txt"
+        with open(matrix_path, "w") as f:
+            f.write(str(matrix))
+        mlflow.log_artifact(matrix_path)
+
+        # Log model
+        mlflow.sklearn.log_model(pipe, "model")
+    ```
 
 </details>
 
-5. Ajouter `mlruns/*` dans `.gitignore`
+4. Ajouter `mlruns/*` dans `.gitignore`
 
-6. Tester `train.py` en ligne de commande
+2. Tester `train.py` en ligne de commande
 
-7. Observer l'évolution de la page `Experiments`. Cliquer sur un des _run_.
+3. Observer l'évolution de la page `Experiments`. Cliquer sur un des _run_.
 Observer toutes les métadonnées archivées (hyperparamètres, métriques d'évaluation, `requirements.txt` dont `MLFlow` a fait l'inférence, etc.)
 
 1. Observer le code proposé par `MLFlow` pour récupérer le _run_ en question. Tester celui-ci dans un _notebook_ sur le fichier intermédiaire de test au format `Parquet`

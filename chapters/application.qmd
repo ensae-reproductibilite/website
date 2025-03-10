@@ -1096,16 +1096,18 @@ scripts. C'est l'objet de la prochaine étape.
 
 ## Etape 3: automatiser le déploiement (déploiement en continu)
 
-::: {.callout-important}
-## Clarification sur la branche de travail et les _tags_
+::: {.callout-important collapse="true"}
+## Clarification sur la branche de travail, les _tags_ et l'image `Docker` utilisée
 
 A partir de maintenant, il est nécessaire de clarifier la
-branche principale sur laquelle nous travaillons. De manière
-traditionnelle, on utilise la branche `main`. Si vous avez changé de branche,
-vous pouvez continuer 1/ continuer mais en tenir compte dans les exemples ultérieurs ou 2/ fusionner celle-ci à `main`.
+branche principale sur laquelle nous travaillons. Toutes les prochaines applications supposeront que vous travaillez depuis la branche `main`. Si vous avez changé de branche, vous pouvez fusionner celle-ci à `main`.
 
 Si vous avez utilisé un `tag` pour sauter une ou plusieurs étapes, il va
 être nécessaire de se placer sur une branche car vous êtes en _head detached_. Si vous avez utilisé les scripts automatisés de checkpoint, cette gymnastique a été faite pour vous.
+
+Les prochaines applications vont également nécessiter d'utiliser une image `Docker`. Si vous avez suivi de manière linéaire cette application, votre image `Docker` devrait exister depuis l'application 15 si vous avez pushé votre dépôt à ce moment là.
+
+Néanmoins, si vous n'avez pas fait cette application, vous pouvez utiliser le _checkpoint_ de l'application 18 et faire un `git push origin main --force` (à ne pas reproduire sur vos projets!) qui devrait déclencher les opérations côté `Github` pour construire et livrer votre image `Docker`. Cela nécessite quelques opérations de votre côté, notamment la création d'un _token_ `Dockerhub` à renseigner en secret `Github`. Pour vous refraîchir la mémoire sur le sujet, vous pouvez retourner consulter l'application 15.
 
 :::
 
@@ -1118,11 +1120,11 @@ Regardons à nouveau notre _pipeline_:
 Les _inputs_ de notre _pipeline_ sont donc:
 
 - La __configuration__. Ici, on peut considérer que notre `.env` de configuration, les secrets renseignés à `Github` ou encore le `requirements.txt` relèvent de cette catégorie  ;
-- Les __données__. Nos données sont statiques et n'ont pas vocation à évoluer. Si c'était le cas, il faudrait en tenir compte dans notre automatisation [@note-versionning-data]. ;
+- Les __données__. Nos données sont statiques et n'ont pas vocation à évoluer. Si c'était le cas, il faudrait en tenir compte dans notre automatisation (@nte-versionning-data). ;
 - Le __code__. C'est l'élément principal qui évolue chez nous. Idéalement, on veut automatiser le processus au maximum en faisant en sorte qu'à chaque mise à jour de notre code (un _push_ sur `Github`), les étapes ultérieures (production de l'image `Docker`, etc.) se lancent. Néanmoins, on veut aussi éviter qu'une erreur puisse donner lieu à une mise en production non-fonctionnelle, on va donc maintenir une action manuelle minimale comme garde-fou.
 
 
-::: {#note-versionning-data .callout-note}
+::: {#nte-versionning-data .callout-note}
 ## Et le _versionning_ des données ?
 
 Ici, nous nous plaçons dans le cas simple où les données brutes reçues sont figées. Ce qui peut changer est la manière dont on constitue nos échantillons train/test. Il sera donc utile de logguer les données en question par le biais de `MLFlow`. Mais il n'est pas nécessaire de versionner les données brutes.
