@@ -1,0 +1,150 @@
+---
+title: "YAML 101"
+image: /penguin.png
+description: |
+  Introduction à l'utilisation de `YAML`, un langage devenu incontournable dans l'éco-système DevOps pour sa capacité à produire des fichiers de configuration déclarative lisibles et expressifs.
+order: 7.5
+href: chapters/yaml101.html
+---
+
+## Qu'est-ce que le format `YAML` ?
+
+`YAML` est un acronyme récursif signifiant [*YAML Ain't Markup Language*](https://yaml.org/). `YAML` est un langage de sérialisation de données au format texte : il permet de structurer de la donnée dans des fichiers textuels, à l'instar d'autres formats populaires (`CSV`, `JSON`, `XML`, etc.). Sa spécificité est qu'il est conçu pour être à la fois expressif et facile à lire pour un humain. Expressif dans la mesure où il permet de représenter de l'information hiérarchique, ce que ne permet pas le format `CSV` par exemple qui représente essentiellement des données tabulaires ("fichier plat"). Lisible car, contrairement aux languages dont la structure est basée sur des balises (*markup*) comme `XML` ou bien délimitée par des symboles comme l'accolade en `JSON`, `YAML` se démarque par une syntaxe basée sur l'indentation — comme `Python`. 
+
+Voici un exemple typique d'un fichier `YAML`, qui compare les principaux langages utilisés pour représenter des données hiérarchiques dans un format textuel[^source].
+
+[^source]: L'exemple présenté est inspiré de [ce tutoriel](https://www.ambient-it.net/tout-savoir-fichiers-yaml/).
+
+```yaml
+---
+type: tutorial
+domain:
+  - devops
+language:
+  - yaml:
+      name: YAML Ain't Markup Language
+      born: 2001
+      legibility: awesome
+  - json:
+      name: JavaScript Object Notation
+      born: 2001
+      legibility: good
+  - xml:
+      name: Extensible Markup Language
+      born: 1996
+      legibility: bad
+---
+```
+
+## Pourquoi s'intéresser au `YAML` ?
+
+Grâce à sa simplicité, `YAML` est rapidement devenu un standard dans les éco-systèmes `DevOps` et `MLOps` dans la mesure où il facilite grandement l'interaction entre les humains et les systèmes automatisés.
+
+L'intérêt pour `YAML` vient principalement de son adoption massive dans les environnements de déploiement modernes, notamment grâce à l'approche dite **"déclarative"** qu'il permet.
+
+En effet, au lieu de spécifier étape par étape comment accomplir une tâche (approche impérative), `YAML` décrit simplement **l'état final souhaité**. C'est alors l'outil utilisé (par exemple, Kubernetes, Docker Compose ou GitOps) qui gère les détails d'implémentation.
+
+Voici un exemple illustrant ce concept dans le contexte Kubernetes :
+
+```yaml
+kind: Pod
+metadata:
+  name: my-api-pod
+spec:
+  containers:
+    - name: api
+      image: my_dh_account/my_fast_api:0.0.1
+      env:
+        - name: MODEL
+          value: deepseek-ai/DeepSeek-R1
+```
+
+Cette approche réduit considérablement la complexité liée à la gestion des infrastructures et améliore la clarté des configurations.
+
+## `YAML` vs. JSON
+
+Une caractéristique notable du `YAML` est qu'il s'agit d'un **superset de JSON**. Cela signifie que tout document JSON valide est également un document `YAML` valide. La différence principale réside dans la syntaxe et la lisibilité :
+
+- `YAML` utilise l'indentation pour structurer les données, augmentant sa lisibilité.
+- JSON utilise des accolades pour structurer ses objets, ce qui peut réduire sa lisibilité mais le rend moins susceptible aux erreurs d'indentation.
+
+Comparaison `YAML` vs JSON :
+
+```yaml
+user:
+  name: Alice
+  age: 30
+```
+
+Correspondance exacte en JSON :
+
+```json
+{
+  "user": {
+    "name": "Alice",
+    "age": 30
+  }
+}
+```
+
+Plusieurs outils en ligne, comme [`YAML`-to-json](https://jsonformatter.org/`YAML`-to-json) et [json-to-`YAML`](https://jsonformatter.org/json-to-`YAML`), permettent de convertir facilement ces formats entre eux.
+
+## Caractéristiques d'un fichier `YAML`
+
+Les fichiers `YAML` portent généralement les extensions `.`YAML`` ou `.yml`. Leur contenu est organisé de façon hiérarchique par des paires clé-valeur, structurées par indentation.
+
+Les types de données supportés par `YAML` sont variés :
+
+- **Chaînes de caractères** : entourées ou non de guillemets (exemple : `"hello"`).
+- **Numériques** : entiers ou flottants (exemple : `42`, `3.14`).
+- **Booléens** : représentés par `true` ou `false`.
+- **Listes** : éléments précédés d'un tiret (`-`).
+- **Dictionnaires (maps)** : collections structurées de paires clé-valeur.
+
+Exemple concret illustrant ces types de données :
+
+```yaml
+kind: Pod
+metadata:
+  name: my-api-pod
+spec:
+  containers:
+    - name: api
+      image: my_dh_account/my_fast_api:0.0.1
+      env:
+        - name: MODEL
+          value: deepseek-ai/DeepSeek-R1
+        - name: DEBUG
+          value: true
+      ports:
+        - containerPort: 8000
+```
+
+## Validation et erreurs fréquentes
+
+Le principal point de vigilance lorsqu'on écrit en `YAML` concerne l'indentation. Celle-ci est essentielle à la structuration des données. L'indentation recommandée est de **deux espaces**, jamais des tabulations, qui peuvent générer des erreurs d'interprétation.
+
+Pour prévenir ces erreurs, de nombreux outils de validation existent :
+
+- **Support natif dans les IDE** : VSCode, IntelliJ, PyCharm offrent des extensions qui détectent immédiatement les erreurs d'indentation ou de syntaxe.
+- ***Linters* dédiés** : [YAMLlint](https://yamllint.com) permet une validation précise et rapide.
+
+## `YAML` et l'approche GitOps
+
+`YAML` s'intègre parfaitement dans le paradigme **Infrastructure as Code** et l'approche **GitOps**. Cette dernière consiste à gérer les infrastructures en utilisant Git comme unique source de vérité.
+
+Dans ce contexte :
+
+- Les configurations d'infrastructure sont écrites en `YAML`, décrivant de manière déclarative les ressources souhaitées.
+- Ces fichiers `YAML` sont stockés dans un dépôt Git, permettant une traçabilité parfaite des modifications (historique, rollbacks, audits).
+
+Cette méthode présente plusieurs avantages essentiels :
+
+- **Reproductibilité** : chaque état de l'infrastructure est clairement décrit et peut être reproduit simplement.
+- **Traçabilité** : tout changement est documenté automatiquement dans l'historique Git.
+- **Automatisation** : l'infrastructure peut être déployée automatiquement à partir du dépôt Git grâce à des outils comme ArgoCD ou FluxCD.
+
+## Conclusion
+
+La maîtrise de `YAML` est aujourd'hui indispensable pour tout data scientist impliqué dans des projets nécessitant de la portabilité et du déploiement automatisé. Sa simplicité apparente et sa puissance sous-jacente en font un choix naturel dans les approches modernes de mise en production, notamment via Kubernetes, Docker, et les méthodologies GitOps.
+
