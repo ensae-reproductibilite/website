@@ -36,15 +36,15 @@ language:
 ---
 ```
 
-## Pourquoi s'intéresser au `YAML` ?
+## `YAML` et l'approche `GitOps` ?
 
-Grâce à sa simplicité, `YAML` est rapidement devenu un standard dans les éco-systèmes `DevOps` et `MLOps` dans la mesure où il facilite grandement l'interaction entre les humains et les systèmes automatisés.
+Grâce à cette lisibilité, le langage `YAML` est rapidement devenu un standard dans les éco-systèmes `DevOps` et `MLOps` dans la mesure où il facilite grandement l'interaction entre les humains et les systèmes automatisés. En particulier, il est devenu un élément central des environnements de déploiement modernes basés sur une approche dite **déclarative**[^sql]. Au lieu de spécifier étape par étape comment déployer une ressource (approche **impérative**), `YAML` permet de décrire simplement **l'état final souhaité** de l'environnement. C'est alors l'outil utilisé (par exemple, `Kubernetes` dans l'exemple ci-dessous) qui gère les détails d'implémentation de manière la plus adaptée. On parle également d'approche ***Infrastructure as Code*** : l'infrastructure peut être complètement décrite dans des fichiers de configuration `YAML` — qu'on appelle **manifestes** — qui permettent de décrire l'état souhaité de celle-ci. Cette manière de spécifier les environnements favorise la **reproductibilité**, chaque état de l'infrastructure étant clairement décrit et pouvant être reproduit simplement.
 
-L'intérêt pour `YAML` vient principalement de son adoption massive dans les environnements de déploiement modernes, notamment grâce à l'approche dite **"déclarative"** qu'il permet.
+[^sql]: A titre d'analogie, l'approche déclarative est également au cœur du langage `SQL`. En `SQL`, on décrit le traitement souhaité dans un langage proche du langage naturel (*SELECT* ce groupe de variables, *FILTER* ces individus, etc.) et c'est le moteur d'exécution sous-jacent qui choisit comment effectuer les calculs demandés de manière optimale. C'est notamment une des raisons de la popularité du langage `SQL` dans l'éco-système *big data* : il est possible d'appliquer une même requête à des données de volumétries très différentes dans la mesure où le moteur d'exécution sous-jacent va convertir la requête de manière appropriée. Par exemple, une requête `SQL` sera convertie par `Spark` en opérations `MapReduce` distribuées permettant de traiter des volumes considérables de données (voir chapitre [*big data*](/chapters/big-data.html) pour plus de détails).
 
-En effet, au lieu de spécifier étape par étape comment accomplir une tâche (approche impérative), `YAML` décrit simplement **l'état final souhaité**. C'est alors l'outil utilisé (par exemple, Kubernetes, Docker Compose ou GitOps) qui gère les détails d'implémentation.
+Bien entendu, ces fichiers décrivant les environnements souhaités ont vocation à être versionnés sur un dépôt `Git`. Cette extension directe de l'approche *Infrastructure as Code* se nomme le ***GitOps*** : l'architecture est décrite sous forme de manifestes (`YAML`) et ces manifestes sont versionnés sur un dépôt `Git` qui devient ainsi la **source de vérité unique** de spécification de l'environnement[^git]. Cette approche favorise à la fois la **traçabilité** — tout changement est documenté dans l'historique du dépôt `Git` — et l'automatisation — l'infrastructure peut être déployée automatiquement à partir du dépôt `Git` grâce à des outils de déploiement continus orientés ***GitOps*** comme `ArgoCD` (cf. chapitre [déploiement](/chapters/deployment.html)). 
 
-Voici un exemple illustrant ce concept dans le contexte Kubernetes :
+Voici un exemple illustrant ce concept dans le contexte de `Kubernetes`. 
 
 ```yaml
 kind: Pod
@@ -56,10 +56,8 @@ spec:
       image: my_dh_account/my_fast_api:0.0.1
       env:
         - name: MODEL
-          value: deepseek-ai/DeepSeek-R1
+          value: random_forest
 ```
-
-Cette approche réduit considérablement la complexité liée à la gestion des infrastructures et améliore la clarté des configurations.
 
 ## `YAML` vs. JSON
 
@@ -128,21 +126,6 @@ Pour prévenir ces erreurs, de nombreux outils de validation existent :
 
 - **Support natif dans les IDE** : VSCode, IntelliJ, PyCharm offrent des extensions qui détectent immédiatement les erreurs d'indentation ou de syntaxe.
 - ***Linters* dédiés** : [YAMLlint](https://yamllint.com) permet une validation précise et rapide.
-
-## `YAML` et l'approche GitOps
-
-`YAML` s'intègre parfaitement dans le paradigme **Infrastructure as Code** et l'approche **GitOps**. Cette dernière consiste à gérer les infrastructures en utilisant Git comme unique source de vérité.
-
-Dans ce contexte :
-
-- Les configurations d'infrastructure sont écrites en `YAML`, décrivant de manière déclarative les ressources souhaitées.
-- Ces fichiers `YAML` sont stockés dans un dépôt Git, permettant une traçabilité parfaite des modifications (historique, rollbacks, audits).
-
-Cette méthode présente plusieurs avantages essentiels :
-
-- **Reproductibilité** : chaque état de l'infrastructure est clairement décrit et peut être reproduit simplement.
-- **Traçabilité** : tout changement est documenté automatiquement dans l'historique Git.
-- **Automatisation** : l'infrastructure peut être déployée automatiquement à partir du dépôt Git grâce à des outils comme ArgoCD ou FluxCD.
 
 ## Conclusion
 
