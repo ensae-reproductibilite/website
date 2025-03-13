@@ -11,7 +11,9 @@ execute:
 
 ## Qu'est-ce que le format `YAML`
 
-`YAML` est un acronyme récursif signifiant [*YAML Ain't Markup Language*](https://yaml.org/). `YAML` est un langage de sérialisation de données au format texte : il permet de structurer de la donnée dans des fichiers textuels, à l'instar d'autres formats populaires (`CSV`, `JSON`, `XML`, etc.). Sa spécificité est qu'il est conçu pour être à la fois expressif et facile à lire pour un humain. Expressif dans la mesure où il permet de représenter de l'information hiérarchique, ce que ne permet pas le format `CSV` par exemple qui représente essentiellement des données tabulaires ("fichier plat"). Lisible car, contrairement aux languages dont la structure est basée sur des balises (*markup*) comme `XML` ou bien délimitée par des symboles comme l'accolade en `JSON`, `YAML` se démarque par une syntaxe basée sur l'indentation — comme `Python`. 
+`YAML` est un acronyme récursif signifiant [*YAML Ain't Markup Language*](https://yaml.org/). `YAML` est un langage de sérialisation de données au format texte : il permet de structurer de la donnée dans des fichiers textuels, à l'instar d'autres formats populaires (`CSV`, `JSON`, `XML`, etc.). 
+
+Sa spécificité par rapport aux autres formats populaires est qu'il est conçu pour être à la fois expressif et facile à lire pour un humain. Expressif dans la mesure où il permet de représenter de l'information hiérarchique, ce que ne permet pas le format `CSV` par exemple qui représente essentiellement des données tabulaires ("fichier plat"). Lisible car, contrairement aux languages dont la structure est basée sur des balises (*markup*) comme `XML` ou bien délimitée par des symboles comme l'accolade en `JSON`, `YAML` se démarque par une syntaxe basée sur l'indentation — comme `Python`. 
 
 Voici un exemple typique d'un fichier `YAML`, qui compare les principaux langages utilisés pour représenter des données hiérarchiques dans un format textuel[^source].
 
@@ -183,7 +185,7 @@ with open('api-deployment.yaml', 'w') as file_out:
     yaml.dump(yaml.safe_load(manifest), file_out)
 ```
 
-La syntaxe pour importer le contenu d'un fichier `YAML` est semblable à celle pour n'importe quel fichier. On utilise la fonction `safe_load` du *package* `PyYAML`. Le contenu est chargé en `Python` sous la forme d'un dictionnaire, qui est la manière naturelle en `Python` de représenter de l'information hiérarchique.
+La syntaxe pour importer le contenu d'un fichier `YAML` est semblable à celle pour n'importe quel fichier. On utilise la fonction `safe_load` du *package* `PyYAML`. 
 
 ```{python}
 with open("api-deployment.yaml", "r") as file_in:
@@ -192,7 +194,7 @@ with open("api-deployment.yaml", "r") as file_in:
 print(manifest)
 ```
 
-A partir de là, on peut requêter le contenu du fichier `YAML` à la manière de n'importe quel dictionnaire `Python`. Récupérons par exemple le nom du modèle déployé.
+Le contenu est chargé en `Python` sous la forme d'un dictionnaire, qui est la manière naturelle en `Python` de représenter de l'information hiérarchique. A partir de là, on peut requêter le contenu du fichier `YAML` à la manière de n'importe quel dictionnaire `Python`. Récupérons par exemple le nom du modèle déployé.
 
 ```{python}
 print(manifest["spec"]["containers"][0]["env"][0]["value"])
