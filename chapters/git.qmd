@@ -1,6 +1,6 @@
 ---
 title: "Versionner son code et travailler collaborativement avec Git"
-image: /snakedolls.jpg
+image: https://minio.lab.sspcloud.fr/lgaliana/generative-art/mise-en-prod/snakedolls_compressed.jpg
 description: |
   Présentation des principes du contrôle de version et du travail collaboratif avec Git et son écosystème.
 order: 3
@@ -27,7 +27,7 @@ Le développement rapide de la *data science* au cours de ces dernières années
 
 Pourtant, tout *data scientist* s'est parfois demandé :
 
-- quelle était la bonne version d'un programme 
+- quelle était la bonne version d'un programme
 - qui était l'auteur d'un bout de code en particulier
 - si un changement était important ou juste un essai
 - comment fusionner des programmes
@@ -41,7 +41,7 @@ Et il n'est pas rare de perdre le fil des versions de son projet lorsque l'on ga
 
 Pourtant, il existe un outil informatique puissant afin de répondre à tous ces besoins : la gestion de version (*version control system* (VCS) en anglais). Ses avantages sont incontestables et permettent de facilement :
 
-- enregistrer l'historique des modifications d'un ensemble de fichiers 
+- enregistrer l'historique des modifications d'un ensemble de fichiers
 - revenir à des versions précédentes d'un ou plusieurs fichiers
 - rechercher les modifications qui ont pu créer des erreurs
 - travailler simultanément sur un même fichier sans risque de perte
@@ -51,11 +51,11 @@ Pourtant, il existe un outil informatique puissant afin de répondre à tous ces
 
 En outre, ces outils fonctionnent avec tous les langages informatiques car ils reposent sur la comparaison des lignes et des caractères des programmes, indépendamment du langage. En bref, c'est la bonne manière pour partager des codes et travailler à plusieurs sur un projet de *data science*. En réalité, il ne serait pas exagéré de dire que **l'utilisation du contrôle de version est la bonne pratique la plus fondamentale de tout projet faisant intervenir du code**, et qu'elle conditionne largement toutes les autres.
 
-## Pourquoi `Git` <i class="fab fa-git-alt"></i> ? 
+## Pourquoi `Git` <i class="fab fa-git-alt"></i> ?
 
 Plusieurs logiciels de contrôle de version existent sur le marché. En principe, le logiciel Git, développé initialement pour fournir une solution décentralisée et *open-source* dans le cadre du développement du noyau Linux, est devenu largement hégémonique. Aussi, **toutes les application de ce cours s'effectueront à l'aide du logiciel Git**.
 
-## Pourquoi `GitHub` <i class="fab fa-github"></i> ? 
+## Pourquoi `GitHub` <i class="fab fa-github"></i> ?
 
 Travailler de manière collaborative avec Git implique de synchroniser son répertoire local avec une copie distante, située sur un serveur hébergeant des projets Git. Ce serveur peut être un serveur interne à une organisation, ou bien être fourni par un hébergeur externe. Les deux alternatives les plus populaires en la matière sont GitHub et GitLab. Dans ce cours, **nous utiliserons GitHub, qui est devenu au fil des années la référence pour l'hébergement des projets open-source**. En pratique, les deux services sont relativement semblables, et tous les concepts présentés se retrouvent sous une forme similaire sur les deux plateformes.
 
@@ -72,7 +72,7 @@ Le graphique suivant illustre les principes fondamentaux de Git.
 **Git tout-en-un** ([Source](http://fabacademy.org/2021/labs/bhubaneswar/students/deepak-chaudhry/ia_PPFP.html))
 ![](/gitallinone.png)
 
-Lorsqu'on utilise Git, il est important de **bien distinguer ce qui se passe en local** (sur son poste, sur le serveur sur lequel on travaille...) **de ce qui se passe en *remote***, i.e. en intéragissant avec un serveur distant. Comme le montre le graphique, l'essentiel du contrôle de version se passe en réalité en local. 
+Lorsqu'on utilise Git, il est important de **bien distinguer ce qui se passe en local** (sur son poste, sur le serveur sur lequel on travaille...) **de ce qui se passe en *remote***, i.e. en intéragissant avec un serveur distant. Comme le montre le graphique, l'essentiel du contrôle de version se passe en réalité en local.
 
 En théorie, sur un projet individuel, il est même possible de réaliser l'ensemble du contrôle de version en mode hors-ligne. Pour cela, il suffit d'indiquer à Git le projet (dossier) que l'on souhaite versionner en utilisant la commande `git init`. Cette commande a pour effet de créer un dossier `.git` à la racine du projet, dans lequel Git va stocker tout l'historique du projet (commits, branches, etc.) et permettre de naviguer entre les versions. A cause du `.` qui préfixe son nom, ce dossier est généralement caché par défaut, ce qui n'est pas problématique dans la mesure où il n'y a jamais besoin de le parcourir ou de le modifier à la main en pratique. Retenez simplement que **c'est la présence de ce dossier `.git` qui fait qu'un dossier est considéré comme un projet Git**, et donc que vous pouvez utilisez les commandes usuelles de Git dans ce dossier à l'aide d'un terminal :
 - `git status` : affiche les modifications du projet par rapport à la version précédente ;
@@ -98,7 +98,7 @@ origin  https://github.com/linogaliana/ensae-reproductibilite-website.git (fetch
 origin  https://github.com/linogaliana/ensae-reproductibilite-website.git (push)
 ```
 
-Le projet local est bien lié au répertoire distant sur GitHub, auquel Git donne par défaut le nom `origin`. Ce lien permet d'utiliser les commandes de synchronisation usuelles : 
+Le projet local est bien lié au répertoire distant sur GitHub, auquel Git donne par défaut le nom `origin`. Ce lien permet d'utiliser les commandes de synchronisation usuelles :
 - `git pull` : récupérer les changements (*fetch*) sur le *remote* et les appliquer au projet local
 - `git push` : envoyer les changements locaux sur le *remote*
 
@@ -118,7 +118,7 @@ Le contrôle de version est une bonne pratique de développement en soi... mais 
 
 #### Uniquement des fichiers texte
 
-A chaque commit, Git calcule les *différences* entre les versions successives du projet, afin de ne pas avoir à stocker une image complète de ce dernier à chaque fois. C'est ce qui permet aux projets Git de rester très légers par défaut, et donc aux différentes opérations impliquant le *remote* (`clone`, `push`, `pull`..) d'être très rapides. 
+A chaque commit, Git calcule les *différences* entre les versions successives du projet, afin de ne pas avoir à stocker une image complète de ce dernier à chaque fois. C'est ce qui permet aux projets Git de rester très légers par défaut, et donc aux différentes opérations impliquant le *remote* (`clone`, `push`, `pull`..) d'être très rapides.
 
 La contrepartie de cette légèreté est une contrainte sur les types d'objets que l'on doit versionner. Les différences sont calculables uniquement sur des fichiers de type texte : codes source, fichiers texte, fichiers de configuration non-sensibles... Voici donc une liste non-exhaustive des extensions de fichier que l'on retrouve fréquemment dans un dépôt Git d'un projet `R` ou `Python` : `.py`, `.R`, `.Rmd`, `.txt`, `.json`, `.xml`, `.yaml`, `.toml`, et bien d'autres.
 
@@ -160,7 +160,7 @@ Chaque ligne du `gitignore` spécifie un élément à ignorer du contrôle de ve
 - ligne 2 : ignore le dossier `__pycache__/` ;
 - ligne 3 : ignore tous les fichiers dont l'extension est `.log`.
 
-De nombreuses autres possiblités existent, et sont détaillées par exemple dans la [documentation de Git](https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository#_ignoring). 
+De nombreuses autres possiblités existent, et sont détaillées par exemple dans la [documentation de Git](https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository#_ignoring).
 
 ### Messages des commits
 
@@ -213,7 +213,7 @@ Date:   Tue Mar 22 14:34:04 2022 +0100
 ...
 ```
 
-Une branche est simplement un pointeur vers un commit. Dans l'exemple précédent, on a imprimé les informations du dernier commit en date. La branche principale (`master`) pointe vers ce commit. Si l'on faisait un nouveau commit, le pointeur se décalerait et la branche `master` pointerait à présent sur le nouveau commit. 
+Une branche est simplement un pointeur vers un commit. Dans l'exemple précédent, on a imprimé les informations du dernier commit en date. La branche principale (`master`) pointe vers ce commit. Si l'on faisait un nouveau commit, le pointeur se décalerait et la branche `master` pointerait à présent sur le nouveau commit.
 
 ### Branches locales
 
@@ -228,7 +228,7 @@ git branch  #<2>
 
 ```{.python}
 * master  #<1>
-  testing  #<2> 
+  testing  #<2>
 ```
 1. La branche sur laquelle on se situe
 2. La nouvelle branche créée
@@ -237,7 +237,7 @@ La figure suivante illustre l'effet de cette création sur l'historique Git.
 
 ![](/newbranch.png)
 
-Désormais, deux branches (`master` et `testing`) pointent vers le même commit. Si l'on effectue à présent des commits sur la branche `testing`, on va diverger de la branche principale, ce qui permet de développer une nouvelle fonctionnalité sans risquer d'impacter `master`. 
+Désormais, deux branches (`master` et `testing`) pointent vers le même commit. Si l'on effectue à présent des commits sur la branche `testing`, on va diverger de la branche principale, ce qui permet de développer une nouvelle fonctionnalité sans risquer d'impacter `master`.
 
 Pour savoir sur quelle branche on se situe à instant donné — et donc sur quelle branche on va commiter — Git utilise un pointeur spécial, appelé `HEAD`, qui pointe vers la branche courante. On comprend à présent mieux la signification de `HEAD -> master` dans l'output de la commande `git log` vu précédemment. Cet élément spécifie la situation *locale* actuelle et signifie : on se situe actuellement sur la branche `master`, qui pointe sur le commit `e58b004`. Pour changer de branche, i.e. déplacer le `HEAD`, on utilise la commande `git checkout`. Par exemple, pour passer de la branche `master` sur laquelle on est par défaut à la branche `testing` :
 
@@ -321,7 +321,7 @@ Dans le cas d'un conflit à gérer, le conflit doit être résolu dans la branch
 
 Si tout est en ordre, la branche peut être fusionnée. Seuls les *mainteneurs*, qui ont les droits sur `master`, peuvent fusionner la *pull request*. En termes d'historique du projet, deux choix sont possibles :
 - "*Create a merge commit*" : tous les commits réalisés sur la branche apparaîtront dans l'historique du projet ;
-- "*Squash and merge*" : les différents commits réalisés sur la branche seront rassemblés en un commit unique. Cette option est généralement préférable lorsqu'on utilise des branches de court-terme : elles permettent de garder l'historique plus lisible. 
+- "*Squash and merge*" : les différents commits réalisés sur la branche seront rassemblés en un commit unique. Cette option est généralement préférable lorsqu'on utilise des branches de court-terme : elles permettent de garder l'historique plus lisible.
 
 
 

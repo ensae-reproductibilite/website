@@ -5,7 +5,7 @@ description: |
   Principes de valorisation et de déploiement d'une application dans un environnement de production.
 image: /whale.png
 order: 8
-href: chapters/deployment.html
+href: https://minio.lab.sspcloud.fr/lgaliana/generative-art/mise-en-prod/whale_compressed.png
 ---
 
 <details>
@@ -33,7 +33,7 @@ La diversité des réponses qui peuvent être apportées à chacun de ces choix 
 
 Par rapport au précédent, ce chapitre est assez technique et repose sur une vaste palette d'outils. Notre propos n'est cependant pas de dire que le *data scientist* doit maîtriser l'ensemble des concepts et outils présentés. Au contraire : avec la complexification des projets et des infrastructures, un ensemble de professions ont émergé — *date engineer*, *dev ops*, *machine learning engineer*, etc. — dont les rôles sont plus spécifiquement centrés sur l'industrialisation des projets. Néanmoins, nous sommes convaincus qu'il est essentiel que le *data scientist* possède des notions sur le sujet afin de pouvoir jouer le **rôle d'interface** entre le métier et les équipes techniques. Ce chapitre est une tentative de condenser ces différentes notions sous une forme la plus accessible possible.
 
-Ce chapitre nous amènera à explorer plusieurs écosystèmes, pour lesquels 
+Ce chapitre nous amènera à explorer plusieurs écosystèmes, pour lesquels
 on retrouve quelques _buzz-words_ dont voici les définitions :
 
 | Terme | Définition|
@@ -55,13 +55,13 @@ on retrouve quelques _buzz-words_ dont voici les définitions :
 ![](/cicd_exemple.png)
 
 L'approche CI/CD garantit une automatisation et une surveillance continues
-tout au long du cycle de vie d'un projet. 
+tout au long du cycle de vie d'un projet.
 
 Cela présente de nombreux avantages:
 
 - on peut anticiper les contraintes de la mise en production grâce à des environnements
 normalisés partant d'image docker standardisées
-- on peut tester les changements apportés à un livrable par un nouveau prototype 
+- on peut tester les changements apportés à un livrable par un nouveau prototype
 - on peut déterminer très rapidement l'introduction de bugs dans un projet.
 
 
@@ -72,12 +72,12 @@ normalisés partant d'image docker standardisées
 
 ### Mise en oeuvre : `GitHub Actions`
 
-Les actions `Github` sont un ensemble de règles qui se suivent au 
+Les actions `Github` sont un ensemble de règles qui se suivent au
 format `YAML`. Cela permet de définir différentes étapes du processus
-avec, pour chaque étape, des éléments de configuration. 
+avec, pour chaque étape, des éléments de configuration.
 Elles permettent de partir d'une configuration minimale
 (ici une machine `ubuntu`) et d'appliquer des instructions à la suite,
-par étape. 
+par étape.
 
 <details>
 <summary>Exemple d'action impliquant exclusivement de l'intégration continue ([application 14](https://linogaliana.github.io/ensae-reproductibilite-website/chapters/application.html#etape-1-mise-en-place-de-tests-automatis%C3%A9s))</summary>
@@ -122,11 +122,11 @@ jobs:
 ::: {.callout-note}
 L'intégration continue est aussi au coeur des fonctionnalités
 de `Gitlab`. Il s'agissait même d'une fonctionnalité disponible
-des années avant `Github`. 
+des années avant `Github`.
 
 La syntaxe est différente mais le principe est le même : on part
 d'une machine à la configuration minimale depuis des serveurs
-mis à disposition et on teste la reproductibilité de son projet.  
+mis à disposition et on teste la reproductibilité de son projet.
 :::
 
 
@@ -142,8 +142,8 @@ mis à disposition et on teste la reproductibilité de son projet.
 - Modélisation d'un pipeline data sous forme de DAG
 - Implémentation : argo-workflow
 
-Une chaîne de production implique plusieurs étapes qui peuvent éventuellement 
-nécessiter plusieurs langages. Ces étapes peuvent être vues comme une suite de 
+Une chaîne de production implique plusieurs étapes qui peuvent éventuellement
+nécessiter plusieurs langages. Ces étapes peuvent être vues comme une suite de
 transformations.
 
 La représentation de ces étapes peut être faite à l'aide des diagrammes
@@ -153,10 +153,10 @@ acycliques dirigés (DAG):
 
 Un _workflow_ complet sera ainsi reproductible si on peut, en ayant accès
 aux _inputs_ et à l'ensemble des règles de transformation, reproduire
-exactement les outputs. 
+exactement les outputs.
 Si les inputs ou le code changent, on peut être en mesure de mettre à jour
 les outputs, si possible sans faire retourner les parties du projet non
-concernés. 
+concernés.
 
 Une première manière de développer est l'approche manuelle, qui est une tâche
 digne de Sisyphe:
@@ -167,18 +167,18 @@ digne de Sisyphe:
 4. Relance le code dans son ensemble
 
 Pour éviter ce cycle interminable, on est tenté d'écrire des bases
-intermédiaires et de ne faire tourner qu'une partie du code. 
-Cette approche, si elle a l'avantage de faire gagner du temps, est 
+intermédiaires et de ne faire tourner qu'une partie du code.
+Cette approche, si elle a l'avantage de faire gagner du temps, est
 néanmoins dangereuse car on peut facilement oublier de mettre à jour
 une base intermédiaire qui a changé ou au contraire refaire tourner
-une partie du code qui n'a pas été mise à jour. 
+une partie du code qui n'a pas été mise à jour.
 
-Il existe des méthodes plus fiables pour éviter ces gestes manuels. 
+Il existe des méthodes plus fiables pour éviter ces gestes manuels.
 Celles-ci sont inspirées de [GNU Make](https://www.gnu.org/software/make/)
-et consistent à créer le chemin de dépendance de la chaine de production 
+et consistent à créer le chemin de dépendance de la chaine de production
 (lister l'environnement, les inputs et les outputs à produire), à déterminer
 les chemins affectés par un changement de code ou de données pour
-ne faire tourner à nouveau que les étapes nécessaires. 
+ne faire tourner à nouveau que les étapes nécessaires.
 
 
 <!-- # Qu'est-ce que la mise en production ?
@@ -188,11 +188,11 @@ dont une structure de projet et de code adéquate facilite
 la réutilisation d'un projet. Cependant, le code est rarement,
 en soi, le produit final mais un moyen. Le code peut
 servir à mettre en oeuvre une application, à effectuer
-des traitements sur une base de données pour un papier ou 
+des traitements sur une base de données pour un papier ou
 un rapport, etc. La fréquence de ré-utilisation du code peut
 elle-même être variable: certains projets vont être utilisés
 quotidiennement alors que d'autres ne le seront qu'à des
-échéances diverses. 
+échéances diverses.
 
 Comme tout produit, un projet a un cycle de vie. Pour faire
 simple, on peut séparer celui-ci en trois phases:
@@ -205,25 +205,25 @@ la demande ;
 - la phase de maintenance correspond à la situation où on ne met plus
 en oeuvre de nouvelles fonctionalités mais où on s'assure qu'un projet
 informatique continue de produire les _output_ désirés malgré l'évolution
-du contexte. 
+du contexte.
 
-En pratique, la distinction entre ces moments d'un projet peut être 
-floue. Par exemple, grâce à `Git`, on peut ainsi mettre en oeuvre de 
+En pratique, la distinction entre ces moments d'un projet peut être
+floue. Par exemple, grâce à `Git`, on peut ainsi mettre en oeuvre de
 nouvelles fonctionalités (protypage correspond à la
-phase de développement) parallèles à celles déjà existantes (phase 
+phase de développement) parallèles à celles déjà existantes (phase
 de maintenance). Néanmoins, ces différences conceptuelles sont intéressantes
 pour appréhender les contraintes différentes de ces phases
-d'un projet. 
+d'un projet.
 
 
 ## Importance des bonnes pratiques
 
 Les bonnes pratiques mises en oeuvre jusqu'à présent avaient pour
-objectif de faciliter la compréhension et la réutilisation d'un 
+objectif de faciliter la compréhension et la réutilisation d'un
 projet. Elles sont donc particulièrement appropriées pour réduire
 le coût en temps de la mise en production et de la maintenance
 d'un projet. Ces coûts pourraient amener un projet, même utile,
-à être abandonné. 
+à être abandonné.
 
 
 ## Environnements de production
@@ -231,8 +231,8 @@ d'un projet. Ces coûts pourraient amener un projet, même utile,
 De même, l'emphase du chapitre précédent sur la portabilité
 vise à faciliter la mise en production. En effet, en créant
 un environnement normalisé qui créé des conditions simples
-pour reproduire certains _output_, on évite un hiatus 
-entre le protypage et la mise en production. 
+pour reproduire certains _output_, on évite un hiatus
+entre le protypage et la mise en production.
 
 
 # Différents types de livrable
@@ -240,7 +240,7 @@ entre le protypage et la mise en production.
 L'écosystème de la _data-science_ est florissant et permet
 une grande variété d'_output_ qui vont toucher des publics
 différents. Selon le type de projet, on peut retrouver
-plusieurs livrables: 
+plusieurs livrables:
 
 - base de données ;
 - API pour mettre à disposition un modèle  ;
@@ -254,9 +254,9 @@ L'objectif du présent chapitre est de proposer des
 méthodes pour anticiper la mise en production d'un
 projet en intégrant, dès la phase de prototypage,
 la production de livrables valorisant un projet
-de _data-science_. 
+de _data-science_.
 
-Ces méthodes nous amèneront à explorer plusieurs écosystèmes, pour lesquels 
+Ces méthodes nous amèneront à explorer plusieurs écosystèmes, pour lesquels
 on retrouve quelques _buzz-words_ dont voici les définitions :
 
 | Terme | Définition|
@@ -271,8 +271,8 @@ on retrouve quelques _buzz-words_ dont voici les définitions :
 
 ## Pipelines de données
 
-Une chaine de production implique plusieurs étapes qui peuvent éventuellement 
-nécessiter plusieurs langages. Ces étapes peuvent être vues comme des 
+Une chaine de production implique plusieurs étapes qui peuvent éventuellement
+nécessiter plusieurs langages. Ces étapes peuvent être vues comme des
 transformations à la chaine d'un ou plusieurs inputs afin de produire
 un ou plusieurs output.
 
@@ -283,10 +283,10 @@ acycliques dirigés (DAG):
 
 Un _workflow_ complet sera ainsi reproductible si on peut, en ayant accès
 aux _inputs_ et à l'ensemble des règles de transformation reproduire
-exactement les outputs. 
+exactement les outputs.
 Si les inputs ou le code change, on peut être en mesure de mettre à jour
 les outputs, si possible sans faire retourner les parties du projet non
-concernés. 
+concernés.
 
 Une première manière de développer est l'approche manuelle, qui est une tâche
 digne de Sisyphe:
@@ -297,18 +297,18 @@ digne de Sisyphe:
 4. Relance le code dans son ensemble
 
 Pour éviter ce cycle interminable, on est tenté d'écrire des bases
-intermédiaires et de ne faire tourner qu'une partie du code. 
-Cette approche, si elle a l'avantage de faire gagner du temps, est 
+intermédiaires et de ne faire tourner qu'une partie du code.
+Cette approche, si elle a l'avantage de faire gagner du temps, est
 néanmoins dangereuse car on peut facilement oublier de mettre à jour
 une base intermédiaire qui a changé ou au contraire refaire tourner
-une partie du code qui n'a pas été mise à jour. 
+une partie du code qui n'a pas été mise à jour.
 
-Il existe des méthodes plus fiables pour éviter ces gestes manuels. 
+Il existe des méthodes plus fiables pour éviter ces gestes manuels.
 Celles-ci sont inspirées de [GNU Make](https://www.gnu.org/software/make/)
-et consistent à créer le chemin de dépendance de la chaine de production 
+et consistent à créer le chemin de dépendance de la chaine de production
 (lister l'environnement, les inputs et les outputs à produire), à déterminer
 les chemins affectés par un changement de code ou de données pour
-ne faire tourner à nouveau que les étapes nécessaires. 
+ne faire tourner à nouveau que les étapes nécessaires.
 
 Les implémentations en `Python` et `R` sont nombreuses. Parmi celles-ci, on
 peut mettre en valeur
@@ -338,28 +338,28 @@ Certains outils vont plus loin:
 ## Avantages
 
 L'approche CI/CD garantit une automatisation et une surveillance continues
-tout au long du cycle de vie d'un projet. 
+tout au long du cycle de vie d'un projet.
 
 Cela présente de nombreux avantages:
 
 - on peut anticiper les contraintes de la mise en production grâce à des environnements
 normalisés partant d'image docker standardisées
-- on peut tester les changements apportés à un livrable par un nouveau prototype 
+- on peut tester les changements apportés à un livrable par un nouveau prototype
 - on peut déterminer très rapidement l'introduction de bugs dans un projet
 
 ## Mise en oeuvre
 
-L'idée de l'approche CI/CD est ainsi d'associer chaque changement de 
+L'idée de l'approche CI/CD est ainsi d'associer chaque changement de
 code (`commit`) à l'exécution de scripts automatisés.
 Bien que mis en oeuvre de manière différente, `Gitlab` et `Github`
 proposent tous les deux ce type de fonctionalités.
 
-Les actions `Github` sont un ensemble de règles qui se suivent au 
+Les actions `Github` sont un ensemble de règles qui se suivent au
 format `YAML`. Cela permet de définir différentes étapes du processus
-avec, pour chaque étape, des éléments de configuration. 
+avec, pour chaque étape, des éléments de configuration.
 
 Voici, par exemple, l'action qui sert de modèle à modifier dans l'exercice
-d'application 
+d'application
 
 ```yaml
 name: Python Package using Conda
@@ -407,7 +407,7 @@ jobs:
 
 Un code ou une API intéressent des publics très ciblés. D'autres
 publics seront intéressés par une autre valorisation
-d'un projet: les chercheurs apprécieront un papier académique, 
+d'un projet: les chercheurs apprécieront un papier académique,
 d'autres personnes préfèreront un site web ergonomique...
 
 ## Qu'est-ce qu'un site _web_ ?
@@ -427,16 +427,16 @@ du _What you see is what you get_ (WYSIWYG) des éditeurs de texte.
 
 Il existe énormément d'outils aujourd'hui qui permettent, sans connaissance
 en HTML, CSS ou JS, de créer un site _web_. Dans le domaine de la
-_data-science_, le format `Markdown` (fichiers `.md`) s'est imposé. 
+_data-science_, le format `Markdown` (fichiers `.md`) s'est imposé.
 
 `Markdown` est un système d’édition doté d’une syntaxe simplifiée souvent
 utilisé pour faire de la documentation de projet.
 Le format est utilisé sur de nombreux sites internet,
 notamment `Gitlab` et `Stackoverflow`.
 L’extension de ce type de fichier est `.md`.
-`Markdown` présente plusieurs avantages: 
+`Markdown` présente plusieurs avantages:
 
-- il est facile d’inclure des blocs de code informatique et des équations mathématiques dans un document Markdown ; 
+- il est facile d’inclure des blocs de code informatique et des équations mathématiques dans un document Markdown ;
 - le formatage de blocs de texte ou de code est simple et très bien fait (et beaucoup plus léger qu’en LaTeX par exemple) ;
 - il existe des outils de conversion de `Markdown` en `HTML` très bien faits.
 
@@ -444,25 +444,25 @@ Plus d'éléments sur la logique de `Markdown` et ses intérêts
 sont disponibles dans le
 chapitre [R Markdown de la documentation  `utilitR`](https://www.book.utilitr.org/rmarkdown.html)
 
-## Comment faire un site _web_ ? 
+## Comment faire un site _web_ ?
 
 Il existe historiquement plusieurs approches dans l'écosystème de la
-_data-science_, selon le langage utilisé et l'output désiré. 
+_data-science_, selon le langage utilisé et l'output désiré.
 
 Si on part de fichiers qui présentent des blocs de
 code qui ne nécessitent pas d'être exécutés, l'écosystème le plus riche
 est [Hugo](https://gohugo.io/content-management/formats/). Celui-ci permet
 de générer des sites web à l'architecture complexe à partir d'une
-arborescence de `.md`. C'est l'approche adoptée 
-pour ce site _web_ 
+arborescence de `.md`. C'est l'approche adoptée
+pour ce site _web_
 
 Cependant, il est souvent nécessaire d'exécuter des bouts de code pour tester
 les exemples présentés, ou générer des tableaux ou sorties graphiques.
-Pour cela, historiquement, il existe deux paradigmes: 
+Pour cela, historiquement, il existe deux paradigmes:
 
 - [`JupyterBook`](https://jupyterbook.org/intro.html) qui vise à générer des
 sites web et des notebooks à partir de fichiers `markdown`. Le notebook n'est
-donc pas le produit de départ (cf. XXXX) mais un livrable. 
+donc pas le produit de départ (cf. XXXX) mais un livrable.
 - [`R Markdown`](https://rmarkdown.rstudio.com/): l'écosystème le plus riche
 avec de nombreux modèles de documents customisables (documents HTML ou articles PDF, sites web de documentation
 avec `bookdown`, blogs avec `blogdown`,  _dashboards_, etc.) Le principe de `R Markdown`
@@ -475,12 +475,12 @@ executant d'autres langages, notamment
 du `Python` ([le cours de python de 2e année](https://pythonds.linogaliana.fr/)
 de l'ENSAE est testé et construit grâce à `R Markdown`).
 
-`Quarto` est le petit nouveau dans cet écosystème, amené à devenir un 
+`Quarto` est le petit nouveau dans cet écosystème, amené à devenir un
 outil standard des _data-scientists_ comme peuvent l'être, aujourd'hui,
 les Notebooks `Jupyter`.
 Successeur de `R Markdown`,
 il vise à améliorer l'aspect universel des documents produits en n'obligeant
-plus à utiliser `R` pour compiler le document qui ne le nécessitent pas. 
+plus à utiliser `R` pour compiler le document qui ne le nécessitent pas.
 C'est un outil particulièrement adapté aux utilisateurs de `Python`
 
 ![](/quarto.png)
@@ -490,32 +490,32 @@ la structure. Il comporte ainsi deux parties principales :
 
 - L’en-tête (`YAML` header) qui gère les éléments de style et les paramètres globaux;
 - Le contenu qui gère le fond et permet d’alterner librement texte et code :
-    + Les __blocs de texte brut__ mis en forme selon la syntaxe markdown 
+    + Les __blocs de texte brut__ mis en forme selon la syntaxe markdown
     + Les __blocs de code__ sont présentés dans des _chunks_ identifiés par un
 langage (ici `python`) qui seront exécutés de manière linéaire et produiront
-l'output désiré (ici une figure `matplotlib`).  
+l'output désiré (ici une figure `matplotlib`).
 
 ## Comment mettre à disposition un site _web_ ?
 
 Mettre à jour manuellement un site _web_ après l'avoir compilé
 est une tâche pénible et source d'erreur dans un projet actif de
 _data-science_.
-L'automatisation issue de l'approche CI/CD permet un gain de confort 
+L'automatisation issue de l'approche CI/CD permet un gain de confort
 aussi dans ce domaine.
 
 Supposons qu'on ait mis en oeuvre une routine pour automatiser la construction
 d'un site _web_ à partir de fichiers _Markdown_. Comment les mettre à
 disposition ?
 
-Il existe plusieurs manières de déployer automatiquement un site web : 
+Il existe plusieurs manières de déployer automatiquement un site web :
 
 - [Gitlab pages](https://docs.gitlab.com/ee/user/project/pages/) ;
 - [Github pages](https://pages.github.com/) ;
 - [Netlify](https://www.netlify.com/).
 
-Ces trois services sont gratuits. Ils consistent à mettre 
+Ces trois services sont gratuits. Ils consistent à mettre
 à disposition un DNS sur lequel des fichiers HTML peuvent être mis à
-disposition automatiquement pour assurer que chaque `commit` 
+disposition automatiquement pour assurer que chaque `commit`
 
 L'[exercice d'application](../application) supposant l'utilisation
 de `Github`, il présentera `Netlify` qui est

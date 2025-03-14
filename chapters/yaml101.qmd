@@ -1,6 +1,6 @@
 ---
 title: "YAML 101"
-image: /penguin.png
+image: https://minio.lab.sspcloud.fr/lgaliana/generative-art/mise-en-prod/divinefile_compressed.webp
 description: |
   Introduction à l'utilisation de `YAML`, un langage devenu incontournable dans l'éco-système DevOps pour sa capacité à produire des fichiers de configuration déclarative lisibles et expressifs.
 order: 7.5
@@ -11,9 +11,9 @@ execute:
 
 ## Qu'est-ce que le format `YAML`
 
-`YAML` est un acronyme récursif signifiant [*YAML Ain't Markup Language*](https://yaml.org/). `YAML` est un langage de sérialisation de données au format texte : il permet de structurer de la donnée dans des fichiers textuels, à l'instar d'autres formats populaires (`CSV`, `JSON`, `XML`, etc.). 
+`YAML` est un acronyme récursif signifiant [*YAML Ain't Markup Language*](https://yaml.org/). `YAML` est un langage de sérialisation de données au format texte : il permet de structurer de la donnée dans des fichiers textuels, à l'instar d'autres formats populaires (`CSV`, `JSON`, `XML`, etc.).
 
-Sa spécificité par rapport aux autres formats populaires est qu'il est conçu pour être à la fois expressif et facile à lire pour un humain. Expressif dans la mesure où il permet de représenter de l'information hiérarchique, ce que ne permet pas le format `CSV` par exemple qui représente essentiellement des données tabulaires ("fichier plat"). Lisible car, contrairement aux languages dont la structure est basée sur des balises (*markup*) comme `XML` ou bien délimitée par des symboles comme l'accolade en `JSON`, `YAML` se démarque par une syntaxe basée sur l'indentation — comme `Python`. 
+Sa spécificité par rapport aux autres formats populaires est qu'il est conçu pour être à la fois expressif et facile à lire pour un humain. Expressif dans la mesure où il permet de représenter de l'information hiérarchique, ce que ne permet pas le format `CSV` par exemple qui représente essentiellement des données tabulaires ("fichier plat"). Lisible car, contrairement aux languages dont la structure est basée sur des balises (*markup*) comme `XML` ou bien délimitée par des symboles comme l'accolade en `JSON`, `YAML` se démarque par une syntaxe basée sur l'indentation — comme `Python`.
 
 Voici un exemple typique d'un fichier `YAML`, qui compare les principaux langages utilisés pour représenter des données hiérarchiques dans un format textuel[^source].
 
@@ -46,7 +46,7 @@ Grâce à sa lisibilité, le langage `YAML` est rapidement devenu un standard da
 
 [^sql]: A titre d'analogie, l'approche déclarative est également au cœur du langage `SQL`. En `SQL`, on décrit le traitement souhaité dans un langage proche du langage naturel (*SELECT* ce groupe de variables, *FILTER* ces individus, etc.) et c'est le moteur d'exécution sous-jacent qui choisit comment effectuer les calculs demandés de manière optimale. C'est notamment une des raisons de la popularité du langage `SQL` dans l'éco-système *big data* : il est possible d'appliquer une même requête à des données de volumétries très différentes dans la mesure où le moteur d'exécution sous-jacent va convertir la requête de manière appropriée. Par exemple, une requête `SQL` sera convertie par `Spark` en opérations `MapReduce` distribuées permettant de traiter des volumes considérables de données (voir chapitre [*big data*](/chapters/big-data.qmd) pour plus de détails).
 
-Bien entendu, ces fichiers décrivant les environnements souhaités ont vocation à être versionnés sur un dépôt `Git`. Cette extension directe de l'approche *Infrastructure as Code* se nomme le ***GitOps*** : l'architecture est décrite sous forme de manifestes (`YAML`) et ces manifestes sont versionnés sur un dépôt `Git` qui devient ainsi la **source de vérité unique** de spécification de l'environnement[^git]. Cette approche favorise à la fois la **traçabilité** — tout changement est documenté dans l'historique du dépôt `Git` — et l'automatisation — l'infrastructure peut être déployée automatiquement à partir du dépôt `Git` grâce à des outils de déploiement continus orientés ***GitOps*** comme `ArgoCD` (cf. chapitre [déploiement](/chapters/deployment.qmd)). 
+Bien entendu, ces fichiers décrivant les environnements souhaités ont vocation à être versionnés sur un dépôt `Git`. Cette extension directe de l'approche *Infrastructure as Code* se nomme le ***GitOps*** : l'architecture est décrite sous forme de manifestes (`YAML`) et ces manifestes sont versionnés sur un dépôt `Git` qui devient ainsi la **source de vérité unique** de spécification de l'environnement[^git]. Cette approche favorise à la fois la **traçabilité** — tout changement est documenté dans l'historique du dépôt `Git` — et l'automatisation — l'infrastructure peut être déployée automatiquement à partir du dépôt `Git` grâce à des outils de déploiement continus orientés ***GitOps*** comme `ArgoCD` (cf. chapitre [déploiement](/chapters/deployment.qmd)).
 
 Voici un exemple illustrant ce concept dans le contexte de `Kubernetes`. On déclare dans un manifeste `YAML` une ressource de type `Pod`, qui a des métadonnées (un nom) et des spécifications. On y déclare le conteneur que le `Pod` doit déployer : celui d'une API [FastAPI](https://fastapi.tiangolo.com/) (voir l'[application fil rouge](/chapters/application.qmd) pour plus de détails). On passe à ce conteneur une variable d'environnement (cf. chapitre [Linux 101](/chapters/linux101.qmd)) qui spécifie le modèle à déployer via l'API au *runtime*. Ainsi, on décrit dans ce manifeste l'état souhaité, et `Kubernetes` se charge du déploiement effectif du conteneur.
 
@@ -65,7 +65,7 @@ spec:
 
 ## `YAML` *vs.* `JSON`
 
-Les langages `YAML` et `JSON` sont très proches dans la représentation hiérarchique de l'information qu'ils permettent. Fonctionnellement, le langage `YAML` est un **superset** du langage `JSON`. Cela signifie que tout ce qui est représentable en `JSON` peut l'être en `YAML` mais l'inverse n'est pas nécessairement vrai — même s'il est très rare en pratique de ne pas pouvoir faire la conversion dans les deux sens. Plusieurs outils en ligne, comme [`YAML`-to-json](https://jsonformatter.org/`YAML`-to-json) et [json-to-`YAML`](https://jsonformatter.org/json-to-`YAML`), permettent de convertir facilement ces formats entre eux. 
+Les langages `YAML` et `JSON` sont très proches dans la représentation hiérarchique de l'information qu'ils permettent. Fonctionnellement, le langage `YAML` est un **superset** du langage `JSON`. Cela signifie que tout ce qui est représentable en `JSON` peut l'être en `YAML` mais l'inverse n'est pas nécessairement vrai — même s'il est très rare en pratique de ne pas pouvoir faire la conversion dans les deux sens. Plusieurs outils en ligne, comme [`YAML`-to-json](https://jsonformatter.org/`YAML`-to-json) et [json-to-`YAML`](https://jsonformatter.org/json-to-`YAML`), permettent de convertir facilement ces formats entre eux.
 
 Comparons à titre d'illustration les représentations `YAML` et `JSON` du manifeste `Kubernetes` précédent.
 
@@ -111,11 +111,11 @@ La comparaison entre les deux représentations illustre clairement la différenc
 
 ## Caractéristiques d'un fichier `YAML`
 
-Les fichiers `YAML` portent généralement les extensions `.yaml` ou `.yml`. En pratique — et cela est vrai pour tous les formats de fichier en pratique — ce n'est pas l'extension qui fait qu'un fichier texte est un fichier `YAML`, mais bien la validité de son contenu au regard de la norme `YAML`. On doit donc respecter un certains nombres de règles et utiliser les types prévus pour produire un fichier `YAML`. 
+Les fichiers `YAML` portent généralement les extensions `.yaml` ou `.yml`. En pratique — et cela est vrai pour tous les formats de fichier en pratique — ce n'est pas l'extension qui fait qu'un fichier texte est un fichier `YAML`, mais bien la validité de son contenu au regard de la norme `YAML`. On doit donc respecter un certains nombres de règles et utiliser les types prévus pour produire un fichier `YAML`.
 
 Première règle : le contenu d'un fichier `YAML` est organisé en **paires clé-valeur** imbriquées, à la manière d'un dictionnaire en `Python`. La structure hiérarchique, c'est à dire l'imbrication des dictionnaires de données, est marquée par l'indentation. Par convention, on indente avec **deux espaces** (pas de tabulation!) à chaque niveau de hiérarchie.
 
-Seconde règle : on doit utiliser les types de données supportés par `YAML`. En pratique, ils sont suffisamment nombreux pour couvrir la plupart des usages : 
+Seconde règle : on doit utiliser les types de données supportés par `YAML`. En pratique, ils sont suffisamment nombreux pour couvrir la plupart des usages :
 
 - **Chaînes de caractères** : de la donnée textuelle. On peut choisir de l'entourer ou non de guillemets. Par convention, tout ce qui n'est pas des autres types de cette liste est au format textuel, il n'est donc pas indispensable de mettre des guillemets (à l'inverse du `JSON`).
 - **Numériques** : entiers ou flottants (exemple : `42`, `3.14`). Attention à ne pas mettre de guillemets dans ce cas, sinon les nombres seront reconnus comme des chaînes de caractères.
@@ -185,7 +185,7 @@ with open('api-deployment.yaml', 'w') as file_out:
     yaml.dump(yaml.safe_load(manifest), file_out)
 ```
 
-La syntaxe pour importer le contenu d'un fichier `YAML` est semblable à celle pour n'importe quel fichier. On utilise la fonction `safe_load` du *package* `PyYAML`. 
+La syntaxe pour importer le contenu d'un fichier `YAML` est semblable à celle pour n'importe quel fichier. On utilise la fonction `safe_load` du *package* `PyYAML`.
 
 ```{python}
 with open("api-deployment.yaml", "r") as file_in:
