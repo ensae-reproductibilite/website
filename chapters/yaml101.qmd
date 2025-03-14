@@ -2,7 +2,7 @@
 title: "YAML 101"
 image: https://minio.lab.sspcloud.fr/lgaliana/generative-art/mise-en-prod/divinefile_compressed.webp
 description: |
-  Introduction à l'utilisation de `YAML`, un langage devenu incontournable dans l'éco-système DevOps pour sa capacité à produire des fichiers de configuration déclarative lisibles et expressifs.
+  Introduction à l'utilisation de `YAML`, un langage devenu incontournable dans l'éco-système DevOps pour sa capacité à produire des fichiers de configuration déclaratifs lisibles et expressifs.
 order: 7.5
 href: chapters/yaml101.qmd
 execute:
@@ -13,7 +13,7 @@ execute:
 
 `YAML` est un acronyme récursif signifiant [*YAML Ain't Markup Language*](https://yaml.org/). `YAML` est un langage de sérialisation de données au format texte : il permet de structurer de la donnée dans des fichiers textuels, à l'instar d'autres formats populaires (`CSV`, `JSON`, `XML`, etc.).
 
-Sa spécificité par rapport aux autres formats populaires est qu'il est conçu pour être à la fois expressif et facile à lire pour un humain. Expressif dans la mesure où il permet de représenter de l'information hiérarchique, ce que ne permet pas le format `CSV` par exemple qui représente essentiellement des données tabulaires ("fichier plat"). Lisible car, contrairement aux languages dont la structure est basée sur des balises (*markup*) comme `XML` ou bien délimitée par des symboles comme l'accolade en `JSON`, `YAML` se démarque par une syntaxe basée sur l'indentation — comme `Python`.
+Sa spécificité par rapport aux autres formats populaires est qu'il est conçu pour être à la fois expressif et __facile à lire__ pour un humain. Expressif dans la mesure où il permet de représenter de l'information hiérarchique, ce que ne permet pas le format `CSV` par exemple qui représente essentiellement des données tabulaires ("fichier plat"). Lisible car, contrairement aux languages dont la structure est basée sur des balises (*markup*) comme `XML` ou bien délimitée par des symboles comme l'accolade en `JSON`, `YAML` se démarque par une syntaxe basée sur l'indentation — comme `Python`.
 
 Voici un exemple typique d'un fichier `YAML`, qui compare les principaux langages utilisés pour représenter des données hiérarchiques dans un format textuel[^source].
 
@@ -42,15 +42,25 @@ language:
 
 ## `YAML` et l'approche `GitOps`
 
-Grâce à sa lisibilité, le langage `YAML` est rapidement devenu un standard dans les éco-systèmes `DevOps` et `MLOps` dans la mesure où il facilite grandement l'interaction entre les humains et les systèmes automatisés. En particulier, il est devenu un élément central des environnements de déploiement modernes basés sur une approche dite **déclarative**[^sql]. Au lieu de spécifier étape par étape comment déployer une ressource (approche **impérative**), `YAML` permet de décrire simplement **l'état final souhaité** de l'environnement. C'est alors l'outil utilisé (par exemple, `Kubernetes` dans l'exemple ci-dessous) qui gère les détails d'implémentation de manière la plus adaptée. On parle également d'approche ***Infrastructure as Code*** : l'infrastructure peut être complètement décrite dans des fichiers de configuration `YAML` — qu'on appelle **manifestes** — qui permettent de décrire l'état souhaité de celle-ci. Cette manière de spécifier les environnements favorise la **reproductibilité**, chaque état de l'infrastructure étant clairement décrit et pouvant être reproduit simplement.
+Grâce à sa lisibilité, le langage `YAML` est rapidement devenu un standard dans les écosystèmes `DevOps` et `MLOps` dans la mesure où il facilite grandement l'interaction entre les humains et les systèmes automatisés. Il permet de définir de manière lisible des règles, basées sur des paramètres, qui peuvent facilement être interprétées à la fois par des humains (du fait de sa lisibilité) et par des machines (du fait de sa structure hiérarchisée).
 
-[^sql]: A titre d'analogie, l'approche déclarative est également au cœur du langage `SQL`. En `SQL`, on décrit le traitement souhaité dans un langage proche du langage naturel (*SELECT* ce groupe de variables, *FILTER* ces individus, etc.) et c'est le moteur d'exécution sous-jacent qui choisit comment effectuer les calculs demandés de manière optimale. C'est notamment une des raisons de la popularité du langage `SQL` dans l'éco-système *big data* : il est possible d'appliquer une même requête à des données de volumétries très différentes dans la mesure où le moteur d'exécution sous-jacent va convertir la requête de manière appropriée. Par exemple, une requête `SQL` sera convertie par `Spark` en opérations `MapReduce` distribuées permettant de traiter des volumes considérables de données (voir chapitre [*big data*](/chapters/big-data.qmd) pour plus de détails).
+En particulier, le `YAML` est devenu un élément central des environnements de déploiement modernes basés sur une approche dite **déclarative** (@nte-sql-declarative). Au lieu de spécifier étape par étape comment déployer une ressource (approche **impérative**), `YAML` permet de décrire simplement **l'état final souhaité** de l'environnement. C'est alors l'outil utilisé (par exemple, `Kubernetes` dans l'exemple ci-dessous) qui gère les détails d'implémentation de manière la plus adaptée. On parle souvent d'approche ***Infrastructure as Code*** : l'infrastructure peut être complètement décrite dans des fichiers de configuration `YAML` — qu'on appelle **manifestes** — qui permettent de décrire l'état souhaité de celle-ci. Cette manière de spécifier les environnements favorise la **reproductibilité**, chaque état de l'infrastructure étant clairement décrit et pouvant être reproduit simplement.
 
-Bien entendu, ces fichiers décrivant les environnements souhaités ont vocation à être versionnés sur un dépôt `Git`. Cette extension directe de l'approche *Infrastructure as Code* se nomme le ***GitOps*** : l'architecture est décrite sous forme de manifestes (`YAML`) et ces manifestes sont versionnés sur un dépôt `Git` qui devient ainsi la **source de vérité unique** de spécification de l'environnement[^git]. Cette approche favorise à la fois la **traçabilité** — tout changement est documenté dans l'historique du dépôt `Git` — et l'automatisation — l'infrastructure peut être déployée automatiquement à partir du dépôt `Git` grâce à des outils de déploiement continus orientés ***GitOps*** comme `ArgoCD` (cf. chapitre [déploiement](/chapters/deployment.qmd)).
+::: {#nte-sql-declarative .callout-note collapse="true"}
+## YAML n'est pas le premier langage déclaratif que vous avez appris !
 
-Voici un exemple illustrant ce concept dans le contexte de `Kubernetes`. On déclare dans un manifeste `YAML` une ressource de type `Pod`, qui a des métadonnées (un nom) et des spécifications. On y déclare le conteneur que le `Pod` doit déployer : celui d'une API [FastAPI](https://fastapi.tiangolo.com/) (voir l'[application fil rouge](/chapters/application.qmd) pour plus de détails). On passe à ce conteneur une variable d'environnement (cf. chapitre [Linux 101](/chapters/linux101.qmd)) qui spécifie le modèle à déployer via l'API au *runtime*. Ainsi, on décrit dans ce manifeste l'état souhaité, et `Kubernetes` se charge du déploiement effectif du conteneur.
+A titre d'analogie, l'approche déclarative est également au cœur du langage `SQL`.
 
-```yaml
+En `SQL`, on décrit le traitement souhaité dans un langage proche du langage naturel (*SELECT* ce groupe de variables, *FILTER* ces individus, etc.) et c'est le moteur d'exécution sous-jacent qui choisit comment effectuer les calculs demandés de manière optimale.
+
+C'est notamment une des raisons de la popularité du langage `SQL` dans l'éco-système *big data* : il est possible d'appliquer une même requête à des données de volumétries très différentes dans la mesure où le moteur d'exécution sous-jacent va convertir la requête de manière appropriée. Par exemple, une requête `SQL` sera convertie par `Spark` en opérations `MapReduce` distribuées permettant de traiter des volumes considérables de données (voir chapitre [*big data*](/chapters/big-data.qmd) pour plus de détails).
+:::
+
+Bien entendu, ces fichiers décrivant les environnements souhaités ont vocation à être versionnés sur un dépôt `Git` {{< fa brands git-alt >}}. Cette extension directe de l'approche *Infrastructure as Code* se nomme le ***GitOps*** : l'architecture est décrite sous forme de manifestes (`YAML`) et ces manifestes sont versionnés sur un dépôt `Git` qui devient ainsi la **source de vérité unique** de spécification de l'environnement. Cette approche favorise à la fois la **traçabilité** — tout changement est documenté dans l'historique du dépôt `Git` — et l'**automatisation** — l'infrastructure peut être déployée automatiquement à partir du dépôt `Git` grâce à des outils de déploiement continus orientés ***GitOps*** comme `ArgoCD` (cf. chapitre [déploiement](/chapters/deployment.qmd)).
+
+Voici un exemple illustrant ce concept dans le contexte de `Kubernetes`. On déclare dans un manifeste `YAML` une ressource de type `Pod`, qui a des métadonnées (un nom) et des spécifications. On y déclare le conteneur que le `Pod` doit déployer : celui d'une API [`FastAPI`](https://fastapi.tiangolo.com/) (voir l'[application fil rouge](/chapters/application.qmd) pour plus de détails). On passe à ce conteneur une variable d'environnement (cf. chapitre [Linux 101](/chapters/linux101.qmd)) qui spécifie le modèle à déployer via l'API au *runtime*. Ainsi, on décrit dans ce manifeste l'état souhaité, et `Kubernetes` se charge du déploiement effectif du conteneur.
+
+```{.yaml file="example.yaml" filename="example.yaml"}
 kind: Pod
 metadata:
   name: my-api-pod
@@ -107,20 +117,22 @@ spec:
 ```
 :::
 
-La comparaison entre les deux représentations illustre clairement la différence majeure entre les deux langages : le `YAML` est facilement lisible par l'humain là où le `JSON` est plus verbeux et ressemble donc plus à un "langage machine". En effet, `YAML` utilise l'indentation pour structurer les données là où `JSON` utilise des accolades pour structurer ses objets, ce qui limite sa lisibilité mais le rend également moins susceptible aux erreurs d'indentation. Il n'est donc pas étonnant que `YAML` soit devenu le langage de référence dans le monde du `GitOps`, les fichiers de configuration déclaratifs étant généralement générés et lus par des humains. A l'inverse, `JSON` reste le langage standard de communication avec une API, dont les réponses sont généralement lues par d'autres applications ou bien par le biais d'un langage de programmation, ce à quoi se prête très bien une structure plus verbeuse mais aussi plus robuste.
+La comparaison entre les deux représentations illustre clairement la différence majeure entre les deux langages : le `YAML` est facilement lisible par l'humain là où le `JSON` est plus verbeux et ressemble donc plus à un "langage machine". En effet, `YAML` utilise l'indentation pour structurer les données là où `JSON` utilise des accolades pour structurer ses objets, ce qui limite sa lisibilité mais le rend également moins susceptible aux erreurs d'indentation.
+
+Il n'est donc pas étonnant que `YAML` soit devenu le langage de référence dans le monde du `GitOps`, les fichiers de configuration déclaratifs étant généralement générés et lus par des humains. A l'inverse, `JSON` reste le langage standard de communication avec une API, dont les réponses sont généralement lues par d'autres applications ou bien par le biais d'un langage de programmation, ce à quoi se prête très bien une structure plus verbeuse mais aussi plus robuste.
 
 ## Caractéristiques d'un fichier `YAML`
 
 Les fichiers `YAML` portent généralement les extensions `.yaml` ou `.yml`. En pratique — et cela est vrai pour tous les formats de fichier en pratique — ce n'est pas l'extension qui fait qu'un fichier texte est un fichier `YAML`, mais bien la validité de son contenu au regard de la norme `YAML`. On doit donc respecter un certains nombres de règles et utiliser les types prévus pour produire un fichier `YAML`.
 
-Première règle : le contenu d'un fichier `YAML` est organisé en **paires clé-valeur** imbriquées, à la manière d'un dictionnaire en `Python`. La structure hiérarchique, c'est à dire l'imbrication des dictionnaires de données, est marquée par l'indentation. Par convention, on indente avec **deux espaces** (pas de tabulation!) à chaque niveau de hiérarchie.
+_Première règle_ : le contenu d'un fichier `YAML` est organisé en **paires clé-valeur** imbriquées, à la manière d'un dictionnaire en `Python`. La structure hiérarchique, c'est à dire l'imbrication des dictionnaires de données, est marquée par l'indentation. Par convention, on indente avec **deux espaces** (pas de tabulation!) à chaque niveau de hiérarchie.
 
-Seconde règle : on doit utiliser les types de données supportés par `YAML`. En pratique, ils sont suffisamment nombreux pour couvrir la plupart des usages :
+__Seconde règle__ : on doit utiliser les types de données supportés par `YAML`. En pratique, ils sont suffisamment nombreux pour couvrir la plupart des usages :
 
 - **Chaînes de caractères** : de la donnée textuelle. On peut choisir de l'entourer ou non de guillemets. Par convention, tout ce qui n'est pas des autres types de cette liste est au format textuel, il n'est donc pas indispensable de mettre des guillemets (à l'inverse du `JSON`).
 - **Numériques** : entiers ou flottants (exemple : `42`, `3.14`). Attention à ne pas mettre de guillemets dans ce cas, sinon les nombres seront reconnus comme des chaînes de caractères.
 - **Booléens** : représentés par `true` ou `false` (tout en minuscule!). Là encore, pas de guillemets.
-- **Listes** : éléments précédés d'un tiret (`-`).
+- **Listes** : éléments précédés d'un tiret (`-`). Les éléments d'une liste peuvent être, et sont souvent, à plusieurs niveaux, le YAML permettant une structure imbriquée.
 
 Agrémentons encore un peu le manifeste de déploiement `Kubernetes` pour faire apparaître l'ensemble de ces types.
 
@@ -141,14 +153,26 @@ spec:
         - containerPort: 8000
 ```
 
+On voit ici que dans notre paramètre `env`, on a pu mettre plusieurs valeurs. Même si on ne connait pas les détails de l'implémentation sous-jacente, on peut se douter qu'on va injecter deux variables d'environnement à notre API dont les valeurs sont définies dans ce fichier.
+
+Les clés-valeurs acceptées sont des conventions, elles dépendent de chaque solution logicielle. Mais, globalement, les paramètres d'instruction acceptés par telle ou telle machine se ressemblent. Dans le cadre de l'[application fil rouge](/chapters/application.qmd), nous proposons l'utilisation de `Github Actions`, qui repose sur la spécification [`Mustache`](https://github.com/mustache/spec), d'`Argo` et de `Kubernetes`. Ces solutions techniques répondent à des besoins différents mais présentent le point commun de recevoir toutes trois leurs instructions depuis des `YAML`.
+
+
+::: {.callout-important}
 ## Validation et erreurs fréquentes
 
 Le principal point de vigilance lorsqu'on écrit du `YAML` concerne l'indentation. Celle-ci est essentielle à la structuration des données. L'indentation recommandée est de **deux espaces** ; jamais de tabulations, qui peuvent générer des erreurs d'interprétation car il s'agit de caractères spéciaux.
 
 Pour prévenir ces erreurs, de nombreux outils de validation existent :
 
-- **IDE** : les IDE standards comme `VSCode`, `PyCharm`, etc. supportent nativement le `YAML` et indiquent donc immédiatement les erreurs d'indentation ou de syntaxe.
+- **IDE** : les IDE standards comme `VSCode`, `PyCharm`, etc. supportent nativement le `YAML` et indiquent donc immédiatement les erreurs d'indentation ou de syntaxe. Il est utile d'avoir dans son IDE une coloration des indentations pour faire moins d'erreur: dans `VSCode`, vous pouvez installer l'extension [indent-rainbow](https://marketplace.visualstudio.com/items?itemName=oderwat.indent-rainbow) pour cela[^appli-fil-rouge].
 - ***Linters*** : des outils spécialisés pour valider le contenu d'un fichier `YAML`. [YAMLlint](https://yamllint.com) en est un choix courant.
+
+[^appli-fil-rouge]: Dans le cadre de l'[application fil rouge](/chapters/application.qmd), si vous créez votre `VSCode` à partir de la configuration proposée, celle-ci est installée par défaut pour vous.
+
+Si vous utilisez des actions `Github`, l'interface de `Github` depuis votre navigateur effectue un diagnostic de la validité formelle du YAML. Si vous _committez_ un fichier non valide formellement (par exemple à cause d'une erreur d'identation), `Github` ne lancera pas l'action. Il peut donc être utile de vérifier, si une action ne se lance pas, si cela vient d'un problème de formattage du fichier en l'ouvrant directement depuis `Github`.
+
+:::
 
 ## Utilisation programmatique
 
@@ -197,7 +221,15 @@ print(manifest)
 Le contenu est chargé en `Python` sous la forme d'un dictionnaire, qui est la manière naturelle en `Python` de représenter de l'information hiérarchique. A partir de là, on peut requêter le contenu du fichier `YAML` à la manière de n'importe quel dictionnaire `Python`. Récupérons par exemple le nom du modèle déployé.
 
 ```{python}
-print(manifest["spec"]["containers"][0]["env"][0]["value"])
+print(
+  manifest
+  .get("spec")
+  .get("containers")[0]
+  .get("env")[0]
+  .get("value")
+)
+# ou en version plus succincte:
+# print(manifest["spec"]["containers"][0]["env"][0]["value"])
 ```
 
 Le chemin dans le dictionnaire reflète les différents objets qui structurent un fichier `YAML`. Les clés ("spec", "containers") correspondent aux dictionnaires en `YAML`, et les index numériques ("0" ici) correspondent à la sélection d'un élément par position dans une liste. Ici, on récupère la spécification du premier conteneur — et le seul en l'occurrence, mais le `Pod` pourrait héberger plusieurs conteneurs — et, pour ce conteneur, on récupère la première variable d'environnement (`MODEL`) dont on extrait la valeur (le nom du modèle).
