@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Introduction à l’utilisation de YAML, un langage lisible et expressif devenu incontournable dans l’éco-système DevOps.">
+<meta name="description" content="Introduction à l’utilisation de YAML, un langage devenu incontournable dans l’éco-système DevOps pour sa capacité à produire des fichiers de configuration déclaratifs lisibles et expressifs.">
 
 <title>YAML 101 – Mise en production</title>
 <style>
@@ -75,6 +75,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../site_libs/bootstrap/bootstrap-bd706bf7cc79ec682822fd2bf903aab3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <link href="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/fontawesome6-1.2.0/all.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/fontawesome6-1.2.0/latex-fontsize.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -257,7 +259,6 @@ div.callout-application.callout-style-default .callout-icon::before, div.callout
   <li><a href="#yaml-et-lapproche-gitops" id="toc-yaml-et-lapproche-gitops" class="nav-link" data-scroll-target="#yaml-et-lapproche-gitops"><code>YAML</code> et l’approche <code>GitOps</code></a></li>
   <li><a href="#yaml-vs.-json" id="toc-yaml-vs.-json" class="nav-link" data-scroll-target="#yaml-vs.-json"><code>YAML</code> <em>vs.</em> <code>JSON</code></a></li>
   <li><a href="#caractéristiques-dun-fichier-yaml" id="toc-caractéristiques-dun-fichier-yaml" class="nav-link" data-scroll-target="#caractéristiques-dun-fichier-yaml">Caractéristiques d’un fichier <code>YAML</code></a></li>
-  <li><a href="#validation-et-erreurs-fréquentes" id="toc-validation-et-erreurs-fréquentes" class="nav-link" data-scroll-target="#validation-et-erreurs-fréquentes">Validation et erreurs fréquentes</a></li>
   <li><a href="#utilisation-programmatique" id="toc-utilisation-programmatique" class="nav-link" data-scroll-target="#utilisation-programmatique">Utilisation programmatique</a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
@@ -273,7 +274,7 @@ div.callout-application.callout-style-default .callout-icon::before, div.callout
 
 <div>
   <div class="description">
-    <p>Introduction à l’utilisation de <code>YAML</code>, un langage lisible et expressif devenu incontournable dans l’éco-système DevOps.</p>
+    <p>Introduction à l’utilisation de <code>YAML</code>, un langage devenu incontournable dans l’éco-système DevOps pour sa capacité à produire des fichiers de configuration déclaratifs lisibles et expressifs.</p>
   </div>
 </div>
 
@@ -293,7 +294,7 @@ div.callout-application.callout-style-default .callout-icon::before, div.callout
 <section id="quest-ce-que-le-format-yaml" class="level2">
 <h2 class="anchored" data-anchor-id="quest-ce-que-le-format-yaml">Qu’est-ce que le format <code>YAML</code></h2>
 <p><code>YAML</code> est un acronyme récursif signifiant <a href="https://yaml.org/"><em>YAML Ain’t Markup Language</em></a>. <code>YAML</code> est un langage de sérialisation de données au format texte : il permet de structurer de la donnée dans des fichiers textuels, à l’instar d’autres formats populaires (<code>CSV</code>, <code>JSON</code>, <code>XML</code>, etc.).</p>
-<p>Sa spécificité par rapport aux autres formats populaires est qu’il est conçu pour être à la fois expressif et facile à lire pour un humain. Expressif dans la mesure où il permet de représenter de l’information hiérarchique, ce que ne permet pas le format <code>CSV</code> par exemple qui représente essentiellement des données tabulaires (“fichier plat”). Lisible car, contrairement aux languages dont la structure est basée sur des balises (<em>markup</em>) comme <code>XML</code> ou bien délimitée par des symboles comme l’accolade en <code>JSON</code>, <code>YAML</code> se démarque par une syntaxe basée sur l’indentation — comme <code>Python</code>.</p>
+<p>Sa spécificité par rapport aux autres formats populaires est qu’il est conçu pour être à la fois expressif et <strong>facile à lire</strong> pour un humain. Expressif dans la mesure où il permet de représenter de l’information hiérarchique, ce que ne permet pas le format <code>CSV</code> par exemple qui représente essentiellement des données tabulaires (“fichier plat”). Lisible car, contrairement aux languages dont la structure est basée sur des balises (<em>markup</em>) comme <code>XML</code> ou bien délimitée par des symboles comme l’accolade en <code>JSON</code>, <code>YAML</code> se démarque par une syntaxe basée sur l’indentation — comme <code>Python</code>.</p>
 <p>Voici un exemple typique d’un fichier <code>YAML</code>, qui compare les principaux langages utilisés pour représenter des données hiérarchiques dans un format textuel<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p>
 <div class="sourceCode" id="cb1" data-code-line-numbers=""><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">---</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">type</span><span class="kw">:</span><span class="at"> tutorial</span></span>
@@ -316,10 +317,33 @@ div.callout-application.callout-style-default .callout-icon::before, div.callout
 </section>
 <section id="yaml-et-lapproche-gitops" class="level2">
 <h2 class="anchored" data-anchor-id="yaml-et-lapproche-gitops"><code>YAML</code> et l’approche <code>GitOps</code></h2>
-<p>Grâce à sa lisibilité, le langage <code>YAML</code> est rapidement devenu un standard dans les éco-systèmes <code>DevOps</code> et <code>MLOps</code> dans la mesure où il facilite grandement l’interaction entre les humains et les systèmes automatisés. En particulier, il est devenu un élément central des environnements de déploiement modernes basés sur une approche dite <strong>déclarative</strong><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. Au lieu de spécifier étape par étape comment déployer une ressource (approche <strong>impérative</strong>), <code>YAML</code> permet de décrire simplement <strong>l’état final souhaité</strong> de l’environnement. C’est alors l’outil utilisé (par exemple, <code>Kubernetes</code> dans l’exemple ci-dessous) qui gère les détails d’implémentation de manière la plus adaptée. On parle également d’approche <strong><em>Infrastructure as Code</em></strong> : l’infrastructure peut être complètement décrite dans des fichiers de configuration <code>YAML</code> — qu’on appelle <strong>manifestes</strong> — qui permettent de décrire l’état souhaité de celle-ci. Cette manière de spécifier les environnements favorise la <strong>reproductibilité</strong>, chaque état de l’infrastructure étant clairement décrit et pouvant être reproduit simplement.</p>
-<p>Bien entendu, ces fichiers décrivant les environnements souhaités ont vocation à être versionnés sur un dépôt <code>Git</code>. Cette extension directe de l’approche <em>Infrastructure as Code</em> se nomme le <strong><em>GitOps</em></strong> : l’architecture est décrite sous forme de manifestes (<code>YAML</code>) et ces manifestes sont versionnés sur un dépôt <code>Git</code> qui devient ainsi la <strong>source de vérité unique</strong> de spécification de l’environnement[^git]. Cette approche favorise à la fois la <strong>traçabilité</strong> — tout changement est documenté dans l’historique du dépôt <code>Git</code> — et l’automatisation — l’infrastructure peut être déployée automatiquement à partir du dépôt <code>Git</code> grâce à des outils de déploiement continus orientés <strong><em>GitOps</em></strong> comme <code>ArgoCD</code> (cf.&nbsp;chapitre <a href="../chapters/deployment.html">déploiement</a>).</p>
-<p>Voici un exemple illustrant ce concept dans le contexte de <code>Kubernetes</code>. On déclare dans un manifeste <code>YAML</code> une ressource de type <code>Pod</code>, qui a des métadonnées (un nom) et des spécifications. On y déclare le conteneur que le <code>Pod</code> doit déployer : celui d’une API <a href="https://fastapi.tiangolo.com/">FastAPI</a> (voir l’<a href="../chapters/application.html">application fil rouge</a> pour plus de détails). On passe à ce conteneur une variable d’environnement (cf.&nbsp;chapitre <a href="../chapters/linux101.html">Linux 101</a>) qui spécifie le modèle à déployer via l’API au <em>runtime</em>. Ainsi, on décrit dans ce manifeste l’état souhaité, et <code>Kubernetes</code> se charge du déploiement effectif du conteneur.</p>
-<div class="sourceCode" id="cb2" data-code-line-numbers=""><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Pod</span></span>
+<p>Grâce à sa lisibilité, le langage <code>YAML</code> est rapidement devenu un standard dans les écosystèmes <code>DevOps</code> et <code>MLOps</code> dans la mesure où il facilite grandement l’interaction entre les humains et les systèmes automatisés. Il permet de définir de manière lisible des règles, basées sur des paramètres, qui peuvent facilement être interprétées à la fois par des humains (du fait de sa lisibilité) et par des machines (du fait de sa structure hiérarchisée).</p>
+<p>En particulier, le <code>YAML</code> est devenu un élément central des environnements de déploiement modernes basés sur une approche dite <strong>déclarative</strong> (<a href="#nte-sql-declarative" class="quarto-xref">Note&nbsp;1</a>). Au lieu de spécifier étape par étape comment déployer une ressource (approche <strong>impérative</strong>), <code>YAML</code> permet de décrire simplement <strong>l’état final souhaité</strong> de l’environnement. C’est alors l’outil utilisé (par exemple, <code>Kubernetes</code> dans l’exemple ci-dessous) qui gère les détails d’implémentation de manière la plus adaptée. On parle souvent d’approche <strong><em>Infrastructure as Code</em></strong> : l’infrastructure peut être complètement décrite dans des fichiers de configuration <code>YAML</code> — qu’on appelle <strong>manifestes</strong> — qui permettent de décrire l’état souhaité de celle-ci. Cette manière de spécifier les environnements favorise la <strong>reproductibilité</strong>, chaque état de l’infrastructure étant clairement décrit et pouvant être reproduit simplement.</p>
+<div id="nte-sql-declarative" class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note&nbsp;1: YAML n’est pas le premier langage déclaratif que vous avez appris !
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>A titre d’analogie, l’approche déclarative est également au cœur du langage <code>SQL</code>.</p>
+<p>En <code>SQL</code>, on décrit le traitement souhaité dans un langage proche du langage naturel (<em>SELECT</em> ce groupe de variables, <em>FILTER</em> ces individus, etc.) et c’est le moteur d’exécution sous-jacent qui choisit comment effectuer les calculs demandés de manière optimale.</p>
+<p>C’est notamment une des raisons de la popularité du langage <code>SQL</code> dans l’éco-système <em>big data</em> : il est possible d’appliquer une même requête à des données de volumétries très différentes dans la mesure où le moteur d’exécution sous-jacent va convertir la requête de manière appropriée. Par exemple, une requête <code>SQL</code> sera convertie par <code>Spark</code> en opérations <code>MapReduce</code> distribuées permettant de traiter des volumes considérables de données (voir chapitre <a href="../chapters/big-data.html"><em>big data</em></a> pour plus de détails).</p>
+</div>
+</div>
+</div>
+<p>Bien entendu, ces fichiers décrivant les environnements souhaités ont vocation à être versionnés sur un dépôt <code>Git</code> <i class="fa-brands fa-git-alt" aria-label="git-alt"></i>. Cette extension directe de l’approche <em>Infrastructure as Code</em> se nomme le <strong><em>GitOps</em></strong> : l’architecture est décrite sous forme de manifestes (<code>YAML</code>) et ces manifestes sont versionnés sur un dépôt <code>Git</code> qui devient ainsi la <strong>source de vérité unique</strong> de spécification de l’environnement. Cette approche favorise à la fois la <strong>traçabilité</strong> — tout changement est documenté dans l’historique du dépôt <code>Git</code> — et l’<strong>automatisation</strong> — l’infrastructure peut être déployée automatiquement à partir du dépôt <code>Git</code> grâce à des outils de déploiement continus orientés <strong><em>GitOps</em></strong> comme <code>ArgoCD</code> (cf.&nbsp;chapitre <a href="../chapters/deployment.html">déploiement</a>).</p>
+<p>Voici un exemple illustrant ce concept dans le contexte de <code>Kubernetes</code>. On déclare dans un manifeste <code>YAML</code> une ressource de type <code>Pod</code>, qui a des métadonnées (un nom) et des spécifications. On y déclare le conteneur que le <code>Pod</code> doit déployer : celui d’une API <a href="https://fastapi.tiangolo.com/"><code>FastAPI</code></a> (voir l’<a href="../chapters/application.html">application fil rouge</a> pour plus de détails). On passe à ce conteneur une variable d’environnement (cf.&nbsp;chapitre <a href="../chapters/linux101.html">Linux 101</a>) qui spécifie le modèle à déployer via l’API au <em>runtime</em>. Ainsi, on décrit dans ce manifeste l’état souhaité, et <code>Kubernetes</code> se charge du déploiement effectif du conteneur.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>example.yaml</strong></pre>
+</div>
+<div class="sourceCode" id="cb2" data-file="example.yaml" data-filename="example.yaml" data-code-line-numbers=""><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Pod</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> my-api-pod</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
@@ -329,6 +353,7 @@ div.callout-application.callout-style-default .callout-icon::before, div.callout
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">env</span><span class="kw">:</span></span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> MODEL</span></span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">value</span><span class="kw">:</span><span class="at"> deepseek-ai/DeepSeek-R1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
 <section id="yaml-vs.-json" class="level2">
 <h2 class="anchored" data-anchor-id="yaml-vs.-json"><code>YAML</code> <em>vs.</em> <code>JSON</code></h2>
@@ -375,18 +400,19 @@ div.callout-application.callout-style-default .callout-icon::before, div.callout
 </div>
 </div>
 </div>
-<p>La comparaison entre les deux représentations illustre clairement la différence majeure entre les deux langages : le <code>YAML</code> est facilement lisible par l’humain là où le <code>JSON</code> est plus verbeux et ressemble donc plus à un “langage machine”. En effet, <code>YAML</code> utilise l’indentation pour structurer les données là où <code>JSON</code> utilise des accolades pour structurer ses objets, ce qui limite sa lisibilité mais le rend également moins susceptible aux erreurs d’indentation. Il n’est donc pas étonnant que <code>YAML</code> soit devenu le langage de référence dans le monde du <code>GitOps</code>, les fichiers de configuration déclaratifs étant généralement générés et lus par des humains. A l’inverse, <code>JSON</code> reste le langage standard de communication avec une API, dont les réponses sont généralement lues par d’autres applications ou bien par le biais d’un langage de programmation, ce à quoi se prête très bien une structure plus verbeuse mais aussi plus robuste.</p>
+<p>La comparaison entre les deux représentations illustre clairement la différence majeure entre les deux langages : le <code>YAML</code> est facilement lisible par l’humain là où le <code>JSON</code> est plus verbeux et ressemble donc plus à un “langage machine”. En effet, <code>YAML</code> utilise l’indentation pour structurer les données là où <code>JSON</code> utilise des accolades pour structurer ses objets, ce qui limite sa lisibilité mais le rend également moins susceptible aux erreurs d’indentation.</p>
+<p>Il n’est donc pas étonnant que <code>YAML</code> soit devenu le langage de référence dans le monde du <code>GitOps</code>, les fichiers de configuration déclaratifs étant généralement générés et lus par des humains. A l’inverse, <code>JSON</code> reste le langage standard de communication avec une API, dont les réponses sont généralement lues par d’autres applications ou bien par le biais d’un langage de programmation, ce à quoi se prête très bien une structure plus verbeuse mais aussi plus robuste.</p>
 </section>
 <section id="caractéristiques-dun-fichier-yaml" class="level2">
 <h2 class="anchored" data-anchor-id="caractéristiques-dun-fichier-yaml">Caractéristiques d’un fichier <code>YAML</code></h2>
 <p>Les fichiers <code>YAML</code> portent généralement les extensions <code>.yaml</code> ou <code>.yml</code>. En pratique — et cela est vrai pour tous les formats de fichier en pratique — ce n’est pas l’extension qui fait qu’un fichier texte est un fichier <code>YAML</code>, mais bien la validité de son contenu au regard de la norme <code>YAML</code>. On doit donc respecter un certains nombres de règles et utiliser les types prévus pour produire un fichier <code>YAML</code>.</p>
-<p>Première règle : le contenu d’un fichier <code>YAML</code> est organisé en <strong>paires clé-valeur</strong> imbriquées, à la manière d’un dictionnaire en <code>Python</code>. La structure hiérarchique, c’est à dire l’imbrication des dictionnaires de données, est marquée par l’indentation. Par convention, on indente avec <strong>deux espaces</strong> (pas de tabulation!) à chaque niveau de hiérarchie.</p>
-<p>Seconde règle : on doit utiliser les types de données supportés par <code>YAML</code>. En pratique, ils sont suffisamment nombreux pour couvrir la plupart des usages :</p>
+<p><em>Première règle</em> : le contenu d’un fichier <code>YAML</code> est organisé en <strong>paires clé-valeur</strong> imbriquées, à la manière d’un dictionnaire en <code>Python</code>. La structure hiérarchique, c’est à dire l’imbrication des dictionnaires de données, est marquée par l’indentation. Par convention, on indente avec <strong>deux espaces</strong> (pas de tabulation!) à chaque niveau de hiérarchie.</p>
+<p><strong>Seconde règle</strong> : on doit utiliser les types de données supportés par <code>YAML</code>. En pratique, ils sont suffisamment nombreux pour couvrir la plupart des usages :</p>
 <ul>
 <li><strong>Chaînes de caractères</strong> : de la donnée textuelle. On peut choisir de l’entourer ou non de guillemets. Par convention, tout ce qui n’est pas des autres types de cette liste est au format textuel, il n’est donc pas indispensable de mettre des guillemets (à l’inverse du <code>JSON</code>).</li>
 <li><strong>Numériques</strong> : entiers ou flottants (exemple : <code>42</code>, <code>3.14</code>). Attention à ne pas mettre de guillemets dans ce cas, sinon les nombres seront reconnus comme des chaînes de caractères.</li>
 <li><strong>Booléens</strong> : représentés par <code>true</code> ou <code>false</code> (tout en minuscule!). Là encore, pas de guillemets.</li>
-<li><strong>Listes</strong> : éléments précédés d’un tiret (<code>-</code>).</li>
+<li><strong>Listes</strong> : éléments précédés d’un tiret (<code>-</code>). Les éléments d’une liste peuvent être, et sont souvent, à plusieurs niveaux, le YAML permettant une structure imbriquée.</li>
 </ul>
 <p>Agrémentons encore un peu le manifeste de déploiement <code>Kubernetes</code> pour faire apparaître l’ensemble de ces types.</p>
 <div class="sourceCode" id="cb5" data-code-line-numbers=""><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Pod</span></span>
@@ -403,26 +429,38 @@ div.callout-application.callout-style-default .callout-icon::before, div.callout
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">value</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">ports</span><span class="kw">:</span></span>
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">containerPort</span><span class="kw">:</span><span class="at"> </span><span class="dv">8000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-<section id="validation-et-erreurs-fréquentes" class="level2">
-<h2 class="anchored" data-anchor-id="validation-et-erreurs-fréquentes">Validation et erreurs fréquentes</h2>
+<p>On voit ici que dans notre paramètre <code>env</code>, on a pu mettre plusieurs valeurs. Même si on ne connait pas les détails de l’implémentation sous-jacente, on peut se douter qu’on va injecter deux variables d’environnement à notre API dont les valeurs sont définies dans ce fichier.</p>
+<p>Les clés-valeurs acceptées sont des conventions, elles dépendent de chaque solution logicielle. Mais, globalement, les paramètres d’instruction acceptés par telle ou telle machine se ressemblent. Dans le cadre de l’<a href="../chapters/application.html">application fil rouge</a>, nous proposons l’utilisation de <code>Github Actions</code>, qui repose sur la spécification <a href="https://github.com/mustache/spec"><code>Mustache</code></a>, d’<code>Argo</code> et de <code>Kubernetes</code>. Ces solutions techniques répondent à des besoins différents mais présentent le point commun de recevoir toutes trois leurs instructions depuis des <code>YAML</code>.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Validation et erreurs fréquentes
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <p>Le principal point de vigilance lorsqu’on écrit du <code>YAML</code> concerne l’indentation. Celle-ci est essentielle à la structuration des données. L’indentation recommandée est de <strong>deux espaces</strong> ; jamais de tabulations, qui peuvent générer des erreurs d’interprétation car il s’agit de caractères spéciaux.</p>
 <p>Pour prévenir ces erreurs, de nombreux outils de validation existent :</p>
 <ul>
-<li><strong>IDE</strong> : les IDE standards comme <code>VSCode</code>, <code>PyCharm</code>, etc. supportent nativement le <code>YAML</code> et indiquent donc immédiatement les erreurs d’indentation ou de syntaxe.</li>
+<li><strong>IDE</strong> : les IDE standards comme <code>VSCode</code>, <code>PyCharm</code>, etc. supportent nativement le <code>YAML</code> et indiquent donc immédiatement les erreurs d’indentation ou de syntaxe. Il est utile d’avoir dans son IDE une coloration des indentations pour faire moins d’erreur: dans <code>VSCode</code>, vous pouvez installer l’extension <a href="https://marketplace.visualstudio.com/items?itemName=oderwat.indent-rainbow">indent-rainbow</a> pour cela<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</li>
 <li><strong><em>Linters</em></strong> : des outils spécialisés pour valider le contenu d’un fichier <code>YAML</code>. <a href="https://yamllint.com">YAMLlint</a> en est un choix courant.</li>
 </ul>
+<p>Si vous utilisez des actions <code>Github</code>, l’interface de <code>Github</code> depuis votre navigateur effectue un diagnostic de la validité formelle du YAML. Si vous <em>committez</em> un fichier non valide formellement (par exemple à cause d’une erreur d’identation), <code>Github</code> ne lancera pas l’action. Il peut donc être utile de vérifier, si une action ne se lance pas, si cela vient d’un problème de formattage du fichier en l’ouvrant directement depuis <code>Github</code>.</p>
+</div>
+</div>
 </section>
 <section id="utilisation-programmatique" class="level2">
 <h2 class="anchored" data-anchor-id="utilisation-programmatique">Utilisation programmatique</h2>
 <p>Comme on l’a vu, le langage <code>YAML</code> est pensé avant tout pour être écrit et lus par des humains. Cela dit, on peut vouloir parfois générer par exemple de nombreux fichiers <code>YAML</code> à partir d’un même template, ou bien récupérer de manière automatisée des informations dans un fichier de configuration <code>YAML</code>. De la même manière qu’un fichier <code>JSON</code> par exemple, il est tout à fait possible d’interagir avec un fichier <code>YAML</code> de manière programmatique.</p>
 <p>En <code>Python</code>, le <em>package</em> de référence pour manipuler du <code>YAML</code> est <a href="https://pypi.org/project/PyYAML/">PyYAML</a>. Illustrons quelques commandes de base.</p>
-<div id="0e8c2d2e" class="cell" data-execution_count="1">
+<div id="70059d30" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb6" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yaml</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Supposons que le fichier de déploiement <code>Kubernetes</code> qu’on a utilisé tout a long de ce tutoriel soit écrit dans un fichier <code>api-deployment.yaml</code>. Commençons par l’importer et récupérer quelques informations.</p>
 <p>La syntaxe pour importer le contenu d’un fichier <code>YAML</code> est semblable à celle pour n’importe quel fichier. On utilise la fonction <code>safe_load</code> du <em>package</em> <code>PyYAML</code>.</p>
-<div id="74a9ea3f" class="cell" data-execution_count="3">
+<div id="3283dcbe" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb7" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"api-deployment.yaml"</span>, <span class="st">"r"</span>) <span class="im">as</span> file_in:</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  manifest <span class="op">=</span> yaml.safe_load(file_in)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -432,15 +470,23 @@ div.callout-application.callout-style-default .callout-icon::before, div.callout
 </div>
 </div>
 <p>Le contenu est chargé en <code>Python</code> sous la forme d’un dictionnaire, qui est la manière naturelle en <code>Python</code> de représenter de l’information hiérarchique. A partir de là, on peut requêter le contenu du fichier <code>YAML</code> à la manière de n’importe quel dictionnaire <code>Python</code>. Récupérons par exemple le nom du modèle déployé.</p>
-<div id="da9d9998" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb9" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(manifest[<span class="st">"spec"</span>][<span class="st">"containers"</span>][<span class="dv">0</span>][<span class="st">"env"</span>][<span class="dv">0</span>][<span class="st">"value"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="5e70efd9" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb9" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  manifest</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  .get(<span class="st">"spec"</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  .get(<span class="st">"containers"</span>)[<span class="dv">0</span>]</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  .get(<span class="st">"env"</span>)[<span class="dv">0</span>]</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  .get(<span class="st">"value"</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co"># ou en version plus succincte:</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co"># print(manifest["spec"]["containers"][0]["env"][0]["value"])</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre data-code-line-numbers=""><code>deepseek-ai/DeepSeek-R1</code></pre>
 </div>
 </div>
 <p>Le chemin dans le dictionnaire reflète les différents objets qui structurent un fichier <code>YAML</code>. Les clés (“spec”, “containers”) correspondent aux dictionnaires en <code>YAML</code>, et les index numériques (“0” ici) correspondent à la sélection d’un élément par position dans une liste. Ici, on récupère la spécification du premier conteneur — et le seul en l’occurrence, mais le <code>Pod</code> pourrait héberger plusieurs conteneurs — et, pour ce conteneur, on récupère la première variable d’environnement (<code>MODEL</code>) dont on extrait la valeur (le nom du modèle).</p>
 <p>A présent, intéressons-nous au cas où l’on voudrait modifier une information du fichier <code>YAML</code> et exporter un manifeste actualisé. On va changer la valeur de la variable d’environnement <code>DEBUG</code> de <code>true</code> à <code>false</code>. En pratique, on fait la modification sur le dictionnaire en <code>Python</code>, puis on exporte le dictionnaire au format <code>YAML</code>.</p>
-<div id="a625f17d" class="cell" data-execution_count="5">
+<div id="5776d30b" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb11" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Vérification du contenu actuel</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(manifest[<span class="st">"spec"</span>][<span class="st">"containers"</span>][<span class="dv">0</span>][<span class="st">"env"</span>][<span class="dv">1</span>])</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -453,7 +499,7 @@ div.callout-application.callout-style-default .callout-icon::before, div.callout
 </div>
 </div>
 <p>L’opération a fonctionné sur l’objet en mémoire dans <code>Python</code>. On exporte finalement le dictionnaire au format <code>YAML</code>.</p>
-<div id="e2bfab2f" class="cell" data-execution_count="6">
+<div id="3a2527b7" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb13" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">'api-deployment-modifie.yaml'</span>, <span class="st">'w'</span>) <span class="im">as</span> file_out:</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    yaml.dump(manifest, file_out)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -491,7 +537,7 @@ spec:
 
 <ol>
 <li id="fn1"><p>L’exemple présenté est inspiré de <a href="https://www.ambient-it.net/tout-savoir-fichiers-yaml/">ce tutoriel</a>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>A titre d’analogie, l’approche déclarative est également au cœur du langage <code>SQL</code>. En <code>SQL</code>, on décrit le traitement souhaité dans un langage proche du langage naturel (<em>SELECT</em> ce groupe de variables, <em>FILTER</em> ces individus, etc.) et c’est le moteur d’exécution sous-jacent qui choisit comment effectuer les calculs demandés de manière optimale. C’est notamment une des raisons de la popularité du langage <code>SQL</code> dans l’éco-système <em>big data</em> : il est possible d’appliquer une même requête à des données de volumétries très différentes dans la mesure où le moteur d’exécution sous-jacent va convertir la requête de manière appropriée. Par exemple, une requête <code>SQL</code> sera convertie par <code>Spark</code> en opérations <code>MapReduce</code> distribuées permettant de traiter des volumes considérables de données (voir chapitre <a href="../chapters/big-data.html"><em>big data</em></a> pour plus de détails).<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Dans le cadre de l’<a href="../chapters/application.html">application fil rouge</a>, si vous créez votre <code>VSCode</code> à partir de la configuration proposée, celle-ci est installée par défaut pour vous.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
