@@ -205,9 +205,11 @@ Le chemin dans le dictionnaire reflète les différents objets qui structurent u
 A présent, intéressons-nous au cas où l'on voudrait modifier une information du fichier `YAML` et exporter un manifeste actualisé. On va changer la valeur de la variable d'environnement `DEBUG` de `true` à `false`. En pratique, on fait la modification sur le dictionnaire en `Python`, puis on exporte le dictionnaire au format `YAML`.
 
 ```{python}
-manifest["spec"]["containers"][0]["env"][1]["value"] = False
+# Vérification du contenu actuel
+print(manifest["spec"]["containers"][0]["env"][1])
 
-# Vérification
+# Modification du contenu
+manifest["spec"]["containers"][0]["env"][1]["value"] = False
 print(manifest["spec"]["containers"][0]["env"][1])
 ```
 
