@@ -13,17 +13,12 @@ python train.py
 
 pour enregistrer en local votre modèle de production.
 
-- Modifier les appels à `main.py` dans votre `Dockerfile` et vos actions `Github`
-sous peine d'essuyer des échecs lors de vos actions `Github` après le prochain _push_.
+- Modifier les appels à `main.py` dans votre `Dockerfile` et vos actions `Github` sous peine d'essuyer des échecs lors de vos actions `Github` après le prochain _push_.
 
-- Ajouter `model.joblib` au `.gitignore` car `Git` n'est pas fait pour
-ce type de fichiers.
+- Ajouter `model.joblib` au `.gitignore` car `Git` n'est pas fait pour ce type de fichiers.
 
-Nous allons maintenant passer au développement de l'API.
-Comme découvrir `FastAPI` n'est pas l'objet de cet enseignement, nous
-donnons directement le modèle pour créer l'API. Si vous
-désirez tester de vous-mêmes, vous pouvez créer votre
-fichier sans vous référer à l'exemple.
+Nous allons maintenant passer au développement de l'API. Comme découvrir `FastAPI` n'est pas l'objet de cet enseignement, nous donnons directement le modèle pour créer l'API. Si vous
+désirez tester de vous-mêmes, vous pouvez créer votre fichier sans vous référer à l'exemple.
 
 - Créer le fichier `app/api.py` permettant d'initialiser l'API:
 
@@ -38,29 +33,37 @@ Fichier `app/api.py`
 
 </details>
 
-- Construire et déployer en local l'API avec la commande
+- Déployer l'API en local avec la commande suivante.
 
 ```{.bash filename="terminal"}
-uvicorn app.api:app --reload --host "0.0.0.0" --port 5000
+uvicorn app.api:app
 ```
 
-- En retournant sur la page [Mes Services](https://datalab.sspcloud.fr/my-services) du `SSPCloud`, ouvrir le `README` de votre service[^forward-port]. Se rendre sur l'URL de déploiement,
-ajouter `/docs/` à celui-ci et observer la documentation de l'API
-- Se servir de la documentation pour tester les requêtes `/predict`
-- Récupérer l'URL d'une des requêtes proposées. La tester dans le navigateur
-et depuis `Python` avec `requests` :
+- Observer l'*output* dans la console. Notre API est désormais déployée en local, plus précisément sur le *localhost*, un serveur web local déployé à l'adresse `http://127.0.0.1`. L'API est déployée sur le port par défaut utilisé par `uvicorn`, soit le port `8000`. 
+- **Sans fermer le terminal précédent**, ouvrir un nouveau terminal. Tester le bon déploiement de l'API en requêtant son *endpoint*. Pour cela, on envoie une simple requête `GET` sur le *endpoint* via l'utilitaire `curl`.
+
+```{.bash filename="terminal"}
+curl "http://127.0.0.1:8000"
+```
+
+- Si tout s'est bien passé, on devrait avoir récupéré une réponse (au format `JSON`) affichant le message d'accueil de notre API. Dans ce cas, on va pouvoir requêter notre modèle via l'API.
+
+- En vous inspirant du code qui définit le *endpoint* `/predict` dans le code de l'API (`app/api.py`), effectuer sur le même modèle que la requête précédente une requête qui calcule la survie d'une femme de `32` ans qui aurait payé son billet `16` dollars et aurait embarqué au port `S`.
+
+```{.bash filename="terminal"}
+curl "http://127.0.0.1:8000/predict?sex=female&age=32&fare=16&embarked=S"
+```
+
+- **Toujours sans fermer le terminal qui déploie l'API**, ouvrir une session `Python` et tester une requête avec des paramètres différents, avec la librairie `requests` :
 
 ```{.python}
-import request
-requests.get(url).json()
+import requests
+
+URL = "http://127.0.0.1:8000/predict?sex=male&age=25&fare=80&embarked=S"
+requests.get(URL).json()
 ```
 
-- Une fois que vous avez testé, vous pouvez tuer l'application en faisant <kbd>CTRL</kbd>+<kbd>C</kbd>. Retester
-votre bout de code `Python` et comprendre l'origine du problème.
-
 :::
-
-[^forward-port]: Puisque vous êtes connectés à un serveur distant, le [_localhost_](https://fr.wikipedia.org/wiki/Localhost) de votre `VSCode` n'est pas celui de votre ordinateur. Les applications locales lancées par `VSCode`, par exemple l'API, ne sont pas locales pour vous. Il faut donc trouver une manière d'y accéder à distance. Le SSPCloud propose automatiquement une redirection du _localhost_ du conteneur sur lequel tourne votre VSCode vers un URL pérenne, à condition d'avoir bien défini le port en question. C'est pour cette raison que vous avez dû indiquer les arguments `--host "0.0.0.0"`  et `--port 5000` pour pouvoir exposer, temporairement, à internet votre application.
 
 {{< checkpoint appli16 >}}
 
