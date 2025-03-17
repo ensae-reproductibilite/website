@@ -1,0 +1,539 @@
+---
+title: "Structure des projets"
+description: |
+  Présentation des principes d'architecture permettant de produire des projets modulaires et maintenables, et d'outils pour faciliter leur adoption.
+image: https://minio.lab.sspcloud.fr/lgaliana/generative-art/mise-en-prod/structure_compressed.png
+order: 5
+href: chapters/projects-architecture.html
+---
+
+
+<details>
+<summary>
+Dérouler les _slides_ ci-dessous ou [cliquer ici](https://ensae-reproductibilite.github.io/slides/#/structure-des-projets)
+pour afficher les slides en plein écran.
+</summary>
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><iframe class="sourceCode yaml code-with-copy" src="https://ensae-reproductibilite.github.io/slides/#/structure-des-projets"></iframe></div>
+
+</details>
+
+# Introduction
+
+La structuration d'un projet
+permet d'immédiatement identifier les éléments de code et les éléments
+annexes, par exemple les dépendances à gérer, la documentation, etc.
+Des scripts de bonne qualité ne sont pas suffisants pour assurer la qualité
+d'un projet de _data science_.
+
+
+Une organisation claire et méthodique du code et des données
+facilite la compréhension du projet et la capacité
+à reprendre et faire évoluer le code. Il est plus facile
+de faire évoluer une chaine de production dont les éléments
+s'enchainent de manière distincte et claire que lorsque tout est mélangé.
+
+::: {layout-ncol=2}
+![Un projet mal structuré](/workflow1.png)
+
+![L'horizon vers lequel nous nous dirigeons dans ce cours](/workflow2.png)
+:::
+
+Comme dans le chapitre précédent, l'objectif d'une bonne
+structure de projets est de favoriser la __lisibilité__
+et la __maintenabilité__ du code. Comme dans le chapitre
+précédent, l'organisation
+d'un projet est l'association de règles formelles
+liées à la nature d'un
+langage (manière dont le langage gère l'interdépendance entre
+plusieurs scripts par exemple) et de conventions arbitraires
+qui peuvent être amenées à évoluer.
+
+L'objectif est d'être pragmatique dans la structure du projet
+et d'adapter celle-ci aux finalités de celui-ci.
+Selon que le livrable du modèle est une API ou un site web la
+solution technique mise en œuvre
+attendra une structure différente de scripts. Néanmoins,
+certains principes universels peuvent s'appliquer et rien
+n'empêche de
+se laisser
+une marge d'adaptation si les _output_ du projet sont amenés à évoluer.
+
+Le premier geste à mettre en œuvre, qui est non négociable,
+est d'utiliser `Git` ([voir chapitre dédié](/chapters/application.qmd)).
+Avec `Git`, les mauvaises pratiques qui risquent de pénaliser
+le développement ultérieur du projet vont être particulièrement criantes
+et pourront être corrigées de manière très précoce.
+
+Les principes généraux sont les suivants :
+
+1. Privilégier les scripts aux _notebooks_, un enjeu spécifique aux projets
+de _data science_
+2. Organiser son projet de manière modulaire
+3. Adopter les standards communautaires de structure de projets
+4. (Auto)-documenter son projet
+
+Il s'agit donc de la continuité des principes évoqués dans le chapitre précédent.
+
+
+## Démonstration par l'exemple
+
+Voici un exemple d'organisation de projet, qui vous rappellera peut-être des souvenirs :
+
+```
+├── report.qmd
+├── correlation.png
+├── data.csv
+├── data2.csv
+├── fig1.png
+├── figure 2 (copy).png
+├── report.pdf
+├── partial data.csv
+├── script.R
+└── script_final.py
+```
+_Source : [eliocamp.github.io](https://eliocamp.github.io/reproducibility-with-r/materials/day1/02-projects/)_
+
+
+La structure du projet suivante rend compliquée
+la compréhension du projet. Parmi les principales
+questions :
+
+- Quelles sont les données en entrée de chaine ?
+- Dans quel ordre les données intermédiaires sont-elles créées ?
+- Quel est l'objet des productions graphiques ?
+- Tous les codes sont-ils utilisés dans ce projet ?
+
+
+En structurant le dossier en suivant des règles
+simples, par exemple
+en organisant le projet par des dossiers _inputs_, _outputs_,
+on améliore déjà grandement la lisibilité du projet
+
+```
+├── README.md
+├── .gitignore
+├── data
+│   ├── raw
+│   │   ├── data.csv
+│   │   └── data2.csv
+│   └── derived
+│       └── partial data.csv
+├── src
+|   ├── script.py
+│   ├── script_final.py
+│   └── report.qmd
+└── output
+    ├── fig1.png
+    ├── figure 2 (copy).png
+    ├── figure10.png
+    ├── correlation.png
+    └── report.pdf
+```
+
+::: {.callout-note}
+
+Comme `Git` est un prérequis, tout projet présente un fichier `.gitignore`
+(il est très important, surtout quand on manipule des données qui ne
+doivent pas se retrouver sur `Github` ou `Gitlab`).
+
+Un projet présente aussi un fichier `README.md` à la racine, nous
+reviendrons dessus.
+
+Un projet qui utilise l'intégration continue contiendra également des fichiers spécifiques :
+
+- si vous utilisez `Gitlab`, les instructions sont stockées dans
+le fichier `gitlab-ci.yml`
+- si vous utilisez `Github`, cela se passe dans le dossier `.github/workflows`
+
+:::
+
+En changeant simplement le nom des fichiers, on rend
+la structure du projet très lisible :
+
+```
+├── README.md
+├── .gitignore
+├── data
+│   ├── raw
+│   │   ├── dpe_logement_202103.csv
+│   │   └── dpe_logement_202003.csv
+│   └── derived
+│       └── dpe_logement_merged_preprocessed.csv
+├── src
+|   ├── preprocessing.py
+│   ├── generate_plots.py
+│   └── report.qmd
+└── output
+    ├── histogram_energy_diagnostic.png
+    ├── barplot_consumption_pcs.png
+    ├── correlation_matrix.png
+    └── report.pdf
+```
+
+Maintenant, le type de données en entrée de chaine
+est clair, le lien entre
+les scripts, les données intermédiaires et les _output_ est
+transparent.
+
+
+# 1️⃣ Les _notebooks_ montrent leurs limites pour la mise en production
+
+Les _notebooks_ Jupyter sont très pratiques pour tâtonner,
+expérimenter et communiquer. Ils sont donc un point d'entrée
+intéressant en début de projet (pour l'expérimentation)
+et en fin de projet (pour la communication).
+
+Cependant, ils présentent un certain
+nombre d'inconvénients à long terme qui peuvent
+rendre difficile, voire impossible à maintenir le code écrit
+dans un _notebook_. Pour les citer, en vrac :
+
+- Tous les objets (fonctions, classes et données)
+sont définis et disponibles dans le même fichier.
+Le moindre changement à une fonction nécessite de retrouver
+l'emplacement dans le code, écrire et faire tourner à nouveau
+une ou plusieurs cellules.
+- Lorsque l'on tâtonne, on écrit du code dans des cellules.
+Dans un cahier, on utiliserait la marge mais cela n'existe
+pas avec un notebook. On crée donc de nouvelles cellules,
+pas nécessairement dans l'ordre. Quand il est
+nécessaire de faire tourner à nouveau le notebook, cela
+provoque des erreurs difficiles à debugger (il est nécessaire
+de retrouver l'ordre logique du code, ce qui n'est pas
+évident).
+- Les notebooks incitent à faire des copier-coller de cellules
+et modifier marginalement le code plutôt qu'à utiliser
+des fonctions.
+- Il est quasi impossible d'avoir un versioning avec Git des notebooks
+qui fonctionne. Les notebooks étant, en arrière-plan, de gros fichiers
+JSON, ils ressemblent plus à des données que des codes sources. Git ne
+parvient pas bien à identifier les blocs de code qui ont changé.
+- Le passage en production des notebooks est coûteux alors qu'un script bien
+fait est beaucoup plus facile à passer en production (voir suite cours).
+- Jupyter manque d'extensions pour mettre en œuvre les bonnes pratiques
+(linters, etc.). VSCode, au contraire, est parfaitement adapté.
+- Risques de révélation de données confidentielles puisque les outputs
+des blocs de code, par exemple les `head`, sont écrits en dur dans
+le code source.
+
+Plus synthétiquement, on peut résumer les inconvénients de cette
+manière :
+
+- **Reproductibilité** limitée ;
+- Pas adaptés pour **l’automatisation** ;
+- **Contrôle de version** difficile.
+
+En fait, ces problèmes sont liés à plusieurs enjeux
+spécifiques liés à la _data science_ :
+
+* Le début du cycle de vie d'un projet de _data science_
+revêt un aspect expérimental où l'interactivité d'un _notebook_
+est un réel avantage. Cependant, dans une phase ultérieure du cycle
+de vie, la stabilité devient plus importante ;
+* Le développement d'un code de traitement des données est souvent
+non linéaire : on lit les données, on effectue des opérations sur celles-ci,
+produits des sorties (par exemple des tableaux descriptifs)
+avant de revenir en arrière pour compléter la source avec d'autres bases
+et adapter le _pipeline_. Si cette phase exploratoire est non linéaire, renouer
+le fil pour rendre le _pipeline_ linéaire et reproductible nécessite
+une autodiscipline importante.
+
+
+Les
+recommandations de ce cours visent à rendre le plus léger possible
+la maintenance à long terme de projets _data science_ en favorisant
+la reprise par d'autres (ou par soi-même dans le futur).
+La bonne pratique est de privilégier des projets utilisant des
+scripts `Python` autosuffisants (du point de vue des dépendances) qui
+vont être encapsulés dans une chaine de traitement
+plus ou moins formalisée. Selon les projets et l'infrastructure disponible,
+cette dernière pourra
+être un simple script `Python` ou un _pipeline_ plus formel. L'arbitrage
+sur le formalisme à adopter dépend du temps de disponible.
+
+
+# 2️⃣ Favoriser une structure modulaire
+
+Dans le chapitre précédent, nous avons recommandé l'utilisation
+des fonctions. Le regroupement de plusieurs fonctions dans
+un fichier est appelé un __module__.
+
+La modularité est un principe fondamental de programmation
+qui consiste à diviser un programme en plusieurs modules ou scripts indépendants,
+chacun ayant une fonctionnalité spécifique.
+Comme indiqué précédemment, la structuration d'un projet sous forme de modules
+permet de rendre le code plus lisible, plus facile à maintenir et plus réutilisable.
+`Python` fournit un système d'importation flexible et puissant, qui permet de contrôler la portée des variables, les conflits de noms et les dépendances entre les modules[^1].
+
+[^1]: A cet égard, `Python` est beaucoup plus fiable que `R`.
+        Dans `R`, si deux scripts utilisent des fonctions
+        dont le nom est identique mais issues de packages
+        différents, il y aura un conflit. En `Python`
+        chaque module sera importé comme un _package_
+        en soi.
+
+## Vers la séparation du stockage du code, des données et de l'environnement d'exécution
+
+La séparation du stockage du code et des données ainsi que de l'environnement d'exécution est importante pour plusieurs raisons.
+
+Tout d'abord, cela permet de garantir la sécurité et l'intégrité des données. En séparant les données du code, il devient plus difficile pour n'importe qui d'accéder aux informations sensibles stockées dans les données.
+
+En séparant l'environnement d'exécution, il est possible de s'assurer que le code fonctionne de manière cohérente et sans conflit avec d'autres programmes exécutés sur le même système ou n'est pas altéré par des configurations
+systèmes difficiles à reproduire.
+Cette séparation facilite également la portabilité et l'adaptation de
+l'application à différentes plateformes, en permettant de modifier
+l'environnement d'exécution sans avoir à modifier le code ou les données.
+
+Le prochain chapitre sera consacré à la gestion des dépendances. Il illustrera
+la manière dont environnement d'exécution et code d'un projet peuvent
+être reliés afin de créer de la portabilité.
+
+L'exécution d'un code peut dépendre d'éléments de configuration
+comme des jetons
+d'authentification ou des mots de passe
+de connexion à des services qui sont personnels.
+Ces éléments de configuration n'ont pas vocation à être partagés
+par du code et il est recommandé de les exclure du code.
+La meilleure manière de transformer ces configurations en paramètre
+est de les isoler dans un script séparé, qui n'est pas partagé,
+et utiliser les variables créées à cette occasion dans le reste
+du programme.
+
+La manière privilégiée de conserver ce type d'information
+est le format `YAML`. Ce format de fichier
+permet de stocker des informations de manière hiérarchisée
+et flexible,
+mais de manière plus lisible que le `JSON`.
+Ce format sera transformé en dictionnaire `Python` ce
+qui permet des recherches facilitées.
+
+
+Prenons le YAML suivant :
+
+```{.yaml filename="secrets.yaml"}
+token:
+    api_insee: "toto"
+    api_github: "tokengh"
+pwd:
+    base_pg: "monmotdepasse"
+```
+
+L'import de ce fichier se fait
+avec le package `yaml` de la
+manière suivante :
+
+```python
+import yaml
+
+with open('secrets.yaml') as f:
+    secrets = yaml.safe_load(f)
+
+# utilisation du secret
+jeton_insee = secrets['token']['api_insee']
+```
+
+
+# 3️⃣ Adopter les standards communautaires
+
+## Les _cookiecutters_
+
+En `Python` il existe des modèles de structure de projets :
+les [`cookiecutters`](https://cookiecutter.readthedocs.io/en/stable/).
+Il s'agit de modèles d'arborescences de fichiers (fichiers `Python` mais également tout
+type de fichiers) proposés par la communauté et téléchargeables comme point
+de départ d'un projet.
+
+L'idée de [`cookiecutter`](https://cookiecutter.readthedocs.io/en/stable/) est de proposer des _templates_ que l'on utilise pour __initialiser__ un projet, afin de bâtir à l'avance une structure évolutive.
+On va s'inspirer de la structure du [_template datascience_](https://drivendata.github.io/cookiecutter-data-science/)
+développé par la communauté.
+La syntaxe à utiliser dans ce cas est la suivante :
+
+```{.bash filename="terminal"}
+$ pip install cookiecutter
+$ cookiecutter https://github.com/drivendata/cookiecutter-data-science
+```
+
+Le modèle est personnalisable, notamment pour faciliter l'interaction
+entre un système de stockage distant. L'arborescence générée
+est assez massive pour permettre une grande diversité de projet. Il
+n'est souvent pas nécessaire d'avoir toutes les composantes du `cookiecutter`.
+
+<details>
+<summary>Structure complète générée par le cookiecutter data science</summary>
+
+```
+├── LICENSE
+├── Makefile           <- Makefile with commands like `make data` or `make train`
+├── README.md          <- The top-level README for developers using this project.
+├── data
+│   ├── external       <- Data from third party sources.
+│   ├── interim        <- Intermediate data that has been transformed.
+│   ├── processed      <- The final, canonical data sets for modeling.
+│   └── raw            <- The original, immutable data dump.
+│
+├── docs               <- A default Sphinx project; see sphinx-doc.org for details
+│
+├── models             <- Trained and serialized models, model predictions, or model summaries
+│
+├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
+│                         the creator's initials, and a short `-` delimited description, e.g.
+│                         `1.0-jqp-initial-data-exploration`.
+│
+├── references         <- Data dictionaries, manuals, and all other explanatory materials.
+│
+├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
+│   └── figures        <- Generated graphics and figures to be used in reporting
+│
+├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
+│                         generated with `pip freeze > requirements.txt`
+│
+├── setup.py           <- Make this project pip installable with `pip install -e`
+├── src                <- Source code for use in this project.
+│   ├── __init__.py    <- Makes src a Python module
+│   │
+│   ├── data           <- Scripts to download or generate data
+│   │   └── make_dataset.py
+│   │
+│   ├── features       <- Scripts to turn raw data into features for modeling
+│   │   └── build_features.py
+│   │
+│   ├── models         <- Scripts to train models and then use trained models to make
+│   │   │                 predictions
+│   │   ├── predict_model.py
+│   │   └── train_model.py
+│   │
+│   └── visualization  <- Scripts to create exploratory and results oriented visualizations
+│       └── visualize.py
+│
+└── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
+```
+
+</details>
+
+
+
+::: {.callout-note collapse="true"}
+
+## Tests unitaires
+
+Les tests unitaires sont des tests automatisés qui vérifient le bon fonctionnement d'une unité de code,
+comme une fonction ou une méthode.
+L'objectif est de s'assurer que chaque unité de code fonctionne correctement avant d'être intégrée dans le reste du programme.
+
+Les tests unitaires sont utiles lorsqu'on travaille sur un code de taille conséquente
+ou lorsqu'on partage son code à d'autres personnes,
+car ils permettent de s'assurer que les modifications apportées ne créent pas de nouvelles erreurs.
+
+En `Python`, on peut utiliser le package `unittest` pour écrire des tests unitaires.
+Voici un exemple tiré de ce [site](https://gayerie.dev/docs/python/python3/unittest.html) :
+
+
+```python
+# fichier test_str.py
+import unittest
+
+
+class ChaineDeCaractereTest(unittest.TestCase):
+
+    def test_reversed(self):
+        resultat = reversed("abcd")
+        self.assertEqual("dcba", "".join(resultat))
+
+    def test_sorted(self):
+        resultat = sorted("dbca")
+        self.assertEqual(['a', 'b', 'c', 'd'], resultat)
+
+    def test_upper(self):
+        resultat = "hello".upper()
+        self.assertEqual("HELLO", resultat)
+
+    def test_erreur
+
+
+if __name__ == '__main__':
+    unittest.main()
+```
+
+Pour vérifier que les tests fonctionnent, on exécute ce
+script depuis la ligne de commande :
+
+```python
+python3 test_str.py
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+OK
+```
+
+
+Si on écrit des tests unitaires, il est important de les maintenir !
+
+Prendre
+du temps pour écrire des tests unitaires qui ne sont pas maintenus et donc
+ne renvoie plus de diagnostics pertinents est du temps perdu.
+:::
+
+
+## Transformer son projet en _package_ `Python`
+
+Le _package_ est la structure aboutie d'un projet `Python`
+autosuffisant. Il s'agit d'une manière
+formelle de contrôler
+la reproductibilité d'un projet car :
+
+- le _package_ assure une gestion cohérente des dépendances
+- le _package_ offre une certaine structure pour la documentation
+- le _package_ facilite la réutilisation du code
+- le _package_ permet des économies d'échelle, car on peut réutiliser
+l'un des packages pour un autre projet
+- le _package_ facilite le debuggage car il est
+plus facile d'identifier une erreur quand elle est dans un package
+- ...
+
+En `Python`, le _package_ est une structure peu contraignante si on
+a adopté les bonnes pratiques de structuration de projet.
+À partir de la structure modulaire précédemment évoquée, il n'y a qu'un pas
+vers le package : l'ajout d'un fichier `pyproject.toml` qui contrôle
+la construction du _package_ ([voir ici](https://py-pkgs.org/03-how-to-package-a-python)).
+
+Il existe plusieurs outils pour installer un package dans le système à
+partir d'une structure de fichiers locale. Les deux principaux sont
+
+- [`setuptools`](https://pypi.org/project/setuptools/)
+- [`poetry`](https://python-poetry.org/)
+
+
+Le package fait la transition entre un code modulaire et un code portable,
+concept sur lequel nous reviendrons dans le prochain chapitre.
+
+
+# 4️⃣ Documenter son projet
+
+Le principe premier, illustré dans l'exemple, est de privilégier l'__autodocumentation__ via
+des nommages pertinents des dossiers et des fichiers.
+
+Le fichier `README.md`, situé à la racine du projet, est à la fois la carte d'identité et la vitrine du projet.
+Sur `Github` et `Gitlab`, comme il s'agit de l'élément qui s'affiche en accueil, ce
+fichier fait office de première impression,
+instant très court qui peut être déterminant sur la valeur évaluée d'un projet.
+
+Idéalement, le `README.md` contient :
+
+- Une présentation du contexte et des objectifs du projet
+- Une description de son fonctionnement
+- Un guide de contribution si le projet accepte des retours dans le cadre d'une démarche *open-source*
+
+::: {.callout-note}
+
+Quelques modèles de `README.md` complets, en `R` :
+
+- [utilitR](https://github.com/InseeFrLab/utilitR/blob/master/README.md)
+- [DoReMIFaSol](https://github.com/InseeFrLab/DoReMIFaSol)
+
+:::
+
+
+
