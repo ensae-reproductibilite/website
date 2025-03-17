@@ -1,7 +1,7 @@
 ::: {.application}
 ## Application 17: Dockeriser l'API (intégration continue)
 
-- Créer un script `app/run.sh` à la racine du projet qui lance le script `train.py` puis déploie localement l'API
+- Créer un script `app/run.sh` à la racine du projet qui lance le script `train.py` puis déploie localement l'API. Attention, quand on se place dans le monde des conteneurs et plus généralement des infrastructures *cloud*, on ne va plus déployer sur le *localhost* mais sur "l'ensemble des interfaces réseaux". Lorsqu'on déploie une application web dans un conteneur, on va donc toujours devoir spécifier un *host* valant `0.0.0.0` (et non plus *localhost* ou, de manière équivalente, `http://127.0.0.1`).
 
 <details>
 <summary>Fichier `run.sh`</summary>
@@ -10,7 +10,7 @@
 #/bin/bash
 
 python3 train.py
-uvicorn app.api:app --reload --host "0.0.0.0" --port 5000
+uvicorn app.api:app --host "0.0.0.0"
 ```
 </details>
 
@@ -22,11 +22,22 @@ uvicorn app.api:app --reload --host "0.0.0.0" --port 5000
 
 - Changer l'instruction `CMD` du `Dockerfile` pour exécuter le script `api/run.sh` au lancement du conteneur (`CMD ["bash", "-c", "./app/run.sh"]`)
 
-- Mettre à jour votre `requirements.txt` pour tenir compte des nouveaux _packages_ utilisés
-
 - *Commit* et *push* les changements
 
-- Une fois le CI terminé, récupérer la nouvelle image dans votre environnement de test de `Docker` et vérifier que l'API se déploie correctement
+- Une fois le CI terminé, vérifier que le nouveau *tag* `latest` a été *pushé* sur le DockerHub. Récupérer la nouvelle image dans votre environnement de test de `Docker` et vérifier que l'API se déploie correctement.
+
+<details>
+<summary>Tester l'image sur le SSP Cloud</summary>
+
+Lancer dans un terminal la commande suivante pour *pull* l'application depuis le DockerHub et la déployer en local :
+
+```{.bash filename="terminal"}
+kubectl run -it api-ml --image=votre_compte_docker_hub/application:latest
+```
+
+</details>
+
+- Si tout se passe correctement, vous devriez observer dans la console un *output* similaire au déploiement en local de la partie précédente. Cette fois, l'application est déployée à l'adresse `http://0.0.0.0:8000`. On ne peut néanmoins pas directement l'exploiter à ce stade : si le conteneur de l'API est déployé, il manque un ensemble de ressources Kubernetes qui permettent de déployer proprement l'API à tout utilisateur. C'est l'objet de l'application suivante !
 
 :::
 

@@ -42,53 +42,53 @@ args = parser.parse_args()
 Code à ajouter
 </summary>
 
-    ```{.python filename="fin de train.py"}
-    # LOGGING IN MLFLOW -----------------
+```{.python filename="fin de train.py"}
+# LOGGING IN MLFLOW -----------------
 
-    mlflow_server = os.getenv("MLFLOW_TRACKING_URI")
+mlflow_server = os.getenv("MLFLOW_TRACKING_URI")
 
-    logger.info(f"Saving experiment in {mlflow_server}")
+logger.info(f"Saving experiment in {mlflow_server}")
 
-    mlflow.set_tracking_uri(mlflow_server)
-    mlflow.set_experiment(args.experiment_name)
-
-
-    input_data_mlflow = mlflow.data.from_pandas(
-        TrainingData, source=data_path, name="Raw dataset"
-    )
-    training_data_mlflow = mlflow.data.from_pandas(
-        pd.concat([X_train, y_train], axis=1), source=data_path, name="Training data"
-    )
+mlflow.set_tracking_uri(mlflow_server)
+mlflow.set_experiment(args.experiment_name)
 
 
-    with mlflow.start_run():
+input_data_mlflow = mlflow.data.from_pandas(
+    TrainingData, source=data_path, name="Raw dataset"
+)
+training_data_mlflow = mlflow.data.from_pandas(
+    pd.concat([X_train, y_train], axis=1), source=data_path, name="Training data"
+)
 
-        # Log datasets
-        mlflow.log_input(input_data_mlflow, context="raw")
-        mlflow.log_input(training_data_mlflow, context="raw")
 
-        # Log parameters
-        mlflow.log_param("n_trees", n_trees)
-        mlflow.log_param("max_depth", MAX_DEPTH)
-        mlflow.log_param("max_features", MAX_FEATURES)
+with mlflow.start_run():
 
-        # Log best hyperparameters from GridSearchCV
-        best_params = pipe_cross_validation.best_params_
-        for param, value in best_params.items():
-            mlflow.log_param(param, value)
+    # Log datasets
+    mlflow.log_input(input_data_mlflow, context="raw")
+    mlflow.log_input(training_data_mlflow, context="raw")
 
-        # Log metrics
-        mlflow.log_metric("accuracy", score)
+    # Log parameters
+    mlflow.log_param("n_trees", n_trees)
+    mlflow.log_param("max_depth", MAX_DEPTH)
+    mlflow.log_param("max_features", MAX_FEATURES)
 
-        # Log confusion matrix as an artifact
-        matrix_path = "confusion_matrix.txt"
-        with open(matrix_path, "w") as f:
-            f.write(str(matrix))
-        mlflow.log_artifact(matrix_path)
+    # Log best hyperparameters from GridSearchCV
+    best_params = pipe_cross_validation.best_params_
+    for param, value in best_params.items():
+        mlflow.log_param(param, value)
 
-        # Log model
-        mlflow.sklearn.log_model(pipe, "model")
-    ```
+    # Log metrics
+    mlflow.log_metric("accuracy", score)
+
+    # Log confusion matrix as an artifact
+    matrix_path = "confusion_matrix.txt"
+    with open(matrix_path, "w") as f:
+        f.write(str(matrix))
+    mlflow.log_artifact(matrix_path)
+
+    # Log model
+    mlflow.sklearn.log_model(pipe, "model")
+```
 
 </details>
 

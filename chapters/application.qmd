@@ -948,31 +948,16 @@ actions suivantes:
 
 
 
-# Partie 5: expérimenter en local des valorisations puis automatiser leur production
+# Partie 5: déployer une application en production 
 
 
-Nous avons automatisé les étapes intermédiaires de notre projet.
-Néanmoins nous n'avons pas encore réfléchi à la valorisation
-à mettre en oeuvre pour notre projet. On va supposer que notre
-projet s'adresse à des _data scientists_ mais aussi à une audience
-moins technique. Pour ces premiers, nous pourrions nous contenter
-de valorisations techniques, comme des API,
-mais pour ces derniers il est
-conseillé de privilégier des formats plus _user friendly_.
+Nous avons automatisé les étapes intermédiaires de notre projet. Néanmoins nous n'avons pas encore réfléchi à la valorisation à mettre en oeuvre pour notre projet. On va supposer que notre projet s'adresse à des _data scientists_ mais aussi à une audience moins technique. Pour ces premiers, nous pourrions nous contenter de valorisations techniques, comme des API, mais pour ces derniers il est conseillé de privilégier des formats plus _user friendly_.
 
-Afin de faire le parallèle avec les parcours possibles pour l'évaluation,
-nous allons proposer deux valorisations[^valorisation]:
+Afin de faire le parallèle avec les parcours possibles pour l'évaluation, nous allons proposer deux valorisations :
 
-- Une [API](https://titanic.kub.sspcloud.fr/docs) facilitant la réutilisation du modèle en "production" ;
+- Une [API](https://titanic.lab.sspcloud.fr/docs) facilitant la réutilisation du modèle en "production" ;
 - Un [site web statique](https://ensae-reproductibilite.github.io/application/) exploitant cette API pour exposer les prédictions
 à une audience moins technique.
-
-
-[^valorisation]: Vous n'êtes pas obligés pour l'évaluation de mettre en oeuvre
-les jalons de plusieurs parcours. Néanmoins, vous découvrirez que
-chaque nouveau pas en avant est moins coûteux que le
-précédent si vous avez mis en oeuvre les réflexes des bonnes
-pratiques.
 
 
 
@@ -1010,23 +995,14 @@ exécuter le code nécessaire à répondre à toute action d'un utilisateur de l
 
 ## Étape 1: développer une API en local
 
-Le premier livrable devenu classique dans un projet
-impliquant du _machine learning_ est la mise à
-disposition d'un modèle par le biais d'une
-API (voir chapitre sur la [mise en production](/chapters/deployment.qmd)).
-Le _framework_ [`FastAPI`](https://fastapi.tiangolo.com/) va permettre
-de rapidement transformer notre application `Python` en une API fonctionnelle.
+Le premier livrable devenu classique dans un projet impliquant du _machine learning_ est la mise à disposition d'un modèle par le biais d'une API (voir chapitre sur la [mise en production](/chapters/deployment.qmd)). Le _framework_ [`FastAPI`](https://fastapi.tiangolo.com/) va permettre de rapidement transformer notre application `Python` en une API fonctionnelle.
 
-
-{{< checkpoint appli15 "Reprendre à partir d'ici" "true" "pre-appli16" >}}
 
 
 {{< include "./applications/_appli16.qmd" >}}
 
 
 ## Étape 2: déployer l'API de manière manuelle
-
-{{< checkpoint appli16 "Reprendre à partir d'ici" "true" "pre-appli17" >}}
 
 
 A ce stade, nous avons déployé l'API seulement localement, dans le cadre d'un terminal qui tourne en arrière-plan.
@@ -1062,19 +1038,6 @@ Ce type de travail est la spécialité de `Kubernetes` que nous allons
 utiliser pour gérer la mise à disposition de notre API.
 
 {{< include "./applications/_appli18.qmd" >}}
-
-::: {.callout-note title="Gérer le CORS" collapse="true"}
-Notre API est accessible sans problème depuis `Python` ou notre navigateur.
-
-En revanche, si on désire utiliser `JavaScript` pour créer une application
-interactive il est indispensable de mettre
-les lignes un peu obscure sur le CORS dans le fichier `ingress.yaml`.
-
-Comme c'est un point technique qui ne concerne pas les compétences
-liées à ce cours, nous avons donné directement les lignes correspondantes dans ce fichier.
-
-:::
-
 
 On peut remarquer quelques voies d'amélioration de notre approche qui
 seront ultérieurement traitées:

@@ -12,7 +12,6 @@ Cette partie nécessite d'avoir à disposition une infrastructure _cloud_.
 
 ```{.python}
 #| filename: "deployment/deployment.yaml"
-#| source-line-numbers: "19"
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -31,11 +30,10 @@ spec:
     spec:
       containers:
       - name: titanic
-        image: #<1>
+        image: votre_compte_docker_hub/application:latest
         ports:
-        - containerPort: 5000
+        - containerPort: 8000
 ```
-1. Mettre ici l'image `Docker` utilisée, sous la forme `username/image:latest`
 
 </details>
 
@@ -55,7 +53,7 @@ spec:
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 5000
+      targetPort: 8000
 ```
 </details>
 
@@ -66,26 +64,17 @@ spec:
 
 ```{.python}
 #| filename: "deployment/ingress.yaml"
-#| source-line-numbers: "16-19"
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: titanic-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
-    # Enable CORS by adding these annotations
-    nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, DELETE, PATCH, OPTIONS"
-    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
-    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
 spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - #<1>
+    - votre_nom_d_application.lab.sspcloud.fr
   rules:
-  - host: #<2>
+  - host: votre_nom_d_application.lab.sspcloud.fr
     http:
       paths:
       - path: /
@@ -96,13 +85,17 @@ spec:
             port:
               number: 80
 ```
-1. Mettez l'URL auquel vous voulez exposer votre service. Sur le modèle de `titanic.kub.sspcloud.fr` (mais ne tentez pas celui-là, il est déjà pris 😃)
-2. Mettre ce même URL ici aussi
+1. Mettez l'URL auquel vous voulez exposer votre service. Sur le modèle de `titanic.lab.sspcloud.fr` (mais ne tentez pas celui-là, il est déjà pris 😃)
+2. Mettre cette même URL ici aussi
 </details>
 
 - Appliquer ces fichiers de configuration sur le cluster : `kubectl apply -f deployment/`
 
-- Si tout a correctement fonctionné, vous devriez pouvoir accéder depuis votre navigateur à l'API à l'URL spécifiée dans le fichier `deployment/ingress.yaml`. Par exemple `https://toto.kub.sspcloud.fr/` si vous avez mis celui-ci plus tôt (et `https://toto.kub.sspcloud.fr/docs` pour la documentation).
+- Vérifier le bon déploiement de l'application (c'est à dire du `Pod` qui encapsule le conteneur) à l'aide de la commande `kubectl get pods`
+
+- Si tout a correctement fonctionné, vous devriez pouvoir accéder depuis votre navigateur à l'API à l'URL spécifiée dans le fichier `deployment/ingress.yaml`. Par exemple `https://api-titanic-test.lab.sspcloud.fr/` si vous avez mis celui-ci plus tôt
+
+- Explorer le *swagger* de votre API à l'adresse `https://api-titanic-test.lab.sspcloud.fr/docs`. Il s'agit d'une page de documentation standard à la plupart des APIs, bien utiles pour tester des requêtes de manière interactive.
 
 :::
 
