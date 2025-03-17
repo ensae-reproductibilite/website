@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Présentation des principes d’architecture permettant de produire des projets modulaires et maintenables, et d’outils pour faciliter leur adoption.">
+
+<title>Structure des projets – Mise en production</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-bd706bf7cc79ec682822fd2bf903aab3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>
+div.callout-application.callout {
+  border-left-color: #9c5bd9;
+}
+div.callout-application.callout-style-default > .callout-header {
+  background-color: rgba(156, 91, 217, 0.13);
+}
+div.callout-application .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-application.callout-style-default .callout-icon::before, div.callout-application.callout-titled .callout-icon::before {
+  content: '🧠';
+  background-image: none;
+}
+</style>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://ensae-reproductibilite.github.io/"> 
+<span class="menu-text">Mise en production</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/introduction.html"> 
+<span class="menu-text">Introduction</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-les-bases" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Les bases</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-les-bases">    
+        <li>
+    <a class="dropdown-item" href="../chapters/linux101.html">
+ <span class="dropdown-text">Linux 101</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/git.html">
+ <span class="dropdown-text">Git</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bonnes-pratiques-de-développement" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Bonnes pratiques de développement</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-bonnes-pratiques-de-développement">    
+        <li>
+    <a class="dropdown-item" href="../chapters/code-quality.html">
+ <span class="dropdown-text">Qualité du code</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/projects-architecture.html">
+ <span class="dropdown-text">Structure des projets</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/big-data.html">
+ <span class="dropdown-text">Traitement des données volumineuses</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/portability.html">
+ <span class="dropdown-text">Portabilité</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-mise-en-production" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Mise en production</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-mise-en-production">    
+        <li>
+    <a class="dropdown-item" href="../chapters/yaml101.html">
+ <span class="dropdown-text">YAML 101</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/deployment.html">
+ <span class="dropdown-text">Déploiement</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/mlops.html">
+ <span class="dropdown-text">MLOps</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/application.html"> 
+<span class="menu-text">Application</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-projets" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Projets</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-projets">    
+        <li>
+    <a class="dropdown-item" href="../chapters/evaluation.html">
+ <span class="dropdown-text">Modalités d’évaluation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/galerie.html">
+ <span class="dropdown-text">Galerie des projets passés</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-github" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-bi-github">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/website">
+ <span class="dropdown-text">Site web</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/slides">
+ <span class="dropdown-text">Slides</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/application">
+ <span class="dropdown-text">Application fil rouge</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#démonstration-par-lexemple" id="toc-démonstration-par-lexemple" class="nav-link" data-scroll-target="#démonstration-par-lexemple">Démonstration par l’exemple</a></li>
+  </ul></li>
+  <li><a href="#les-notebooks-montrent-leurs-limites-pour-la-mise-en-production" id="toc-les-notebooks-montrent-leurs-limites-pour-la-mise-en-production" class="nav-link" data-scroll-target="#les-notebooks-montrent-leurs-limites-pour-la-mise-en-production">1️⃣ Les <em>notebooks</em> montrent leurs limites pour la mise en production</a></li>
+  <li><a href="#favoriser-une-structure-modulaire" id="toc-favoriser-une-structure-modulaire" class="nav-link" data-scroll-target="#favoriser-une-structure-modulaire">2️⃣ Favoriser une structure modulaire</a>
+  <ul class="collapse">
+  <li><a href="#vers-la-séparation-du-stockage-du-code-des-données-et-de-lenvironnement-dexécution" id="toc-vers-la-séparation-du-stockage-du-code-des-données-et-de-lenvironnement-dexécution" class="nav-link" data-scroll-target="#vers-la-séparation-du-stockage-du-code-des-données-et-de-lenvironnement-dexécution">Vers la séparation du stockage du code, des données et de l’environnement d’exécution</a></li>
+  </ul></li>
+  <li><a href="#adopter-les-standards-communautaires" id="toc-adopter-les-standards-communautaires" class="nav-link" data-scroll-target="#adopter-les-standards-communautaires">3️⃣ Adopter les standards communautaires</a>
+  <ul class="collapse">
+  <li><a href="#les-cookiecutters" id="toc-les-cookiecutters" class="nav-link" data-scroll-target="#les-cookiecutters">Les <em>cookiecutters</em></a></li>
+  <li><a href="#transformer-son-projet-en-package-python" id="toc-transformer-son-projet-en-package-python" class="nav-link" data-scroll-target="#transformer-son-projet-en-package-python">Transformer son projet en <em>package</em> <code>Python</code></a></li>
+  </ul></li>
+  <li><a href="#documenter-son-projet" id="toc-documenter-son-projet" class="nav-link" data-scroll-target="#documenter-son-projet">4️⃣ Documenter son projet</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Structure des projets</h1>
+</div>
+
+<div>
+  <div class="description">
+    <p>Présentation des principes d’architecture permettant de produire des projets modulaires et maintenables, et d’outils pour faciliter leur adoption.</p>
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<details>
+<summary>
+Dérouler les <em>slides</em> ci-dessous ou <a href="https://ensae-reproductibilite.github.io/slides/#/structure-des-projets">cliquer ici</a> pour afficher les slides en plein écran.
+</summary>
+<div id="cb1" class="sourceCode">
+<pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+<iframe class="sourceCode yaml code-with-copy" src="https://ensae-reproductibilite.github.io/slides/#/structure-des-projets">
+</iframe>
+</div>
+</details>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>La structuration d’un projet permet d’immédiatement identifier les éléments de code et les éléments annexes, par exemple les dépendances à gérer, la documentation, etc. Des scripts de bonne qualité ne sont pas suffisants pour assurer la qualité d’un projet de <em>data science</em>.</p>
+<p>Une organisation claire et méthodique du code et des données facilite la compréhension du projet et la capacité à reprendre et faire évoluer le code. Il est plus facile de faire évoluer une chaine de production dont les éléments s’enchainent de manière distincte et claire que lorsque tout est mélangé.</p>
+<div>
+
+</div>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../workflow1.png" class="img-fluid figure-img"></p>
+<figcaption>Un projet mal structuré</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../workflow2.png" class="img-fluid figure-img"></p>
+<figcaption>L’horizon vers lequel nous nous dirigeons dans ce cours</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<p>Comme dans le chapitre précédent, l’objectif d’une bonne structure de projets est de favoriser la <strong>lisibilité</strong> et la <strong>maintenabilité</strong> du code. Comme dans le chapitre précédent, l’organisation d’un projet est l’association de règles formelles liées à la nature d’un langage (manière dont le langage gère l’interdépendance entre plusieurs scripts par exemple) et de conventions arbitraires qui peuvent être amenées à évoluer.</p>
+<p>L’objectif est d’être pragmatique dans la structure du projet et d’adapter celle-ci aux finalités de celui-ci. Selon que le livrable du modèle est une API ou un site web la solution technique mise en œuvre attendra une structure différente de scripts. Néanmoins, certains principes universels peuvent s’appliquer et rien n’empêche de se laisser une marge d’adaptation si les <em>output</em> du projet sont amenés à évoluer.</p>
+<p>Le premier geste à mettre en œuvre, qui est non négociable, est d’utiliser <code>Git</code> (<a href="../chapters/application.html">voir chapitre dédié</a>). Avec <code>Git</code>, les mauvaises pratiques qui risquent de pénaliser le développement ultérieur du projet vont être particulièrement criantes et pourront être corrigées de manière très précoce.</p>
+<p>Les principes généraux sont les suivants :</p>
+<ol type="1">
+<li>Privilégier les scripts aux <em>notebooks</em>, un enjeu spécifique aux projets de <em>data science</em></li>
+<li>Organiser son projet de manière modulaire</li>
+<li>Adopter les standards communautaires de structure de projets</li>
+<li>(Auto)-documenter son projet</li>
+</ol>
+<p>Il s’agit donc de la continuité des principes évoqués dans le chapitre précédent.</p>
+<section id="démonstration-par-lexemple" class="level2">
+<h2 class="anchored" data-anchor-id="démonstration-par-lexemple">Démonstration par l’exemple</h2>
+<p>Voici un exemple d’organisation de projet, qui vous rappellera peut-être des souvenirs :</p>
+<pre data-code-line-numbers=""><code>├── report.qmd
+├── correlation.png
+├── data.csv
+├── data2.csv
+├── fig1.png
+├── figure 2 (copy).png
+├── report.pdf
+├── partial data.csv
+├── script.R
+└── script_final.py</code></pre>
+<p><em>Source : <a href="https://eliocamp.github.io/reproducibility-with-r/materials/day1/02-projects/">eliocamp.github.io</a></em></p>
+<p>La structure du projet suivante rend compliquée la compréhension du projet. Parmi les principales questions :</p>
+<ul>
+<li>Quelles sont les données en entrée de chaine ?</li>
+<li>Dans quel ordre les données intermédiaires sont-elles créées ?</li>
+<li>Quel est l’objet des productions graphiques ?</li>
+<li>Tous les codes sont-ils utilisés dans ce projet ?</li>
+</ul>
+<p>En structurant le dossier en suivant des règles simples, par exemple en organisant le projet par des dossiers <em>inputs</em>, <em>outputs</em>, on améliore déjà grandement la lisibilité du projet</p>
+<pre data-code-line-numbers=""><code>├── README.md
+├── .gitignore
+├── data
+│   ├── raw
+│   │   ├── data.csv
+│   │   └── data2.csv
+│   └── derived
+│       └── partial data.csv
+├── src
+|   ├── script.py
+│   ├── script_final.py
+│   └── report.qmd
+└── output
+    ├── fig1.png
+    ├── figure 2 (copy).png
+    ├── figure10.png
+    ├── correlation.png
+    └── report.pdf</code></pre>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Comme <code>Git</code> est un prérequis, tout projet présente un fichier <code>.gitignore</code> (il est très important, surtout quand on manipule des données qui ne doivent pas se retrouver sur <code>Github</code> ou <code>Gitlab</code>).</p>
+<p>Un projet présente aussi un fichier <code>README.md</code> à la racine, nous reviendrons dessus.</p>
+<p>Un projet qui utilise l’intégration continue contiendra également des fichiers spécifiques :</p>
+<ul>
+<li>si vous utilisez <code>Gitlab</code>, les instructions sont stockées dans le fichier <code>gitlab-ci.yml</code></li>
+<li>si vous utilisez <code>Github</code>, cela se passe dans le dossier <code>.github/workflows</code></li>
+</ul>
+</div>
+</div>
+<p>En changeant simplement le nom des fichiers, on rend la structure du projet très lisible :</p>
+<pre data-code-line-numbers=""><code>├── README.md
+├── .gitignore
+├── data
+│   ├── raw
+│   │   ├── dpe_logement_202103.csv
+│   │   └── dpe_logement_202003.csv
+│   └── derived
+│       └── dpe_logement_merged_preprocessed.csv
+├── src
+|   ├── preprocessing.py
+│   ├── generate_plots.py
+│   └── report.qmd
+└── output
+    ├── histogram_energy_diagnostic.png
+    ├── barplot_consumption_pcs.png
+    ├── correlation_matrix.png
+    └── report.pdf</code></pre>
+<p>Maintenant, le type de données en entrée de chaine est clair, le lien entre les scripts, les données intermédiaires et les <em>output</em> est transparent.</p>
+</section>
+</section>
+<section id="les-notebooks-montrent-leurs-limites-pour-la-mise-en-production" class="level1">
+<h1>1️⃣ Les <em>notebooks</em> montrent leurs limites pour la mise en production</h1>
+<p>Les <em>notebooks</em> Jupyter sont très pratiques pour tâtonner, expérimenter et communiquer. Ils sont donc un point d’entrée intéressant en début de projet (pour l’expérimentation) et en fin de projet (pour la communication).</p>
+<p>Cependant, ils présentent un certain nombre d’inconvénients à long terme qui peuvent rendre difficile, voire impossible à maintenir le code écrit dans un <em>notebook</em>. Pour les citer, en vrac :</p>
+<ul>
+<li>Tous les objets (fonctions, classes et données) sont définis et disponibles dans le même fichier. Le moindre changement à une fonction nécessite de retrouver l’emplacement dans le code, écrire et faire tourner à nouveau une ou plusieurs cellules.</li>
+<li>Lorsque l’on tâtonne, on écrit du code dans des cellules. Dans un cahier, on utiliserait la marge mais cela n’existe pas avec un notebook. On crée donc de nouvelles cellules, pas nécessairement dans l’ordre. Quand il est nécessaire de faire tourner à nouveau le notebook, cela provoque des erreurs difficiles à debugger (il est nécessaire de retrouver l’ordre logique du code, ce qui n’est pas évident).</li>
+<li>Les notebooks incitent à faire des copier-coller de cellules et modifier marginalement le code plutôt qu’à utiliser des fonctions.</li>
+<li>Il est quasi impossible d’avoir un versioning avec Git des notebooks qui fonctionne. Les notebooks étant, en arrière-plan, de gros fichiers JSON, ils ressemblent plus à des données que des codes sources. Git ne parvient pas bien à identifier les blocs de code qui ont changé.</li>
+<li>Le passage en production des notebooks est coûteux alors qu’un script bien fait est beaucoup plus facile à passer en production (voir suite cours).</li>
+<li>Jupyter manque d’extensions pour mettre en œuvre les bonnes pratiques (linters, etc.). VSCode, au contraire, est parfaitement adapté.</li>
+<li>Risques de révélation de données confidentielles puisque les outputs des blocs de code, par exemple les <code>head</code>, sont écrits en dur dans le code source.</li>
+</ul>
+<p>Plus synthétiquement, on peut résumer les inconvénients de cette manière :</p>
+<ul>
+<li><strong>Reproductibilité</strong> limitée ;</li>
+<li>Pas adaptés pour <strong>l’automatisation</strong> ;</li>
+<li><strong>Contrôle de version</strong> difficile.</li>
+</ul>
+<p>En fait, ces problèmes sont liés à plusieurs enjeux spécifiques liés à la <em>data science</em> :</p>
+<ul>
+<li>Le début du cycle de vie d’un projet de <em>data science</em> revêt un aspect expérimental où l’interactivité d’un <em>notebook</em> est un réel avantage. Cependant, dans une phase ultérieure du cycle de vie, la stabilité devient plus importante ;</li>
+<li>Le développement d’un code de traitement des données est souvent non linéaire : on lit les données, on effectue des opérations sur celles-ci, produits des sorties (par exemple des tableaux descriptifs) avant de revenir en arrière pour compléter la source avec d’autres bases et adapter le <em>pipeline</em>. Si cette phase exploratoire est non linéaire, renouer le fil pour rendre le <em>pipeline</em> linéaire et reproductible nécessite une autodiscipline importante.</li>
+</ul>
+<p>Les recommandations de ce cours visent à rendre le plus léger possible la maintenance à long terme de projets <em>data science</em> en favorisant la reprise par d’autres (ou par soi-même dans le futur). La bonne pratique est de privilégier des projets utilisant des scripts <code>Python</code> autosuffisants (du point de vue des dépendances) qui vont être encapsulés dans une chaine de traitement plus ou moins formalisée. Selon les projets et l’infrastructure disponible, cette dernière pourra être un simple script <code>Python</code> ou un <em>pipeline</em> plus formel. L’arbitrage sur le formalisme à adopter dépend du temps de disponible.</p>
+</section>
+<section id="favoriser-une-structure-modulaire" class="level1">
+<h1>2️⃣ Favoriser une structure modulaire</h1>
+<p>Dans le chapitre précédent, nous avons recommandé l’utilisation des fonctions. Le regroupement de plusieurs fonctions dans un fichier est appelé un <strong>module</strong>.</p>
+<p>La modularité est un principe fondamental de programmation qui consiste à diviser un programme en plusieurs modules ou scripts indépendants, chacun ayant une fonctionnalité spécifique. Comme indiqué précédemment, la structuration d’un projet sous forme de modules permet de rendre le code plus lisible, plus facile à maintenir et plus réutilisable. <code>Python</code> fournit un système d’importation flexible et puissant, qui permet de contrôler la portée des variables, les conflits de noms et les dépendances entre les modules<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p>
+<section id="vers-la-séparation-du-stockage-du-code-des-données-et-de-lenvironnement-dexécution" class="level2">
+<h2 class="anchored" data-anchor-id="vers-la-séparation-du-stockage-du-code-des-données-et-de-lenvironnement-dexécution">Vers la séparation du stockage du code, des données et de l’environnement d’exécution</h2>
+<p>La séparation du stockage du code et des données ainsi que de l’environnement d’exécution est importante pour plusieurs raisons.</p>
+<p>Tout d’abord, cela permet de garantir la sécurité et l’intégrité des données. En séparant les données du code, il devient plus difficile pour n’importe qui d’accéder aux informations sensibles stockées dans les données.</p>
+<p>En séparant l’environnement d’exécution, il est possible de s’assurer que le code fonctionne de manière cohérente et sans conflit avec d’autres programmes exécutés sur le même système ou n’est pas altéré par des configurations systèmes difficiles à reproduire. Cette séparation facilite également la portabilité et l’adaptation de l’application à différentes plateformes, en permettant de modifier l’environnement d’exécution sans avoir à modifier le code ou les données.</p>
+<p>Le prochain chapitre sera consacré à la gestion des dépendances. Il illustrera la manière dont environnement d’exécution et code d’un projet peuvent être reliés afin de créer de la portabilité.</p>
+<p>L’exécution d’un code peut dépendre d’éléments de configuration comme des jetons d’authentification ou des mots de passe de connexion à des services qui sont personnels. Ces éléments de configuration n’ont pas vocation à être partagés par du code et il est recommandé de les exclure du code. La meilleure manière de transformer ces configurations en paramètre est de les isoler dans un script séparé, qui n’est pas partagé, et utiliser les variables créées à cette occasion dans le reste du programme.</p>
+<p>La manière privilégiée de conserver ce type d’information est le format <code>YAML</code>. Ce format de fichier permet de stocker des informations de manière hiérarchisée et flexible, mais de manière plus lisible que le <code>JSON</code>. Ce format sera transformé en dictionnaire <code>Python</code> ce qui permet des recherches facilitées.</p>
+<p>Prenons le YAML suivant :</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>secrets.yaml</strong></pre>
+</div>
+<div class="sourceCode" id="cb4" data-filename="secrets.yaml" data-code-line-numbers=""><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">token</span><span class="kw">:</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">api_insee</span><span class="kw">:</span><span class="at"> </span><span class="st">"toto"</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">api_github</span><span class="kw">:</span><span class="at"> </span><span class="st">"tokengh"</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">pwd</span><span class="kw">:</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">base_pg</span><span class="kw">:</span><span class="at"> </span><span class="st">"monmotdepasse"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>L’import de ce fichier se fait avec le package <code>yaml</code> de la manière suivante :</p>
+<div class="sourceCode" id="cb5" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yaml</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">'secrets.yaml'</span>) <span class="im">as</span> f:</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    secrets <span class="op">=</span> yaml.safe_load(f)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># utilisation du secret</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>jeton_insee <span class="op">=</span> secrets[<span class="st">'token'</span>][<span class="st">'api_insee'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="adopter-les-standards-communautaires" class="level1">
+<h1>3️⃣ Adopter les standards communautaires</h1>
+<section id="les-cookiecutters" class="level2">
+<h2 class="anchored" data-anchor-id="les-cookiecutters">Les <em>cookiecutters</em></h2>
+<p>En <code>Python</code> il existe des modèles de structure de projets : les <a href="https://cookiecutter.readthedocs.io/en/stable/"><code>cookiecutters</code></a>. Il s’agit de modèles d’arborescences de fichiers (fichiers <code>Python</code> mais également tout type de fichiers) proposés par la communauté et téléchargeables comme point de départ d’un projet.</p>
+<p>L’idée de <a href="https://cookiecutter.readthedocs.io/en/stable/"><code>cookiecutter</code></a> est de proposer des <em>templates</em> que l’on utilise pour <strong>initialiser</strong> un projet, afin de bâtir à l’avance une structure évolutive. On va s’inspirer de la structure du <a href="https://drivendata.github.io/cookiecutter-data-science/"><em>template datascience</em></a> développé par la communauté. La syntaxe à utiliser dans ce cas est la suivante :</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb6" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> pip install cookiecutter</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cookiecutter https://github.com/drivendata/cookiecutter-data-science</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Le modèle est personnalisable, notamment pour faciliter l’interaction entre un système de stockage distant. L’arborescence générée est assez massive pour permettre une grande diversité de projet. Il n’est souvent pas nécessaire d’avoir toutes les composantes du <code>cookiecutter</code>.</p>
+<details>
+<summary>
+Structure complète générée par le cookiecutter data science
+</summary>
+<pre data-code-line-numbers=""><code>├── LICENSE
+├── Makefile           &lt;- Makefile with commands like `make data` or `make train`
+├── README.md          &lt;- The top-level README for developers using this project.
+├── data
+│   ├── external       &lt;- Data from third party sources.
+│   ├── interim        &lt;- Intermediate data that has been transformed.
+│   ├── processed      &lt;- The final, canonical data sets for modeling.
+│   └── raw            &lt;- The original, immutable data dump.
+│
+├── docs               &lt;- A default Sphinx project; see sphinx-doc.org for details
+│
+├── models             &lt;- Trained and serialized models, model predictions, or model summaries
+│
+├── notebooks          &lt;- Jupyter notebooks. Naming convention is a number (for ordering),
+│                         the creator's initials, and a short `-` delimited description, e.g.
+│                         `1.0-jqp-initial-data-exploration`.
+│
+├── references         &lt;- Data dictionaries, manuals, and all other explanatory materials.
+│
+├── reports            &lt;- Generated analysis as HTML, PDF, LaTeX, etc.
+│   └── figures        &lt;- Generated graphics and figures to be used in reporting
+│
+├── requirements.txt   &lt;- The requirements file for reproducing the analysis environment, e.g.
+│                         generated with `pip freeze &gt; requirements.txt`
+│
+├── setup.py           &lt;- Make this project pip installable with `pip install -e`
+├── src                &lt;- Source code for use in this project.
+│   ├── __init__.py    &lt;- Makes src a Python module
+│   │
+│   ├── data           &lt;- Scripts to download or generate data
+│   │   └── make_dataset.py
+│   │
+│   ├── features       &lt;- Scripts to turn raw data into features for modeling
+│   │   └── build_features.py
+│   │
+│   ├── models         &lt;- Scripts to train models and then use trained models to make
+│   │   │                 predictions
+│   │   ├── predict_model.py
+│   │   └── train_model.py
+│   │
+│   └── visualization  &lt;- Scripts to create exploratory and results oriented visualizations
+│       └── visualize.py
+│
+└── tox.ini            &lt;- tox file with settings for running tox; see tox.readthedocs.io</code></pre>
+</details>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tests unitaires
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Les tests unitaires sont des tests automatisés qui vérifient le bon fonctionnement d’une unité de code, comme une fonction ou une méthode. L’objectif est de s’assurer que chaque unité de code fonctionne correctement avant d’être intégrée dans le reste du programme.</p>
+<p>Les tests unitaires sont utiles lorsqu’on travaille sur un code de taille conséquente ou lorsqu’on partage son code à d’autres personnes, car ils permettent de s’assurer que les modifications apportées ne créent pas de nouvelles erreurs.</p>
+<p>En <code>Python</code>, on peut utiliser le package <code>unittest</code> pour écrire des tests unitaires. Voici un exemple tiré de ce <a href="https://gayerie.dev/docs/python/python3/unittest.html">site</a> :</p>
+<div class="sourceCode" id="cb8" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fichier test_str.py</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> unittest</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> ChaineDeCaractereTest(unittest.TestCase):</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> test_reversed(<span class="va">self</span>):</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        resultat <span class="op">=</span> <span class="bu">reversed</span>(<span class="st">"abcd"</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.assertEqual(<span class="st">"dcba"</span>, <span class="st">""</span>.join(resultat))</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> test_sorted(<span class="va">self</span>):</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        resultat <span class="op">=</span> <span class="bu">sorted</span>(<span class="st">"dbca"</span>)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.assertEqual([<span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'c'</span>, <span class="st">'d'</span>], resultat)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> test_upper(<span class="va">self</span>):</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>        resultat <span class="op">=</span> <span class="st">"hello"</span>.upper()</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.assertEqual(<span class="st">"HELLO"</span>, resultat)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> test_erreur</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">'__main__'</span>:</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    unittest.main()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Pour vérifier que les tests fonctionnent, on exécute ce script depuis la ligne de commande :</p>
+<div class="sourceCode" id="cb9" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>python3 test_str.py</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>.</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="op">----------------------------------------------------------------------</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>Ran <span class="dv">1</span> test <span class="kw">in</span> <span class="fl">0.000</span><span class="er">s</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>OK</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Si on écrit des tests unitaires, il est important de les maintenir !</p>
+<p>Prendre du temps pour écrire des tests unitaires qui ne sont pas maintenus et donc ne renvoie plus de diagnostics pertinents est du temps perdu.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="transformer-son-projet-en-package-python" class="level2">
+<h2 class="anchored" data-anchor-id="transformer-son-projet-en-package-python">Transformer son projet en <em>package</em> <code>Python</code></h2>
+<p>Le <em>package</em> est la structure aboutie d’un projet <code>Python</code> autosuffisant. Il s’agit d’une manière formelle de contrôler la reproductibilité d’un projet car :</p>
+<ul>
+<li>le <em>package</em> assure une gestion cohérente des dépendances</li>
+<li>le <em>package</em> offre une certaine structure pour la documentation</li>
+<li>le <em>package</em> facilite la réutilisation du code</li>
+<li>le <em>package</em> permet des économies d’échelle, car on peut réutiliser l’un des packages pour un autre projet</li>
+<li>le <em>package</em> facilite le debuggage car il est plus facile d’identifier une erreur quand elle est dans un package</li>
+<li>…</li>
+</ul>
+<p>En <code>Python</code>, le <em>package</em> est une structure peu contraignante si on a adopté les bonnes pratiques de structuration de projet. À partir de la structure modulaire précédemment évoquée, il n’y a qu’un pas vers le package : l’ajout d’un fichier <code>pyproject.toml</code> qui contrôle la construction du <em>package</em> (<a href="https://py-pkgs.org/03-how-to-package-a-python">voir ici</a>).</p>
+<p>Il existe plusieurs outils pour installer un package dans le système à partir d’une structure de fichiers locale. Les deux principaux sont</p>
+<ul>
+<li><a href="https://pypi.org/project/setuptools/"><code>setuptools</code></a></li>
+<li><a href="https://python-poetry.org/"><code>poetry</code></a></li>
+</ul>
+<p>Le package fait la transition entre un code modulaire et un code portable, concept sur lequel nous reviendrons dans le prochain chapitre.</p>
+</section>
+</section>
+<section id="documenter-son-projet" class="level1">
+<h1>4️⃣ Documenter son projet</h1>
+<p>Le principe premier, illustré dans l’exemple, est de privilégier l’<strong>autodocumentation</strong> via des nommages pertinents des dossiers et des fichiers.</p>
+<p>Le fichier <code>README.md</code>, situé à la racine du projet, est à la fois la carte d’identité et la vitrine du projet. Sur <code>Github</code> et <code>Gitlab</code>, comme il s’agit de l’élément qui s’affiche en accueil, ce fichier fait office de première impression, instant très court qui peut être déterminant sur la valeur évaluée d’un projet.</p>
+<p>Idéalement, le <code>README.md</code> contient :</p>
+<ul>
+<li>Une présentation du contexte et des objectifs du projet</li>
+<li>Une description de son fonctionnement</li>
+<li>Un guide de contribution si le projet accepte des retours dans le cadre d’une démarche <em>open-source</em></li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Quelques modèles de <code>README.md</code> complets, en <code>R</code> :</p>
+<ul>
+<li><a href="https://github.com/InseeFrLab/utilitR/blob/master/README.md">utilitR</a></li>
+<li><a href="https://github.com/InseeFrLab/DoReMIFaSol">DoReMIFaSol</a></li>
+</ul>
+</div>
+</div>
+
+
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>A cet égard, <code>Python</code> est beaucoup plus fiable que <code>R</code>. Dans <code>R</code>, si deux scripts utilisent des fonctions dont le nom est identique mais issues de packages différents, il y aura un conflit. En <code>Python</code> chaque module sera importé comme un <em>package</em> en soi.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/ensae-reproductibilite\.github\.io\/website\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.js" defer="true"></script>
+</body></html>

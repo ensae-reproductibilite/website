@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Présentation des standards permettant de produire du code lisible et maintenable, et d’outils pour faciliter leur adoption.">
+
+<title>Qualité du code – Mise en production</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-bd706bf7cc79ec682822fd2bf903aab3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/fontawesome6-1.2.0/all.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/fontawesome6-1.2.0/latex-fontsize.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>
+div.callout-application.callout {
+  border-left-color: #9c5bd9;
+}
+div.callout-application.callout-style-default > .callout-header {
+  background-color: rgba(156, 91, 217, 0.13);
+}
+div.callout-application .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-application.callout-style-default .callout-icon::before, div.callout-application.callout-titled .callout-icon::before {
+  content: '🧠';
+  background-image: none;
+}
+</style>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://ensae-reproductibilite.github.io/"> 
+<span class="menu-text">Mise en production</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/introduction.html"> 
+<span class="menu-text">Introduction</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-les-bases" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Les bases</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-les-bases">    
+        <li>
+    <a class="dropdown-item" href="../chapters/linux101.html">
+ <span class="dropdown-text">Linux 101</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/git.html">
+ <span class="dropdown-text">Git</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bonnes-pratiques-de-développement" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Bonnes pratiques de développement</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-bonnes-pratiques-de-développement">    
+        <li>
+    <a class="dropdown-item" href="../chapters/code-quality.html">
+ <span class="dropdown-text">Qualité du code</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/projects-architecture.html">
+ <span class="dropdown-text">Structure des projets</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/big-data.html">
+ <span class="dropdown-text">Traitement des données volumineuses</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/portability.html">
+ <span class="dropdown-text">Portabilité</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-mise-en-production" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Mise en production</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-mise-en-production">    
+        <li>
+    <a class="dropdown-item" href="../chapters/yaml101.html">
+ <span class="dropdown-text">YAML 101</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/deployment.html">
+ <span class="dropdown-text">Déploiement</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/mlops.html">
+ <span class="dropdown-text">MLOps</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/application.html"> 
+<span class="menu-text">Application</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-projets" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Projets</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-projets">    
+        <li>
+    <a class="dropdown-item" href="../chapters/evaluation.html">
+ <span class="dropdown-text">Modalités d’évaluation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/galerie.html">
+ <span class="dropdown-text">Galerie des projets passés</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-github" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-bi-github">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/website">
+ <span class="dropdown-text">Site web</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/slides">
+ <span class="dropdown-text">Slides</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/application">
+ <span class="dropdown-text">Application fil rouge</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#lenjeu-dun-code-lisible-et-maintenable" id="toc-lenjeu-dun-code-lisible-et-maintenable" class="nav-link" data-scroll-target="#lenjeu-dun-code-lisible-et-maintenable">L’enjeu d’un code lisible et maintenable</a></li>
+  <li><a href="#de-limportance-de-suivre-les-conventions" id="toc-de-limportance-de-suivre-les-conventions" class="nav-link" data-scroll-target="#de-limportance-de-suivre-les-conventions">De l’importance de suivre les conventions</a></li>
+  </ul></li>
+  <li><a href="#principe-1-adopter-les-standards-communautaires" id="toc-principe-1-adopter-les-standards-communautaires" class="nav-link" data-scroll-target="#principe-1-adopter-les-standards-communautaires">Principe 1️⃣ : Adopter les standards communautaires</a>
+  <ul class="collapse">
+  <li><a href="#un-bon-ide-un-premier-pas-vers-la-qualité" id="toc-un-bon-ide-un-premier-pas-vers-la-qualité" class="nav-link" data-scroll-target="#un-bon-ide-un-premier-pas-vers-la-qualité">Un bon IDE, un premier pas vers la qualité</a>
+  <ul class="collapse">
+  <li><a href="#les-outils-automatisés-pour-le-diagnostic-et-la-mise-en-forme-du-code" id="toc-les-outils-automatisés-pour-le-diagnostic-et-la-mise-en-forme-du-code" class="nav-link" data-scroll-target="#les-outils-automatisés-pour-le-diagnostic-et-la-mise-en-forme-du-code">Les outils automatisés pour le diagnostic et la mise en forme du code</a></li>
+  <li><a href="#les-linters-pour-comprendre-les-mauvaises-pratiques-appliquées" id="toc-les-linters-pour-comprendre-les-mauvaises-pratiques-appliquées" class="nav-link" data-scroll-target="#les-linters-pour-comprendre-les-mauvaises-pratiques-appliquées">Les <em>linters</em> pour comprendre les mauvaises pratiques appliquées</a></li>
+  <li><a href="#les-formatters-pour-nettoyer-en-masse-ses-scripts" id="toc-les-formatters-pour-nettoyer-en-masse-ses-scripts" class="nav-link" data-scroll-target="#les-formatters-pour-nettoyer-en-masse-ses-scripts">Les <em>formatters</em> pour nettoyer en masse ses scripts</a></li>
+  </ul></li>
+  <li><a href="#le-partage-une-démarche-favorable-à-la-qualité-du-code" id="toc-le-partage-une-démarche-favorable-à-la-qualité-du-code" class="nav-link" data-scroll-target="#le-partage-une-démarche-favorable-à-la-qualité-du-code">Le partage, une démarche favorable à la qualité du code</a>
+  <ul class="collapse">
+  <li><a href="#lopensource-comme-moyen-pour-améliorer-la-qualité" id="toc-lopensource-comme-moyen-pour-améliorer-la-qualité" class="nav-link" data-scroll-target="#lopensource-comme-moyen-pour-améliorer-la-qualité">L’<em>opensource</em> comme moyen pour améliorer la qualité</a></li>
+  <li><a href="#la-revue-de-code" id="toc-la-revue-de-code" class="nav-link" data-scroll-target="#la-revue-de-code">La revue de code</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#principe-2-favoriser-une-structure-modulaire" id="toc-principe-2-favoriser-une-structure-modulaire" class="nav-link" data-scroll-target="#principe-2-favoriser-une-structure-modulaire">Principe 2️⃣ : favoriser une structure modulaire</a>
+  <ul class="collapse">
+  <li><a href="#objectifs" id="toc-objectifs" class="nav-link" data-scroll-target="#objectifs">Objectifs</a></li>
+  <li><a href="#avantages-des-fonctions" id="toc-avantages-des-fonctions" class="nav-link" data-scroll-target="#avantages-des-fonctions">Avantages des fonctions</a>
+  <ul class="collapse">
+  <li><a href="#conseils-pour-la-programmation" id="toc-conseils-pour-la-programmation" class="nav-link" data-scroll-target="#conseils-pour-la-programmation">Conseils pour la programmation</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#principe-3-autodocumenter-son-code" id="toc-principe-3-autodocumenter-son-code" class="nav-link" data-scroll-target="#principe-3-autodocumenter-son-code">Principe 3️⃣ : (auto)documenter son code</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Qualité du code</h1>
+</div>
+
+<div>
+  <div class="description">
+    <p>Présentation des standards permettant de produire du code lisible et maintenable, et d’outils pour faciliter leur adoption.</p>
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<details>
+<summary>
+Dérouler les <em>slides</em> ci-dessous ou <a href="https://ensae-reproductibilite.github.io/slides/#/qualité-du-code">cliquer ici</a> pour afficher les slides en plein écran.
+</summary>
+<div id="cb1" class="sourceCode">
+<pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+<iframe class="sourceCode yaml code-with-copy" src="https://ensae-reproductibilite.github.io/slides/#/qualité-du-code">
+</iframe>
+</div>
+</details>
+<p>Ce chapitre constitue une introduction à la question de la qualité du code, premier niveau dans l’échelle des bonnes pratiques. Celui-ci présente les enjeux de la qualité du code, les principes généraux pour améliorer celui-ci et quelques outils ou gestes faciles à mettre en œuvre pour améliorer la qualité du code. Ceux-ci sont approfondis dans l’<a href="../chapters/application.html">application fil rouge</a>.</p>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../berk.png" class="img-fluid figure-img"></p>
+<figcaption>Image empruntée à la page “Les joies du code”</figcaption>
+</figure>
+</div>
+<section id="lenjeu-dun-code-lisible-et-maintenable" class="level2">
+<h2 class="anchored" data-anchor-id="lenjeu-dun-code-lisible-et-maintenable">L’enjeu d’un code lisible et maintenable</h2>
+<blockquote class="blockquote">
+<p><em>“The code is read much more often than it is written.”</em></p>
+<p>Guido Van Rossum<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+</blockquote>
+<p>Lorsqu’on s’initie à la pratique de la <em>data science</em>, il est assez naturel de voir le code d’une manière très fonctionnelle : je veux réaliser une tâche donnée — par exemple un algorithme de classification — et je vais donc assembler dans un <em>notebook</em> des bouts de code, souvent trouvés sur internet, jusqu’à obtenir un projet qui réalise la tâche voulue. La structure du projet importe assez peu, tant qu’elle permet d’importer correctement les données nécessaires à la tâche en question.</p>
+<p>Si cette approche flexible et minimaliste fonctionne très bien lors de la phase d’apprentissage, il est malgré tout indispensable de s’en détacher progressivement à mesure que l’on progresse et que l’on est amené à réaliser des projets plus professionnels ou bien à intégrer des projets collaboratifs. Autrement, on risque de <strong>produire un code complexe à reprendre et à faire évoluer, ce qui pourrait conduire inévitablement à son abandon</strong>.</p>
+<p>En particulier, il est important de proposer, parmi les multiples manières de résoudre un problème informatique, une solution qui soit intelligible par d’autres personnes parlant le même langage. Le code est en effet lu bien plus souvent qu’il n’est écrit, c’est donc avant tout un <strong>outil de communication</strong>. De même, la maintenance d’un code demande généralement beaucoup plus de moyens que sa phase de développement initial. Il est donc important de penser en amont la qualité de son code et la structure de son projet de sorte à le rendre maintenable dans le temps.</p>
+<p>Afin de faciliter la communication et réduire la douleur d’avoir à faire évoluer un code obscur, des tentatives plus ou moins institutionnalisées de définir des conventions ont émergé. Ces conventions dépendent naturellement du langage utilisé, mais les principes sous-jacents s’appliquent de manière universelle à tout projet basé sur du code.</p>
+</section>
+<section id="de-limportance-de-suivre-les-conventions" class="level2">
+<h2 class="anchored" data-anchor-id="de-limportance-de-suivre-les-conventions">De l’importance de suivre les conventions</h2>
+<p><code>Python</code> est un langage très <strong>lisible</strong>. Avec un peu d’effort sur le nom des objets, sur la gestion des dépendances et sur la structure du programme, on peut très bien comprendre un script sans avoir besoin de l’exécuter. C’est l’une des principales forces du langage <code>Python</code> qui permet ainsi une acquisition rapide des bases et facilite l’appropriation d’un script.</p>
+<p>La communauté <code>Python</code> a abouti à un certain nombre de normes, dites <code>PEP</code> (<em>Python Enhancement Proposal</em>), qui constituent un standard dans l’écosystème Python. Les deux normes les plus connues sont :</p>
+<ul>
+<li>la <strong>norme <a href="https://peps.python.org/pep-0008/"><code>PEP8</code></a></strong> qui définit un certain nombre de conventions relatives au code ;</li>
+<li>la <strong>norme <a href="https://peps.python.org/pep-0257/"><code>PEP257</code></a></strong> consacrée à la documentation (<em>docstrings</em>).</li>
+</ul>
+<p>Ces conventions vont au-delà de la syntaxe. Un certain nombre de standards d’organisation d’un projet ont émergé, qui seront abordées dans le <a href="../chapters/projects-architecture.html">prochain chapitre</a>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Comparaison avec <i class="fa-brands fa-r-project" aria-label="r-project"></i>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Dans l’univers <i class="fa-brands fa-r-project" aria-label="r-project"></i>, la formalisation a été moins organisée. Ce langage est plus permissif que <code>Python</code> sur certains aspects<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>. Néanmoins, des standards ont émergé récemment, à travers un certain nombre de <em>style guides</em> dont les plus connus sont le <a href="https://style.tidyverse.org/googl"><em>tidyverse style guide</em></a> et le <a href="https://google.github.io/styleguide/Rguide.html"><em>google style guide</em></a>, <a href="https://github.com/mlr-org/mlr3/wiki/Style-Guide#theoretical-style-guide">MLR style guide</a>…</p>
+<p>Pour aller plus loin sur <i class="fa-brands fa-r-project" aria-label="r-project"></i>:</p>
+<ul>
+<li>La formation Insee <a href="https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/">aux bonnes pratiques avec <code>Git</code> et <i class="fa-brands fa-r-project" aria-label="r-project"></i></a> dont le parcours est très proche de celui de ce cours ;</li>
+<li>Des éléments complémentaires dans la <a href="https://www.book.utilitr.org/02_bonnes_pratiques/01-qualite-code">documentation collaborative <code>utilitR</code></a> ;</li>
+<li><a href="https://blog.r-hub.io/2022/03/21/code-style/">Ce post</a> qui pointe vers un certain nombre de ressources sur le sujet.</li>
+</ul>
+</div>
+</div>
+</div>
+<p>Ces conventions sont arbitraires, dans une certaine mesure. Il est tout à fait possible de trouver certaines conventions moins esthétiques que d’autres.</p>
+<p>Ces conventions ne sont pas non plus immuables : les langages et leurs usages évoluent, ce qui nécessite de mettre à jour les conventions. Cependant, adopter dans la mesure du possible certains des réflexes préconisés par ces conventions devrait améliorer la capacité à être compris par la communauté, augmenter les chances de bénéficier d’apport de celle-ci pour adapter le code, mais aussi réduire la difficulté à faire évoluer un code.</p>
+<p>Il existe beaucoup de philosophies différentes sur le style de codage et, en fait, le plus important est la <strong>cohérence</strong> : si on choisit une convention, par exemple <em>snake case</em> (<code>toto_a_la_plage</code>) plutôt que <em>camel case</em> (<code>totoALaPlage</code>), le mieux est de s’y tenir.</p>
+</section>
+</section>
+<section id="principe-1-adopter-les-standards-communautaires" class="level1">
+<h1>Principe 1️⃣ : Adopter les standards communautaires</h1>
+<p>Dans la lignée de la vision des bonnes pratiques comme continuum proposée en <a href="../chapters/introduction.html">introduction</a>, il n’est pas nécessairement souhaitable d’appliquer toutes les recommandations présentées dans ce chapitre à chaque projet. Sur certains projets, le coût marginal d’adopter certaines pratiques peut excéder les bénéfices induits. Nous recommandons plutôt de voir ces bonnes pratiques comme de bonnes habitudes à acquérir en opérant un va-et-vient régulier entre la pratique et la théorie. Les outils que nous allons proposer seront là pour accélérer la mise en œuvre des bonnes pratiques.</p>
+<p>Les éléments exposés dans ce chapitre n’ont pas vocation à être exhaustifs. Ils visent à pointer vers quelques ressources utiles tout en proposant des conseils pratiques. L’apprentissage par cœur de ces règles ou faire des aller-retour en continu entre le code et les manuels de règles serait quelques peu rébarbatif.</p>
+<p>Pour faire le parallèle avec le langage naturel, on n’a pas toujours le bescherelle ou le dictionnaire sous les yeux. Les éditeurs de texte ou les smartphones embarquent des correcteurs orthographiques qui identifient, voire corrigent directement le texte écrit.</p>
+<section id="un-bon-ide-un-premier-pas-vers-la-qualité" class="level2">
+<h2 class="anchored" data-anchor-id="un-bon-ide-un-premier-pas-vers-la-qualité">Un bon IDE, un premier pas vers la qualité</h2>
+<p>Sans les outils automatisés de mise en forme du code, l’adoption des bonnes pratiques serait coûteuse en temps et donc difficile à mettre en œuvre au quotidien. Ces outils, que ce soit par le biais de diagnostics ou de mise aux normes automatisée du code rendent de précieux services. Adopter les standards minimaux de qualité est plus ou moins instantané et économise un temps précieux dans la vie d’un projet de <em>data science</em>. C’est un préalable indispensable à la mise en production, sur laquelle nous reviendrons ultérieurement.</p>
+<p>Le premier pas vers les bonnes pratiques est d’adopter un environnement de développement adapté. <code>VSCode</code> est un très bon environnement comme nous le découvrirons dans la <a href="../chapters/application.html">partie pratique</a>. Il propose tous les outils d’autocomplétion et de diagnostics usuels (contrairement à <code>Jupyter</code>) et propose une grande gamme d’extensions pour enrichir les fonctionnalités de l’IDE de manière contributive :</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://code.visualstudio.com/assets/docs/python/editing/packageAbbreviations.gif" class="img-fluid figure-img"></p>
+<figcaption>Exemple de diagnostics et d’actions proposés par <code>VSCode</code></figcaption>
+</figure>
+</div>
+<p>Néanmoins, les outils de détection de code au niveau des IDE ne suffisent pas. En effet, ils nécessitent une composante manuelle qui peut être chronophage et ainsi pénible à appliquer régulièrement. Heureusement, il existe des outils automatisés de diagnostics et de mise en forme.</p>
+<section id="les-outils-automatisés-pour-le-diagnostic-et-la-mise-en-forme-du-code" class="level3">
+<h3 class="anchored" data-anchor-id="les-outils-automatisés-pour-le-diagnostic-et-la-mise-en-forme-du-code">Les outils automatisés pour le diagnostic et la mise en forme du code</h3>
+<p><code>Python</code> étant l’outil de travail principal de milliers de <em>data-scientists</em>, un certain nombre d’outils ont vu le jour pour réduire le temps nécessaire pour créer un projet ou disposer d’un code fonctionnel. Ces outils permettent un gros gain de productivité, réduisent le temps passé à effectuer des tâches rébarbatives et améliorent la qualité d’un projet en offrant des diagnostics, voire des correctifs à des codes perfectibles.</p>
+<p>Les deux principaux types d’outils sont les suivants :</p>
+<ol type="1">
+<li><strong><em>Linter</em></strong> : programme qui vérifie que le code est <strong>formellement</strong> conforme à un certain <em>guidestyle</em>
+<ul>
+<li>signale des problèmes formels, sans corriger</li>
+</ul></li>
+<li><strong><em>Formatter</em></strong> : programme qui reformate un code pour le rendre conforme à un certain <em>guidestyle</em>
+<ul>
+<li>modifie directement le code</li>
+</ul></li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemples
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li>Exemples d’erreurs repérées par un <em>linter</em> :
+<ul>
+<li>lignes de code trop longues ou mal indentées, parenthèses non équilibrées, noms de fonctions mal construits…</li>
+</ul></li>
+<li>Exemples d’erreurs <strong>non</strong> repérées par un <em>linter</em> :
+<ul>
+<li>fonctions mal utilisées, arguments mal spécifiés, structure du code incohérente, code insuffisamment documenté…</li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="les-linters-pour-comprendre-les-mauvaises-pratiques-appliquées" class="level3">
+<h3 class="anchored" data-anchor-id="les-linters-pour-comprendre-les-mauvaises-pratiques-appliquées">Les <em>linters</em> pour comprendre les mauvaises pratiques appliquées</h3>
+<p>Les <em>linters</em> sont des outils qui permettent d’évaluer la qualité du code et son risque de provoquer une erreur (explicite ou silencieuse).</p>
+<p>Voici quelques exemples de problèmes que peuvent rencontrer les <code>linters</code>:</p>
+<ul>
+<li>les variables sont utilisées mais n’existent pas (erreur)</li>
+<li>les variables inutilisées (inutiles)</li>
+<li>la mauvaise organisation du code (risque d’erreur)</li>
+<li>le non-respect des bonnes pratiques d’écriture de code</li>
+<li>les erreurs de syntaxe (par exemple les coquilles)</li>
+</ul>
+<p>La plupart des logiciels de développement embarquent des fonctionnalités de diagnostic (voire de suggestion de correctif). Il faut parfois les paramétrer dans les options (ils sont désactivés pour ne pas effrayer l’utilisateur avec des croix rouges partout). Néanmoins, si on n’a pas appliqué les correctifs au fil de l’eau la masse des modifications à mettre en œuvre peut être effrayante.</p>
+<p>En <code>Python</code>, les deux principaux <em>linters</em> sont <a href="https://pylint.readthedocs.io/en/latest/"><code>PyLint</code></a> et <a href="https://flake8.pycqa.org/en/latest/"><code>Flake8</code></a>. Dans les exercices, nous proposons d’utiliser <code>PyLint</code> qui est pratique et pédagogique. Celui-ci s’utilise en ligne de commande, de la manière suivante :</p>
+<div class="sourceCode" id="cb1" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install pylint</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pylint</span> monscript.py <span class="co">#pour un fichier</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">pylint</span> src <span class="co">#pour tous les fichiers du dossier src</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>L’un des intérêts d’utiliser <code>PyLint</code> est qu’on obtient une note, ce qui est assez instructif. Nous l’utiliserons dans l’application fil rouge pour comprendre la manière dont chaque étape améliore la qualité du code.</p>
+<p>Il est possible de mettre en œuvre des <a href="https://pylint.readthedocs.io/en/latest/user_guide/installation/pre-commit-integration.html"><em>pre commit hooks</em></a> qui empêchent un <em>commit</em> n’ayant pas une note minimale.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="les-formatters-pour-nettoyer-en-masse-ses-scripts" class="level3">
+<h3 class="anchored" data-anchor-id="les-formatters-pour-nettoyer-en-masse-ses-scripts">Les <em>formatters</em> pour nettoyer en masse ses scripts</h3>
+<p>Le <em>formatter</em> modifie directement le code. On peut faire un parallèle avec le correcteur orthographique. Cet outil peut donc induire un changement substantiel du script afin de le rendre plus lisible.</p>
+<p>Le <em>formater</em> le plus utilisé</p>
+<p>est <a href="https://black.readthedocs.io/en/stable/"><code>Black</code></a>. Récemment, <a href="https://github.com/astral-sh/ruff"><code>Ruff</code></a>, qui est à la fois un <em>linter</em> et un <em>formatter</em> a émergé pour intégrer à <code>Black</code> des diagnostics supplémentaires, issus d’autres <em>packages</em>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Pour signaler sur <code>Github</code> la qualité d’un projet utilisant <code>Black</code>, il est possible d’ajouter un badge dans le <code>README</code>:</p>
+<p><a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" class="img-fluid"></a></p>
+</div>
+</div>
+</div>
+<p>Il est assez instructif de regarder le code modifié par les outils pour comprendre et corriger certains problèmes dans sa manière de développer. Par exemple, à la lecture de ce chapitre, vous allez certainement retenir en particulier certaines règles qui tranchent avec vos pratiques actuelles. Vous pouvez alors essayer d’appliquer ces nouvelles règles pendant un certain temps puis, lorsque celles-ci seront devenues naturelles, revenir à ce guide et appliquer le processus à nouveau. En procédant ainsi de manière incrémentale, vous améliorerez progressivement la qualité de vos projets sans avoir l’impression de passer trop de temps sur des micro-détails, au détriment des objectifs globaux du projet.</p>
+</section>
+</section>
+<section id="le-partage-une-démarche-favorable-à-la-qualité-du-code" class="level2">
+<h2 class="anchored" data-anchor-id="le-partage-une-démarche-favorable-à-la-qualité-du-code">Le partage, une démarche favorable à la qualité du code</h2>
+<section id="lopensource-comme-moyen-pour-améliorer-la-qualité" class="level3">
+<h3 class="anchored" data-anchor-id="lopensource-comme-moyen-pour-améliorer-la-qualité">L’<em>opensource</em> comme moyen pour améliorer la qualité</h3>
+<p>En ouvrant son code sur des forges <em>opensource</em> (cf.&nbsp;<a href="../chapters/git.html">chapitre <code>Git</code></a>), il est possible de recevoir des suggestions voire, des contributions de ré-utilisateurs du code. Cependant, les vertus de l’ouverture vont au-delà. En effet, l’ouverture se traduit généralement par des codes de meilleure qualité, mieux documentés pour pouvoir être réutilisés ou ayant simplement bénéficié d’une attention accrue sur la qualité pour ne pas paraître ridicule. Même en l’absence de retour de (ré)utilisateurs du code, le partage de code améliore la qualité des projets.</p>
+</section>
+<section id="la-revue-de-code" class="level3">
+<h3 class="anchored" data-anchor-id="la-revue-de-code">La revue de code</h3>
+<p>La revue de code s’inspire de la méthode du <em>peer reviewing</em> du monde académique pour améliorer la qualité du code <code>Python</code>. Dans une revue de code, le code écrit par une personne est relu et évalué par un ou plusieurs autres développeurs afin d’identifier les erreurs et les améliorations possibles. Cette pratique permet de détecter les erreurs avant qu’elles ne deviennent des problèmes majeurs, d’assurer une cohérence dans le code, de garantir le respect des bonnes pratiques mais aussi d’améliorer la qualité du code en identifiant les parties du code qui peuvent être simplifiées, optimisées ou refactorisées pour en améliorer la lisibilité et la maintenabilité.</p>
+<p>Un autre avantage de cette approche est qu’elle permet le partage de connaissances entre des personnes expérimentées et des personnes plus débutantes ce qui permet à ces dernières de monter en compétence. <code>Github</code> <i class="fa-brands fa-github" aria-label="github"></i> et <code>Gitlab</code> <i class="fa-brands fa-gitlab" aria-label="gitlab"></i> proposent des fonctionnalités très pratiques pour la revue de code : discussions, suggestions de modifications…</p>
+</section>
+</section>
+</section>
+<section id="principe-2-favoriser-une-structure-modulaire" class="level1">
+<h1>Principe 2️⃣ : favoriser une structure modulaire</h1>
+<section id="objectifs" class="level2">
+<h2 class="anchored" data-anchor-id="objectifs">Objectifs</h2>
+<ul>
+<li>Favoriser la <strong>concision</strong> pour réduire le risque d’erreur et rendre la démarche plus claire ;</li>
+<li>Améliorer la <strong>lisibilité</strong> ce qui est indispensable pour rendre la démarche intelligible par d’autres mais aussi pour soi, lorsqu’on reprend un code écrit il y a quelques temps ;</li>
+<li>Limiter la <strong>redondance</strong> ce qui permet de simplifier un code (paradigme du <em>don’t repeat yourself</em>) ;</li>
+<li>Limite les risques d’<strong>erreurs liées aux copier/coller</strong></li>
+</ul>
+</section>
+<section id="avantages-des-fonctions" class="level2">
+<h2 class="anchored" data-anchor-id="avantages-des-fonctions">Avantages des fonctions</h2>
+<p>Les fonctions ont de nombreux avantages par rapport à de longs scripts :</p>
+<ul>
+<li>Limite les risques d’erreurs liés aux copier/coller</li>
+<li>Rend le code plus lisible et plus compact</li>
+<li>Un seul endroit du code à modifier lorsqu’on souhaite modifier le traitement</li>
+<li>Facilite la réutilisation et la documentation du code !</li>
+</ul>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Règle d’or
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Il faut utiliser une <span class="red2"><strong>fonction</strong></span> dès qu’on utilise une même portion de code plus de deux fois (<span class="red2"><strong><em>don’t repeat yourself</em> (DRY)</strong></span>)</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Règles pour écrire des fonctions <strong>pertinentes</strong>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Une tâche = une fonction</li>
+<li>Une tâche complexe = un enchaînement de fonctions réalisant chacune une tâche simple</li>
+<li>Limiter l’utilisation de variables globales</li>
+</ul>
+</div>
+</div>
+<p>En ce qui concerne l’installation des packages, nous allons voir dans les parties <a href="../chapters/projects-architecture.html">Structure de code</a> et <a href="../chapters/portability.html">Portabilité</a> qu’il ne faut pas gérer ceci dans le script mais dans un élément à part, relatif à l’environnement d’exécution du projet<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>. De même, ces parties présenteront des conseils pratiques sur la gestion des jetons d’accès à des API ou bases de données qui ne <strong>doivent jamais être inscrites dans un code</strong>.</p>
+<p>Les scripts trop longs ne sont pas une bonne pratique. Il est préférable de diviser l’ensemble des scripts exécutant une chaîne de production en <em>“monades”</em>, c’est-à-dire en petites unités cohérentes. Les fonctions sont un outil privilégié pour cela (en plus de limiter la redondance, et d’être un outil privilégié pour documenter un code).</p>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exemple: privilégier les <em>list comprehensions</em>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>En <code>Python</code>, il est recommandé de privilégier les <em>list comprehensions</em> à l’utilisation de boucles <code>for</code> indentées. Ces dernières sont en général moins efficaces et surtout impliquent un nombre important de ligne de codes là où les compréhensions de listes sont beaucoup plus concises</p>
+<div class="sourceCode" id="cb2" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>liste_nombres <span class="op">=</span> <span class="bu">range</span>(<span class="dv">10</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># très mauvais</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> []</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> x <span class="kw">in</span> liste_nombres:</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> x <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        y.append(x<span class="op">*</span>x)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># mieux</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> [x<span class="op">*</span>x <span class="cf">for</span> x <span class="kw">in</span> liste_nombres <span class="cf">if</span> x <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">0</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<section id="conseils-pour-la-programmation" class="level3">
+<h3 class="anchored" data-anchor-id="conseils-pour-la-programmation">Conseils pour la programmation</h3>
+<p>Dans le monde de la programmation en <code>Python</code>, il existe deux paradigmes différents :</p>
+<ul>
+<li>La <strong>programmation fonctionnelle</strong> est une approche qui construit un code en enchaînant des fonctions, c’est-à-dire des opérations plus ou moins standardisées ;</li>
+<li>La <strong>programmation orientée objet (POO)</strong> consiste à construire son code en définissant des objets d’une certaine <em>classe</em> ayant des <em>attributs</em> (les caractéristiques intrinsèques de l’objet) et sur lequel on effectue des opérations <em>ad hoc</em> par le biais de <em>méthodes</em> qui encapsulent des opérations propres à chaque classe.</li>
+</ul>
+<details>
+<summary>
+Exemple de comparaison des deux paradigmes
+</summary>
+<p>Merci <em>ChatGPT</em> pour l’exemple :</p>
+<div id="cf1261be" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb3" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> AverageCalculator:</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, numbers):</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.numbers <span class="op">=</span> numbers</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> calculate_average(<span class="va">self</span>):</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">sum</span>(<span class="va">self</span>.numbers) <span class="op">/</span> <span class="bu">len</span>(<span class="va">self</span>.numbers)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Utilisation</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>calculator <span class="op">=</span> AverageCalculator([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>])</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Moyenne (POO):"</span>, calculator.calculate_average())</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> calculate_average(numbers):</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sum</span>(numbers) <span class="op">/</span> <span class="bu">len</span>(numbers)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Utilisation</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>numbers <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>]</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Moyenne (PF):"</span>, calculate_average(numbers))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre data-code-line-numbers=""><code>Moyenne (POO): 3.0
+Moyenne (PF): 3.0</code></pre>
+</div>
+</div>
+</details>
+<p>La programmation fonctionnelle est plus intuitive que la POO et permet souvent de développer du code plus rapidement. La POO est une approche plus formaliste. Celle-ci est intéressante lorsqu’une fonction doit s’adapter au type d’objet en entrée (par exemple aller chercher des poids différents selon le type de modèle <a href="https://pytorch.org/vision/0.9/models.html"><code>Pytorch</code></a>). Cela évite les codes <em>spaghetti</em> 🍝 inutilement complexes qui sont impossibles à débugger.</p>
+<p>Néanmoins, il convient d’être pragmatique. La programmation orientée objet peut être plus complexe à mettre en œuvre que la programmation fonctionnelle. Dans de nombreuses situations, cette dernière, si elle est bien faite, suffit largement. Il est utile lorsqu’on développe dans le cadre d’un projet important d’adopter une approche dite de <strong>programmation défensive</strong>. Il s’agit d’un principe de précaution dans le paradigme de la programmation fonctionnelle qui vise à limiter les situations imprévues en étant capable de gérer, par exemple, un argument d’une fonction inattendu ou un objet à la structure différente de celle pour lequel le code a été pensé.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Le code spaghetti
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Le code <code>spaghetti</code> est un style d’écriture qui favorise l’apparition du syndrome du plat de spaghettis : un code impossible à démêler parce qu’il fait un usage excessif de conditions, d’exceptions en tous sens, de gestion des événements complexes. Il devient quasi impossible de savoir quelles ont été les conditions à l’origine de telle ou telle erreur sans exécuter ligne à ligne (et celles-ci sont excessivement nombreuses du fait de mauvaises pratiques de programmation) le programme.</p>
+<p>En fait, la programmation spaghetti qualifie tout ce qui ne permet pas de déterminer le qui, le quoi et le comment. Le code est donc plus long à mettre à jour car cela nécessite de remonter un à un le fil des renvois.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Un exemple progressif pour comprendre
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>💡 Supposons qu’on dispose d’une table de données qui utilise le code <code>−99</code> pour représenter les valeurs manquantes. On désire remplacer l’ensemble des <code>−99</code> par des <code>NA</code>.</p>
+<p>Voici un code <code>Python</code> qui permet de se placer dans ce cas qui, malheureusement, arrive fréquemment.</p>
+<div class="sourceCode" id="cb5" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># On fixe la racine pour être sûr de tous avoir le même dataset</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">1234</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># On créé un dataframe</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> np.random.randint(<span class="dv">1</span>, <span class="dv">10</span>, size <span class="op">=</span> (<span class="dv">5</span>,<span class="dv">6</span>))</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> np.insert(</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    a,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    np.random.choice(<span class="bu">len</span>(a), size<span class="op">=</span><span class="dv">6</span>),</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span><span class="dv">99</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(df.reshape((<span class="dv">6</span>,<span class="dv">6</span>)), columns<span class="op">=</span>[<span class="bu">chr</span>(x) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">97</span>, <span class="dv">103</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Un premier jet de code pourrait prendre la forme suivante :</p>
+<div class="sourceCode" id="cb6" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Dupliquer les données</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>df2 <span class="op">=</span> df.copy()</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Remplacer les -99 par des NA</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>df2.loc[df2[<span class="st">'a'</span>] <span class="op">==</span> <span class="op">-</span><span class="dv">99</span>,<span class="st">'a'</span>] <span class="op">=</span> np.nan</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>df2.loc[df2[<span class="st">'b'</span>] <span class="op">==</span> <span class="op">-</span><span class="dv">99</span>,<span class="st">'b'</span>] <span class="op">=</span> np.nan</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>df2.loc[df2[<span class="st">'c'</span>] <span class="op">==</span> <span class="op">-</span><span class="dv">99</span>,<span class="st">'c'</span>] <span class="op">=</span> np.nan</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>df2.loc[df2[<span class="st">'d'</span>] <span class="op">==</span> <span class="op">-</span><span class="dv">99</span>,<span class="st">'d'</span>] <span class="op">=</span> np.nan</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>df2.loc[df2[<span class="st">'e'</span>] <span class="op">==</span> <span class="op">-</span><span class="dv">98</span>,<span class="st">'e'</span>] <span class="op">=</span> np.nan</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>df2.loc[df2[<span class="st">'f'</span>] <span class="op">==</span> <span class="op">-</span><span class="dv">99</span>,<span class="st">'e'</span>] <span class="op">=</span> np.nan</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Quelles sont les choses qui vous dérangent dans le code ci-dessus ?</p>
+<details>
+<summary>
+Indice 💡 Regardez précisément le code et le <code>DataFrame</code>, notamment les colonnes <code>e</code> et <code>g</code>.
+</summary>
+<p>Il y a deux erreurs, difficiles à détecter:</p>
+<ul>
+<li><code>df2.loc[df2['e'] == -98,'e'] = np.nan</code>: une erreur de copier-coller sur la valeur de l’erreur ;</li>
+<li><code>df2.loc[df2['f'] == -99,'e'] = np.nan</code>: une erreur de copier-coller sur les colonnes en question</li>
+</ul>
+</details>
+<p>On peut noter au moins deux trois :</p>
+<ul>
+<li>Le code est long et répétitif, ce qui nuit à sa lisibilité ;</li>
+<li>Le code est très dépendant de la structure des données (nom et nombre de colonnes) et doit être adapté dès que celle-ci évolue ;</li>
+<li>On a introduit des erreurs humaines dans le code, difficiles à détecter.</li>
+</ul>
+<p>On voit dans la première version de notre code qu’il y a une structure commune à toutes nos lignes de la forme <code>.[. == -99] = np.nan</code>. Cette structure va servir de base à notre fonction, en vue de généraliser le traitement que nous voulons faire.</p>
+<div class="sourceCode" id="cb7" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fix_missing(x: pd.Series):</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    x[x <span class="op">==</span> <span class="op">-</span><span class="dv">99</span>] <span class="op">=</span> np.nan</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>df2 <span class="op">=</span> df.copy()</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>df2[<span class="st">'a'</span>] <span class="op">=</span> fix_missing(df[<span class="st">'a'</span>])</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>df2[<span class="st">'b'</span>] <span class="op">=</span> fix_missing(df[<span class="st">'b'</span>])</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>df2[<span class="st">'c'</span>] <span class="op">=</span> fix_missing(df[<span class="st">'c'</span>])</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>df2[<span class="st">'d'</span>] <span class="op">=</span> fix_missing(df[<span class="st">'d'</span>])</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>df2[<span class="st">'e'</span>] <span class="op">=</span> fix_missing(df[<span class="st">'e'</span>])</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>df2[<span class="st">'f'</span>] <span class="op">=</span> fix_missing(df[<span class="st">'f'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Cette seconde version du code est meilleure que la première version, car on a réglé le problème d’erreur humaine (il n’est plus possible de taper <code>-98</code> au lieu de <code>-99</code>).</p>
+<details>
+<summary>
+Mais voyez-vous le problème qui persiste ?
+</summary>
+Le code reste long et répétitif, et n’élimine pas encore toute possibilité d’erreur, car il est toujours possible de se tromper dans le nom des variables.
+</details>
+<p>La prochaine étape consiste à éliminer ce risque d’erreur en combinant deux fonctions (ce qu’on appelle la combinaison de fonctions).</p>
+<p>La première fonction <code>fix_missing()</code> sert à régler le problème sur un vecteur. La seconde généralisera ce procédé à toutes les colonnes. Comme <code>Pandas</code> permet une approche vectorielle, il est fréquent de construire des fonctions sur des vecteurs et les appliquer ensuite à plusieurs colonnes.</p>
+<div class="sourceCode" id="cb8" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fix_missing(x: pd.Series):</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    x[x <span class="op">==</span> <span class="op">-</span><span class="dv">99</span>] <span class="op">=</span> np.nan</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>df2 <span class="op">=</span> df.copy()</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>df2 <span class="op">=</span> df2.<span class="bu">apply</span>(fix_missing)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Cette troisième version du code a plusieurs avantages sur les deux autres versions :</p>
+<ol type="1">
+<li>Elle est plus concise et plus lisible ;</li>
+<li>Si on a un changement de code pour les valeurs manquantes, il suffit de le mettre à un seul endroit ;</li>
+<li>Elle fonctionne quel que soit le nombre de colonnes et le nom des colonnes ;</li>
+<li>On ne peut pas traiter une colonne différemment des autres par erreur.</li>
+</ol>
+<p>De plus, le code est facilement généralisable.</p>
+<p>Par exemple, à partir de la même structure, écrire le code qui permet de ne traiter que les colonnes <em>a</em>,<em>b</em> et <em>e</em> ne demande pas beaucoup d’énergie.</p>
+<div class="sourceCode" id="cb9" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df2 <span class="op">=</span> df.copy()</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>df2[[<span class="st">'a'</span>,<span class="st">'b'</span>,<span class="st">'e'</span>]] <span class="op">=</span> df2[[<span class="st">'a'</span>,<span class="st">'b'</span>,<span class="st">'e'</span>]].<span class="bu">apply</span>(fix_missing)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<p>Un certain nombre de conseils sont présents dans le <a href="https://docs.python-guide.org/writing/style/">Hitchhiker’s Guide to Python</a> qui vise à faire connaître les préceptes du <em>“Zen of Python”</em> (PEP 20). <a href="https://towardsdatascience.com/the-zen-of-python-a-guide-to-pythons-design-principles-93f3f76d088a">Ce post de blog</a> illustre quelques uns de ces principes avec des exemples.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Le <em>Zen de Python</em>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Le <em>“Zen de Python”</em> est une collection de principes pour la programmation en <code>Python</code>, écrite par Tim Peters en 2004 sous la forme d’aphorismes. Ceux-ci mettent en lumière la philosophie de conception du langage <code>Python</code>.</p>
+<p>Vous pouvez retrouver ces conseils dans <code>Python</code> en tapant le code suivant:</p>
+<div class="python">
+<div class="sourceCode" id="cb10" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> this</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre data-code-line-numbers=""><code>The Zen of Python, by Tim Peters
+
+Beautiful is better than ugly.
+Explicit is better than implicit.
+Simple is better than complex.
+Complex is better than complicated.
+Flat is better than nested.
+Sparse is better than dense.
+Readability counts.
+Special cases aren't special enough to break the rules.
+Although practicality beats purity.
+Errors should never pass silently.
+Unless explicitly silenced.
+In the face of ambiguity, refuse the temptation to guess.
+There should be one-- and preferably only one --obvious way to do it.
+Although that way may not be obvious at first unless you're Dutch.
+Now is better than never.
+Although never is often better than *right* now.
+If the implementation is hard to explain, it's a bad idea.
+If the implementation is easy to explain, it may be a good idea.
+Namespaces are one honking great idea -- let's do more of those!</code></pre>
+</div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="principe-3-autodocumenter-son-code" class="level1">
+<h1>Principe 3️⃣ : (auto)documenter son code</h1>
+<p>Un code écrit avec des <strong>noms de variables et de fonctions explicites</strong> est autant, voire plus, informatif que les commentaires qui l’accompagnent. C’est pourquoi il est essentiel de respecter des conventions, et de s’y tenir, pour le choix des noms des objets afin d’assurer la lisibilité des programmes.</p>
+<p>Il est recommandé de privilégier l’<strong>autodocumentation</strong> à la multiplication de commentaires dans un document. Trop de commentaires fait que ceux-ci ne seront jamais lus. Ils risquent d’ailleurs de ne pas être actualisés en même temps que le code qu’ils accompagnent, ce qui est une source d’erreur potentielle. Une documentation est inutile si elle décrit ce qui est intelligible par ailleurs en lisant le code : il est donc important de documenter le pourquoi plutôt que le comment.</p>
+<p>En résumé, les deux grands principes de la documentation au sein d’un script sont les suivants :</p>
+<ul>
+<li>Il est préférable de <strong>documenter le pourquoi plutôt que le comment</strong>. Le <em>“comment”</em> devrait être compréhensible à la lecture du code ;</li>
+<li>Privilégier l’autodocumentation via des <strong>nommages pertinents</strong>.</li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Comment bien documenter un script ?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>Minimum</strong> 🚦 : commentaire au début du script pour décrire ce qu’il fait</li>
+<li><strong>Bien</strong> 👍 : commenter les parties “délicates” du code</li>
+<li><strong>Idéal</strong> 💪 : documenter ses fonctions avec la syntaxe des <code>docstrings</code>.</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Le <em>type hinting</em>, un élément d’autodocumentation
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><code>Python</code> propose une fonctionalité assez plaisante qui est le <em><code>type hinting</code></em> (<a href="https://docs.python.org/3/library/typing.html">doc officielle</a> et <a href="https://realpython.com/lessons/type-hinting/">tutoriel sur realpython.com</a>).</p>
+<p>Cette approche permet d’indiquer le type d’argument attendu par une fonction et celui qui sera renvoyé par la fonction. Par exemple, la personne ayant écrit la fonction suivante</p>
+<div class="sourceCode" id="cb12" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> calcul_moyenne(df: pd.DataFrame, col : <span class="bu">str</span> <span class="op">=</span> <span class="st">"y"</span>) <span class="op">-&gt;</span> pd.DataFrame:</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df[col].mean()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>propose d’utiliser deux types d’inputs (un <code>DataFrame Pandas</code> et une chaine de caractère) et indique qu’elle renverra un <code>DataFrame Pandas</code>. A noter que c’est indicatif, non contraignant. En effet, le code ci-dessus fonctionnera si on fournit en argument <code>col</code> une liste puisque <code>Pandas</code> sait gérer cela à l’étape <code>df[col].mean()</code>.</p>
+<p>Le <em>type hinting</em> est un élément d’autodocumentation puisque grâce à ces <em>hints</em> le code suffit à faire comprendre la volonté de la personne l’ayant écrit.</p>
+</div>
+</div>
+</div>
+<p>La documentation vise à présenter la démarche générale, éventuellement à travers des exemples, mais aussi à expliciter certains éléments du code (une opération qui n’est pas évidente, des arguments de fonction, etc.). La documentation se mélange donc aux instructions visant à être exécutées mais s’en distingue. Ces principes sont hérités du paradigme de la <strong>“programmation lettrée”</strong> (<em>Literate programming</em>) dont l’un des avocats était Donald Knuth.</p>
+<blockquote class="blockquote">
+<p><em>“Je crois que le temps est venu pour une amélioration significative de la documentation des programmes, et que le meilleur moyen d’y arriver est de considérer les programmes comme des œuvres littéraires. D’où mon titre, « programmation lettrée ».</em></p>
+<p><em>Nous devons changer notre attitude traditionnelle envers la construction des programmes : au lieu de considérer que notre tâche principale est de dire à un ordinateur ce qu’il doit faire, appliquons-nous plutôt à expliquer à des êtres humains ce que nous voulons que l’ordinateur fasse.</em></p>
+<p><em>Celui qui pratique la programmation lettrée peut être vu comme un essayiste, qui s’attache principalement à exposer son sujet dans un style visant à l’excellence. Tel un auteur, il choisit , avec soin, le dictionnaire à la main, les noms de ses variables et en explique la signification pour chacune d’elles. Il cherche donc à obtenir un programme compréhensible parce que ses concepts sont présentés dans le meilleur ordre possible. Pour cela, il utilise un mélange de méthodes formelles et informelles qui se complètent”</em></p>
+<p>Donald Knuth, <em>Literate Programming</em> (<a href="https://fr.wikipedia.org/wiki/Programmation_lettr%C3%A9e">source</a>)</p>
+</blockquote>
+<p>Cela peut amener à distinguer deux types de documentation :</p>
+<ol type="1">
+<li>Une documentation générale de type <code>Jupyter Notebook</code> ou <code>Quarto Markdown</code> qui présente certes du code exécuté mais dont l’objet principal est de présenter une démarche ou des résultats ;</li>
+<li>Une documentation de la démarche plus proche du code dont l’un des exemples sont les <em>docstrings</em> <code>Python</code> (ou son équivalent <code>R</code>, la documentation <code>Roxygen</code>).</li>
+</ol>
+
+
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Guido Van Rossum est le créateur de <i class="fa-brands fa-python" aria-label="python"></i>, c’est donc quelqu’un qu’il est pertinent d’écouter.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Par exemple, en <i class="fa-brands fa-r-project" aria-label="r-project"></i>, il est possible d’utiliser <code>&lt;-</code> ou <code>=</code> pour l’assignation, on ne recontre pas d’erreur en cas de mauvaise indentation…<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Nous présenterons les deux approches principales en <code>Python</code>, leurs points commun et les points par lesquels ils diffèrent : les environnements virtuels (gérés par un fichier <code>requirements.txt</code>) et les environnements conda (gérés par un fichier <code>environment.yml</code>)<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/ensae-reproductibilite\.github\.io\/website\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.js" defer="true"></script>
+</body></html>

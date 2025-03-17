@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Présentation des principales notions développées dans ce cours, de la raison d’être des bonnes pratiques et des enjeux de la mise en production.">
+
+<title>Introduction – Mise en production</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-bd706bf7cc79ec682822fd2bf903aab3.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>
+div.callout-application.callout {
+  border-left-color: #9c5bd9;
+}
+div.callout-application.callout-style-default > .callout-header {
+  background-color: rgba(156, 91, 217, 0.13);
+}
+div.callout-application .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-application.callout-style-default .callout-icon::before, div.callout-application.callout-titled .callout-icon::before {
+  content: '🧠';
+  background-image: none;
+}
+</style>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://ensae-reproductibilite.github.io/"> 
+<span class="menu-text">Mise en production</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../chapters/introduction.html" aria-current="page"> 
+<span class="menu-text">Introduction</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-les-bases" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Les bases</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-les-bases">    
+        <li>
+    <a class="dropdown-item" href="../chapters/linux101.html">
+ <span class="dropdown-text">Linux 101</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/git.html">
+ <span class="dropdown-text">Git</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bonnes-pratiques-de-développement" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Bonnes pratiques de développement</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-bonnes-pratiques-de-développement">    
+        <li>
+    <a class="dropdown-item" href="../chapters/code-quality.html">
+ <span class="dropdown-text">Qualité du code</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/projects-architecture.html">
+ <span class="dropdown-text">Structure des projets</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/big-data.html">
+ <span class="dropdown-text">Traitement des données volumineuses</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/portability.html">
+ <span class="dropdown-text">Portabilité</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-mise-en-production" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Mise en production</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-mise-en-production">    
+        <li>
+    <a class="dropdown-item" href="../chapters/yaml101.html">
+ <span class="dropdown-text">YAML 101</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/deployment.html">
+ <span class="dropdown-text">Déploiement</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/mlops.html">
+ <span class="dropdown-text">MLOps</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/application.html"> 
+<span class="menu-text">Application</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-projets" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Projets</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-projets">    
+        <li>
+    <a class="dropdown-item" href="../chapters/evaluation.html">
+ <span class="dropdown-text">Modalités d’évaluation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/galerie.html">
+ <span class="dropdown-text">Galerie des projets passés</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-github" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-bi-github">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/website">
+ <span class="dropdown-text">Site web</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/slides">
+ <span class="dropdown-text">Slides</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/application">
+ <span class="dropdown-text">Application fil rouge</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#vue-densemble" id="toc-vue-densemble" class="nav-link active" data-scroll-target="#vue-densemble">Vue d’ensemble</a></li>
+  <li><a href="#les-bonnes-pratiques-de-développement" id="toc-les-bonnes-pratiques-de-développement" class="nav-link" data-scroll-target="#les-bonnes-pratiques-de-développement">Les bonnes pratiques de développement</a>
+  <ul class="collapse">
+  <li><a href="#origine" id="toc-origine" class="nav-link" data-scroll-target="#origine">Origine</a></li>
+  <li><a href="#pourquoi-sintéresser-aux-bonnes-pratiques" id="toc-pourquoi-sintéresser-aux-bonnes-pratiques" class="nav-link" data-scroll-target="#pourquoi-sintéresser-aux-bonnes-pratiques">Pourquoi s’intéresser aux bonnes pratiques ?</a></li>
+  <li><a href="#un-continuum-de-bonnes-pratiques" id="toc-un-continuum-de-bonnes-pratiques" class="nav-link" data-scroll-target="#un-continuum-de-bonnes-pratiques">Un continuum de bonnes pratiques</a></li>
+  </ul></li>
+  <li><a href="#les-principaux-parti-pris-de-ce-cours" id="toc-les-principaux-parti-pris-de-ce-cours" class="nav-link" data-scroll-target="#les-principaux-parti-pris-de-ce-cours">Les principaux parti-pris de ce cours</a>
+  <ul class="collapse">
+  <li><a href="#le-code-est-un-outil-de-communication" id="toc-le-code-est-un-outil-de-communication" class="nav-link" data-scroll-target="#le-code-est-un-outil-de-communication">Le code est un outil de communication</a></li>
+  <li><a href="#travailler-de-manière-collaborative" id="toc-travailler-de-manière-collaborative" class="nav-link" data-scroll-target="#travailler-de-manière-collaborative">Travailler de manière collaborative</a></li>
+  <li><a href="#maximiser-la-reproductibilité" id="toc-maximiser-la-reproductibilité" class="nav-link" data-scroll-target="#maximiser-la-reproductibilité">Maximiser la reproductibilité</a></li>
+  <li><a href="#faciliter-la-mise-en-production" id="toc-faciliter-la-mise-en-production" class="nav-link" data-scroll-target="#faciliter-la-mise-en-production">Faciliter la mise en production</a></li>
+  <li><a href="#une-ouverture-à-lindustrialisation-de-la-production" id="toc-une-ouverture-à-lindustrialisation-de-la-production" class="nav-link" data-scroll-target="#une-ouverture-à-lindustrialisation-de-la-production">Une ouverture à l’industrialisation de la production</a></li>
+  <li><a href="#chapitres-supplémentaires" id="toc-chapitres-supplémentaires" class="nav-link" data-scroll-target="#chapitres-supplémentaires">Chapitres supplémentaires</a></li>
+  </ul></li>
+  <li><a href="#modalités-pratiques" id="toc-modalités-pratiques" class="nav-link" data-scroll-target="#modalités-pratiques">Modalités pratiques</a>
+  <ul class="collapse">
+  <li><a href="#approche-pédagogique" id="toc-approche-pédagogique" class="nav-link" data-scroll-target="#approche-pédagogique">Approche pédagogique</a></li>
+  <li><a href="#langages" id="toc-langages" class="nav-link" data-scroll-target="#langages">Langages</a></li>
+  <li><a href="#environnement-dexécution" id="toc-environnement-dexécution" class="nav-link" data-scroll-target="#environnement-dexécution">Environnement d’exécution</a></li>
+  <li><a href="#ressources-complémentaires" id="toc-ressources-complémentaires" class="nav-link" data-scroll-target="#ressources-complémentaires">Ressources complémentaires</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Introduction</h1>
+</div>
+
+<div>
+  <div class="description">
+    <p>Présentation des principales notions développées dans ce cours, de la raison d’être des bonnes pratiques et des enjeux de la mise en production.</p>
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<details>
+<summary>
+Dérouler les <em>slides</em> ci-dessous ou <a href="https://ensae-reproductibilite.github.io/slides/#/title-slide">cliquer ici</a> pour afficher les slides en plein écran.
+</summary>
+<div id="cb1" class="sourceCode">
+<pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+<iframe class="sourceCode yaml code-with-copy" src="https://ensae-reproductibilite.github.io/slides/#/title-slide">
+</iframe>
+</div>
+</details>
+<section id="vue-densemble" class="level1">
+<h1>Vue d’ensemble</h1>
+<p>Ce cours s’adresse aux praticiens de la <em>data science</em>, discipline entendue ici au sens large comme la combinaison de techniques issues des mathématiques, de la statistique et de l’informatique pour produire de la connaissance utile à partir de données. Comme la <em>data science</em> n’est pas qu’une discipline scientique mais vise à fournir un ensemble d’outils pour répondre à des objectifs opérationnels, la notion de mise en production est centrale pour les <em>data scientists</em>, qu’ils se trouvent dans le secteur privé ou public.</p>
+<p>Ce cours part du constat que les formations académiques dans le domaine de la <em>data science</em> adoptent souvent une orientation essentiellement technique, visant une compréhension fine des modèles manipulés, mais ne discutent que rarement des problèmes pratiques qui forment le quotidien du <em>data scientist</em> dans un contexte professionnel. Ces derniers sont pourtant structurants sur l’approche scientifique pouvant être mise en oeuvre, en pratique. Ce cours vise à combler le manque de ces formations en proposant des pistes de solution à diverses questions que peuvent se poser les <em>data scientists</em> lorsqu’ils transitionnent du contexte de la formation initiale à des projets réels :</p>
+<ul>
+<li>Comment <strong>travailler de manière collaborative</strong> sur un projet ?</li>
+<li>Comment <strong>partager du code</strong> et s’assurer que celui-ci va <strong>tourner sans erreur</strong> sur un autre environnement d’exécution ?</li>
+<li>Comment passer d’un environnement de développement<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> à un <strong>environnement de production</strong><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>?</li>
+<li>Comment <strong>déployer</strong> un modèle de <em>data science</em>, et rendre celui-ci accessible à des utilisateurs afin de le valoriser ?</li>
+<li>Comment <strong>automatiser</strong> les différentes étapes de son projet afin de <strong>simplifier sa maintenance</strong> ?</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Ressource complémentaire: le <em>missing semester</em> du MIT
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Beaucoup de praticiens ont pris conscience de certains manques dans les cursus de formations en statistiques ou en informatique. Certaines ressources très utiles ont été regroupées dans le <a href="https://missing.csail.mit.edu/"><em>missing semester</em> du MIT</a> dont une partie des contenus présente des thèmes communs avec ce cours.</p>
+</div>
+</div>
+<p>Afin de proposer des réponses à ces interrogations, ce cours présente <strong>un ensemble de bonnes pratiques et d’outils issus de différents domaines de l’informatique</strong>, comme le développement logiciel, l’infrastructure, l’administration de serveurs, le déploiement applicatif, etc. L’objectif n’est bien entendu pas de développer une expertise dans chacun de ces domaines, dans la mesure où ces compétences font l’objet de métiers à part entière, que sont les développeurs, les <em>data architects</em>, les <em>sysadmin</em>, ou encore les <em>data engineers</em>.</p>
+<p>En revanche, face à la taille croissante des projets de <em>data science</em> et donc des équipes qui les portent, le <em>data scientist</em> tend à se retrouver à l’interface de ces différentes professions, avec lesquelles il doit communiquer de manière efficiente pour mener ces projets à bien. <strong>Ce cours vise à fournir, plus que des connaissances techniques pointues, les élements de langage nécessaires pour pouvoir jouer ce rôle d’interface en communiquant à la fois avec les équipes métiers et les équipes techniques qui entourent un projet de <em>data science</em></strong>.</p>
+<p>Un projet de <em>data science</em> comporte un <strong>cycle de vie complet</strong> qui est généralement passé sous silence dans les enseignements de <em>data science</em> ou dans de nombreux manuels spécialisés. La solution la plus complexe sur le plan méthodologique ou technique est rarement la meilleure. Celle-ci est en effet souvent coûteuse à développer et encore plus difficile à mettre en oeuvre. Elle peut même être dépassée avant même d’être finalisée: les algorithmes apprennent du passé ce qui est un défi dans le monde réel pour conserver des performances équivalentes à mesure qu’on collecte de nouvelles données. La phase de développement n’est ainsi qu’un moment dans la vie d’un projet de <em>data science</em> et y concentrer tous ses efforts amène régulièrement à des projets à faible validité externe.</p>
+<p>Ce cours présente ainsi un ensemble de techniques et de principes qui ont pour objet de fluidifier la mise en production<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> d’un projet de <em>data science</em>. La mise en production est entendue, de manière abstraite, comme une manière de <strong>faire vivre une application dans l’espace de ses utilisateurs</strong>. Cette définition peut apparaître obscure mais elle permet, en pratique, de rappeler que l’approche technique est avant tout une réponse à un besoin, celui du public cible dont les attentes, les niveaux de technicité et les moyens d’accès aux données sont variables. Le fait de parler d’application peut apparaître comme une manière restrictive de répondre à ce besoin mais, comme nous aurons l’occasion de le voir ultérieurement, ce terme peut être appréhendé de manière large pour répondre à une grande diversité de cas d’usage.</p>
+<p>L’objectif principal de cours est de montrer la manière dont une approche pragmatique et l’adoption des bons outils et bons principes permet de sortir facilement de la phase artisanale d’expérimentation pour amener un projet plus facilement vers l’industrialisation.</p>
+</section>
+<section id="les-bonnes-pratiques-de-développement" class="level1">
+<h1>Les bonnes pratiques de développement</h1>
+<section id="origine" class="level2">
+<h2 class="anchored" data-anchor-id="origine">Origine</h2>
+<p>La notion de “bonnes pratiques” qui nous intéresse dans ce cours trouve son origine au sein de la communauté des développeurs logiciels. Elle constitue une réponse à plusieurs constats :</p>
+<ul>
+<li>le <em>“code est beaucoup plus souvent lu qu’il n’est écrit”</em> (Guido Van Rossum) ;</li>
+<li>la maintenance d’un code demande souvent (beaucoup) plus de ressources que son développement initial ;</li>
+<li>la personne qui maintient une base de code a de fortes chances de ne pas être celle qui l’a écrite.</li>
+</ul>
+<p>Face à ces constats, un <strong>ensemble de règles informelles</strong> ont été conventionnellement acceptées par la communauté des développeurs comme <strong>produisant des logiciels plus fiables, évolutifs et maintenables dans le temps</strong>. Comme toutes conventions de langue, certaines peuvent paraître arbitraires. Ces règles favorisent néanmoins la capacité à communiquer du code, un aspect communautaire qui peut paraître secondaire au premier abord mais qui est pourtant le principe ayant fait le succès d’un langage <em>open source</em> en favorisant le partage d’expérience et d’assistance.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+La <a href="https://12factor.net/fr/"><code>12 Factor App</code></a>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Récemment, dans le contexte d’une évolution des logiciels vers des applications web vivant dans le <em>cloud</em>, un certain nombre de ces bonnes pratiques ont été formalisées dans un manifeste : la <a href="https://12factor.net/fr/"><code>12 Factor App</code></a>. Le développement du <em>cloud</em>, c’est-à-dire d’infrastructures standardisées hors des systèmes d’information des détenteurs de données, rend les besoins de bonnes pratiques plus prégnant.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="pourquoi-sintéresser-aux-bonnes-pratiques" class="level2">
+<h2 class="anchored" data-anchor-id="pourquoi-sintéresser-aux-bonnes-pratiques">Pourquoi s’intéresser aux bonnes pratiques ?</h2>
+<blockquote class="blockquote">
+<p>En quoi est-ce pertinent pour le <em>data scientist</em>, dont le rôle n’est pas de développer des applications mais de donner du sens aux données ?</p>
+</blockquote>
+<p>Du fait du développement rapide de la <em>data science</em> et conséquemment de la croissance de la taille moyenne des projets, l’activité du <em>data scientist</em> tend à se rapprocher par certains aspects de celle du développeur :</p>
+<ul>
+<li>les projets sur lesquels travaille le <em>data scientist</em> sont <strong>intenses en code</strong> ;</li>
+<li>il doit travailler de manière <strong>collaborative</strong> au sein de projets de <strong>grande envergure</strong> ;</li>
+<li>il est de plus en plus amené à travailler à partir de données massives, ce qui nécessite de travailler sur des <strong>infrastructures <em>big data</em> informatiquement complexes</strong> ;</li>
+<li>il est amené à <strong>interagir avec des profils informatiques</strong> pour déployer ses modèles et les rendre accessibles à des utilisateurs.</li>
+</ul>
+<p>Aussi, il fait sens pour le <em>data scientist</em> moderne de s’intéresser aux bonnes pratiques en vigueur dans la communauté des développeurs. Bien entendu, celles-ci doivent être adaptées aux spécificités des projets basés sur des données. L’effet bénéfique de ces bonnes pratiques est que les projets les adoptant auront un coût bien plus minimal pour évoluer, ce qui les rend plus compétitif dans un écosystème mouvant comme l’est la <em>data science</em> où les données, les outils et les attentes des utilisateurs sont en changements continuels.</p>
+</section>
+<section id="un-continuum-de-bonnes-pratiques" class="level2">
+<h2 class="anchored" data-anchor-id="un-continuum-de-bonnes-pratiques">Un continuum de bonnes pratiques</h2>
+<p>La notion de bonnes pratiques ne doit pas être vue de manière binaire : il n’y a pas d’un côté les projets qui les appliquent et de l’autre ceux qui ne les appliquent pas. Les bonnes pratiques ont un <strong>coût</strong>, qu’il ne faut pas négliger — même si leur application évite aussi des coûts futurs, notamment en terme de maintenance. Il faut donc plutôt <strong>voir les bonnes pratiques comme un spectre, sur lequel on vient positionner son projet en fonction de différents critères</strong>, notamment du coût-avantage à avancer d’un niveau dans le spectre de la reproductibilité.</p>
+<p>La détermination du seuil pertinent doit résulter d’un arbitrage entre différents critères liés au projet :</p>
+<ul>
+<li><strong>ambitions</strong> : le projet est-il amené à évoluer, prendre de l’ampleur ? Est-il destiné à devenir collaboratif, que ce soit dans le cadre d’une équipe en organisation ou bien en <em>open-source</em> ? Les <em>outputs</em> du projet ont-ils vocation à être diffusés au grand public ?</li>
+<li><strong>ressources</strong> : quels sont les moyens humain du projet ? Pour un projet <em>open-source</em>, existe-t-il une communauté potentielle de contributeurs ?</li>
+<li><strong>contraintes</strong> : le projet a-t-il une échéance proche ? Des exigences de qualité ont-elles été fixées ? Est-il destiné à la mise en production ? Existe-t-il des enjeux de sécurité forts ?</li>
+<li><strong>public cible</strong>: à quels profils s’adresse les différentes valorisations de données de ce projet ? Quel est leur niveau de technicité et le temps qu’elles vont consacrer à suivre votre projet ?</li>
+</ul>
+<p>Il n’est donc pas question pour nous de suggérer que tout projet de <em>data science</em> doit respecter toutes les bonnes pratiques présentées dans ce cours. Cela étant dit, nous sommes convaincus qu’il est important pour tout <em>data scientist</em> de réfléchir à ces questions pour améliorer ces pratiques au fil du temps.</p>
+<p>En particulier, nous pensons qu’il est possible de définir un socle, i.e.&nbsp;un <strong>ensemble minimal de bonnes pratiques</strong> qui apportent plus d’avantages qu’elles ne coûtent à implémenter. Notre suggestion pour un tel socle est la suivante :</p>
+<ul>
+<li>Contrôler la qualité de son code en utilisant des outils dédiés (cf.&nbsp;chapitre <a href="../chapters/code-quality.html">Qualité du Code</a>) ;</li>
+<li>Adopter une structure standardisée de projet en utilisant des <em>templates</em> prêts à l’emploi (cf.&nbsp;chapitre <a href="../chapters/projects-architecture.html">Architecture des Projets</a>) ;</li>
+<li>Utiliser <code>Git</code> pour versionner le code de ses projets, qu’ils impliquent d’autres développeurs ou seulement vous (cf.&nbsp;chapitre <a href="../chapters/git.html">Versionner son code et travailler collaborativement avec Git</a>) ;</li>
+<li>contrôler les dépendances de son projet en développant dans des environnements virtuels (cf.&nbsp;chapitre <a href="../chapters/portability.html">Portabilité</a>).</li>
+</ul>
+<p>Les étapes suivantes dans l’échelle de la reproductibilité dépendront de l’arbitrage coût-avantage. L’adoption du socle minimal de reproductibilité facilitera énormément l’avancée ultérieure dans l’ambition d’un projet.</p>
+<p>Faisons à présent un tour d’horizon des principes défendus dans ce cours et de la progression logique de celui-ci.</p>
+</section>
+</section>
+<section id="les-principaux-parti-pris-de-ce-cours" class="level1">
+<h1>Les principaux parti-pris de ce cours</h1>
+<section id="le-code-est-un-outil-de-communication" class="level2">
+<h2 class="anchored" data-anchor-id="le-code-est-un-outil-de-communication">Le code est un outil de communication</h2>
+<p>La première bonne pratique à adopter est de considérer le code comme un <strong>outil de communication</strong>, et non simplement de manière fonctionnelle. Un code ne sert pas seulement à réaliser une tâche donnée, il a vocation à être diffusé, réutilisé, maintenu, que ce soit dans le contexte d’une équipe dans une organisation ou bien en <em>open-source</em>.</p>
+<p>Pour favoriser cette communication du code, des conventions ont été developpées en matière de qualité du code et de structuration des projets, qu’il est utile d’appliquer dans ses projets. Nous présentons ces conventions dans les chapitres <a href="../chapters/code-quality.html">Qualité du Code</a> et <a href="../chapters/projects-architecture.html">Architecture des Projets</a>.</p>
+<p>Il est pour les mêmes raisons indispensable d’appliquer les principes du <strong>contrôle de version</strong>, qui permettent une documentation en continu des projets, ce qui accroît fortement leur réutilisabilité et leur maintenabilité dans le temps. Nous proposons donc un chapitre de rappel sur l’utilisation du logiciel <code>Git</code> dans le chapitre <a href="../chapters/git.html">Versionner son code et travailler collaborativement avec Git</a>.</p>
+</section>
+<section id="travailler-de-manière-collaborative" class="level2">
+<h2 class="anchored" data-anchor-id="travailler-de-manière-collaborative">Travailler de manière collaborative</h2>
+<p>Le <em>data scientist</em>, quel que soit son contexte de travail, est amené à travailler dans le cadre de projets en équipe. Cela implique de définir une organisation du travail ainsi que d’utiliser des outils permettant de collaborer sur un projet de manière efficace et sécurisée.</p>
+<p>Nous présentons une manière moderne de travailler collaborativement avec <code>Git</code> et <code>GitHub</code> dans le chapitre de rappel <a href="../chapters/git.html">Versionner son code et travailler collaborativement avec Git</a>. Les autres chapitres prendront pour acquis cette approche collaborative et la raffineront à travers l’approche <code>DevOps</code><a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>.</p>
+</section>
+<section id="maximiser-la-reproductibilité" class="level2">
+<h2 class="anchored" data-anchor-id="maximiser-la-reproductibilité">Maximiser la reproductibilité</h2>
+<p>Le troisième pilier des bonnes pratiques présentées dans ce cours est la <strong>reproductibilité</strong>.</p>
+<p>Un projet est dit reproductible lorsque, <strong>avec le même code et les mêmes données, il est possible de reproduire les résultats obtenus</strong>. Notons bien que le problème de la reproductibilité est différent de celui de la <strong>réplicabilité</strong>. La réplicabilité est un concept <em>scientifique</em>, qui signifie qu’un même procédé expérimental donne des résultats analogues sur des jeux de données différents. La reproductibilité est un concept <em>technique</em> : elle ne signifie pas que le protocole expérimental est scientifiquement correct, mais qu’il a été spécifié et diffusé d’une manière qui permet à tous de reproduire les résultats obtenus.</p>
+<p><strong>La notion de reproductibilité est le fil rouge de ce cours</strong> : toutes les notions vues dans les différents chapitres y contribuent. Le fait de produire du code et des projets qui respectent les conventions communautaires, comme le fait d’utiliser le contrôle de version, contribuent à rendre le code plus lisible et documenté, et donc reproductible.</p>
+<p>Il faut néanmoins aller plus loin pour atteindre une véritable reproductibilité, et réfléchir à la notion d’<strong>environnement d’exécution</strong>. Un code n’est pas un objet autonome, il est toujours exécuté sur un environnement (ordinateur personnel, serveur, etc.), et ces environnements peuvent être très différents (système d’exploitation, librairies installées, contraintes de sécurité, etc.). C’est pourquoi il faut réfléchir à la <strong>portabilité de son code, i.e.&nbsp;sa capacité à s’exécuter de manière attendue sur différents environnements</strong>, ce qui sera l’objet d’un <a href="../chapters/portability.html">chapitre</a> à part entière.</p>
+</section>
+<section id="faciliter-la-mise-en-production" class="level2">
+<h2 class="anchored" data-anchor-id="faciliter-la-mise-en-production">Faciliter la mise en production</h2>
+<p>Pour qu’un projet de <em>data science</em> crée <em>in fine</em> de la valeur, il faut qu’il soit déployé sous une forme valorisable de sorte à toucher son public. Cela implique deux choses :</p>
+<ul>
+<li>trouver le <strong>format de diffusion adapté</strong>, i.e.&nbsp;qui valorise au mieux les résultas obtenus auprès des utilisateurs potentiels ;</li>
+<li>faire transitionner le projet de l’environnement dans lequel il a été développé vers une <strong>infrastructure de production</strong>, i.e.&nbsp;permettant un déploiement robuste de l’<em>output</em> du projet afin que celui-ci soit disponible à la demande.</li>
+</ul>
+<p>Dans le chapitre <a href="../chapters/deployment.html">Déployer et valoriser son projet de data science</a>, nous proposons des pistes permettant de répondre à ces deux besoins. Nous présentons un certain nombre de formats standards (API, application, rapport automatisé, site internet) qui permettent à un projet de <em>data science</em> d’être valorisé, ainsi que les outils modernes qui permettent de les produire.</p>
+<p>Nous détaillons ensuite les concepts essentiels du déploiement sur une infrastructure de production, et illustrons ces derniers par des exemples de déploiements dans un environnement <em>cloud</em> moderne.</p>
+<p>C’est en quelque sorte la récompense de l’application des bonnes pratiques : dès lors que l’on s’est donné la peine de produire un code et un projet appliquant des standards de qualité, que l’on a bien versionné son code, et que l’on a pris des mesures pour le rendre portable, le déploiement du projet dans un environnement de production s’en trouve largement facilité.</p>
+</section>
+<section id="une-ouverture-à-lindustrialisation-de-la-production" class="level2">
+<h2 class="anchored" data-anchor-id="une-ouverture-à-lindustrialisation-de-la-production">Une ouverture à l’industrialisation de la production</h2>
+<p>En simplifiant la structure d’un projet, on facilite sa production en série. Dans le domaine de la <em>data science</em>, cela prendra par exemple la forme d’une industrialisation des entraînements d’un modèle permettant de choisir le “meilleur” dans un ensemble beaucoup plus complet de modèles que ne le permettrait une approche artisanale.</p>
+<p>Néanmoins, tout modèle apprend du passé et avoir un bon modèle aujourd’hui n’assure en rien que ce dernier sera pertinent demain, lorsqu’on aura réellement besoin de celui-ci. Pour intégrer cette dimension mouvante inhérante à tout projet de <em>data science</em>, nous aurons l’occasion de présenter quelques principes du <em>MLOps</em>. Ce terme, qui est certes un <em>buzz-word</em> mais qui rassemble un ensemble pertinent de pratiques pour les <em>data scientists</em>, sera présenté dans le <a href="../chapters/mlops.html">chapitre consacré</a>.</p>
+</section>
+<section id="chapitres-supplémentaires" class="level2">
+<h2 class="anchored" data-anchor-id="chapitres-supplémentaires">Chapitres supplémentaires</h2>
+<p>Plusieurs outils présentés tout au long de ce cours, tels que les logiciels <code>Git</code> et <code>Docker</code>, impliquent l’utilisation du terminal ainsi que des connaissances de base du fonctionnement d’un système <code>Linux</code>. Dans le chapitre <a href="../chapters/linux101.html">Démystifier le terminal Linux pour gagner en autonomie</a>, nous présentons les connaissances essentielles des systèmes <code>Linux</code> qu’un <em>data scientist</em> doit posséder pour pouvoir être autonome dans ses déploiements et dans l’application des bonnes pratiques de développement.</p>
+</section>
+</section>
+<section id="modalités-pratiques" class="level1">
+<h1>Modalités pratiques</h1>
+<section id="approche-pédagogique" class="level2">
+<h2 class="anchored" data-anchor-id="approche-pédagogique">Approche pédagogique</h2>
+<p>Le parti pris de ce cours est que seule la pratique, et en particulier la confrontation à des problèmes issus de projets réels, permet d’acquérir efficacement des concepts informatiques. Aussi, une large part du cours consistera en l’<strong>application des notions étudiées à des cas concrets</strong>. Chaque chapitre se concluera par des applications touchant à des sujets réalistes de <em>data science</em>.</p>
+<p>Un <a href="../chapters/">exemple fil rouge</a> illustre les progrès dans la conception d’un projet reproductible en appliquant successivement le contenu des chapitres de ce cours.</p>
+<p>Pour l’évaluation générale du cours, l’idée sera de partir d’un projet personnel, idéalement terminé, et de lui appliquer un maximum de bonnes pratiques présentées dans ce cours.</p>
+</section>
+<section id="langages" class="level2">
+<h2 class="anchored" data-anchor-id="langages">Langages</h2>
+<p>Les principes présentés dans ce cours sont pour la plupart <strong>agnostiques du langage de programmation utilisé</strong>.</p>
+<p>Ce choix n’est pas qu’éditorial, c’est selon nous un aspect fondamental du sujet des bonnes pratiques. Trop souvent, des différences de langage entre les phases de développement (notamment <code>R</code> ou <code>Python</code>) et de mise en production (ex : <code>Java</code>) érigent des murs artificiels qui réduisent fortement la capacité à valoriser des projets de <em>data science</em>.</p>
+<p>A l’inverse, plus les différentes équipes qui forment le cycle de vie d’un projet s’accordent pour appliquer le même ensemble de bonnes pratiques, plus ces équipes développent un langage commun, et plus les déploiements en sont facilités.</p>
+<p>Un exemple parlant est l’utilisation de la <strong>conteneurisation</strong> : si le <em>data scientist</em> met à disposition une image <code>Docker</code> comme <em>output</em> de sa phase de développement et que le <em>data engineer</em> s’occupe de déployer cette image sur une infrastructure dédiée, le contenu même de l’application en termes de langage importe finalement assez peu. Cet exemple, certes simpliste, illustre malgré tout l’enjeu des bonnes pratiques en matière de communication au sein d’un projet.</p>
+<p>Les exemples présentés dans ce cours seront pour l’essentiel en <code>Python</code>. La raison principale est que ce langage, malgré ses défauts, est enseigné dans la majorité des cursus de <em>data science</em> mais aussi d’informatique. Il peut faciliter la passerelle entre le monde des utilisateurs de données et celui des développeurs informatiques, passerelle indispensable pour favoriser le dialogue entre ces deux profils, nécessaires tous deux pour un passage en production. Encore une fois, il est tout à fait possible d’appliquer les mêmes principes avec d’autres langages, et nous encourageons d’ailleurs les étudiants à s’essayer à cet exercice formateur.</p>
+</section>
+<section id="environnement-dexécution" class="level2">
+<h2 class="anchored" data-anchor-id="environnement-dexécution">Environnement d’exécution</h2>
+<p>A l’instar du langage, les principes appliqués dans ce cours sont agnostiques à l’infrastructure utilisée pour faire tourner les exemples proposés. Il est donc à la fois possible et souhaitable d’appliquer les bonnes pratiques aussi bien à un projet individuel développé sur un ordinateur personnel qu’à un projet collaboratif visant à être déployé sur une infrastructure de production dédiée.</p>
+<p>Cependant, nous choisissons comme environnement de référence tout au long de ce cours le <a href="https://datalab.sspcloud.fr/home"><code>SSP Cloud</code></a>, une plateforme de services pour la <em>data science</em> développée à l’Insee et accessible aux élèves des écoles statistiques. Les raisons de ce choix sont multiples :</p>
+<ul>
+<li><strong>l’environnement de développement est normalisé</strong> : les serveurs du SSP Cloud ont une configuration homogène — notamment, ils se basent sur une même distribution Linux (Debian) — ce qui garantit la reproductibilité des exemples présentés tout au long du cours ;</li>
+<li>via un cluster Kubernetes sous-jacent, le SSP Cloud met à disposition une infrastructure robuste permettant le déploiement automatisé d’applications potentiellement intensives en données, ce qui permet de <strong>simuler un véritable environnement de production</strong> ;</li>
+<li>le SSP Cloud est construit selon les standards les plus récents des infrastructures <em>data science</em>, et permet donc d’<strong>acquérir les bonnes pratiques de manière organique</strong> :
+<ul>
+<li>les services sont lancés via des conteneurs, configurés par des images <em>Docker</em>. Cela permet de garantir une forte <strong>reproductibilité</strong> des déploiements, au prix d’une phase de développement un peu plus coûteuse ;</li>
+<li>le SSP Cloud est basé sur une <strong>approche dite <em>cloud native</em></strong> : il est construit sur un ensemble modulaire de briques logicielles, qui permettent d’appliquer une séparation nette du code, des données, de la configuration et de l’environnement d’exécution, principe majeur des bonnes pratiques qui reviendra tout au long de ce cours.</li>
+</ul></li>
+</ul>
+<p>Pour en savoir plus sur cette plateforme, vous pouvez consulter <a href="https://ssphub.netlify.app/post/onyxia/">cette page</a>.</p>
+</section>
+<section id="ressources-complémentaires" class="level2">
+<h2 class="anchored" data-anchor-id="ressources-complémentaires">Ressources complémentaires</h2>
+<ul>
+<li><a href="https://missing.csail.mit.edu/"><em>Missing semester</em> du MIT</a></li>
+</ul>
+
+
+</section>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Celui que vous connaissez certainement le mieux est le <em>Notebook <code>Jupyter</code></em>. Très pratique pour produire du code exploratoire ou pour transmettre un code avec de la documentation, nous aurons l’occasion de découvrir ses limites dans le cadre d’un projet collaboratif ou un projet à grande échelle.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Nous aurons l’occasion ultérieurement de définir de manière formelle cette notion centrale. En attendant, on peut entendre ce concept comme un environnement disponible en continu afin de mettre à disposition une valorisation de données. Cela prend souvent la forme d’un serveur de production ou d’un <em>cluster</em> informatique qui doit être disponible en continu.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>L’aspect très intriqué des notions de bonnes pratiques, de reproductibilité et de mise en production nous a d’ailleurs longtemps fait hésiter sur le nom à donner à ce cours. Parmi la <em>shortlist</em> des noms possibles, nous avions <em>“Bonnes pratiques en data science”</em> ou <em>“Bonnes pratiques pour la reproductibilité en data science</em>. Néanmoins, les bonnes pratiques restent un moyen là où la mise en production est la finalité, nous avons ainsi privilégié le fait de mettre en avant cette dernière notion.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>Démarche consistant à automatiser et intégrer la conception et la production des livrables avant la phase de mise en production. Comme les bonnes pratiques, cette approche issue à l’origine du monde du développement logiciel est devenue incontournable pour les <em>data scientists</em>.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/ensae-reproductibilite\.github\.io\/website\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.js" defer="true"></script>
+</body></html>
