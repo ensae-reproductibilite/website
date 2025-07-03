@@ -1,0 +1,635 @@
+::: {.content-visible when-profile="fr"}
+
+# Principe 2️⃣ : favoriser une structure modulaire
+
+## Objectifs
+
+- Favoriser la __concision__ pour réduire le risque d'erreur
+et rendre la démarche plus claire ;
+- Améliorer la __lisibilité__ ce qui est indispensable pour
+rendre la démarche intelligible par d'autres mais aussi pour soi, lorsqu'on
+reprend un code écrit il y a quelques temps ;
+- Limiter la __redondance__ ce qui permet de simplifier
+un code (paradigme du _don't repeat yourself_) ;
+- Limite les risques d’__erreurs liées aux copier/coller__
+
+## Avantages des fonctions
+
+Les fonctions ont de nombreux avantages par rapport à de longs
+scripts :
+
+- Limite les risques d'erreurs liés aux copier/coller
+- Rend le code plus lisible et plus compact
+- Un seul endroit du code à modifier lorsqu'on souhaite modifier le traitement
+- Facilite la réutilisation et la documentation du code !
+
+::: {.callout-important}
+## Règle d'or
+
+Il faut utiliser une [**fonction**]{.red2} dès qu'on utilise une même
+portion de code plus de deux fois ([**_don't repeat yourself_ (DRY)**]{.red2})
+:::
+
+
+::: {.callout-tip}
+## Règles pour écrire des fonctions **pertinentes**
+
+- Une tâche = une fonction
+- Une tâche complexe = un enchaînement de fonctions réalisant chacune une tâche simple
+- Limiter l'utilisation de variables globales
+
+:::
+
+En ce qui concerne l'installation des packages, nous allons voir
+dans les parties [Structure de code](/chapters/projects-architecture.html) et [Portabilité](/chapters/portability.qmd)
+qu'il ne faut pas
+gérer ceci dans le script mais dans un élément à part, relatif à l'environnement
+d'exécution du projet[^environnement]. De même, ces parties présenteront
+des conseils pratiques sur la gestion des jetons d'accès à des API ou bases de données
+qui ne __doivent jamais être inscrites dans un code__.
+
+[^environnement]: Nous présenterons les deux approches principales en `Python`,
+        leurs points commun et les points par lesquels ils diffèrent :
+        les environnements virtuels (gérés par un fichier `requirements.txt`)
+        et les environnements conda (gérés par un fichier `environment.yml`)
+
+
+Les scripts trop longs ne sont pas une bonne pratique. Il est préférable
+de diviser l'ensemble des scripts exécutant une
+chaîne de production en _"monades"_, c'est-à-dire en petites unités
+cohérentes. Les fonctions sont un outil privilégié pour cela
+(en plus de limiter la redondance, et d'être un outil privilégié
+pour documenter un code).
+
+
+::: {.callout-caution collapse="true"}
+## Exemple: privilégier les _list comprehensions_
+
+En `Python`, il est recommandé de privilégier
+les _list comprehensions_ à l'utilisation de boucles
+`for` indentées. Ces dernières sont en général moins
+efficaces et surtout impliquent un nombre important de
+ligne de codes là où les compréhensions de listes sont
+beaucoup plus concises
+
+```python
+liste_nombres = range(10)
+
+# très mauvais
+y = []
+for x in liste_nombres:
+    if x % 2 == 0:
+        y.append(x*x)
+
+# mieux
+y = [x*x for x in liste_nombres if x % 2 == 0]
+```
+
+
+:::
+
+
+### Conseils pour la programmation
+
+Dans le monde de la programmation en `Python`, il existe deux paradigmes
+différents :
+
+* La __programmation fonctionnelle__ est une approche qui construit un
+code en enchaînant des fonctions, c'est-à-dire des opérations plus ou
+moins standardisées ;
+* La __programmation orientée objet (POO)__ consiste
+à construire son code en définissant des objets
+d'une certaine _classe_ ayant des
+_attributs_ (les caractéristiques intrinsèques de l'objet)
+et sur lequel on effectue des opérations _ad hoc_ par le biais
+de _méthodes_ qui encapsulent des opérations propres à
+chaque classe.
+
+
+<details>
+
+<summary>
+Exemple de comparaison des deux paradigmes
+</summary>
+
+Merci _ChatGPT_ pour l'exemple :
+
+```{python}
+#| eval: true
+class AverageCalculator:
+    def __init__(self, numbers):
+        self.numbers = numbers
+
+    def calculate_average(self):
+        return sum(self.numbers) / len(self.numbers)
+
+# Utilisation
+calculator = AverageCalculator([1, 2, 3, 4, 5])
+print("Moyenne (POO):", calculator.calculate_average())
+
+def calculate_average(numbers):
+    return sum(numbers) / len(numbers)
+
+# Utilisation
+numbers = [1, 2, 3, 4, 5]
+print("Moyenne (PF):", calculate_average(numbers))
+```
+
+</details>
+
+La programmation fonctionnelle est plus intuitive que la
+POO et permet souvent de développer du code plus
+rapidement. La POO est une approche plus formaliste.
+Celle-ci est intéressante lorsqu'une fonction doit
+s'adapter au type d'objet en entrée (par exemple aller chercher des
+poids différents selon le type de modèle [`Pytorch`](https://pytorch.org/vision/0.9/models.html)).
+Cela évite les codes _spaghetti_ 🍝 inutilement complexes qui sont impossibles à débugger.
+
+Néanmoins, il convient d'être pragmatique. La programmation orientée objet peut être
+plus complexe à mettre en œuvre que la programmation fonctionnelle. Dans de
+nombreuses situations, cette dernière, si elle est bien faite, suffit largement.
+Il est utile lorsqu'on développe dans le cadre d'un projet important d'adopter
+une approche dite de __programmation défensive__. Il s'agit d'un principe
+de précaution dans le paradigme de la programmation fonctionnelle qui vise
+à limiter les
+situations imprévues en étant capable
+de gérer, par exemple, un argument d'une fonction inattendu ou un objet
+à la structure différente de celle pour lequel le code a été pensé.
+
+::: {.callout-note}
+
+## Le code spaghetti
+
+Le code `spaghetti` est un style d'écriture qui favorise l'apparition du syndrome du plat de spaghettis :
+un code impossible à démêler parce qu'il fait un usage excessif de conditions, d'exceptions en tous sens, de gestion des événements complexes. Il devient quasi impossible de savoir quelles ont été les conditions à l'origine de telle ou telle erreur sans exécuter ligne à ligne (et celles-ci sont excessivement nombreuses du fait de mauvaises pratiques de programmation) le programme.
+
+En fait, la programmation spaghetti qualifie tout ce qui ne permet pas de déterminer le qui, le quoi et le comment. Le code est donc plus long à mettre à jour car cela nécessite de remonter un à un le fil des renvois.
+
+:::
+
+::: {.callout-tip collapse="true"}
+
+## Un exemple progressif pour comprendre
+
+💡 Supposons qu'on dispose d'une table de données qui utilise le code `−99` pour représenter les valeurs manquantes.
+On désire remplacer l'ensemble des `−99` par des `NA`.
+
+Voici un code `Python` qui permet de se placer dans ce cas qui, malheureusement,
+arrive fréquemment.
+
+```python
+# On fixe la racine pour être sûr de tous avoir le même dataset
+np.random.seed(1234)
+
+# On créé un dataframe
+a = np.random.randint(1, 10, size = (5,6))
+df = np.insert(
+    a,
+    np.random.choice(len(a), size=6),
+    -99,
+)
+df = pd.DataFrame(df.reshape((6,6)), columns=[chr(x) for x in range(97, 103)])
+```
+
+
+Un premier jet de code pourrait prendre la forme suivante :
+
+```python
+# Dupliquer les données
+df2 = df.copy()
+# Remplacer les -99 par des NA
+df2.loc[df2['a'] == -99,'a'] = np.nan
+df2.loc[df2['b'] == -99,'b'] = np.nan
+df2.loc[df2['c'] == -99,'c'] = np.nan
+df2.loc[df2['d'] == -99,'d'] = np.nan
+df2.loc[df2['e'] == -98,'e'] = np.nan
+df2.loc[df2['f'] == -99,'e'] = np.nan
+```
+
+Quelles sont les choses qui vous dérangent dans le code ci-dessus ?
+
+<details>
+<summary>
+Indice 💡 Regardez précisément le code et le `DataFrame`, notamment les colonnes `e` et `g`.
+</summary>
+Il y a deux erreurs, difficiles à détecter:
+
+- `df2.loc[df2['e'] == -98,'e'] = np.nan`: une erreur de copier-coller sur la valeur de l'erreur ;
+- `df2.loc[df2['f'] == -99,'e'] = np.nan`: une erreur de copier-coller sur les colonnes en question
+</details>
+
+On peut noter au moins deux trois :
+
+* Le code est long et répétitif, ce qui nuit à sa lisibilité ;
+* Le code est très dépendant de la structure des données (nom et nombre de colonnes) et doit être adapté dès que celle-ci évolue ;
+* On a introduit des erreurs humaines dans le code, difficiles à détecter.
+
+On voit dans la première version de notre code qu'il y a une structure commune à toutes nos lignes de la forme `.[. == -99] = np.nan`. Cette structure va servir de base à notre fonction, en vue de généraliser le traitement que nous voulons faire.
+
+```python
+def fix_missing(x: pd.Series):
+    x[x == -99] = np.nan
+    return x
+
+df2 = df.copy()
+df2['a'] = fix_missing(df['a'])
+df2['b'] = fix_missing(df['b'])
+df2['c'] = fix_missing(df['c'])
+df2['d'] = fix_missing(df['d'])
+df2['e'] = fix_missing(df['e'])
+df2['f'] = fix_missing(df['f'])
+```
+
+Cette seconde version du code est meilleure que la première version, car on a réglé le problème d'erreur humaine (il n'est plus possible de taper `-98` au lieu de `-99`).
+
+<details>
+<summary>
+Mais voyez-vous le problème qui persiste ?
+</summary>
+
+Le code reste long et répétitif, et n'élimine pas encore toute possibilité d'erreur, car il est toujours possible de se tromper dans le nom des variables.
+</details>
+
+La prochaine étape consiste à éliminer ce risque d'erreur en combinant deux fonctions (ce qu'on appelle la combinaison de fonctions).
+
+La première fonction `fix_missing()` sert à régler le problème sur un vecteur. La seconde généralisera ce procédé à toutes les colonnes. Comme `Pandas` permet une approche vectorielle, il est fréquent de construire des fonctions sur des vecteurs et les appliquer ensuite à plusieurs colonnes.
+
+
+```python
+def fix_missing(x: pd.Series):
+    x[x == -99] = np.nan
+    return x
+
+df2 = df.copy()
+df2 = df2.apply(fix_missing)
+```
+
+Cette troisième version du code a plusieurs avantages sur les deux autres versions :
+
+1. Elle est plus concise et plus lisible ;
+2. Si on a un changement de code pour les valeurs manquantes, il suffit de le mettre à un seul endroit ;
+3. Elle fonctionne quel que soit le nombre de colonnes et le nom des colonnes ;
+4. On ne peut pas traiter une colonne différemment des autres par erreur.
+
+De plus, le code est facilement généralisable.
+
+Par exemple, à partir de la même structure, écrire le code qui permet de ne traiter que les colonnes *a*,*b* et *e*
+ne demande pas beaucoup d'énergie.
+
+
+```python
+df2 = df.copy()
+df2[['a','b','e']] = df2[['a','b','e']].apply(fix_missing)
+```
+:::
+
+Un certain nombre de conseils sont présents dans le [Hitchhiker's Guide to Python](https://docs.python-guide.org/writing/style/)
+qui vise à faire connaître les préceptes du _"Zen of Python"_ (PEP 20).
+[Ce post de blog](https://towardsdatascience.com/the-zen-of-python-a-guide-to-pythons-design-principles-93f3f76d088a) illustre quelques uns
+de ces principes avec des exemples.
+
+::: {.callout-note collapse="true"}
+## Le _Zen de Python_
+
+Le _"Zen de Python"_ est une collection de principes pour la programmation en `Python`, écrite par Tim Peters en 2004
+sous la forme d'aphorismes. Ceux-ci
+mettent en lumière la philosophie de conception du langage `Python`.
+
+Vous pouvez retrouver ces conseils dans `Python` en
+tapant le code suivant:
+
+:::: {.python}
+
+```python
+import this
+```
+
+```
+The Zen of Python, by Tim Peters
+
+Beautiful is better than ugly.
+Explicit is better than implicit.
+Simple is better than complex.
+Complex is better than complicated.
+Flat is better than nested.
+Sparse is better than dense.
+Readability counts.
+Special cases aren't special enough to break the rules.
+Although practicality beats purity.
+Errors should never pass silently.
+Unless explicitly silenced.
+In the face of ambiguity, refuse the temptation to guess.
+There should be one-- and preferably only one --obvious way to do it.
+Although that way may not be obvious at first unless you're Dutch.
+Now is better than never.
+Although never is often better than *right* now.
+If the implementation is hard to explain, it's a bad idea.
+If the implementation is easy to explain, it may be a good idea.
+Namespaces are one honking great idea -- let's do more of those!
+```
+
+::::
+
+:::
+
+
+
+# Principe 3️⃣ : (auto)documenter son code
+
+Un code écrit avec des __noms de variables et de fonctions explicites__ est autant,
+voire plus, informatif que les commentaires qui l’accompagnent.
+C’est pourquoi il est essentiel de respecter des conventions, et de s'y tenir,
+pour le
+choix des noms des objets afin d’assurer la lisibilité des programmes.
+
+Il est recommandé de privilégier l'__autodocumentation__
+à la multiplication de commentaires dans un document. Trop de commentaires fait que
+ceux-ci ne seront
+jamais lus. Ils risquent d'ailleurs de ne pas être actualisés en même temps que le code
+qu'ils accompagnent, ce qui est une source d'erreur potentielle.
+Une documentation est inutile si elle décrit ce qui est intelligible
+par ailleurs en lisant le code : il est donc important
+de documenter le pourquoi plutôt que le comment.
+
+En résumé,
+les deux grands principes de la documentation au sein d'un script sont les suivants :
+
+- Il est préférable de __documenter le pourquoi plutôt que le comment__. Le _"comment"_ devrait
+être compréhensible à la lecture du code ;
+- Privilégier l'autodocumentation via des __nommages pertinents__.
+
+
+::: {.callout-tip}
+## Comment bien documenter un script ?
+
+- **Minimum** 🚦 : commentaire au début du script pour décrire ce qu'il fait
+- **Bien** 👍 : commenter les parties "délicates" du code
+- **Idéal** 💪 : documenter ses fonctions avec la syntaxe des `docstrings`.
+
+:::
+
+
+::: {.callout-tip collapse="true"}
+## Le _type hinting_, un élément d'autodocumentation
+
+`Python` propose une fonctionalité assez plaisante qui est
+le _`type hinting`_
+([doc officielle](https://docs.python.org/3/library/typing.html)
+et [tutoriel sur realpython.com](https://realpython.com/lessons/type-hinting/)).
+
+Cette approche permet d'indiquer le type d'argument attendu par une fonction
+et celui qui sera renvoyé par la fonction.
+Par exemple, la personne ayant écrit la fonction suivante
+
+```python
+def calcul_moyenne(df: pd.DataFrame, col : str = "y") -> pd.DataFrame:
+    return df[col].mean()
+```
+
+propose d'utiliser deux types d'inputs (un `DataFrame Pandas` et une chaine de caractère)
+et indique qu'elle renverra un `DataFrame Pandas`.
+A noter que c'est indicatif, non contraignant.
+En effet, le code ci-dessus fonctionnera si on fournit en argument `col` une liste puisque `Pandas` sait gérer cela à l'étape `df[col].mean()`.
+
+Le _type hinting_ est un élément d'autodocumentation puisque grâce à ces _hints_ le code
+suffit à faire comprendre la volonté de la personne l'ayant écrit.
+:::
+
+
+La documentation vise à présenter la démarche générale, éventuellement
+à travers des exemples, mais aussi à expliciter certains éléments
+du code (une opération qui n'est pas évidente, des arguments de fonction, etc.).
+La documentation se mélange donc aux instructions visant à être exécutées
+mais s'en distingue. Ces principes sont hérités du paradigme de la
+**"programmation lettrée"** (_Literate programming_) dont l'un des
+avocats était Donald Knuth.
+
+
+> _"Je crois que le temps est venu pour une amélioration significative de la documentation des programmes, et que le meilleur moyen d'y arriver est de considérer les programmes comme des œuvres littéraires. D'où mon titre, « programmation lettrée »._
+>
+> _Nous devons changer notre attitude traditionnelle envers la construction des programmes : au lieu de considérer que notre tâche principale est de dire à un ordinateur ce qu'il doit faire, appliquons-nous plutôt à expliquer à des êtres humains ce que nous voulons que l'ordinateur fasse._
+>
+> _Celui qui pratique la programmation lettrée peut être vu comme un essayiste, qui s'attache principalement à exposer son sujet dans un style visant à l'excellence. Tel un auteur, il choisit , avec soin, le dictionnaire à la main, les noms de ses variables et en explique la signification pour chacune d'elles. Il cherche donc à obtenir un programme compréhensible parce que ses concepts sont présentés dans le meilleur ordre possible. Pour cela, il utilise un mélange de méthodes formelles et informelles qui se complètent"_
+>
+> Donald Knuth, _Literate Programming_ ([source](https://fr.wikipedia.org/wiki/Programmation_lettr%C3%A9e))
+
+Cela peut amener à distinguer deux types de documentation :
+
+1. Une documentation générale de type `Jupyter Notebook` ou `Quarto Markdown` qui
+présente certes du code exécuté mais dont l'objet principal est de présenter
+une démarche ou des résultats ;
+2. Une documentation de la démarche plus proche du code dont l'un des
+exemples sont les _docstrings_ `Python` (ou son équivalent `R`, la documentation `Roxygen`).
+
+:::
+
+
+:::: {.content-visible when-profile="en"}
+
+# Principle 2️⃣: Favour a Modular Structure
+
+## Objectives
+
+- Encourage __conciseness__ to reduce the risk of error and make the process clearer;
+- Improve __readability__, which is essential to make the process understandable by others but also for yourself when revisiting an old script;
+- Reduce __redundancy__, which simplifies code (the _don't repeat yourself_ paradigm);
+- Minimize the risk of __errors due to copy/paste__.
+
+## Advantages of Functions
+
+Functions have many advantages over long scripts:
+
+- Limit the risk of errors caused by copy/paste;
+- Make the code more readable and compact;
+- Only one place to modify the code if the processing changes;
+- Facilitate code reuse and documentation!
+
+::: {.callout-important}
+## Golden Rule
+
+You should use a [**function**]{.red2} whenever a piece of code is used more than twice ([**_don't repeat yourself_ (DRY)**]{.red2}).
+:::
+
+::: {.callout-tip}
+## Rules for Writing **Effective** Functions
+
+- One task = one function;
+- A complex task = a sequence of functions, each performing a simple task;
+- Limit the use of global variables.
+
+:::
+
+Regarding package installation, as we will see in the [Project Structure](/chapters/projects-architecture.html) and [Portability](/chapters/portability.qmd) sections, this should not be managed inside the script, but in a separate element related to the project's execution environment[^environnement]. Those sections also provide practical advice on handling API or database tokens, which __should never be written in the code__.
+
+[^environnement]: We will present the two main approaches in `Python`, their similarities and differences: virtual environments (managed by a `requirements.txt` file) and conda environments (managed by an `environment.yml` file).
+
+Overly long scripts are not a best practice. It is better to divide all scripts executing a production chain into _"monads"_, i.e., small coherent units. Functions are a key tool for this purpose (they help reduce redundancy and are a preferred tool for documenting code).
+
+::: {.callout-caution collapse="true"}
+## Example: Prefer List Comprehensions
+
+In `Python`, it is recommended to prefer list comprehensions over indented `for` loops. The latter are generally less efficient and involve a larger number of code lines, whereas list comprehensions are much more concise:
+
+```python
+liste_nombres = range(10)
+
+# very bad
+y = []
+for x in liste_nombres:
+    if x % 2 == 0:
+        y.append(x*x)
+
+# better
+y = [x*x for x in liste_nombres if x % 2 == 0]
+```
+
+:::
+
+### Programming Advice
+
+In the Python programming world, there are two main paradigms:
+
+- __Functional programming__: builds code by chaining functions, i.e., more or less standardized operations;
+- __Object-Oriented Programming (OOP)__: builds code by defining objects of a given _class_ with _attributes_ (intrinsic features) and custom _methods_ to perform class-specific operations.
+
+<details>
+<summary>
+Example comparing the two paradigms
+</summary>
+
+Thanks _ChatGPT_ for the example:
+
+```{python}
+#| eval: true
+class AverageCalculator:
+    def __init__(self, numbers):
+        self.numbers = numbers
+
+    def calculate_average(self):
+        return sum(self.numbers) / len(self.numbers)
+
+# Usage
+calculator = AverageCalculator([1, 2, 3, 4, 5])
+print("Average (OOP):", calculator.calculate_average())
+
+def calculate_average(numbers):
+    return sum(numbers) / len(numbers)
+
+# Usage
+numbers = [1, 2, 3, 4, 5]
+print("Average (FP):", calculate_average(numbers))
+```
+
+</details>
+
+Functional programming is more intuitive than OOP and often allows for quicker code development. OOP is a more formalist approach, useful when functions need to adapt to the input object type (e.g., loading different model weights depending on the model type in [`Pytorch`](https://pytorch.org/vision/0.9/models.html)). It avoids 🍝 _spaghetti code_ that’s hard to debug.
+
+However, one should remain pragmatic. OOP can be more complex to implement than functional programming. In many cases, well-written functional code is sufficient. For large projects, adopting a __defensive programming__ approach is helpful — a precautionary strategy in the functional paradigm that anticipates and manages unexpected situations (e.g., wrong argument type or structure).
+
+::: {.callout-note}
+
+## Spaghetti Code
+
+“Spaghetti code” refers to programming style that leads to tangled code due to excessive use of conditions, exceptions, and complex event handling. It becomes almost impossible to trace the cause of errors without stepping through every line of code — and there are many, due to poor practices.
+
+Spaghetti code prevents determining who, what, and how something happens, making updates time-consuming since one must follow the chain of references line by line.
+
+:::
+
+::: {.callout-tip collapse="true"}
+## A Progressive Example
+
+💡 Suppose we have a dataset that uses `−99` to represent missing values. We want to replace all `−99` with `NA`.
+
+```python
+np.random.seed(1234)
+a = np.random.randint(1, 10, size = (5,6))
+df = np.insert(
+    a,
+    np.random.choice(len(a), size=6),
+    -99,
+)
+df = pd.DataFrame(df.reshape((6,6)), columns=[chr(x) for x in range(97, 103)])
+```
+
+First attempt:
+
+```python
+df2 = df.copy()
+df2.loc[df2['a'] == -99,'a'] = np.nan
+df2.loc[df2['b'] == -99,'b'] = np.nan
+df2.loc[df2['c'] == -99,'c'] = np.nan
+df2.loc[df2['d'] == -99,'d'] = np.nan
+df2.loc[df2['e'] == -98,'e'] = np.nan
+df2.loc[df2['f'] == -99,'e'] = np.nan
+```
+
+What’s wrong here?
+
+<details>
+<summary>
+Hint 💡 Look at columns `e` and `g`.
+</summary>
+Two copy-paste errors:
+- `-98` instead of `-99`;
+- `'e'` instead of `'f'` in the last line.
+</details>
+
+Next improvement — using a function:
+
+```python
+def fix_missing(x: pd.Series):
+    x[x == -99] = np.nan
+    return x
+
+df2 = df.copy()
+df2['a'] = fix_missing(df['a'])
+df2['b'] = fix_missing(df['b'])
+...
+```
+
+Still repetitive and error-prone with column names.
+
+Best version — apply function across all columns:
+
+```python
+df2 = df.copy()
+df2 = df2.apply(fix_missing)
+```
+
+Now the code is:
+1. Concise;
+2. Robust to data structure changes;
+3. Free from hard-coded mistakes;
+4. Easily generalizable — e.g., apply only on selected columns:
+
+```python
+df2[['a','b','e']] = df2[['a','b','e']].apply(fix_missing)
+```
+
+:::
+
+Resources like the [Hitchhiker's Guide to Python](https://docs.python-guide.org/writing/style/) and [this blog post](https://towardsdatascience.com/the-zen-of-python-a-guide-to-pythons-design-principles-93f3f76d088a) illustrate these design principles well.
+
+::: {.callout-note collapse="true"}
+## The Zen of Python
+
+Written by Tim Peters in 2004, this set of aphorisms embodies Python’s design philosophy:
+
+```python
+import this
+```
+
+```
+The Zen of Python, by Tim Peters
+
+Beautiful is better than ugly.
+Explicit is better than implicit.
+Simple is better than complex.
+...
+Namespaces are one honking great idea -- let's do more of those!
+```
+
+:::
+
+::::

@@ -1,0 +1,91 @@
+::: {.content-visible when-profile="fr"}
+
+# Modalités pratiques
+
+## Approche pédagogique
+
+Le parti pris de ce cours est que seule la pratique, et en particulier la confrontation à des problèmes issus de projets réels, permet d'acquérir efficacement des concepts informatiques. Aussi, une large part du cours consistera en l'**application des notions étudiées à des cas concrets**. Chaque chapitre se concluera par des applications touchant à des sujets réalistes de *data science*.
+
+Un [exemple fil rouge](/chapters/) illustre les progrès dans la conception d'un projet reproductible en appliquant
+successivement le contenu des chapitres de ce cours.
+
+Pour l'évaluation générale du cours, l'idée sera de partir d'un projet personnel, idéalement terminé, et de lui appliquer un maximum de bonnes pratiques présentées dans ce cours.
+
+## Langages
+
+Les principes présentés dans ce cours sont pour la plupart **agnostiques du langage de programmation utilisé**.
+
+Ce choix n'est pas qu'éditorial, c'est selon nous un aspect fondamental du sujet des bonnes pratiques. Trop souvent, des différences de langage entre les phases de développement (notamment `R` ou `Python`) et de mise en production (ex : `Java`) érigent des murs artificiels qui réduisent fortement la capacité à valoriser des projets de *data science*.
+
+A l'inverse, plus les différentes équipes qui forment le cycle de vie d'un projet s'accordent pour appliquer le même ensemble de bonnes pratiques, plus ces équipes développent un langage commun, et plus les déploiements en sont facilités.
+
+Un exemple parlant est l'utilisation de la **conteneurisation** : si le *data scientist* met à disposition une image `Docker` comme *output* de sa phase de développement et que le *data engineer* s'occupe de déployer cette image sur une infrastructure dédiée, le contenu même de l'application en termes de langage importe finalement assez peu. Cet exemple, certes simpliste, illustre malgré tout l'enjeu des bonnes pratiques en matière de communication au sein d'un projet.
+
+Les exemples présentés dans ce cours seront pour l'essentiel en `Python`. La raison principale est que ce langage, malgré ses défauts, est enseigné dans la majorité des cursus de *data science* mais aussi d'informatique. Il peut faciliter la passerelle entre le monde des utilisateurs de données et celui des développeurs informatiques, passerelle indispensable pour favoriser le dialogue entre ces deux profils, nécessaires tous deux pour un passage en production.
+Encore une fois, il est tout à fait possible d'appliquer les mêmes principes avec d'autres langages, et nous encourageons d'ailleurs les étudiants à s'essayer à cet exercice formateur.
+
+## Environnement d'exécution
+
+A l'instar du langage, les principes appliqués dans ce cours sont agnostiques à l'infrastructure utilisée pour faire tourner les exemples proposés. Il est donc à la fois possible et souhaitable d'appliquer les bonnes pratiques aussi bien à un projet individuel développé sur un ordinateur personnel qu'à un projet collaboratif visant à être déployé sur une infrastructure de production dédiée.
+
+Cependant, nous choisissons comme environnement de référence tout au long de ce cours le [`SSP Cloud`](https://datalab.sspcloud.fr/home), une plateforme de services pour la *data science* développée à l'Insee et accessible aux élèves des écoles statistiques. Les raisons de ce choix sont multiples :
+
+- **l'environnement de développement est normalisé** : les serveurs du SSP Cloud ont une configuration homogène — notamment, ils se basent sur une même distribution Linux (Debian) — ce qui garantit la reproductibilité des exemples présentés tout au long du cours ;
+- via un cluster Kubernetes sous-jacent, le SSP Cloud met à disposition une infrastructure robuste permettant le déploiement automatisé d'applications potentiellement intensives en données, ce qui permet de **simuler un véritable environnement de production** ;
+- le SSP Cloud est construit selon les standards les plus récents des infrastructures *data science*, et permet donc d'**acquérir les bonnes pratiques de manière organique** :
+  - les services sont lancés via des conteneurs, configurés par des images *Docker*. Cela permet de garantir une forte **reproductibilité** des déploiements, au prix d'une phase de développement un peu plus coûteuse ;
+  - le SSP Cloud est basé sur une **approche dite *cloud native*** : il est construit sur un ensemble modulaire de briques logicielles, qui permettent d'appliquer une séparation nette du code, des données, de la configuration et de l'environnement d'exécution, principe majeur des bonnes pratiques qui reviendra tout au long de ce cours.
+
+Pour en savoir plus sur cette plateforme, vous pouvez consulter [cette page](https://ssphub.netlify.app/post/onyxia/).
+
+## Ressources complémentaires
+
+- [_Missing semester_ du MIT](https://missing.csail.mit.edu/)
+
+:::
+::: {.content-visible when-profile="en"}
+
+# Practical Information
+
+## Teaching Approach
+
+The guiding principle of this course is that only practice—especially hands-on experience with real-world problems—can effectively develop understanding of computing concepts. As such, a large part of the course will consist of **applying key ideas to concrete use cases**. Each chapter will conclude with applications rooted in realistic *data science* problems.
+
+A [running example](/chapters/) illustrates how a reproducible project evolves by progressively applying the practices discussed throughout the course.
+
+For the course evaluation, students will be asked to take a personal project—ideally already completed—and apply as many of the best practices introduced here as possible.
+
+## Programming Languages
+
+The principles presented in this course are mostly **language-agnostic**.
+
+This is not just an editorial decision—we believe it's central to the topic of best practices. Too often, language differences between development phases (e.g., `R` or `Python`) and production phases (e.g., `Java`) create artificial barriers that limit a *data science* project’s potential impact.
+
+By contrast, when the different teams involved in a project’s lifecycle adopt a shared set of best practices, they also develop a shared vocabulary—greatly easing the deployment process.
+
+A compelling example is **containerization**: if the *data scientist* provides a `Docker` image as the output of their development work, and a *data engineer* handles its deployment, then the underlying programming language becomes largely irrelevant. While simplistic, this example captures the essence of how best practices enhance communication within a project.
+
+Examples in this course will primarily use `Python`. The main reason is that despite its shortcomings, Python is widely taught in both *data science* and computer science programs. It serves as a bridge between data users and developers—two essential roles in production workflows.
+
+That said, the same principles can be applied with other languages, and we strongly encourage students to practice this transfer of skills.
+
+## Execution Environment
+
+Like programming language, the principles in this course are **agnostic to the infrastructure** used to run the examples. It is not only possible but desirable to apply best practices to both solo projects on a personal computer and collaborative projects intended for production deployment.
+
+That said, we have chosen the [`SSP Cloud`](https://datalab.sspcloud.fr/home) platform as our reference environment throughout the course. Developed at Insee and available to students at statistical schools, it offers several advantages:
+
+- **Standardized development environment**: SSP Cloud servers use a uniform configuration—specifically, the Debian Linux distribution—which ensures reproducibility across course examples;
+- Built on a Kubernetes cluster, SSP Cloud offers robust infrastructure for automated deployment of potentially data-intensive applications—making it possible to **simulate a true production environment**;
+- SSP Cloud follows modern *data science* infrastructure standards, enabling learners to **internalize best practices organically**:
+  - Services are run in containers configured via *Docker* images, which ensures strong **reproducibility** of deployments—at the cost of some initial complexity during development;
+  - The platform is based on a **cloud-native architecture**, composed of modular software building blocks. This encourages strict separation of code, data, configuration, and execution environment—a major principle of good practice that will be revisited throughout the course.
+
+To learn more about this platform, see [this page](https://ssphub.netlify.app/post/onyxia/).
+
+## Additional Resources
+
+- [MIT's _Missing Semester_](https://missing.csail.mit.edu/)
+
+:::
+

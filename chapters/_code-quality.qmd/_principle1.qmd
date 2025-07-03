@@ -1,0 +1,289 @@
+::: {.content-visible when-profile="fr"}
+
+# Principe 1️⃣ : Adopter les standards communautaires
+
+Dans la lignée de la vision des bonnes pratiques comme
+continuum proposée en [introduction](/chapters/introduction.qmd), il n'est pas nécessairement souhaitable d'appliquer toutes les recommandations présentées dans ce chapitre à chaque projet. Sur certains projets, le coût marginal
+d'adopter certaines pratiques peut excéder les bénéfices induits.
+Nous recommandons plutôt de voir ces bonnes pratiques comme de bonnes habitudes à acquérir en opérant un va-et-vient régulier entre la pratique et la théorie. Les outils
+que nous allons proposer seront là pour accélérer la mise en œuvre des bonnes pratiques.
+
+Les éléments exposés dans ce chapitre n'ont pas vocation à être exhaustifs.
+Ils visent à pointer vers quelques ressources utiles tout en proposant des conseils pratiques.
+L'apprentissage par cœur de ces règles ou
+faire des aller-retour en continu entre le code
+et les manuels de règles
+serait quelques
+peu rébarbatif.
+
+Pour faire le parallèle avec
+le langage naturel, on n'a pas toujours le bescherelle
+ou le dictionnaire sous les yeux. Les éditeurs de
+texte ou les smartphones embarquent des correcteurs
+orthographiques qui identifient, voire corrigent
+directement le texte écrit.
+
+## Un bon IDE, un premier pas vers la qualité
+
+Sans les outils automatisés de mise en forme du code, l'adoption des bonnes
+pratiques serait coûteuse en temps et donc difficile à mettre en œuvre
+au quotidien. Ces outils, que ce soit par le biais de diagnostics ou de
+mise aux normes automatisée du code
+rendent de précieux services. Adopter les standards minimaux de qualité
+est plus ou moins instantané et économise un temps précieux dans la vie
+d'un projet de _data science_. C'est un préalable indispensable à la
+mise en production, sur laquelle nous reviendrons ultérieurement.
+
+Le premier pas vers les bonnes pratiques est d'adopter un environnement de développement
+adapté. `VSCode` est un très bon environnement comme nous le découvrirons
+dans la [partie pratique](/chapters/application.qmd). Il propose tous les
+outils d'autocomplétion et de diagnostics usuels (contrairement
+à `Jupyter`) et propose une grande gamme d'extensions pour enrichir
+les fonctionnalités de l'IDE de manière contributive :
+
+![Exemple de diagnostics et d'actions proposés par `VSCode`](https://code.visualstudio.com/assets/docs/python/editing/packageAbbreviations.gif)
+
+Néanmoins, les outils de détection de code au niveau des IDE
+ne suffisent pas. En effet, ils nécessitent une composante manuelle
+qui peut être chronophage et ainsi pénible à appliquer
+régulièrement. Heureusement, il existe des outils automatisés de diagnostics
+et de mise en forme.
+
+### Les outils automatisés pour le diagnostic et la mise en forme du code
+
+`Python` étant l'outil de travail principal de milliers de
+_data-scientists_, un certain nombre d'outils ont vu le jour
+pour réduire le temps nécessaire pour créer un projet ou disposer
+d'un code fonctionnel. Ces outils permettent un gros gain de productivité,
+réduisent le temps passé à effectuer des tâches rébarbatives et améliorent
+la qualité d'un projet en offrant des diagnostics, voire des correctifs
+à des codes perfectibles.
+
+Les deux principaux types d'outils sont les suivants :
+
+1. **_Linter_** : programme qui vérifie que le code est __formellement__ conforme à un certain _guidestyle_
+    + signale des problèmes formels, sans corriger
+2. **_Formatter_** : programme qui reformate un code pour le rendre conforme à un certain _guidestyle_
+    + modifie directement le code
+
+:::: {.callout-tip collapse="true"}
+## Exemples
+
+- Exemples d’erreurs repérées par un _linter_ :
+    + lignes de code trop longues ou mal indentées, parenthèses non équilibrées, noms de fonctions mal construits…
+- Exemples d’erreurs __non__ repérées par un _linter_ :
+    + fonctions mal utilisées, arguments mal spécifiés, structure du code incohérente, code insuffisamment documenté…
+::::
+
+### Les _linters_ pour comprendre les mauvaises pratiques appliquées
+
+Les _linters_ sont des outils qui permettent d'évaluer la qualité du
+code et son risque de provoquer une erreur (explicite ou silencieuse).
+
+Voici quelques exemples de problèmes que peuvent rencontrer les
+`linters`:
+
+* les variables sont utilisées mais n'existent pas (erreur)
+* les variables inutilisées (inutiles)
+* la mauvaise organisation du code (risque d'erreur)
+* le non-respect des bonnes pratiques d'écriture de code
+* les erreurs de syntaxe (par exemple les coquilles)
+
+La plupart des logiciels de développement embarquent des fonctionnalités
+de diagnostic (voire de suggestion de correctif). Il faut parfois
+les paramétrer dans les options (ils sont désactivés pour ne pas
+effrayer l'utilisateur avec des croix rouges partout).
+Néanmoins, si on n'a pas appliqué les correctifs
+au fil de l'eau la masse des modifications à mettre en
+œuvre peut être effrayante.
+
+En `Python`, les deux principaux _linters_
+sont [`PyLint`](https://pylint.readthedocs.io/en/latest/) et
+[`Flake8`](https://flake8.pycqa.org/en/latest/).
+Dans les exercices, nous proposons d'utiliser `PyLint` qui est
+pratique et pédagogique. Celui-ci s'utilise en ligne de commande,
+de la manière suivante :
+
+````bash
+pip install pylint
+pylint monscript.py #pour un fichier
+pylint src #pour tous les fichiers du dossier src
+````
+
+:::: {.callout-tip collapse="true"}
+L'un des intérêts d'utiliser `PyLint` est qu'on obtient une note,
+ce qui est assez instructif. Nous l'utiliserons dans l'application
+fil rouge pour comprendre la manière dont chaque étape améliore
+la qualité du code.
+
+Il est possible de mettre en œuvre des [_pre commit hooks_](https://pylint.readthedocs.io/en/latest/user_guide/installation/pre-commit-integration.html) qui empêchent un
+_commit_ n'ayant pas une note minimale.
+::::
+
+### Les _formatters_ pour nettoyer en masse ses scripts
+
+Le _formatter_ modifie directement le code. On peut
+faire un parallèle avec le correcteur orthographique.
+Cet outil peut
+donc induire un changement substantiel du script
+afin de le rendre plus lisible.
+
+Le _formater_ le plus utilisé
+est [`Black`](https://black.readthedocs.io/en/stable/).
+Récemment, [`Ruff`](https://github.com/astral-sh/ruff),
+qui est à la fois un _linter_ et un _formatter_
+a émergé pour intégrer à `Black` des diagnostics
+supplémentaires, issus d'autres _packages_.
+
+:::: {.callout-note collapse="true"}
+Pour signaler sur `Github`
+la qualité d'un projet utilisant `Black`, il est possible
+d'ajouter un badge dans le `README`:
+
+[![](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+::::
+
+Il est assez instructif de regarder
+le code modifié par les outils pour comprendre et corriger certains problèmes dans sa manière de développer.
+Par exemple, à la lecture de ce chapitre, vous allez certainement retenir en particulier certaines règles qui tranchent avec vos pratiques actuelles. Vous pouvez alors essayer d'appliquer ces nouvelles règles pendant un certain temps puis, lorsque celles-ci seront devenues naturelles, revenir à ce guide et appliquer le processus à nouveau. En procédant ainsi de manière incrémentale, vous améliorerez progressivement la qualité de vos projets sans avoir l'impression de passer trop de temps sur des micro-détails, au détriment des objectifs globaux du projet.
+
+## Le partage, une démarche favorable à la qualité du code
+
+### L'_opensource_ comme moyen pour améliorer la qualité
+
+En ouvrant son code sur des forges _opensource_ (cf. [chapitre `Git`](/chapters/git.qmd)), il est possible de recevoir
+des suggestions voire, des contributions de ré-utilisateurs
+du code. Cependant, les vertus de l'ouverture vont au-delà.
+En effet, l'ouverture se traduit généralement par des codes de
+meilleure qualité, mieux documentés pour pouvoir être réutilisés
+ou ayant simplement bénéficié d'une attention accrue sur la qualité
+pour ne pas paraître ridicule. Même en l'absence de retour de (ré)utilisateurs
+du code, le partage de code améliore la qualité des projets.
+
+### La revue de code
+
+La revue de code s'inspire de la méthode du _peer reviewing_ du monde académique
+pour améliorer la qualité du code `Python`. Dans une revue de code,
+le code écrit par une personne est relu et évalué par un ou plusieurs autres développeurs
+afin d'identifier les erreurs et les améliorations possibles.
+Cette pratique permet de détecter les erreurs avant qu'elles ne deviennent des problèmes majeurs,
+d'assurer une cohérence dans le code, de garantir le respect des bonnes pratiques
+mais aussi d'améliorer la qualité du code en identifiant les parties du code qui peuvent être simplifiées, optimisées ou refactorisées pour en améliorer la lisibilité et la maintenabilité.
+
+Un autre avantage de cette approche est qu'elle permet le
+partage de connaissances entre des personnes expérimentées et des personnes
+plus débutantes ce qui permet à ces dernières de monter en compétence.
+`Github` {{< fa brands github >}} et `Gitlab` {{< fa brands gitlab >}}
+proposent des fonctionnalités très pratiques
+pour la revue de code : discussions, suggestions de modifications...
+
+:::
+
+::: {.content-visible when-profile="en"}
+
+# Principle 1️⃣: Adopt Community Standards
+
+In line with the idea of best practices as a **continuum** introduced in the [introduction](/chapters/introduction.qmd), it's not necessarily advisable to apply all the recommendations in this chapter to every project. In some cases, the marginal cost of implementing certain practices may outweigh the benefits.
+
+Instead, we recommend thinking of these best practices as habits to be acquired gradually, through a back-and-forth between theory and practice. The tools we’ll introduce are here to help accelerate the adoption of best practices.
+
+This chapter is not meant to be exhaustive. It highlights some useful resources while offering practical advice. Memorizing every rule or constantly switching between your code and rulebooks would be tedious.
+
+To draw a parallel with natural language: we don’t always have a dictionary at hand. Text editors and smartphones come with built-in spellcheckers that identify—and sometimes fix—errors in real time.
+
+## A Good IDE: The First Step Toward Quality
+
+Without automated code formatting tools, adopting best practices would be time-consuming and difficult to implement daily. Tools that provide diagnostics or automatically format code are incredibly useful. They allow developers to meet minimum quality standards almost instantly, saving time throughout a *data science* project. These tools are a prerequisite for production deployment, which we’ll discuss later.
+
+The first step toward best practices is choosing a suitable development environment. `VSCode` is an excellent IDE, as we’ll explore in the [practical section](/chapters/application.qmd). It offers autocompletion, built-in diagnostics (unlike `Jupyter`), and a wide array of extensions to expand functionality:
+
+![Example of diagnostics and actions in `VSCode`](https://code.visualstudio.com/assets/docs/python/editing/packageAbbreviations.gif)
+
+However, IDE-level tools are not enough. They require manual interaction, which can be time-consuming and difficult to apply consistently. Fortunately, we also have automated tools for diagnostics and formatting.
+
+### Automated Tools for Code Diagnostics and Formatting
+
+Since `Python` is the primary tool of thousands of *data scientists*, many tools have been developed to reduce the time needed to create a functional project. These tools boost productivity, reduce repetitive tasks, and improve project quality through diagnostics or even automatic fixes.
+
+There are two main types of tools:
+
+1. **Linters**: programs that check whether code formally adheres to a given _guidestyle_
+   + They report issues but do not fix them
+2. **Formatters**: programs that automatically rewrite code to follow a specific _guidestyle_
+   + They modify the code directly
+
+:::: {.callout-tip collapse="true"}
+## Examples
+
+- Issues that a linter can catch:
+  + long or poorly indented lines, unbalanced parentheses, poorly named functions…
+- Issues that a linter typically won’t catch:
+  + incorrect function usage, mis-specified arguments, incoherent structure, insufficient documentation…
+::::
+
+### Linters to Identify Bad Coding Habits
+
+Linters assess code quality and its potential to trigger explicit or silent errors.
+
+Examples of issues linters can catch include:
+
+* usage of undefined variables (errors)
+* unused variables (unnecessary code)
+* poor code organization (risk of bugs)
+* violations of code style guidelines
+* syntax errors (e.g., typos)
+
+Most development tools offer built-in diagnostics (and sometimes suggestions). You may need to enable them in the settings, as they’re often disabled by default to avoid overwhelming beginners.
+
+However, if you don't fix issues as you go, the backlog of changes can become overwhelming.
+
+In `Python`, the two most common linters are [`PyLint`](https://pylint.readthedocs.io/en/latest/) and [`Flake8`](https://flake8.pycqa.org/en/latest/). In this course, we’ll use `PyLint` for its practicality and pedagogy. It can be run from the command line as follows:
+
+````bash
+pip install pylint
+pylint myscript.py   # for a single file
+pylint src           # for all files in the 'src' folder
+````
+
+:::: {.callout-tip collapse="true"}
+One of the nice features of `PyLint` is that it gives a score, which is quite informative. We’ll use this in the running project to track how each step improves code quality.
+
+You can also set up [_pre-commit hooks_](https://pylint.readthedocs.io/en/latest/user_guide/installation/pre-commit-integration.html) to block commits that don’t meet a minimum score.
+::::
+
+### Formatters for Bulk Code Cleanup
+
+A formatter rewrites code directly—like a spellchecker, but for style. It can make substantial changes to improve readability.
+
+The most widely used formatter is [`Black`](https://black.readthedocs.io/en/stable/). More recently, [`Ruff`](https://github.com/astral-sh/ruff)—a hybrid linter/formatter—has gained popularity. It builds on `Black` while integrating diagnostics from other packages.
+
+:::: {.callout-note collapse="true"}
+If your project uses `Black`, you can add a badge to the `README` on GitHub:
+
+[![](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+::::
+
+It’s quite instructive to review code after formatting—it helps identify and correct stylistic habits. You’ll likely notice some rules that contradict your current habits. Try applying these new rules incrementally. Once they become second nature, revisit the guide and tackle the next set of improvements. This step-by-step approach helps raise code quality without getting bogged down in micro-details that distract from the bigger project goals.
+
+## Sharing: A Path to Better Code Quality
+
+### Open Source as a Quality Driver
+
+By sharing your code on open-source platforms (see [Git chapter](/chapters/git.qmd)), you may receive suggestions or even contributions from other users. But the benefits of openness go further. Public code tends to be better written, better documented, and more thoughtfully structured—often because authors want to avoid public embarrassment! Even without external feedback, sharing code encourages higher quality.
+
+### Code Review
+
+Code review borrows from academic _peer review_ to improve the quality of `Python` code. In a review, one or more developers read and evaluate code written by someone else to identify errors and suggest improvements.
+
+Benefits include:
+
+- catching bugs before they escalate
+- ensuring consistent style and structure
+- enforcing best practices
+- identifying code that could be refactored for clarity or maintainability
+
+It’s also a great way to share knowledge: senior developers can help junior ones grow by reviewing their work.
+
+Platforms like `GitHub` {{< fa brands github >}} and `GitLab` {{< fa brands gitlab >}} offer convenient code review features: inline discussions, suggestions, etc.
+
+:::

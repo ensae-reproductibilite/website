@@ -1,0 +1,126 @@
+::: {.content-visible when-profile="fr"}
+
+# Les principaux parti-pris de ce cours
+
+## Le code est un outil de communication
+
+La première bonne pratique à adopter est de considérer le code comme un __outil de communication__, et non simplement de manière fonctionnelle. Un code ne sert pas seulement à réaliser une tâche donnée, il a vocation à être diffusé, réutilisé, maintenu, que ce soit dans le contexte d'une équipe dans une organisation ou bien en *open-source*.
+
+Pour favoriser cette communication du code, des conventions ont été developpées en matière de qualité du code et de structuration des projets, qu'il est utile d'appliquer dans ses projets. Nous présentons ces conventions dans les chapitres [Qualité du Code](/chapters/code-quality.html) et [Architecture des Projets](/chapters/projects-architecture.html).
+
+Il est pour les mêmes raisons indispensable d'appliquer les principes du __contrôle de version__, qui permettent une documentation en continu des projets, ce qui accroît fortement leur réutilisabilité et leur maintenabilité dans le temps. Nous proposons donc un chapitre de rappel sur l'utilisation du logiciel `Git` dans le chapitre [Versionner son code et travailler collaborativement avec Git](/chapters/git.html).
+
+## Travailler de manière collaborative
+
+Le *data scientist*, quel que soit son contexte de travail, est amené à travailler dans le cadre de projets en équipe. Cela implique de définir une organisation du travail ainsi que d'utiliser des outils permettant de collaborer sur un projet de manière efficace et sécurisée.
+
+Nous présentons une manière moderne de travailler collaborativement avec `Git` et `GitHub` dans le chapitre de rappel [Versionner son code et travailler collaborativement avec Git](/chapters/git.html). Les autres chapitres prendront pour acquis cette approche collaborative et la
+raffineront à travers l'approche `DevOps`[^devops].
+
+[^devops]: Démarche consistant à automatiser et intégrer la conception
+    et la production des livrables avant la phase de mise en production.
+    Comme les bonnes pratiques, cette approche issue à l'origine du
+    monde du développement logiciel est devenue incontournable
+    pour les _data scientists_.
+
+## Maximiser la reproductibilité
+
+Le troisième pilier des bonnes pratiques présentées dans ce cours est la **reproductibilité**.
+
+Un projet est dit reproductible lorsque, **avec le même code et les mêmes données, il est possible de reproduire les résultats obtenus**. Notons bien que le problème de la reproductibilité est différent de celui de la **réplicabilité**. La réplicabilité est un concept *scientifique*, qui signifie qu'un même procédé expérimental donne des résultats analogues sur des jeux de données différents. La reproductibilité est un concept *technique* : elle ne signifie pas que le protocole expérimental est scientifiquement correct, mais qu'il a été spécifié et diffusé d'une manière qui permet à tous de reproduire les résultats obtenus.
+
+**La notion de reproductibilité est le fil rouge de ce cours** : toutes les notions vues dans les différents chapitres y contribuent. Le fait de produire du code et des projets qui respectent les conventions communautaires, comme le fait d'utiliser le contrôle de version, contribuent à rendre le code plus lisible et documenté, et donc reproductible.
+
+Il faut néanmoins aller plus loin pour atteindre une véritable reproductibilité, et réfléchir à la notion d'**environnement d'exécution**. Un code n'est pas un objet autonome, il est toujours exécuté sur un environnement (ordinateur personnel, serveur, etc.), et ces environnements peuvent être très différents (système d'exploitation, librairies installées, contraintes de sécurité, etc.). C'est pourquoi il faut réfléchir à la **portabilité de son code, i.e. sa capacité à s'exécuter de manière attendue sur différents environnements**, ce qui sera l'objet d'un [chapitre](/chapters/portability.html) à part entière.
+
+## Faciliter la mise en production
+
+Pour qu'un projet de *data science* crée *in fine* de la valeur, il faut qu'il soit déployé sous une forme valorisable de sorte à toucher son public. Cela implique deux choses :
+
+- trouver le __format de diffusion adapté__, i.e. qui valorise au mieux les résultas obtenus auprès des utilisateurs potentiels ;
+- faire transitionner le projet de l'environnement dans lequel il a été développé vers une __infrastructure de production__, i.e. permettant un déploiement robuste de l'*output* du projet afin que celui-ci soit disponible à la demande.
+
+Dans le chapitre [Déployer et valoriser son projet de data science](/chapters/deployment.html),
+nous proposons des pistes permettant de répondre à ces deux besoins.
+Nous présentons un certain nombre de formats standards (API, application, rapport automatisé, site internet) qui permettent à un projet de *data science* d'être valorisé, ainsi que les outils modernes qui permettent de les produire.
+
+Nous détaillons ensuite les concepts essentiels du déploiement sur une infrastructure de production, et illustrons ces derniers par des exemples de déploiements dans un environnement *cloud* moderne.
+
+C'est en quelque sorte la récompense de l'application des bonnes pratiques : dès lors que l'on s'est donné la peine de produire un code et un projet appliquant des standards de qualité, que l'on a bien versionné son code, et que l'on a pris des mesures pour le rendre portable, le déploiement du projet dans un environnement de production s'en trouve largement facilité.
+
+## Une ouverture à l'industrialisation de la production
+
+En simplifiant la structure d'un projet, on facilite sa production en série.
+Dans le domaine de la _data science_, cela prendra par exemple la forme
+d'une industrialisation des entraînements d'un modèle permettant de choisir
+le "meilleur" dans un ensemble beaucoup plus complet de modèles que ne
+le permettrait une approche artisanale.
+
+Néanmoins, tout modèle apprend du passé et avoir un bon modèle aujourd'hui
+n'assure en rien que ce dernier sera pertinent demain, lorsqu'on
+aura réellement besoin de celui-ci. Pour intégrer cette dimension mouvante
+inhérante à tout projet de _data science_, nous aurons l'occasion
+de présenter quelques principes du _MLOps_.
+Ce terme, qui est certes un _buzz-word_ mais qui rassemble un ensemble  pertinent
+de pratiques pour les _data scientists_, sera présenté
+dans le [chapitre consacré](/chapters/mlops.qmd).
+
+## Chapitres supplémentaires
+
+Plusieurs outils présentés tout au long de ce cours, tels que les logiciels `Git` et `Docker`, impliquent l'utilisation du terminal ainsi que des connaissances de base du fonctionnement d'un système `Linux`. Dans le chapitre [Démystifier le terminal Linux pour gagner en autonomie](/chapters/linux101.html), nous présentons les connaissances essentielles des systèmes `Linux` qu'un *data scientist* doit posséder pour pouvoir être autonome dans ses déploiements et dans l'application des bonnes pratiques de développement.
+
+:::
+::: {.content-visible when-profile="en"}
+
+# The Course’s Core Principles
+
+## Code as a Communication Tool
+
+The first best practice to adopt is to view code as a __communication tool__, not just a functional one. Code doesn’t exist solely to perform a task—it’s meant to be shared, reused, and maintained, whether in a team or an *open-source* context.
+
+To support this communication, conventions have been developed regarding code quality and project structure. These are covered in the chapters [Code Quality](/chapters/code-quality.html) and [Project Architecture](/chapters/projects-architecture.html).
+
+For the same reasons, applying __version control__ principles is essential. These provide continuous documentation of the project, which greatly improves its reusability and maintainability. We revisit the use of `Git` in the chapter [Version Control and Collaborative Work with Git](/chapters/git.html).
+
+## Working Collaboratively
+
+Regardless of context, *data scientists* typically work in team-based projects. This requires defining a work organization and using tools that enable secure, efficient collaboration.
+
+We present a modern way to collaborate using `Git` and `GitHub` in the reminder chapter [Version Control and Collaborative Work with Git](/chapters/git.html). Later chapters will build on this collaborative approach and refine it using the `DevOps` methodology[^devops].
+
+[^devops]: A methodology focused on automating and integrating design and delivery workflows prior to deployment. Like best practices, this approach originated in software development but has become essential for *data scientists*.
+
+## Maximizing Reproducibility
+
+The third pillar of best practices in this course is **reproducibility**.
+
+A project is reproducible when **the same code and data can be used to reproduce the same results**. It’s important to distinguish this from **replicability**. Replicability is a *scientific* concept—meaning the same experimental process yields similar results on different datasets. Reproducibility is a *technical* concept: it doesn’t guarantee scientific validity but ensures that the protocol is specified and shared in a way that allows others to reproduce the results.
+
+**Reproducibility is the guiding theme of this course**: all concepts covered in the chapters contribute to it. Producing code and projects that follow community conventions and using version control contribute to making code more readable and documented—and therefore reproducible.
+
+However, achieving full reproducibility requires going further—by considering the concept of an **execution environment**. Code doesn’t run in a vacuum; it runs in an environment (e.g., personal computer, server), and those environments can differ greatly (OS, installed libraries, security policies, etc.). That’s why we must consider **code portability—i.e., its ability to run as expected across different environments**, which we explore in the dedicated [chapter](/chapters/portability.html).
+
+## Facilitating Production Deployment
+
+For a *data science* project to ultimately create value, it must be deployed in a usable form that reaches its audience. This implies two things:
+
+- Choosing the right __distribution format__, i.e., one that best highlights the results to the intended users;
+- Transitioning the project from its development environment to a __production infrastructure__, i.e., one that allows the project output to be robustly deployed and accessible on demand.
+
+In the chapter [Deploy and Showcase Your Data Science Project](/chapters/deployment.html), we propose ways to address both needs. We present common output formats (API, app, automated report, website) that help make *data science* projects accessible, and the modern tools used to produce them.
+
+We then explain the essential concepts of production infrastructure and demonstrate them with examples of deployments in a modern *cloud* environment.
+
+This is, in a way, the reward for following best practices: once you’ve put in the effort to write quality code, properly version it, and make it portable, deploying your project becomes significantly easier.
+
+## Opening the Door to Industrialization
+
+By simplifying a project’s structure, you make it easier to scale. In *data science*, this may take the form of industrializing model training to select the “best” model from a much broader set—far beyond what an ad hoc approach would allow.
+
+However, every model learns from past data, and a model that works today may no longer be valid tomorrow. To account for this ever-changing reality, we will explore key principles of _MLOps_. Though the term is a buzzword, it represents a meaningful set of practices for *data scientists*, covered in the [dedicated chapter](/chapters/mlops.qmd).
+
+## Supplementary Chapters
+
+Several tools presented in this course, such as `Git` and `Docker`, require terminal usage and a basic understanding of how `Linux` systems work. In the chapter [Demystifying the Linux Terminal for Autonomy](/chapters/linux101.html), we cover the essential Linux knowledge a *data scientist* needs to deploy projects independently and apply development best practices.
+
+:::

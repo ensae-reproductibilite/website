@@ -1,0 +1,152 @@
+::: {.content-visible when-profile="fr"}
+
+# Introduction
+
+![Image empruntée à la page "Les joies du code"](/berk.png){fig-align="center"}
+
+## L'enjeu d'un code lisible et maintenable
+
+> _"The code is read much more often than it is written."_
+>
+> Guido Van Rossum[^1]
+
+[^1]: Guido Van Rossum est le créateur de {{< fa brands python >}}, c'est donc quelqu'un qu'il est pertinent d'écouter.
+
+Lorsqu'on s'initie à la pratique de la *data science*, il est assez naturel de voir le code d'une manière très fonctionnelle : je veux réaliser une tâche donnée — par exemple un algorithme de classification — et je vais donc assembler dans un *notebook* des bouts de code, souvent trouvés sur internet, jusqu'à obtenir un projet qui réalise la tâche voulue. La structure du projet importe assez peu, tant qu'elle permet d'importer correctement les données nécessaires à la tâche en question.
+
+Si cette approche flexible et minimaliste fonctionne très bien lors de la phase d'apprentissage, il est malgré tout indispensable de s'en détacher progressivement à mesure que l'on progresse et que l'on est amené à réaliser des projets plus professionnels ou bien à intégrer des projets collaboratifs. Autrement, on risque de __produire un code complexe à reprendre et à faire évoluer, ce qui pourrait conduire inévitablement à son abandon__.
+
+En particulier, il est important de proposer, parmi les multiples manières de résoudre un problème informatique, une solution qui soit intelligible par d'autres personnes parlant le même langage. Le code est en effet lu bien plus souvent qu'il n'est écrit, c'est donc avant tout un __outil de communication__. De même, la maintenance d'un code demande généralement beaucoup plus de moyens que sa phase de développement initial. Il est donc important de penser en amont la qualité de son code et la structure de son projet de sorte à le rendre maintenable dans le temps.
+
+Afin de faciliter la communication et réduire la douleur d'avoir à faire évoluer un code obscur, des tentatives plus ou moins institutionnalisées de définir des conventions ont émergé. Ces conventions dépendent naturellement du langage utilisé, mais les principes sous-jacents s'appliquent de manière universelle à tout projet basé sur du code.
+
+## De l'importance de suivre les conventions
+
+`Python` est un langage très __lisible__.
+Avec un peu d’effort sur le nom des objets,
+sur la gestion des dépendances et sur la structure du programme,
+on peut très bien comprendre un script sans avoir besoin de l’exécuter.
+C'est l'une des principales forces du langage `Python` qui permet ainsi
+une acquisition rapide des bases et facilite l'appropriation d'un script.
+
+La communauté `Python` a abouti à un certain nombre de normes,
+dites `PEP` (_Python Enhancement Proposal_),
+qui constituent un standard dans l’écosystème Python.
+Les deux normes les plus connues sont :
+
+- la __norme [`PEP8`](https://peps.python.org/pep-0008/)__ qui définit un certain nombre de conventions
+relatives au code ;
+- la __norme [`PEP257`](https://peps.python.org/pep-0257/)__ consacrée à la documentation (_docstrings_).
+
+Ces conventions vont au-delà de la syntaxe. Un certain nombre de standards
+d'organisation d'un projet ont émergé, qui seront abordées
+dans le [prochain chapitre](/chapters/projects-architecture.html).
+
+:::: {.callout-note collapse="true"}
+## Comparaison avec {{< fa brands r-project >}}
+
+Dans l'univers {{< fa brands r-project >}}, la formalisation
+a été moins organisée. Ce langage est plus permissif que `Python`
+sur certains aspects[^2]. Néanmoins, des standards ont émergé récemment, à travers
+un certain nombre de _style guides_ dont les plus connus
+sont le
+[_tidyverse style guide_](https://style.tidyverse.org/googl) et le
+[_google style guide_](https://google.github.io/styleguide/Rguide.html), [MLR style guide](https://github.com/mlr-org/mlr3/wiki/Style-Guide#theoretical-style-guide)...
+
+Pour aller plus loin sur {{< fa brands r-project >}}:
+
+* La formation Insee [aux bonnes pratiques avec `Git` et {{< fa brands r-project >}}](https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/) dont le parcours est très proche de celui de ce cours ;
+* Des éléments complémentaires dans la [documentation collaborative `utilitR`](https://www.book.utilitr.org/02_bonnes_pratiques/01-qualite-code) ;
+* [Ce post](https://blog.r-hub.io/2022/03/21/code-style/) qui pointe vers
+un certain nombre de ressources sur le sujet.
+::::
+
+[^2]: Par exemple, en {{< fa brands r-project >}}, il est possible d'utiliser `<-` ou `=`
+pour l'assignation,
+on ne recontre pas d'erreur en cas de mauvaise indentation...
+
+Ces conventions sont arbitraires, dans une certaine mesure. Il est tout à fait
+possible de trouver certaines conventions moins esthétiques que d'autres.
+
+Ces conventions ne sont pas non plus immuables : les langages et leurs usages
+évoluent, ce qui nécessite de mettre à jour les conventions. Cependant,
+adopter dans la mesure du possible certains des réflexes préconisés par ces
+conventions devrait améliorer la capacité à être compris par la communauté,
+augmenter les chances de
+bénéficier d'apport de celle-ci pour adapter le code, mais aussi réduire la
+difficulté à faire évoluer un code.
+
+Il existe beaucoup de philosophies différentes sur le style de codage et,
+en fait, le plus important est
+la __cohérence__ :
+si on choisit une convention, par exemple _snake case_ (`toto_a_la_plage`) plutôt que
+_camel case_ (`totoALaPlage`), le mieux est de s'y tenir.
+
+:::
+::: {.content-visible when-profile="en"}
+
+# Introduction
+
+![Image borrowed from the "Les joies du code" page](/berk.png){fig-align="center"}
+
+## Why Readable and Maintainable Code Matters
+
+> _"The code is read much more often than it is written."_
+>
+> Guido Van Rossum[^1]
+
+[^1]: Guido Van Rossum is the creator of {{< fa brands python >}}, which makes him a voice worth listening to.
+
+When getting started with *data science*, it’s natural to think of code in a purely functional way: “I want to complete a given task—say, run a classification algorithm—so I’ll piece together some code, often found online, in a notebook until the task is done.” The project’s structure doesn’t matter much, as long as it loads the necessary data.
+
+While this minimalist and flexible mindset works well during the learning phase, it’s essential to move past it as you progress—especially if you’re building professional or collaborative projects. Otherwise, you’ll likely end up __with code that’s hard to maintain or improve—and that will eventually be abandoned__.
+
+It’s important to choose, among many ways to solve a problem, a solution that can be understood by others who speak the same programming language. Code is read far more than it’s written—it’s primarily a __communication tool__. Moreover, maintaining code typically takes more effort than writing it in the first place. That’s why thinking ahead about code quality and project structure is critical to long-term maintainability.
+
+To improve communication and reduce the pain of working with unclear code, developers have attempted—sometimes informally, sometimes through institutions—to define conventions. These depend on the language but are based on principles that apply universally to code-based projects.
+
+## Why Follow Conventions?
+
+`Python` is a very __readable__ language.
+With a bit of care—naming things well, managing dependencies,
+and structuring code properly—you can often understand a script
+without running it. This is one of Python’s biggest strengths,
+enabling fast learning and easy understanding of other people's code.
+
+The Python community has developed a set of widely accepted standards,
+called `PEPs` (Python Enhancement Proposals),
+that serve as the foundation of the ecosystem.
+The two most well-known are:
+
+- __[`PEP8`](https://peps.python.org/pep-0008/)__, which defines code style conventions;
+- __[`PEP257`](https://peps.python.org/pep-0257/)__, which outlines conventions for documentation (_docstrings_).
+
+These conventions go beyond syntax. Several standards for project organization have also emerged, which we’ll explore in the [next chapter](/chapters/projects-architecture.html).
+
+:::: {.callout-note collapse="true"}
+## Comparison with {{< fa brands r-project >}}
+
+In the {{< fa brands r-project >}} ecosystem, formalization has been less structured. The language is more permissive than `Python` in some ways[^2]. Still, some style standards have emerged, including:
+
+- the [_tidyverse style guide_](https://style.tidyverse.org/googl),
+- the [_Google R style guide_](https://google.github.io/styleguide/Rguide.html),
+- and the [MLR style guide](https://github.com/mlr-org/mlr3/wiki/Style-Guide#theoretical-style-guide)...
+
+For further learning in {{< fa brands r-project >}}:
+
+* The Insee training on [best practices with `Git` and {{< fa brands r-project >}}](https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/), which aligns closely with this course;
+* Additional guidance in the [collaborative `utilitR` documentation](https://www.book.utilitr.org/02_bonnes_pratiques/01-qualite-code);
+* [This blog post](https://blog.r-hub.io/2022/03/21/code-style/) that links to various resources on the subject.
+::::
+
+[^2]: For example, in {{< fa brands r-project >}}, you can use `<-` or `=` for assignment, and the language won’t complain about poor indentation...
+
+These conventions are somewhat arbitrary—it’s natural to prefer some styles over others.
+
+They’re also not set in stone. Languages and practices evolve, which means conventions must adapt. Still, adopting the recommended habits—when possible—will make your code easier for the community to understand, increase your chances of getting help, and make future maintenance easier.
+
+There are many coding style philosophies, but the most important principle is __consistency__:
+If you choose a convention—say, _snake_case_ (`my_function_name`) over _camelCase_ (`myFunctionName`)—then stick with it.
+
+:::
+
