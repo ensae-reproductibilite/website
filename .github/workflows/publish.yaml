@@ -20,7 +20,13 @@ jobs:
           python-version: '3.10'
           cache: 'pip'
       - run: pip install -r requirements.txt
-      - name: Publish to GitHub Pages (and render)
-        uses: quarto-dev/quarto-actions/publish@v2
-        with:
-          target: gh-pages
+      - name: "Build website in multiple languages"
+        run: |
+          quarto render --profile fr --to html
+          quarto render --profile en --to html
+      - name: Publish to Pages
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config --global user.email quarto-github-actions-publish@example.com
+          git config --global user.name "Quarto GHA Workflow Runner"
+          quarto publish gh-pages . --no-render --no-browser
