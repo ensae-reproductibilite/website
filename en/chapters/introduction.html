@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Presentation of the main concepts developed in this course, the rationale behind best practices and the stakes of putting a project in to productio">
+
+<title>Introduction – Putting into production course</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-a98ec624fb63d9b712fc3a6f62e2b305.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>
+div.callout-application.callout {
+  border-left-color: #9c5bd9;
+}
+div.callout-application.callout-style-default > .callout-header {
+  background-color: rgba(156, 91, 217, 0.13);
+}
+div.callout-application .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-application.callout-style-default .callout-icon::before, div.callout-application.callout-titled .callout-icon::before {
+  content: '🧠';
+  background-image: none;
+}
+</style>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Putting into production course</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://ensae-reproductibilite.github.io/"> 
+<span class="menu-text">Putting into production</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../chapters/introduction.html" aria-current="page"> 
+<span class="menu-text">Introduction</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-fundamentals" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Fundamentals</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-fundamentals">    
+        <li>
+    <a class="dropdown-item" href="../chapters/linux101.html">
+ <span class="dropdown-text">Linux 101</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/git.html">
+ <span class="dropdown-text">Git</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-good-development-practices" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Good development practices</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-good-development-practices">    
+        <li>
+    <a class="dropdown-item" href="../chapters/code-quality.html">
+ <span class="dropdown-text">Code quality</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/projects-architecture.html">
+ <span class="dropdown-text">Projects structure</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/big-data.html">
+ <span class="dropdown-text">Big data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/portability.html">
+ <span class="dropdown-text">Portability</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-putting-into-production" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Putting into production</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-putting-into-production">    
+        <li>
+    <a class="dropdown-item" href="../chapters/yaml101.html">
+ <span class="dropdown-text">YAML 101</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/deployment.html">
+ <span class="dropdown-text">Deployment</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/mlops.html">
+ <span class="dropdown-text">MLOps</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/application.html"> 
+<span class="menu-text">Application</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-projects" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Projects</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-projects">    
+        <li>
+    <a class="dropdown-item" href="../chapters/evaluation.html">
+ <span class="dropdown-text">Evaluations</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/galerie.html">
+ <span class="dropdown-text">Past student projects</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-github" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-bi-github">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/website">
+ <span class="dropdown-text">Website</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/slides">
+ <span class="dropdown-text">Slides</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/application">
+ <span class="dropdown-text">Red thread application</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#development-best-practices" id="toc-development-best-practices" class="nav-link" data-scroll-target="#development-best-practices">Development Best Practices</a>
+  <ul class="collapse">
+  <li><a href="#origin" id="toc-origin" class="nav-link" data-scroll-target="#origin">Origin</a></li>
+  <li><a href="#why-care-about-best-practices" id="toc-why-care-about-best-practices" class="nav-link" data-scroll-target="#why-care-about-best-practices">Why Care About Best Practices?</a></li>
+  <li><a href="#a-continuum-of-best-practices" id="toc-a-continuum-of-best-practices" class="nav-link" data-scroll-target="#a-continuum-of-best-practices">A Continuum of Best Practices</a></li>
+  </ul></li>
+  <li><a href="#the-courses-core-principles" id="toc-the-courses-core-principles" class="nav-link" data-scroll-target="#the-courses-core-principles">The Course’s Core Principles</a>
+  <ul class="collapse">
+  <li><a href="#code-as-a-communication-tool" id="toc-code-as-a-communication-tool" class="nav-link" data-scroll-target="#code-as-a-communication-tool">Code as a Communication Tool</a></li>
+  <li><a href="#working-collaboratively" id="toc-working-collaboratively" class="nav-link" data-scroll-target="#working-collaboratively">Working Collaboratively</a></li>
+  <li><a href="#maximizing-reproducibility" id="toc-maximizing-reproducibility" class="nav-link" data-scroll-target="#maximizing-reproducibility">Maximizing Reproducibility</a></li>
+  <li><a href="#facilitating-production-deployment" id="toc-facilitating-production-deployment" class="nav-link" data-scroll-target="#facilitating-production-deployment">Facilitating Production Deployment</a></li>
+  <li><a href="#opening-the-door-to-industrialization" id="toc-opening-the-door-to-industrialization" class="nav-link" data-scroll-target="#opening-the-door-to-industrialization">Opening the Door to Industrialization</a></li>
+  <li><a href="#supplementary-chapters" id="toc-supplementary-chapters" class="nav-link" data-scroll-target="#supplementary-chapters">Supplementary Chapters</a></li>
+  </ul></li>
+  <li><a href="#practical-information" id="toc-practical-information" class="nav-link" data-scroll-target="#practical-information">Practical Information</a>
+  <ul class="collapse">
+  <li><a href="#teaching-approach" id="toc-teaching-approach" class="nav-link" data-scroll-target="#teaching-approach">Teaching Approach</a></li>
+  <li><a href="#programming-languages" id="toc-programming-languages" class="nav-link" data-scroll-target="#programming-languages">Programming Languages</a></li>
+  <li><a href="#execution-environment" id="toc-execution-environment" class="nav-link" data-scroll-target="#execution-environment">Execution Environment</a></li>
+  <li><a href="#additional-resources" id="toc-additional-resources" class="nav-link" data-scroll-target="#additional-resources">Additional Resources</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<script>
+  const langButton = document.createElement("div");
+  langButton.className = "lang-switch-button";
+  langButton.style.textAlign = "right";
+  langButton.style.marginTop = "1rem";
+  langButton.style.marginBottom = "1rem";
+
+  const currentPath = window.location.pathname;
+  const isEnglish = currentPath.startsWith("/en/");
+  let targetHref, label, svg;
+
+  if (isEnglish) {
+    targetHref = currentPath.replace(/^\/en\//, "/");
+    label = "Passer à la version française";
+    svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" style="vertical-align: middle; margin-left: 0.5em; display: inline-block;"><mask id="circleFlagsLangFr"><circle cx="256" cy="256" r="256" fill="#fff"/></mask><g mask="url(#circleFlagsLangFr)"><path fill="#0055A4" d="M0 0h512v512H0z"/><path fill="#fff" d="M170.7 0h170.6v512H170.7z"/><path fill="#EF4135" d="M341.3 0H512v512H341.3z"/></g></svg>`;
+  } else {
+    targetHref = "/en" + currentPath;
+    label = "Switch to English version";
+    svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" style="vertical-align: middle; margin-left: 0.5em; display: inline-block;"><mask id="circleFlagsLangEn"><circle cx="256" cy="256" r="256" fill="#fff"/></mask><g mask="url(#circleFlagsLangEn)"><path fill="#eee" d="M256 0L0 256v64l32 32l-32 32v128l22-8l23 8h23l54-32l54 32h32l48-32l48 32h32l54-32l54 32h68l-8-22l8-23v-23l-32-54l32-54v-32l-32-48l32-48v-32l-32-54l32-54V0z"/><path fill="#d80027" d="M224 64v64h160l64-64zm0 128l32 64l-48 48v208h96V304h208v-96H304l16-16zM0 320v64h128l-64 64H0v64h45l131-131v-45l16-16zm336 16l176 176v-45L381 336Z"/><path fill="#0052b4" d="M0 0v256h256V0zm512 68L404 176h108zM404 336l108 108V336zm-228 68L68 512h108zm160 0v108h108z"/><path fill="#eee" d="m187 243l57-41h-70l57 41l-22-67zm-81 0l57-41H93l57 41l-22-67zm-81 0l57-41H12l57 41l-22-67zm162-81l57-41h-70l57 41l-22-67zm-81 0l57-41H93l57 41l-22-67zm-81 0l57-41H12l57 41l-22-67Zm162-82l57-41h-70l57 41l-22-67zm-81 0l57-41H93l57 41l-22-67Zm-81 0l57-41H12l57 41l-22-67Z"/></g></svg>`;
+  }
+
+  langButton.innerHTML = `
+    <a href="${targetHref}" class="button-cta">
+      <button class="btn"><i class="fa fa-language"></i> ${label} ${svg}</button>
+    </a>
+  `;
+
+  const main = document.querySelector("main#quarto-document-content");
+  if (main) main.insertAdjacentElement("afterbegin", langButton);
+</script>
+    
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Introduction</h1>
+</div>
+
+<div>
+  <div class="description">
+    <p>Presentation of the main concepts developed in this course, the rationale behind best practices and the stakes of putting a project in to productio</p>
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<details>
+<summary>
+See slides (in French) or <a href="https://ensae-reproductibilite.github.io/slides/#/title-slide">click here</a>
+</summary>
+<div id="cb1" class="sourceCode">
+<pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+<iframe class="sourceCode yaml code-with-copy" src="https://ensae-reproductibilite.github.io/slides/#/title-slide">
+</iframe>
+</div>
+</details>
+<section id="overview" class="level1">
+<h1>Overview</h1>
+<p>This course is intended for <em>data science</em> practitioners, understood here in a broad sense as the combination of techniques from mathematics, statistics, and computer science to generate useful insights from data. Since data science is not just a scientific discipline but aims to provide tools to meet operational objectives, the notion of production deployment is central for <em>data scientists</em>, whether in the private or public sector.</p>
+<p>This course starts from the observation that academic training in <em>data science</em> often takes a primarily technical approach, focusing on a deep understanding of models, but rarely addresses the practical problems that make up the daily work of a <em>data scientist</em> in a professional setting. Yet these issues significantly shape the scientific approach that can be implemented in practice.</p>
+<p>This course aims to fill that gap by offering potential solutions to various questions <em>data scientists</em> may face when transitioning from academic training to real-world projects:</p>
+<ul>
+<li>How to <strong>collaborate effectively</strong> on a project?</li>
+<li>How to <strong>share code</strong> and ensure it will <strong>run without errors</strong> on a different execution environment?</li>
+<li>How to transition from a development environment<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> to a <strong>production environment</strong><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>?</li>
+<li>How to <strong>deploy</strong> a <em>data science</em> model and make it accessible to users to create value?</li>
+<li>How to <strong>automate</strong> different steps of the project to <strong>ease maintenance</strong>?</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Additional Resource: MIT’s <em>Missing Semester</em>
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Many practitioners have realized the lack of certain skills in statistics or computer science curricula. Some very useful resources have been compiled in the <a href="https://missing.csail.mit.edu/">MIT <em>Missing Semester</em></a>, part of which overlaps with topics covered in this course.</p>
+</div>
+</div>
+<p>To address these questions, the course introduces <strong>a set of best practices and tools from various computer science domains</strong>, such as software development, infrastructure, server administration, and application deployment. The goal is not to become an expert in each of these fields, as they are professions in their own right—developers, <em>data architects</em>, <em>sysadmins</em>, and <em>data engineers</em>.</p>
+<p>However, as <em>data science</em> projects and the teams supporting them grow larger, <em>data scientists</em> increasingly find themselves at the intersection of these roles. They must communicate effectively across domains to see projects through. <strong>This course is designed to equip you not just with technical knowledge, but with the vocabulary and concepts necessary to act as a bridge between business and technical teams involved in a <em>data science</em> project.</strong></p>
+<p>A <em>data science</em> project goes through a <strong>full lifecycle</strong>, which is often overlooked in data science education or specialized manuals. The most complex methodological or technical solution is rarely the best one. It tends to be costly to develop and even harder to implement. It may even become obsolete before completion: algorithms learn from the past, and it is challenging in the real world to maintain equivalent performance as new data accumulates.</p>
+<p>The development phase is just one moment in the life of a <em>data science</em> project. Focusing solely on it often leads to low external validity.</p>
+<p>This course introduces a set of techniques and principles intended to streamline the process of production deployment<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> for a <em>data science</em> project. Production deployment is understood, abstractly, as the act of <strong>making an application live in the user’s environment</strong>. While this definition may seem vague, it helps remind us that technical solutions are above all a response to user needs—needs which vary in expertise level and data access.</p>
+<p>Speaking of “application” might seem restrictive, but as we will see, this term can be interpreted broadly to fit a wide range of use cases.</p>
+<p>The main goal of the course is to show how a pragmatic approach, along with the right tools and principles, allows projects to move beyond experimental tinkering and toward production-grade solutions.</p>
+</section>
+<section id="development-best-practices" class="level1">
+<h1>Development Best Practices</h1>
+<section id="origin" class="level2">
+<h2 class="anchored" data-anchor-id="origin">Origin</h2>
+<p>The notion of “best practices” as used in this course originates from the software development community. It emerged in response to several observations:</p>
+<ul>
+<li><em>“Code is read much more often than it is written”</em> (Guido Van Rossum);</li>
+<li>Maintaining code often requires (much) more effort than writing it initially;</li>
+<li>The person maintaining the codebase is likely not the one who wrote it.</li>
+</ul>
+<p>In light of these realities, the developer community has conventionally agreed on an <strong>informal set of rules</strong> recognized as producing <strong>more reliable, scalable, and maintainable software over time</strong>. Like language conventions, some may seem arbitrary—but they support a critical goal: enabling code to be shared and communicated effectively. This may seem secondary at first, but it’s a key factor in the success of <em>open source</em> languages, which thrive on shared experience and collaboration.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+The <a href="https://12factor.net/"><code>12 Factor App</code></a>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Recently, as software has evolved toward cloud-based web applications, many of these best practices were formalized in a manifesto known as the <a href="https://12factor.net/"><code>12 Factor App</code></a>. The rise of the <em>cloud</em>—i.e., standardized infrastructures external to traditional in-house data systems—makes adopting good practices more crucial than ever.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="why-care-about-best-practices" class="level2">
+<h2 class="anchored" data-anchor-id="why-care-about-best-practices">Why Care About Best Practices?</h2>
+<blockquote class="blockquote">
+<p>Why should this matter to a <em>data scientist</em>, whose job is to derive insights from data—not build applications?</p>
+</blockquote>
+<p>Due to the rapid growth of <em>data science</em> and the increasing size of typical projects, the <em>data scientist</em>’s work is becoming more similar in some ways to that of a developer:</p>
+<ul>
+<li><em>Data science</em> projects involve <strong>intensive coding</strong>;</li>
+<li>Collaboration is required on <strong>large-scale projects</strong>;</li>
+<li>Massive datasets require working on <strong>technically complex big data infrastructures</strong>;</li>
+<li>The <em>data scientist</em> must <strong>collaborate with technical roles</strong> to deploy models and make them accessible to users.</li>
+</ul>
+<p>Thus, it makes sense for modern <em>data scientists</em> to take interest in the best practices adopted by developers. Naturally, these need to be tailored to data-centered projects. The upside is significant: projects that adopt best practices are much cheaper to evolve—making them more competitive in the ever-changing data science ecosystem, where tools, data, and user expectations constantly shift.</p>
+</section>
+<section id="a-continuum-of-best-practices" class="level2">
+<h2 class="anchored" data-anchor-id="a-continuum-of-best-practices">A Continuum of Best Practices</h2>
+<p>Best practices should not be viewed in a binary way: it’s not that some projects follow them and others don’t. Best practices come with a <strong>cost</strong>, which should not be overlooked—even though they prevent future costs, especially in maintenance. It’s better to <strong>view best practices as a spectrum</strong>, and position your project on it based on cost-benefit analysis, particularly in terms of improving reproducibility.</p>
+<p>The appropriate threshold depends on trade-offs specific to your project:</p>
+<ul>
+<li><strong>Ambitions</strong>: Will the project grow or evolve? Is it meant to become collaborative—within a team or as open source? Are the outputs intended for public release?</li>
+<li><strong>Resources</strong>: What human resources are available? For open-source work, is there a potential contributor community?</li>
+<li><strong>Constraints</strong>: Are there tight deadlines? Specific quality requirements? Is deployment expected? Are there major security concerns?</li>
+<li><strong>Target audience</strong>: Who will consume the project’s data products? What’s their technical level, and how much time will they spend engaging with your work?</li>
+</ul>
+<p>We are not suggesting that every <em>data science</em> project must follow all the best practices covered in this course. That said, we strongly believe every <em>data scientist</em> should consider these questions and continuously improve their practices.</p>
+<p>In particular, we believe it’s possible to define a core set—i.e., a <strong>minimal set of best practices</strong> that provide more value than they cost to implement. Here’s our suggestion for such a baseline:</p>
+<ul>
+<li>Use dedicated tools to check code quality (see <a href="../chapters/code-quality.html">Code Quality</a>);</li>
+<li>Use a standardized project structure with ready-made templates (see <a href="../chapters/projects-architecture.html">Project Architecture</a>);</li>
+<li>Use <code>Git</code> to version your code, whether or not you’re working with others (see <a href="../chapters/git.html">Version Control and Collaboration with Git</a>);</li>
+<li>Manage project dependencies with virtual environments (see <a href="../chapters/portability.html">Portability</a>).</li>
+</ul>
+<p>Beyond this minimal baseline, decisions should weigh costs and benefits. But adopting this foundational level of reproducibility will make further progress much easier as your project grows.</p>
+<p>Let’s now look at the core principles promoted by this course and how the content is logically structured.</p>
+</section>
+</section>
+<section id="the-courses-core-principles" class="level1">
+<h1>The Course’s Core Principles</h1>
+<section id="code-as-a-communication-tool" class="level2">
+<h2 class="anchored" data-anchor-id="code-as-a-communication-tool">Code as a Communication Tool</h2>
+<p>The first best practice to adopt is to view code as a <strong>communication tool</strong>, not just a functional one. Code doesn’t exist solely to perform a task—it’s meant to be shared, reused, and maintained, whether in a team or an <em>open-source</em> context.</p>
+<p>To support this communication, conventions have been developed regarding code quality and project structure. These are covered in the chapters <a href="../chapters/code-quality.html">Code Quality</a> and <a href="../chapters/projects-architecture.html">Project Architecture</a>.</p>
+<p>For the same reasons, applying <strong>version control</strong> principles is essential. These provide continuous documentation of the project, which greatly improves its reusability and maintainability. We revisit the use of <code>Git</code> in the chapter <a href="../chapters/git.html">Version Control and Collaborative Work with Git</a>.</p>
+</section>
+<section id="working-collaboratively" class="level2">
+<h2 class="anchored" data-anchor-id="working-collaboratively">Working Collaboratively</h2>
+<p>Regardless of context, <em>data scientists</em> typically work in team-based projects. This requires defining a work organization and using tools that enable secure, efficient collaboration.</p>
+<p>We present a modern way to collaborate using <code>Git</code> and <code>GitHub</code> in the reminder chapter <a href="../chapters/git.html">Version Control and Collaborative Work with Git</a>. Later chapters will build on this collaborative approach and refine it using the <code>DevOps</code> methodology<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>.</p>
+</section>
+<section id="maximizing-reproducibility" class="level2">
+<h2 class="anchored" data-anchor-id="maximizing-reproducibility">Maximizing Reproducibility</h2>
+<p>The third pillar of best practices in this course is <strong>reproducibility</strong>.</p>
+<p>A project is reproducible when <strong>the same code and data can be used to reproduce the same results</strong>. It’s important to distinguish this from <strong>replicability</strong>. Replicability is a <em>scientific</em> concept—meaning the same experimental process yields similar results on different datasets. Reproducibility is a <em>technical</em> concept: it doesn’t guarantee scientific validity but ensures that the protocol is specified and shared in a way that allows others to reproduce the results.</p>
+<p><strong>Reproducibility is the guiding theme of this course</strong>: all concepts covered in the chapters contribute to it. Producing code and projects that follow community conventions and using version control contribute to making code more readable and documented—and therefore reproducible.</p>
+<p>However, achieving full reproducibility requires going further—by considering the concept of an <strong>execution environment</strong>. Code doesn’t run in a vacuum; it runs in an environment (e.g., personal computer, server), and those environments can differ greatly (OS, installed libraries, security policies, etc.). That’s why we must consider <strong>code portability—i.e., its ability to run as expected across different environments</strong>, which we explore in the dedicated <a href="../chapters/portability.html">chapter</a>.</p>
+</section>
+<section id="facilitating-production-deployment" class="level2">
+<h2 class="anchored" data-anchor-id="facilitating-production-deployment">Facilitating Production Deployment</h2>
+<p>For a <em>data science</em> project to ultimately create value, it must be deployed in a usable form that reaches its audience. This implies two things:</p>
+<ul>
+<li>Choosing the right <strong>distribution format</strong>, i.e., one that best highlights the results to the intended users;</li>
+<li>Transitioning the project from its development environment to a <strong>production infrastructure</strong>, i.e., one that allows the project output to be robustly deployed and accessible on demand.</li>
+</ul>
+<p>In the chapter <a href="../chapters/deployment.html">Deploy and Showcase Your Data Science Project</a>, we propose ways to address both needs. We present common output formats (API, app, automated report, website) that help make <em>data science</em> projects accessible, and the modern tools used to produce them.</p>
+<p>We then explain the essential concepts of production infrastructure and demonstrate them with examples of deployments in a modern <em>cloud</em> environment.</p>
+<p>This is, in a way, the reward for following best practices: once you’ve put in the effort to write quality code, properly version it, and make it portable, deploying your project becomes significantly easier.</p>
+</section>
+<section id="opening-the-door-to-industrialization" class="level2">
+<h2 class="anchored" data-anchor-id="opening-the-door-to-industrialization">Opening the Door to Industrialization</h2>
+<p>By simplifying a project’s structure, you make it easier to scale. In <em>data science</em>, this may take the form of industrializing model training to select the “best” model from a much broader set—far beyond what an ad hoc approach would allow.</p>
+<p>However, every model learns from past data, and a model that works today may no longer be valid tomorrow. To account for this ever-changing reality, we will explore key principles of <em>MLOps</em>. Though the term is a buzzword, it represents a meaningful set of practices for <em>data scientists</em>, covered in the <a href="../chapters/mlops.html">dedicated chapter</a>.</p>
+</section>
+<section id="supplementary-chapters" class="level2">
+<h2 class="anchored" data-anchor-id="supplementary-chapters">Supplementary Chapters</h2>
+<p>Several tools presented in this course, such as <code>Git</code> and <code>Docker</code>, require terminal usage and a basic understanding of how <code>Linux</code> systems work. In the chapter <a href="../chapters/linux101.html">Demystifying the Linux Terminal for Autonomy</a>, we cover the essential Linux knowledge a <em>data scientist</em> needs to deploy projects independently and apply development best practices.</p>
+</section>
+</section>
+<section id="practical-information" class="level1">
+<h1>Practical Information</h1>
+<section id="teaching-approach" class="level2">
+<h2 class="anchored" data-anchor-id="teaching-approach">Teaching Approach</h2>
+<p>The guiding principle of this course is that only practice—especially hands-on experience with real-world problems—can effectively develop understanding of computing concepts. As such, a large part of the course will consist of <strong>applying key ideas to concrete use cases</strong>. Each chapter will conclude with applications rooted in realistic <em>data science</em> problems.</p>
+<p>A <a href="../chapters/">running example</a> illustrates how a reproducible project evolves by progressively applying the practices discussed throughout the course.</p>
+<p>For the course evaluation, students will be asked to take a personal project—ideally already completed—and apply as many of the best practices introduced here as possible.</p>
+</section>
+<section id="programming-languages" class="level2">
+<h2 class="anchored" data-anchor-id="programming-languages">Programming Languages</h2>
+<p>The principles presented in this course are mostly <strong>language-agnostic</strong>.</p>
+<p>This is not just an editorial decision—we believe it’s central to the topic of best practices. Too often, language differences between development phases (e.g., <code>R</code> or <code>Python</code>) and production phases (e.g., <code>Java</code>) create artificial barriers that limit a <em>data science</em> project’s potential impact.</p>
+<p>By contrast, when the different teams involved in a project’s lifecycle adopt a shared set of best practices, they also develop a shared vocabulary—greatly easing the deployment process.</p>
+<p>A compelling example is <strong>containerization</strong>: if the <em>data scientist</em> provides a <code>Docker</code> image as the output of their development work, and a <em>data engineer</em> handles its deployment, then the underlying programming language becomes largely irrelevant. While simplistic, this example captures the essence of how best practices enhance communication within a project.</p>
+<p>Examples in this course will primarily use <code>Python</code>. The main reason is that despite its shortcomings, Python is widely taught in both <em>data science</em> and computer science programs. It serves as a bridge between data users and developers—two essential roles in production workflows.</p>
+<p>That said, the same principles can be applied with other languages, and we strongly encourage students to practice this transfer of skills.</p>
+</section>
+<section id="execution-environment" class="level2">
+<h2 class="anchored" data-anchor-id="execution-environment">Execution Environment</h2>
+<p>Like programming language, the principles in this course are <strong>agnostic to the infrastructure</strong> used to run the examples. It is not only possible but desirable to apply best practices to both solo projects on a personal computer and collaborative projects intended for production deployment.</p>
+<p>That said, we have chosen the <a href="https://datalab.sspcloud.fr/home"><code>SSP Cloud</code></a> platform as our reference environment throughout the course. Developed at Insee and available to students at statistical schools, it offers several advantages:</p>
+<ul>
+<li><strong>Standardized development environment</strong>: SSP Cloud servers use a uniform configuration—specifically, the Debian Linux distribution—which ensures reproducibility across course examples;</li>
+<li>Built on a Kubernetes cluster, SSP Cloud offers robust infrastructure for automated deployment of potentially data-intensive applications—making it possible to <strong>simulate a true production environment</strong>;</li>
+<li>SSP Cloud follows modern <em>data science</em> infrastructure standards, enabling learners to <strong>internalize best practices organically</strong>:
+<ul>
+<li>Services are run in containers configured via <em>Docker</em> images, which ensures strong <strong>reproducibility</strong> of deployments—at the cost of some initial complexity during development;</li>
+<li>The platform is based on a <strong>cloud-native architecture</strong>, composed of modular software building blocks. This encourages strict separation of code, data, configuration, and execution environment—a major principle of good practice that will be revisited throughout the course.</li>
+</ul></li>
+</ul>
+<p>To learn more about this platform, see <a href="https://ssphub.netlify.app/post/onyxia/">this page</a>.</p>
+</section>
+<section id="additional-resources" class="level2">
+<h2 class="anchored" data-anchor-id="additional-resources">Additional Resources</h2>
+<ul>
+<li><a href="https://missing.csail.mit.edu/">MIT’s <em>Missing Semester</em></a></li>
+</ul>
+
+
+</section>
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>You’re probably most familiar with the <em>Jupyter Notebook</em>. While very convenient for writing exploratory code or sharing annotated code, we’ll see its limitations in collaborative or large-scale projects.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>We will define this central concept more formally later. For now, you can think of it as an always-on environment designed to deliver data products—often in the form of a production server or a computing cluster that must remain continuously available.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>The strong entanglement of best practices, reproducibility, and deployment actually made it hard for us to settle on a course title. Some names on our shortlist were <em>“Best Practices in Data Science”</em> or <em>“Best Practices for Reproducibility in Data Science”</em>. However, since best practices are a means and deployment is the end, we decided to emphasize the latter.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p>A methodology focused on automating and integrating design and delivery workflows prior to deployment. Like best practices, this approach originated in software development but has become essential for <em>data scientists</em>.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.js" defer="true"></script>
+</body></html>

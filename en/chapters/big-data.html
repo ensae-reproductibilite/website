@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Présentation des architectures informatiques et des outils logiciels permettant de faciliter le traitement de données volumineuses.">
+
+<title>Traitement des données volumineuses – Putting into production course</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-a98ec624fb63d9b712fc3a6f62e2b305.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>
+div.callout-application.callout {
+  border-left-color: #9c5bd9;
+}
+div.callout-application.callout-style-default > .callout-header {
+  background-color: rgba(156, 91, 217, 0.13);
+}
+div.callout-application .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-application.callout-style-default .callout-icon::before, div.callout-application.callout-titled .callout-icon::before {
+  content: '🧠';
+  background-image: none;
+}
+</style>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Putting into production course</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://ensae-reproductibilite.github.io/"> 
+<span class="menu-text">Putting into production</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/introduction.html"> 
+<span class="menu-text">Introduction</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-fundamentals" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Fundamentals</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-fundamentals">    
+        <li>
+    <a class="dropdown-item" href="../chapters/linux101.html">
+ <span class="dropdown-text">Linux 101</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/git.html">
+ <span class="dropdown-text">Git</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-good-development-practices" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Good development practices</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-good-development-practices">    
+        <li>
+    <a class="dropdown-item" href="../chapters/code-quality.html">
+ <span class="dropdown-text">Code quality</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/projects-architecture.html">
+ <span class="dropdown-text">Projects structure</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/big-data.html">
+ <span class="dropdown-text">Big data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/portability.html">
+ <span class="dropdown-text">Portability</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-putting-into-production" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Putting into production</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-putting-into-production">    
+        <li>
+    <a class="dropdown-item" href="../chapters/yaml101.html">
+ <span class="dropdown-text">YAML 101</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/deployment.html">
+ <span class="dropdown-text">Deployment</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/mlops.html">
+ <span class="dropdown-text">MLOps</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/application.html"> 
+<span class="menu-text">Application</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-projects" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Projects</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-projects">    
+        <li>
+    <a class="dropdown-item" href="../chapters/evaluation.html">
+ <span class="dropdown-text">Evaluations</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/galerie.html">
+ <span class="dropdown-text">Past student projects</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-github" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-bi-github">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/website">
+ <span class="dropdown-text">Website</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/slides">
+ <span class="dropdown-text">Slides</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/application">
+ <span class="dropdown-text">Red thread application</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#infrastructures" id="toc-infrastructures" class="nav-link active" data-scroll-target="#infrastructures">Infrastructures</a>
+  <ul class="collapse">
+  <li><a href="#evolution-des-infrastructures-de-données" id="toc-evolution-des-infrastructures-de-données" class="nav-link" data-scroll-target="#evolution-des-infrastructures-de-données">Evolution des infrastructures de données</a></li>
+  <li><a href="#lapport-des-technologies-cloud" id="toc-lapport-des-technologies-cloud" class="nav-link" data-scroll-target="#lapport-des-technologies-cloud">L’apport des technologies <em>cloud</em></a></li>
+  </ul></li>
+  <li><a href="#sec-new-formats" id="toc-sec-new-formats" class="nav-link" data-scroll-target="#sec-new-formats">Formats de données</a></li>
+  <li><a href="#frameworks-de-traitement" id="toc-frameworks-de-traitement" class="nav-link" data-scroll-target="#frameworks-de-traitement"><em>Frameworks</em> de traitement</a></li>
+  <li><a href="#applications" id="toc-applications" class="nav-link" data-scroll-target="#applications">Applications</a>
+  <ul class="collapse">
+  <li><a href="#application-3" id="toc-application-3" class="nav-link" data-scroll-target="#application-3">Application 3</a></li>
+  <li><a href="#pour-aller-plus-loin" id="toc-pour-aller-plus-loin" class="nav-link" data-scroll-target="#pour-aller-plus-loin">Pour aller plus loin</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<script>
+  const langButton = document.createElement("div");
+  langButton.className = "lang-switch-button";
+  langButton.style.textAlign = "right";
+  langButton.style.marginTop = "1rem";
+  langButton.style.marginBottom = "1rem";
+
+  const currentPath = window.location.pathname;
+  const isEnglish = currentPath.startsWith("/en/");
+  let targetHref, label, svg;
+
+  if (isEnglish) {
+    targetHref = currentPath.replace(/^\/en\//, "/");
+    label = "Passer à la version française";
+    svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" style="vertical-align: middle; margin-left: 0.5em; display: inline-block;"><mask id="circleFlagsLangFr"><circle cx="256" cy="256" r="256" fill="#fff"/></mask><g mask="url(#circleFlagsLangFr)"><path fill="#0055A4" d="M0 0h512v512H0z"/><path fill="#fff" d="M170.7 0h170.6v512H170.7z"/><path fill="#EF4135" d="M341.3 0H512v512H341.3z"/></g></svg>`;
+  } else {
+    targetHref = "/en" + currentPath;
+    label = "Switch to English version";
+    svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" style="vertical-align: middle; margin-left: 0.5em; display: inline-block;"><mask id="circleFlagsLangEn"><circle cx="256" cy="256" r="256" fill="#fff"/></mask><g mask="url(#circleFlagsLangEn)"><path fill="#eee" d="M256 0L0 256v64l32 32l-32 32v128l22-8l23 8h23l54-32l54 32h32l48-32l48 32h32l54-32l54 32h68l-8-22l8-23v-23l-32-54l32-54v-32l-32-48l32-48v-32l-32-54l32-54V0z"/><path fill="#d80027" d="M224 64v64h160l64-64zm0 128l32 64l-48 48v208h96V304h208v-96H304l16-16zM0 320v64h128l-64 64H0v64h45l131-131v-45l16-16zm336 16l176 176v-45L381 336Z"/><path fill="#0052b4" d="M0 0v256h256V0zm512 68L404 176h108zM404 336l108 108V336zm-228 68L68 512h108zm160 0v108h108z"/><path fill="#eee" d="m187 243l57-41h-70l57 41l-22-67zm-81 0l57-41H93l57 41l-22-67zm-81 0l57-41H12l57 41l-22-67zm162-81l57-41h-70l57 41l-22-67zm-81 0l57-41H93l57 41l-22-67zm-81 0l57-41H12l57 41l-22-67Zm162-82l57-41h-70l57 41l-22-67zm-81 0l57-41H93l57 41l-22-67Zm-81 0l57-41H12l57 41l-22-67Z"/></g></svg>`;
+  }
+
+  langButton.innerHTML = `
+    <a href="${targetHref}" class="button-cta">
+      <button class="btn"><i class="fa fa-language"></i> ${label} ${svg}</button>
+    </a>
+  `;
+
+  const main = document.querySelector("main#quarto-document-content");
+  if (main) main.insertAdjacentElement("afterbegin", langButton);
+</script>
+    
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Traitement des données volumineuses</h1>
+</div>
+
+<div>
+  <div class="description">
+    <p>Présentation des architectures informatiques et des outils logiciels permettant de faciliter le traitement de données volumineuses.</p>
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<details>
+<summary>
+Dérouler les <em>slides</em> ci-dessous ou <a href="https://ensae-reproductibilite.github.io/slides/#/traitement-des-donn%C3%A9es-volumineuses">cliquer ici</a> pour afficher les slides en plein écran.
+</summary>
+<div id="cb1" class="sourceCode">
+<pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+<iframe class="sourceCode yaml code-with-copy" src="https://ensae-reproductibilite.github.io/slides/#/traitement-des-donn%C3%A9es-volumineuses">
+</iframe>
+</div>
+</details>
+<p>Le phénomène du <em>big data</em> est maintenant bien documenté : la génération et la collecte de données par une multitude de sources (capteurs IoT, interactions quotidiennes sur les réseaux sociaux, transactions en ligne, dispositifs mobiles, etc.) démultiplie les volumes de données disponibles pour l’analyse. Les raisons pouvant mener à s’intéresser à de telles données pour des projets de data science sont nombreuses : haute disponibilité, plus grande finesse des phénomènes observés, bases pour l’entraînement de modèles de ML de plus en plus gourmands (comme les LLM), etc.</p>
+<p>On définit souvent le <em>big data</em> comme étant la situation où les données sont volumineuses au point qu’on ne soit plus en mesure de les traiter sur une unique machine. Cette définition relativiste peut sembler réductrice mais présente néanmoins l’intérêt de souligner qu’une source de données peut, selon les époques et les environnements, faire appel à des compétences différentes. Le fait de passer à des données <em>big data</em> n’est en effet pas seulement un changement de volume: on change souvent de nature d’infrastructure informatique et cela a des implications fortes sur les compétences à mettre en oeuvre pour traiter des données et l’évolutivité des chaines de production en question.</p>
+<p>En contrepartie, le traitement de ces données génère de nouveaux défis. Ces derniers peuvent être résumés par les <strong>“trois V”</strong>, une manière désormais admise de caractériser ces nouvelles sources de données <span class="citation" data-cites="sagiroglu2013big">(<a href="#ref-sagiroglu2013big" role="doc-biblioref">Sagiroglu and Sinanc 2013</a>)</span> :</p>
+<ul>
+<li><p><strong>Volume</strong> : des <strong>volumes massifs de données</strong>, souvent à une échelle bien supérieure à ce que les systèmes traditionnels peuvent traiter efficacement. Par conséquent, de nouvelles architectures de stockage et de traitement sont nécessaires afin de gérer de telles volumétries.</p></li>
+<li><p><strong>Vitesse</strong> : ces données sont généralement produites à <strong>haute fréquence, jusqu’au temps réel</strong>. Là encore, cela nécessite des ajustements dans les architectures et les méthodes de traitement, comme les méthodes de <em>stream processing</em> par exemple.</p></li>
+<li><p><strong>Variété</strong> : ces données présentent <strong>des sources et des formats très variés</strong>, allant des bases structurées (données tabulaires) aux données non-structurées (texte, image, vidéo, etc.). Là encore, les techniques de traitement adaptées vont dépendre des formes prises par les données. Dans ce cours, nous nous concentrerons sur des données relativement structurées, dans la mesure où ces dernières restent centrales dans les projets analytiques de data science.</p></li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../vvv.png" height="350" class="figure-img"></p>
+<figcaption>Les “3 V” du <em>big data</em>. Source : <a href="https://www.packtpub.com/product/artificial-intelligence-with-python-second-edition/9781839219535">AI with Python</a></figcaption>
+</figure>
+</div>
+<p>Lorsque l’on envisage de passer en production un projet de data science basé sur des données volumineuses, <strong>l’adoption de bonnes pratiques de développement n’est pas seulement recommandée, elle est indispensable</strong>. En effet, les données volumineuses voire massives introduisent une complexité significative dans tous les aspects du cycle de vie d’un projet de data science, de la collecte et du stockage des données à leur traitement et analyse. Les systèmes doivent être conçus pour non seulement gérer le volume actuel de données, mais aussi pour être <strong>évolutifs</strong> face à une croissance future inévitable. Les bonnes pratiques de développement facilitent cette évolutivité en promouvant des <strong>architectures modulaires</strong>, des codes réutilisables, et des technologies adaptées au traitement des grandes quantités de données.</p>
+<p>Face à ces enjeux, le choix des technologies est primordial. Dans ce cours, nous présenterons trois axes principaux qui peuvent guider ces choix : <strong>l’infrastructure informatique</strong>, des <strong>formats de données</strong> adaptés aux données volumineuses, et des <strong><em>frameworks</em></strong> (solutions logicielles et leur écosystème) utilisés pour le traitement de la donnée.</p>
+<section id="infrastructures" class="level1">
+<h1>Infrastructures</h1>
+<section id="evolution-des-infrastructures-de-données" class="level2">
+<h2 class="anchored" data-anchor-id="evolution-des-infrastructures-de-données">Evolution des infrastructures de données</h2>
+<p>Historiquement, les données ont été stockées dans des bases de données, c’est à dire des systèmes de stockage et d’organisation de la donnée. Ces objets ont vu le jour dans les années 1950, et ont connu un essor particulier avec les bases de données relationnelles dans les années 1980. Cette technologie se révélant particulièrement pertinente pour organiser le stockage des données “métier” des entreprises, elle a été à la base des <em>data warehouses</em>, qui ont longtemps constitué la référence des infrastructures de stockage de la donnée <span class="citation" data-cites="chaudhuri1997overview">(<a href="#ref-chaudhuri1997overview" role="doc-biblioref">Chaudhuri and Dayal 1997</a>)</span>. Si leur implémentation technique peut être de nature variée, leur principe est simple : des données de sources multiples et hétérogènes sont intégrées dans un système de bases de données relationnel selon des règles métier grâce à des processus dits <em>ETL</em> (<em>extract-transform-load</em>), afin de les rendre directement accessibles pour une variété d’usages (analyse statistique, <em>reporting</em>, etc.) à l’aide d’un langage normalisé : <code>SQL</code> (<a href="#fig-datawarehouse" class="quarto-xref">Figure&nbsp;1</a>).</p>
+<div id="fig-datawarehouse" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-datawarehouse-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../datawharehouse.png" class="img-fluid quarto-figure quarto-figure-center figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-datawarehouse-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Architecture d’un <em>data warehouse</em>. Source : <a href="https://airbyte.com/data-engineering-resources/business-intelligence-data-warehouse">airbyte.com</a>
+</figcaption>
+</figure>
+</div>
+<p>Au début des années 2000, la montée en puissance des usages de nature <em>big data</em> dans les entreprises met en lumière les limites des <em>data warehouses</em> traditionnels. D’une part, les données traités présentent une diversité croissante de formats (structurés, semi-structurés et non structurés) et un format changeant au gré de l’ajout de fonctionnalités sur les plateformes web collectant des données. Ces éléments rentre difficilement dans le monde ordonné des <em>data warehouses</em>, qui nécessite de spécifier <em>a priori</em> le schéma des données. Pour pallier ces limites, de nouvelles infrastructures de stockage vont être développées : les <em>data lakes</em>, qui permettent la collecte et le stockage de quantités massives de données de nature diverse (<a href="#fig-datalake" class="quarto-xref">Figure&nbsp;2</a>).</p>
+<div id="fig-datalake" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-datalake-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../datalake.png" class="img-fluid quarto-figure quarto-figure-center figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-datalake-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Architecture d’un <em>data lake</em>. Source : <a href="https://www.cartelis.com/blog/data-lake-definition-enjeux/">cartelis.com</a>
+</figcaption>
+</figure>
+</div>
+<p>D’autre part, la taille considérable de ces données rend de plus en plus difficile leur exploitation sur une unique machine. C’est dans ce contexte que Google publie le paradigme <code>MapReduce</code> <span class="citation" data-cites="ghemawat2003google dean2008mapreduce">(<a href="#ref-ghemawat2003google" role="doc-biblioref">Ghemawat, Gobioff, and Leung 2003</a>; <a href="#ref-dean2008mapreduce" role="doc-biblioref">Dean and Ghemawat 2008</a>)</span>, posant les bases d’une nouvelle génération de systèmes permettant de traiter de larges volumes de données de manière distribuée. Dans les infrastructures traditionnelles, le passage à l’échelle était réalisé selon un principe de scalabilité verticale, c’est à dire en augmentant la puissance d’une machine de calcul ou en choisissant une machine plus performante. Cette approche devient néanmoins rapidement très coûteuse et se heurte aux limites physiques des composants. A l’inverse, les architectures distribuées adoptent le principe de scalabité horizontale : en installant des serveurs — chacun d’une puissance limitée — en parallèle et en adaptant les algorithmes à cette logique distribuée, on parvient à traiter des données massives avec du matériel standard. Dans la lignée de ces travaux, émerge l’écosystème <code>Hadoop</code> qui offre une combinaison de technologies complémentaires : un <em>data lake</em> (<code>HDFS</code> - <em>Hadoop Distributed File System</em>), un moteur de calcul distribué (<code>MapReduce</code>) et des outils d’intégration et de transformation de la donnée (<a href="#fig-hadoop" class="quarto-xref">Figure&nbsp;3</a>). Cet éco-système est progressivement complété par des outils qui vont démocratiser la capacité à traiter des données <em>big data</em> : <code>Hive</code>, qui convertit des requêtes <code>SQL</code> en traitements <code>MapReduce</code> distribués, puis <code>Spark</code>, qui lève certaines limites techniques de <code>MapReduce</code> et fournit des API dans plusieurs langages (<code>Java</code>, <code>Scala</code>, <code>Python</code>, etc.). Le succès de l’éco-système <code>Hadoop</code> dans les entreprises est considérable dans la mesure où il permet de traiter des volumes de données sans précédent — jusqu’au péta-octet — et des vélocités considérables — jusqu’au temps réel — à l’aide de langages de programmation non réservés aux seuls informaticiens.</p>
+<p>C’est ce mouvement technologique qui a permis l’engouement pour le <em>big data</em>, offrant les moyens techniques pour répondre à de nouvelles questions à partir de sources de données volumineuses. Au delà du sujet technique, ces changements ont entraîné une révolution paradigmatique dans le domaine de la <em>data</em>. Plutôt que de collecter un volume limité de données correspondant à quelques besoins bien identifiés, il est plus simple d’empiler la donnée dans des entrepôts et, seulement ensuite, lors du traitement, se poser la question de la valeur de celles-ci. Cette philosophie est typique des environnements reposant sur l’approche <a href="https://en.wikipedia.org/wiki/NoSQL">NoSQL</a> (<em>“Not only SQL”</em>) où les données sont, comme dans l’écosystème SQL, enregistrées à chaque événement transactionnel, mais où celles-ci sont empilées dans des formats plus flexibles que dans les bases de données traditionnelles. Parmi les formats de prédilection de ce domaine, le JSON, issu de transactions web, tient la dragée haute. Selon la nature plus ou moins structurée des données, il existe des outils différents pour les requêter: <code>ElasticSearch</code> ou <code>MongoDB</code> pour des données textuelles, <code>Spark</code> pour des données tabulaires, etc. Le trait commun entre ces outils et qu’ils sont très scalables horizontalement, ce qui les rend idéaux pour être utilisés dans des fermes de serveurs.</p>
+<div id="fig-hadoop" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-hadoop-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../mapreduce-hdfs.png" class="quarto-figure quarto-figure-center figure-img" height="350">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-hadoop-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Représentation schématique d’une architecture <code>Hadoop</code>. La donnée volumineuse est découpée en blocs, et le stockage ainsi que le traitement des différents blocs sont distribués sur plusieurs nœuds de calcul. Les algorithmes utilisés pour traiter la donnée sont adaptés au mode distribué via le paradigme <code>MapReduce</code> : on applique à chaque bloc une fonction (étape “<em>map</em>” ; par exemple, compter les fréquences des mots qui apparaissent dans les documents d’un bloc), puis on effectue une étape d’agrégation (étape “<em>reduce</em>” ; par exemple, agréger les fréquences des différents blocs pour obtenir des fréquences agrégées sur l’ensemble des données initiales). Les données en sortie de ces deux étapes sont généralement de taille bien inférieure à celle des données source, et peuvent donc être rapatriées en local pour des traitements ultérieurs (ex : faire de la visualisation de données). Source : <a href="https://www.glennklockwood.com/data-intensive/hadoop/overview.html">glennklockwood.com</a>
+</figcaption>
+</figure>
+</div>
+<p>À la fin des années 2010, les architectures basées sur <code>Hadoop</code> connaissent néanmoins un net déclin de popularité. Dans les environnements <code>Hadoop</code> traditionnels, le stockage et le calcul sont co-localisés par construction : si les données à traiter sont réparties sur plusieurs serveurs, chaque section des données est directement traitée sur la machine hébergeant cette section, afin d’éviter les transferts réseau entre serveurs. Dans ce paradigme, la mise à l’échelle de l’architecture implique une augmentation linéaire à la fois des capacités de calcul et de stockage, indépendamment de la demande réelle. Dans un article volontairement provocateur et intitulé “<em>Big Data is Dead</em>” <span class="citation" data-cites="Tigani_2023">(<a href="#ref-Tigani_2023" role="doc-biblioref">Tigani 2023</a>)</span>, Jordan Tigani, l’un des ingénieurs fondateurs de Google BigQuery, explique pourquoi ce modèle ne correspond plus à la réalité de la plupart des organisations exploitant intensivement de la donnée. Premièrement, parce que “dans la pratique, la taille des données augmente beaucoup plus rapidement que les besoins en calcul”. Même si la quantité de données générées et nécessitant donc d’être stockées croît de manière rapide au fil du temps, il n’est généralement pas nécessaire d’interroger l’ensemble des données stockées mais seulement les portions les plus récentes, ou seulement certaines colonnes et/ou groupes de lignes. Par ailleurs, Tigani souligne que “la frontière du <em>big data</em> ne cesse de reculer” : les avancées dans les capacités des serveurs et la baisse des coûts du matériel signifient que le nombre de charges de travail ne tenant pas sur une seule machine — une définition simple mais efficace du <em>big data</em> — a diminué de manière continue (<a href="#fig-bigdata-frontier" class="quarto-xref">Figure&nbsp;4</a>). L’apparition de nouveaux formats de données rendant plus efficients à la fois le stockage et le traitement de la donnée en mémoire participent également à cette dynamique (voir <a href="#sec-new-formats" class="quarto-xref">Section&nbsp;2</a>). En conséquence, en séparant correctement les fonctions de stockage et de calcul, même les traitements de données substantiels peuvent finir par utiliser “beaucoup moins de calcul que prévu […] et pourraient même ne pas avoir besoin d’un traitement distribué du tout”. Ces enseignements plaident donc de manière générale pour le choix d’infrastructures dans lesquelles ressources de calcul et de stockage sont le plus faiblement couplées possibles.</p>
+<div id="fig-bigdata-frontier" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bigdata-frontier-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../bigdatafrontier.jpg" class="quarto-figure quarto-figure-center figure-img" height="350">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bigdata-frontier-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: “<em>The big data frontier keeps receding</em>” : la part des traitements de données ne pouvant être réalisés sur une seule machine a continuellement diminué au cours de la dernière décennie. Source : <a href="https://motherduck.com/blog/big-data-is-dead/">motherduck.com</a>
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="lapport-des-technologies-cloud" class="level2">
+<h2 class="anchored" data-anchor-id="lapport-des-technologies-cloud">L’apport des technologies <em>cloud</em></h2>
+<p>Dans la lignée des observations de Tigani, on observe ces dernières années une transition marquée des organisations vers des architectures plus flexibles et faiblement couplées. L’avènement des technologies <em>cloud</em> a joué un rôle déterminant dans cette transition, et ce pour plusieurs raisons. D’abord, une raison technique : par rapport à l’époque où <code>Hadoop</code> constituait l’infrastructure <em>big data</em> de référence, la latence des flux réseaux est devenue une préoccupation bien moindre, rendant le modèle de co-localisation du stockage et des ressources de calcul sur de mêmes machines moins pertinent. Ensuite, une raison liée aux usages : si le volume des données générées continue de croître, c’est surtout la diversification des données exploitées qui marque l’évolution récente de l’éco-système. Les infrastructures modernes doivent doivent non seulement être capables de traiter de grands volumes, mais aussi être adaptables sur de multiples dimensions. Elles doivent pouvoir prendre en charge diverses structures de données (allant des formats structurés et tabulaires aux formats non structurés comme le texte, les images, le son et la vidéo) et permettre une large gamme de techniques computationnelles, du calcul parallèle aux modèles d’apprentissage profond qui nécessitent des GPU, ainsi que le déploiement et la gestion d’applications <span class="citation" data-cites="li2020big">(<a href="#ref-li2020big" role="doc-biblioref">Li et al. 2020</a>)</span>.</p>
+<p>Ces dernières années, deux technologies intimement liée au <em>cloud</em> — justifiant leur qualificatif de technologies <em>cloud-native</em> — ont émergé comme des solutions essentielles pour atteindre ce besoin d’environnements de calcul plus flexibles : la conteneurisation et le stockage objet. La conteneurisation est une technologie centrale dès lors qu’on aborde le sujet de la mise en production, dans la mesure où elle permet de garantir la reproductibilité et la portabilité des projets, c’est à dire leur capacité à fonctionner correctement dans différents environnements de traitement. Par conséquent, la technologie des conteneurs sera présentée en détail dans les chapitres concernant la <a href="../chapters/portability.html">Portabilité</a> et le <a href="../chapters/deployment.html">Déploiement</a>. Nous nous concentrons dans cette section sur la deuxième technologie <em>cloud-native</em> devenue un standard dans les infrastructures de données modernes : le stockage objet.</p>
+<p>Les conteneurs étant par construction sans état (<em>stateless</em>), il est nécessaire dans une infrastructure conteneurisée de prévoir une couche de persistence pour stocker à la fois les données brutes en entrée des traitements et les données transformées en sortie de ces derniers (<a href="#fig-types-storage" class="quarto-xref">Figure&nbsp;5</a>). Dans l’écosystème des infrastructures de données conteneurisées, le stockage dit “objet” s’est progressivement imposé comme référence, largement popularisée par l’implémentation <code>S3</code> (<em>Amazon Simple Storage Service</em>) d’Amazon <span class="citation" data-cites="mesnier2003object samundiswary2017object">(<a href="#ref-mesnier2003object" role="doc-biblioref">Mesnier, Ganger, and Riedel 2003</a>; <a href="#ref-samundiswary2017object" role="doc-biblioref">Samundiswary and Dongre 2017</a>)</span>. Afin de comprendre cette prédominance, il est utile de comparer ce mode de stockage aux autres modes existants.</p>
+<p>Schématiquement, on peut distinguer trois grandes approches en matière de stockage : le stockage de fichiers (<em>filesystem</em>), le stockage par bloc (<em>block storage</em>) et le stockage d’objets (<em>object storage</em>) (<a href="#fig-types-storage" class="quarto-xref">Figure&nbsp;5</a>). Le stockage de fichiers est le plus intuitif : les données sont organisées sous forme d’une structure hiérarchique de répertoires et de fichiers — comme sur un ordinateur personnel. Facile d’utilisation et adapté aux environnements traditionnels, ce mode de stockage passe difficilement à l’échelle et requiert des interventions manuelles pour monter et gérer les accès aux fichiers, ce qui restreint l’autonomie des utilisateurs et n’est pas adapté aux environnements de traitement éphémères comme les conteneurs. Le stockage par bloc propose un accès de bas niveau aux données sous forme de blocs contigus — à l’image du stockage sur un disque dur — garantissant des performances élevées et une faible latence. Il s’avère donc très pertinent pour des applications qui exigent un accès rapide aux données stockées, comme une base de données. En revanche, il passe là encore difficilement à l’échelle du fait du coût de la technologie et de la difficulté à faire croître horizontalement ce type de stockage. Enfin, le stockage objet divise quant à lui les fichiers de données en morceaux appelés “objets” qui sont ensuite stockés dans un référentiel unique, qui peut être distribué sur plusieurs machines. Chaque objet se voit attribuer un certain nombre de métadonnées (nom de l’objet, taille, date de création, etc.) dont un identifiant unique qui permet au système de retrouver l’objet sans la nécessité d’une structure hiérarchique comme celle d’un <em>filesystem</em>, ce qui réduit drastiquement le coût du stockage.</p>
+<div id="fig-types-storage" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-types-storage-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../types-storage.png" class="quarto-figure quarto-figure-center figure-img" height="250">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-types-storage-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Comparaison des principaux systèmes de stockage de la donnée. Source : <a href="https://blog.bytebytego.com/p/storage-systems-overview">bytebytego.com</a>
+</figcaption>
+</figure>
+</div>
+<p>Les différentes propriétés du stockage objet le rendent particulièrement pertinent pour construire une infrastructure conteneurisée pour la <em>data science</em>. D’abord, il est optimisé pour la scalabilité : les objets stockés ne sont pas limités en taille et la technologie sous-jacente permet un stockage efficient de fichiers potentiellement très volumineux, si besoin en les distribuant horizontalement. Ensuite, il est source d’autonomie pour les utilisateurs : en stockant les données sous forme d’objets enrichis de métadonnées et accessibles via l’API standardisée <code>S3</code> d’Amazon (<a href="#fig-types-storage" class="quarto-xref">Figure&nbsp;5</a>), il permet aux utilisateurs d’interagir directement avec le stockage via leur code applicatif (en <code>R</code>, <code>Python</code>, etc.) tout en offrant une gestion très fine des permissions — jusqu’aux droits sur un fichier — vie des jetons d’accès, garantissant ainsi une traçabilité accrue des opérations effectuées. Enfin, le stockage objet joue un rôle clé dans l’objectif de construction d’une infrastructure découplée comme celle évoquée précédemment. Dans la mesure où les dépôts de données — appelés <em>“buckets”</em> — sont interrogeables via des requêtes <code>HTTP</code> standards, les environnements de calcul peuvent importer par le biais du réseau les données nécessaires aux traitements réalisés. Ainsi, les ressources de stockage et de calcul n’ont plus besoin d’être sur les mêmes machines ni même nécessairement dans le même lieu, et peuvent ainsi évoluer indépendamment en fonction des besoins spécifiques de l’organisation.</p>
+<div id="fig-minio-s3" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-minio-s3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../minio-s3.png" class="quarto-figure quarto-figure-center figure-img" height="300">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-minio-s3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: Dans une infrastructure basée sur des conteneurs — <em>stateless</em> par construction — le stockage objet permet de fournir la couche de persistence. MinIO est une solution open-source de stockage objet qui s’intègre nativement avec Kubernetes. Par ailleurs, elle est compatible avec l’API S3, qui est devenu le standard dominant pour l’interaction avec des systèmes de stockage objet. Ce système de stockage est donc par construction interopérable avec différents environnements de calcul. Source : <a href="https://www.lemondeinformatique.fr/actualites/lire-les-donnees-sont-plus-importantes-que-le-cloud--assure-minio%C2%A0%C2%A0-77730.html">lemondeinformatique.fr</a>
+</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="sec-new-formats" class="level1">
+<h1>Formats de données</h1>
+<p>Une autre dimension majeure à considérer pour le traitement des données massives est la manière dont on stocke ces données. Le choix d’un format de données repose sur un arbitrage entre plusieurs critères, notamment la finalité (traitement, analyse, diffusion…), le public cible (population générale, membres du projet, etc.), la volumétrie et l’interopérabilité. Les formats classiques comme le CSV, le JSON ou le XML sont largement utilisés pour le traitement et la diffusion de données, en particulier pour leur praticité : ils sont au format texte, ce qui les rend facilement prévisualisables dans un éditeur — on dit qu’ils sont “<em>human-readable</em>”. Par ailleurs, ils sont naturellement interopérables : le texte peut être lu simplement depuis n’importe quel langage de programmation, et les différentes librairies de lecture de fichiers intègre nativement leur lecture. Néanmoins, ces formats montrent rapidement leurs limites face aux besoins d’analyse sur des données massives. Leur absence de compression entraîne une consommation élevée d’espace disque. Par ailleurs, leur représentation sous forme de lignes (<a href="#fig-columnar-storage" class="quarto-xref">Figure&nbsp;7</a>) à la fois sur disque et en mémoire les rend peu efficients, dans la mesure où il est nécessaire de charger un fichier entier pour pouvoir effectuer des opérations statistiques sur les colonnes et/ou les lignes.</p>
+<p>Une innovation majeure de la dernière décennie au sein de l’éco-système de la donnée est l’émergence de formats de données qui pallient les différentes limites des formats traditionnels précédemment évoquées. Le format le plus populaire à ce titre, et qui est ainsi devenu un véritable standard pour le stockage de données, est le format <code>Apache Parquet</code>. Ce format présente en effet un ensemble de caractéristiques qui le rendent particulièrement adapté aux applications de <em>data science</em>. D’abord, il s’agit d’un format compressé, ce qui en fait un format très adapté au stockage de données volumineuses. Si le degré de compression dépend intimement de la structure des données, il n’est pas rare de voir un même jeu de données occuper 10 fois moins de place en <code>Parquet</code> qu’en <code>CSV</code>. Ensuite, le format <code>Parquet</code> est interopérable : les fichiers de ce format peuvent être aussi bien requêtés à partir de langages courants (comme <code>Python</code>, <code>R</code> ou <code>SQL</code>) qu’avec des langages dédiés au traitement des données massives comme <code>Spark</code>.</p>
+<p>Mais le facteur essentiel qui explique l’adoption généralisée du format <code>Parquet</code> dans les applications de <em>data science</em> est sa performance en lecture. S’agissant d’un format compressé, on pourrait intuitivement s’attendre à des performances inférieures comparé à la lecture des mêmes données sous la forme d’un fichier texte : si l’on compresse un fichier <code>CSV</code> au format <code>zip</code> par exemple, il faut payer un coût de décompression pour pouvoir lire le fichier. Au contraire, la compression des données en <code>Parquet</code> est très optimisée, ce qui permet des performances en lecture bien supérieures à celle d’un fichier <code>CSV</code>. Une propriété essentielle du format <code>Parquet</code> pour comprendre cette performance en lecture est le fait qu’il soit “orienté-colonne”, c’est à dire que les données sont stockées sous forme de colonnes et non de lignes comme dans les formats textuels traditionnels (<a href="#fig-columnar-storage" class="quarto-xref">Figure&nbsp;7</a>). Cette propriété le rend particulièrement adapté pour la <em>data science</em> dans la mesure où la plupart des opérations statistiques sont de nature analytique (dites OLAP - <em>Online Analytical Processing</em>) : elles impliquent la sélection de colonnes spécifiques, le calcul de nouvelles variables, la réalisation d’agrégations basées sur des groupes, etc. Le stockage orienté ligne — comme dans un fichier CSV — n’est pas adapté à ces opérations analytiques, car il nécessite de charger l’ensemble du jeu de données en mémoire afin d’effectuer une requête. À l’inverse, le stockage orienté colonne permet de ne lire que les colonnes de données pertinentes, ce qui réduit considérablement les temps de lecture et de traitement pour ces charges de travail analytiques <span class="citation" data-cites="abdelaziz2023optimizing">(<a href="#ref-abdelaziz2023optimizing" role="doc-biblioref">Abdelaziz et al. 2023</a>)</span>. En pratique, les formats colonnes populaires tels que <code>Parquet</code> utilisent une représentation hybride : ils sont principalement orientés colonne, mais intègrent également un regroupement astucieux basé sur les lignes pour optimiser les requêtes de filtrage.</p>
+<div id="fig-columnar-storage" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-columnar-storage-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../columnar-storage.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-columnar-storage-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7: Représentation orientée ligne et orientée colonne d’un même jeu de données.
+</figcaption>
+</figure>
+</div>
+<p>Une autre propriété importante du format <code>Parquet</code> est sa capacité native à produire des fichiers partitionnés, c’est à dire à distribuer un fichier de données selon une ou plusieurs clés de partitionnement. Dans la majorité des cas, les traitements statistiques ne concernent pas l’ensemble des données d’une source de données : on voudra souvent restreindre les calculs à une zone géographique, une fenêtre temporelle, etc. Si les données à traiter sont disponibles sous la forme d’un unique fichier, il faudra généralement charger l’ensemble des données en mémoire — a minima, les colonnes pertinentes — pour réaliser les traitements. A contrario, <code>Parquet</code> offre la possibilité native de partitionner un jeu de données selon une variable de filtrage fréquente — à la manière d’un index dans une base <code>SQL</code> — ce qui permet d’optimiser les traitements et d’accroître encore leur efficience (<a href="#fig-parquet-partitions" class="quarto-xref">Figure&nbsp;8</a>). Là encore, cette propriété rend le format <code>Parquet</code> particulièrement pertinent pour les traitements analytiques qui caractérisent les applications de <em>data science</em> <span class="citation" data-cites="dondon2023quels">(<a href="#ref-dondon2023quels" role="doc-biblioref">Dondon and Lamarche 2023</a>)</span>.</p>
+<div id="fig-parquet-partitions" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-parquet-partitions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../parquet-partitions.png" class="quarto-figure quarto-figure-center figure-img" height="300">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-parquet-partitions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8: Représentation sur le <em>filesystem</em> d’un fichier <code>Parquet</code> partitionné selon deux clés : l’année et le mois. Dans cet exemple, effectuer une requête faisant intervenir seulement un ou quelques mois de données serait très efficient dans la mesure où seules les partitions pertinentes auront besoin d’être chargées en mémoire.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="frameworks-de-traitement" class="level1">
+<h1><em>Frameworks</em> de traitement</h1>
+<p>Le format <code>Parquet</code> rend le stockage de données au format tabulaire beaucoup plus efficient. Mais pour pleinement bénéficier de cette structure de données, il est également nécessaire de s’intéresser à l’étape suivante : le traitement des données en mémoire.</p>
+<p>Deux outils majeurs ont émergé à cette fin au cours des dernières années. Le premier est <a href="https://arrow.apache.org/">Apache Arrow</a>, un format tabulaire de données en mémoire interopérable entre de nombreux langages (<code>Python</code>, <code>R</code>, <code>Java</code>, etc.). Le second est <a href="https://duckdb.org/"><code>DuckDB</code></a>, un système de base de données portable et interopérable permettant de requêter des sources de données de nature très variée (<a href="#fig-duckdb-multisrc" class="quarto-xref">Figure&nbsp;10</a>). Ces deux outils, bien que techniquement très différents en termes d’implémentation, présentent des avantages et des gains de performance semblables. D’abord, ils sont tous deux orientés-colonne et travaillent ainsi en synergie avec le format <code>Parquet</code>, dans la mesure où ils font persister les bénéfices de ce format de stockage dans la mémoire (<a href="#fig-arrow-memory" class="quarto-xref">Figure&nbsp;9</a>).</p>
+<div id="fig-arrow-memory" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-arrow-memory-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../arrow-memory.png" class="quarto-figure quarto-figure-center figure-img" height="400">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-arrow-memory-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9: Représentation en mémoire des données au format <code>Arrow</code>. Avec ce format, le stockage en mémoire est également orienté-colonne. Cela permet d’une part de faire perdurer en mémoire les avantages du format <code>Parquet</code> pour le stockage, et d’autre part d’exploiter les avancées des processeurs récents en matière de vectorisation des opérations. Dans cet exemple, la représentation en colonne des données dans la mémoire permet à la requête de filtrage sur les données de la colonne <code>session_id</code> d’être beaucoup plus efficiente que dans un format en mémoire traditionnel.
+</figcaption>
+</figure>
+</div>
+<p>Par ailleurs, <code>Arrow</code> comme <code>DuckDB</code> permettent tous deux d’augmenter considérablement les performances des requêtes sur les données grâce à l’utilisation de la <em>lazy evaluation</em> (“évaluation paresseuse”). Là où les opérations sur des données sont généralement exécutées de manière linéaire par les langages de programmation — par exemple, sélectionner des colonnes et/ou filtrer des lignes, puis calculer de nouvelles colonnes, puis effectuer des agrégations, etc. — <code>Arrow</code> et <code>DuckDB</code> exécutent quant à eux ces dernières selon un plan d’exécution pré-calculé qui optimise de manière globale la chaîne de traitements. Dans ce paradigme, les calculs sont non seulement beaucoup plus performants, mais également beaucoup plus efficients dans la mesure où ils n’impliquent de récupérer que les données effectivement nécessaires pour les traitements demandés. Ces innovations permettent ainsi d’envisager des traitements basés sur des données dont le volume total dépasse la mémoire RAM effectivement disponible sur une machine.</p>
+<div id="fig-duckdb-multisrc" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-duckdb-multisrc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../duckdb-multisrc.png" class="quarto-figure quarto-figure-center figure-img" height="400">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-duckdb-multisrc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10: Un avantage majeur de <code>DuckDB</code> est sa capacité à requêter de manière standardisée des sources de données très variées. DuckDB étant un format de base de données en mémoire, il est naturellement très adapté au requêtage de bases de données relationnelles (comme PostgreSQL ou MySQL). Mais ce <em>framework</em> peut également requêter de la même manière des fichiers de données (<code>CSV</code>, <code>Parquet</code>, etc.), qu’ils soient locaux ou stockés dans le <em>cloud</em>.
+</figcaption>
+</figure>
+</div>
+<p>La meilleure manière de se convaincre de l’apport du format <code>Parquet</code> consiste à tester celui-ci et à la comparer avec la même donnée enregistrée sous la forme d’un CSV, à la manière de la <a href="#fig-tableau-parquet" class="quarto-xref">Figure&nbsp;11</a>. Les applications proposées ci-dessous proposent d’illustrer les concepts évoqués précédemment (<em>lazy evaluation</em>, partionnemement, etc.) et les deux écosystèmes mentionnés (<code>Arrow</code> et <code>DuckDB</code>) à partir d’exemples simples, montrant la simplicité d’usage de ceux-ci lorsqu’on est familier du traitement de données. L’<a href="../chapters/application.html">application fil rouge</a> est plus succincte sur la partie <code>Parquet</code>.</p>
+<div id="fig-tableau-parquet" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-tableau-parquet-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/slides/img/tableau-perf-parquet.png" class="img-fluid figure-img" style="width:80.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tableau-parquet-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11: Exemple de comparaison des performances du format <code>Parquet</code> dans plusieurs cas d’usage sur les données détaillées du recensement de la population diffusées par l’Insee en 2023
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="applications" class="level1">
+<h1>Applications</h1>
+<p>Tout au long de cette application, nous allons voir comment utiliser le format <code>Parquet</code> de la manière la plus efficiente possible. Afin de comparer les différents formats et méthodes d’utilisation, nous allons <strong>comparer le temps d’exécution et l’usage mémoire d’une requête standard</strong>. Commençons déjà, sur un premier exemple avec une donnée légère, pour comparer les formats <code>CSV</code> et <code>Parquet</code>.</p>
+<p>Pour cela, nous allons avoir besoin de récupérer des données au format <code>Parquet</code>. Nous proposons d’utiliser les données détaillées et anonymisées du recensement de la population française: environ 20 millions de lignes pour 80 colonnes. Le code pour récupérer celles-ci est donné ci-dessous</p>
+<details>
+<summary>
+Code pour récupérer les données
+</summary>
+<div id="4b6c4025" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="annotated-cell-1" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-1-1"><a href="#annotated-cell-1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.parquet <span class="im">as</span> pq</span>
+<span id="annotated-cell-1-2"><a href="#annotated-cell-1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow <span class="im">as</span> pa</span>
+<span id="annotated-cell-1-3"><a href="#annotated-cell-1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="annotated-cell-1-4"><a href="#annotated-cell-1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-1-5"><a href="#annotated-cell-1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Définir le fichier de destination</span></span>
+<span id="annotated-cell-1-6"><a href="#annotated-cell-1-6" aria-hidden="true" tabindex="-1"></a>filename_table_individu <span class="op">=</span> <span class="st">"data/RPindividus.parquet"</span></span>
+<span id="annotated-cell-1-7"><a href="#annotated-cell-1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-1-8"><a href="#annotated-cell-1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Copier le fichier depuis le stockage distant (remplacer par une méthode adaptée si nécessaire)</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-1" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-1-9" class="code-annotation-target"><a href="#annotated-cell-1-9" aria-hidden="true" tabindex="-1"></a>os.system(<span class="st">"mc cp s3/projet-formation/bonnes-pratiques/data/RPindividus.parquet data/RPindividus.parquet"</span>)</span>
+<span id="annotated-cell-1-10"><a href="#annotated-cell-1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-1-11"><a href="#annotated-cell-1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Charger le fichier Parquet</span></span>
+<span id="annotated-cell-1-12"><a href="#annotated-cell-1-12" aria-hidden="true" tabindex="-1"></a>table <span class="op">=</span> pq.read_table(filename_table_individu)</span>
+<span id="annotated-cell-1-13"><a href="#annotated-cell-1-13" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> table.to_pandas()</span>
+<span id="annotated-cell-1-14"><a href="#annotated-cell-1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-1-15"><a href="#annotated-cell-1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Filtrer les données pour REGION == "24"</span></span>
+<span id="annotated-cell-1-16"><a href="#annotated-cell-1-16" aria-hidden="true" tabindex="-1"></a>df_filtered <span class="op">=</span> df.loc[df[<span class="st">"REGION"</span>] <span class="op">==</span> <span class="st">"24"</span>]</span>
+<span id="annotated-cell-1-17"><a href="#annotated-cell-1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-1-18"><a href="#annotated-cell-1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Sauvegarder en CSV</span></span>
+<span id="annotated-cell-1-19"><a href="#annotated-cell-1-19" aria-hidden="true" tabindex="-1"></a>df_filtered.to_csv(<span class="st">"data/RPindividus_24.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="annotated-cell-1-20"><a href="#annotated-cell-1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-1-21"><a href="#annotated-cell-1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Sauvegarder en Parquet</span></span>
+<span id="annotated-cell-1-22"><a href="#annotated-cell-1-22" aria-hidden="true" tabindex="-1"></a>pq.write_table(pa.Table.from_pandas(df_filtered), <span class="st">"data/RPindividus_24.parquet"</span>)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-annotation">
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-1" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-1" data-code-lines="9" data-code-annotation="1">Cette ligne de code utilise l’utilitaire Minio Client disponible sur le <code>SSPCloud</code>. Si vous n’êtes pas sur cette infrastructure, vous pouvez vous référer à la boite dédiée</span>
+</dd>
+</dl>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Si vous n’êtes pas sur le <code>SSPCloud</code>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Vous devrez remplacer la ligne</p>
+<div class="sourceCode" id="cb1" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>os.system(<span class="st">"mc cp s3/projet-formation/bonnes-pratiques/data/RPindividus.parquet data/RPindividus.parquet"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>qui utilise l’outil en ligne de commande <code>mc</code> par un code téléchargeant cette donnée à partir de l’URL <a href="https://projet-formation.minio.lab.sspcloud.fr/bonnes-pratiques/data/RPindividus.parquet">https://projet-formation.minio.lab.sspcloud.fr/bonnes-pratiques/data/RPindividus.parquet</a>.</p>
+<p>Il y a de nombreuses manières de faire. Vous pouvez par exemple le faire en pur <code>Python</code> avec <code>requests</code>. Si vous avez <code>curl</code> installé, vous pouvez aussi l’utiliser. Par l’intermédiaire de <code>Python</code>, cela donnera la commande <code>os.system("curl -o data/RPindividus.parquet https://projet-formation/bonnes-pratiques/data/RPindividus.parquet")</code>.</p>
+</div>
+</div>
+</div>
+</details>
+<p>Ces exercices vont utiliser des décorateurs <code>Python</code>, c’est-à-dire des fonctions qui surchargent le comportement d’une autre fonction. En l’occurrence, nous allons créer une fonction exécutant une chaine d’opérations et la surcharger avec une autre chargée de contrôler l’usage mémoire et le temps d’exécution.</p>
+<div class="callout callout-style-default callout-application callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Partie 1 : Du <code>CSV</code> au <code>Parquet</code>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<ul>
+<li><p>Créer un notebook <code>benchmark_parquet.ipynb</code> afin de réaliser les différentes comparaisons de performance de l’application</p></li>
+<li><p>Créons notre décorateur, en charge de <em>benchmarker</em> le code <code>Python</code>:</p>
+<div id="5ff21667" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Dérouler pour retrouver le code du décorateur permettant de mesurer la performance</summary>
+<div class="sourceCode cell-code" id="cb2" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> memory_profiler <span class="im">import</span> memory_usage</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> functools <span class="im">import</span> wraps</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">def</span> convert_size(size_bytes):</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> size_bytes <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>      <span class="cf">return</span> <span class="st">"0B"</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  size_name <span class="op">=</span> (<span class="st">"B"</span>, <span class="st">"KB"</span>, <span class="st">"MB"</span>, <span class="st">"GB"</span>, <span class="st">"TB"</span>, <span class="st">"PB"</span>, <span class="st">"EB"</span>, <span class="st">"ZB"</span>, <span class="st">"YB"</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  i <span class="op">=</span> <span class="bu">int</span>(math.floor(math.log(size_bytes, <span class="dv">1024</span>)))</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  p <span class="op">=</span> math.<span class="bu">pow</span>(<span class="dv">1024</span>, i)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  s <span class="op">=</span> <span class="bu">round</span>(size_bytes <span class="op">/</span> p, <span class="dv">2</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="st">"</span><span class="sc">%s</span><span class="st"> </span><span class="sc">%s</span><span class="st">"</span> <span class="op">%</span> (s, size_name[i])</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Decorator to measure execution time and memory usage</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="kw">def</span> measure_performance(func, return_output<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">@wraps</span>(func)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>      <span class="kw">def</span> wrapper(return_output<span class="op">=</span><span class="va">False</span>, <span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>          warnings.filterwarnings(<span class="st">"ignore"</span>)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>          start_time <span class="op">=</span> time.time()</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>          mem_usage <span class="op">=</span> memory_usage((func, args, kwargs), interval<span class="op">=</span><span class="fl">0.1</span>)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>          end_time <span class="op">=</span> time.time()</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>          warnings.filterwarnings(<span class="st">"always"</span>)</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>          exec_time <span class="op">=</span> end_time <span class="op">-</span> start_time</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>          peak_mem <span class="op">=</span> <span class="bu">max</span>(mem_usage)  <span class="co"># Peak memory usage</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>          exec_time_formatted <span class="op">=</span> <span class="ss">f"</span><span class="ch">\033</span><span class="ss">[92m</span><span class="sc">{</span>exec_time<span class="sc">:.4f}</span><span class="ss"> sec</span><span class="ch">\033</span><span class="ss">[0m"</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>          peak_mem_formatted <span class="op">=</span> <span class="ss">f"</span><span class="ch">\033</span><span class="ss">[92m</span><span class="sc">{</span>convert_size(<span class="dv">1024</span><span class="op">*</span>peak_mem)<span class="sc">}</span><span class="ch">\033</span><span class="ss">[0m"</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>          <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>func<span class="sc">.</span><span class="va">__name__</span><span class="sc">}</span><span class="ss"> - Execution Time: </span><span class="sc">{</span>exec_time_formatted<span class="sc">}</span><span class="ss"> | Peak Memory Usage: </span><span class="sc">{</span>peak_mem_formatted<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>          <span class="cf">if</span> return_output <span class="kw">is</span> <span class="va">True</span>:</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>              <span class="cf">return</span> func(<span class="op">*</span>args, <span class="op">**</span>kwargs)</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>      <span class="cf">return</span> wrapper</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div></li>
+<li><p>La requête suivante permet de calculer les données pour construire une pyramide des âges sur un département donné, à partir du fichier <code>CSV</code> du recensement. La tester dans votre <em>notebook</em>:</p>
+<div id="8ce68d58" class="cell" data-execution_count="3">
+<details class="code-fold">
+<summary>Dérouler pour récupérer le code de lecture du CSV</summary>
+<div class="sourceCode cell-code" id="cb3" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Charger le fichier CSV</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"data/RPindividus_24.csv"</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> (</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    df.loc[df[<span class="st">"DEPT"</span>] <span class="op">==</span> <span class="dv">36</span>]</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    .groupby([<span class="st">"AGED"</span>, <span class="st">"DEPT"</span>])[<span class="st">"IPONDI"</span>]</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">sum</span>().reset_index()</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    .rename(columns<span class="op">=</span>{<span class="st">"IPONDI"</span>: <span class="st">"n_indiv"</span>})</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div></li>
+<li><p>Reprendre ce code pour encapsuler ces opérations dans une fonction <code>process_csv_appli1</code> :</p>
+<div id="d2fe5990" class="cell" data-execution_count="4">
+<details class="code-fold">
+<summary>Dérouler pour récupérer le code pour mesurer les performances de la lecture en CSV</summary>
+<div class="sourceCode cell-code" id="cb4" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply the decorator to functions</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at">@measure_performance</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_csv_appli1(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.read_csv(<span class="st">"data/RPindividus_24.csv"</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        df.loc[df[<span class="st">"DEPT"</span>] <span class="op">==</span> <span class="dv">36</span>]</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        .groupby([<span class="st">"AGED"</span>, <span class="st">"DEPT"</span>])[<span class="st">"IPONDI"</span>]</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        .<span class="bu">sum</span>().reset_index()</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        .rename(columns<span class="op">=</span>{<span class="st">"IPONDI"</span>: <span class="st">"n_indiv"</span>})</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div></li>
+<li><p>Exécuter <code>process_csv_appli1()</code> et <code>process_csv_appli1(return_output=True)</code></p></li>
+<li><p>Sur le même modèle, construire une fonction <code>process_parquet_appli1</code> basée cette fois sur le fichier <code>data/RPindividus_24.parquet</code> chargé avec la fonction <a href="https://pandas.pydata.org/docs/reference/api/pandas.read_parquet.html">read_parquet</a> de <code>Pandas</code></p></li>
+<li><p>Comparer les performances (temps d’exécution et allocation mémoire) de ces deux méthodes grâce à la fonction.</p></li>
+</ul>
+<div id="6479c973" class="cell" data-execution_count="5">
+<details class="code-fold">
+<summary>Code complet de l’application</summary>
+<div class="sourceCode cell-code" id="cb5" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> memory_profiler <span class="im">import</span> memory_usage</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> functools <span class="im">import</span> wraps</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> convert_size(size_bytes):</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>   <span class="cf">if</span> size_bytes <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>       <span class="cf">return</span> <span class="st">"0B"</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>   size_name <span class="op">=</span> (<span class="st">"B"</span>, <span class="st">"KB"</span>, <span class="st">"MB"</span>, <span class="st">"GB"</span>, <span class="st">"TB"</span>, <span class="st">"PB"</span>, <span class="st">"EB"</span>, <span class="st">"ZB"</span>, <span class="st">"YB"</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>   i <span class="op">=</span> <span class="bu">int</span>(math.floor(math.log(size_bytes, <span class="dv">1024</span>)))</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>   p <span class="op">=</span> math.<span class="bu">pow</span>(<span class="dv">1024</span>, i)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>   s <span class="op">=</span> <span class="bu">round</span>(size_bytes <span class="op">/</span> p, <span class="dv">2</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>   <span class="cf">return</span> <span class="st">"</span><span class="sc">%s</span><span class="st"> </span><span class="sc">%s</span><span class="st">"</span> <span class="op">%</span> (s, size_name[i])</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Decorator to measure execution time and memory usage</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> measure_performance(func, return_output<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">@wraps</span>(func)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> wrapper(return_output<span class="op">=</span><span class="va">False</span>, <span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>        warnings.filterwarnings(<span class="st">"ignore"</span>)</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>        start_time <span class="op">=</span> time.time()</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>        mem_usage <span class="op">=</span> memory_usage((func, args, kwargs), interval<span class="op">=</span><span class="fl">0.1</span>)</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>        end_time <span class="op">=</span> time.time()</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>        warnings.filterwarnings(<span class="st">"always"</span>)</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>        exec_time <span class="op">=</span> end_time <span class="op">-</span> start_time</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>        peak_mem <span class="op">=</span> <span class="bu">max</span>(mem_usage)  <span class="co"># Peak memory usage</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>        exec_time_formatted <span class="op">=</span> <span class="ss">f"</span><span class="ch">\033</span><span class="ss">[92m</span><span class="sc">{</span>exec_time<span class="sc">:.4f}</span><span class="ss"> sec</span><span class="ch">\033</span><span class="ss">[0m"</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>        peak_mem_formatted <span class="op">=</span> <span class="ss">f"</span><span class="ch">\033</span><span class="ss">[92m</span><span class="sc">{</span>convert_size(<span class="dv">1024</span><span class="op">*</span>peak_mem)<span class="sc">}</span><span class="ch">\033</span><span class="ss">[0m"</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>func<span class="sc">.</span><span class="va">__name__</span><span class="sc">}</span><span class="ss"> - Execution Time: </span><span class="sc">{</span>exec_time_formatted<span class="sc">}</span><span class="ss"> | Peak Memory Usage: </span><span class="sc">{</span>peak_mem_formatted<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> return_output <span class="kw">is</span> <span class="va">True</span>:</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> func(<span class="op">*</span>args, <span class="op">**</span>kwargs)</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> wrapper</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply the decorator to functions</span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="at">@measure_performance</span></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_csv(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.read_csv(<span class="st">"data/RPindividus_24.csv"</span>)</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>        df.loc[df[<span class="st">"DEPT"</span>] <span class="op">==</span> <span class="dv">36</span>]</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>        .groupby([<span class="st">"AGED"</span>, <span class="st">"DEPT"</span>])[<span class="st">"IPONDI"</span>]</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>        .<span class="bu">sum</span>().reset_index()</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>        .rename(columns<span class="op">=</span>{<span class="st">"IPONDI"</span>: <span class="st">"n_indiv"</span>})</span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a><span class="at">@measure_performance</span></span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_parquet(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.read_parquet(<span class="st">"data/RPindividus_24.parquet"</span>)</span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>        df.loc[df[<span class="st">"DEPT"</span>] <span class="op">==</span> <span class="st">"36"</span>]</span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>        .groupby([<span class="st">"AGED"</span>, <span class="st">"DEPT"</span>])[<span class="st">"IPONDI"</span>]</span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>        .<span class="bu">sum</span>().reset_index()</span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>        .rename(columns<span class="op">=</span>{<span class="st">"IPONDI"</span>: <span class="st">"n_indiv"</span>})</span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>process_csv()</span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>process_parquet()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</div>
+</div>
+</div>
+<p><em>❓️ Quelle semble être la limite de la fonction <code>read_parquet</code> ?</em></p>
+<p>On gagne déjà un temps conséquent en lecture mais on ne bénéficie pas vraiment de l’optimisation permise par <code>Parquet</code> car on transforme les données directement après la lecture en <code>DataFrame</code> <code>Pandas</code>. On n’utilise donc pas l’une des fonctionnalités principales du format <code>Parquet</code>, qui explique ses excellentes performances: le <em>predicate pushdown</em> qui consiste à optimiser notre traitement pour faire remonter, le plus tôt possible, les filtres sur les colonnes pour ne garder que celles vraiment utilisées dans le traitement.</p>
+<div class="callout callout-style-default callout-application callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Partie 2 : Exploiter la <em>lazy evaluation</em> et les optimisations d’<code>Arrow</code> ou de <code>DuckDB</code>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>La partie précédente a montré un <strong>gain de temps considérable</strong> du passage de <code>CSV</code> à <code>Parquet</code>. Néanmoins, l’<strong>utilisation mémoire était encore très élevée</strong> alors qu’on utilise de fait qu’une infime partie du fichier.</p>
+<p>Dans cette partie, on va voir comment utiliser la <strong><em>lazy evaluation</em></strong> et les <strong>optimisations du plan d’exécution</strong> effectuées par <code>Arrow</code> pour exploiter pleinement la puissance du format <code>Parquet</code>.</p>
+<ul>
+<li>Ouvrir le fichier <code>data/RPindividus_24.parquet</code> avec <a href="https://arrow.apache.org/docs/python/dataset.html">pyarrow.dataset</a>. Regarder la classe de l’objet obtenu.</li>
+<li>Tester le code ci-dessous pour lire un échantillon de données:</li>
+</ul>
+<div id="72e1e9c4" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb6" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    dataset.scanner()</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    .head(<span class="dv">5</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    .to_pandas()</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Comprenez-vous la différence avec précédemment ? Observez dans la documentation la méthode <code>to_table</code> : comprenez-vous son principe ?</p>
+<ul>
+<li>Construire une fonction <code>summarize_parquet_arrow</code> (resp. <code>summarize_parquet_duckdb</code>) qui importe cette fois les données avec la fonction <a href="https://arrow.apache.org/docs/python/dataset.html"><code>pyarrow.dataset</code></a> (resp. avec <code>DuckDB</code>) et effectue l’agrégation voulue.</li>
+<li>Comparer les performances (temps d’exécution et allocation mémoire) des trois méthodes (<code>Parquet</code> lu et processé avec <code>Pandas</code>, <code>Arrow</code> et <code>DuckDB</code>) grâce à notre fonction.</li>
+</ul>
+<div id="8bef434b" class="cell" data-execution_count="7">
+<details class="code-fold">
+<summary>Code complet de l’application</summary>
+<div class="sourceCode cell-code" id="cb7" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.dataset <span class="im">as</span> ds</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="at">@measure_performance</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> summarize_parquet_duckdb(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    con <span class="op">=</span> duckdb.<span class="ex">connect</span>(<span class="st">":memory:"</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    query <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="st">    FROM read_parquet('data/RPindividus_24.parquet')</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="st">    SELECT AGED, DEPT, SUM(IPONDI) AS n_indiv</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="st">    GROUP BY AGED, DEPT</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="st">    """</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (con.sql(query).to_df())</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="at">@measure_performance</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> summarize_parquet_arrow(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    dataset <span class="op">=</span> ds.dataset(<span class="st">"data/RPindividus_24.parquet"</span>, <span class="bu">format</span><span class="op">=</span><span class="st">"parquet"</span>)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    table <span class="op">=</span> dataset.to_table()</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    grouped_table <span class="op">=</span> (</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>        table</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>        .group_by([<span class="st">"AGED"</span>, <span class="st">"DEPT"</span>])</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>        .aggregate([(<span class="st">"IPONDI"</span>, <span class="st">"sum"</span>)])</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>        .rename_columns([<span class="st">"AGED"</span>, <span class="st">"DEPT"</span>, <span class="st">"n_indiv"</span>])</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>        .to_pandas()</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>        grouped_table</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>process_parquet()</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>summarize_parquet_duckdb()</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>summarize_parquet_arrow()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</div>
+</div>
+</div>
+<p>Avec l’évaluation différée, on obtient donc un processus en plusieurs temps:</p>
+<ul>
+<li><code>Arrow</code> ou <code>DuckDB</code> reçoit des instructions, les optimise, exécute les requêtes</li>
+<li>Seules les données en sortie de cette chaîne sont renvoyées à <code>Python</code></li>
+</ul>
+<p><img src="https://linogaliana.github.io/parquet-recensement-tutomate/img/duckdb-delegation1.png" class="img-fluid"></p>
+<section id="application-3" class="level2 smaller">
+<h2 class="smaller anchored" data-anchor-id="application-3">Application 3</h2>
+<div class="callout callout-style-default callout-application callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Partie 3a : Et si on filtrait sur les lignes ?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>Ajoutez une étape de filtre sur les lignes dans nos requêtes:</p>
+<ul>
+<li>Avec <code>DuckDB</code>, vous devez modifier la requête avec un <code>WHERE DEPT IN ('18', '28', '36')</code></li>
+<li>Avec <code>Arrow</code>, vous devez modifier l’étape <code>to_table</code> de cette manière: <code>dataset.to_table(filter=pc.field("DEPT").isin(['18', '28', '36']))</code></li>
+</ul>
+<div id="986a858e" class="cell" data-execution_count="8">
+<details class="code-fold">
+<summary>Correction de cet exercice</summary>
+<div class="sourceCode cell-code" id="cb8" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.dataset <span class="im">as</span> ds</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.compute <span class="im">as</span> pc</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="at">@measure_performance</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> summarize_filter_parquet_arrow(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    dataset <span class="op">=</span> ds.dataset(<span class="st">"data/RPindividus.parquet"</span>, <span class="bu">format</span><span class="op">=</span><span class="st">"parquet"</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    table <span class="op">=</span> dataset.to_table(<span class="bu">filter</span><span class="op">=</span>pc.field(<span class="st">"DEPT"</span>).isin([<span class="st">'18'</span>, <span class="st">'28'</span>, <span class="st">'36'</span>]))</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    grouped_table <span class="op">=</span> (</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>        table</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        .group_by([<span class="st">"AGED"</span>, <span class="st">"DEPT"</span>])</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        .aggregate([(<span class="st">"IPONDI"</span>, <span class="st">"sum"</span>)])</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>        .rename_columns([<span class="st">"AGED"</span>, <span class="st">"DEPT"</span>, <span class="st">"n_indiv"</span>])</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>        .to_pandas()</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        grouped_table</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="at">@measure_performance</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> summarize_filter_parquet_duckdb(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    con <span class="op">=</span> duckdb.<span class="ex">connect</span>(<span class="st">":memory:"</span>)</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    query <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="st">    FROM read_parquet('data/RPindividus_24.parquet')</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="st">    SELECT AGED, DEPT, SUM(IPONDI) AS n_indiv</span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="st">    WHERE DEPT IN ('11','31','34')</span></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="st">    GROUP BY AGED, DEPT</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="st">    """</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (con.sql(query).to_df())</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>summarize_filter_parquet_arrow()</span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>summarize_filter_parquet_duckdb()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</div>
+</div>
+</div>
+<p><em>❓️ Pourquoi ne gagne-t-on pas de temps avec nos filtres sur les lignes (voire pourquoi en perdons nous?) comme c’est le cas avec les filtres sur les colonnes ?</em></p>
+<p>La donnée n’est pas organisée par blocs de lignes comme elle l’est pas bloc de colonne. Heureusement, il existe pour cela un moyen: le partitionnement !</p>
+<div class="callout callout-style-default callout-application callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Partie 3 : Le <code>Parquet</code> partitionné
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>La <em>lazy evaluation</em> et les optimisations d’<code>Arrow</code> apportent des gain de performance considérables. Mais on peut encore faire mieux ! Lorsqu’on sait qu’on va être amené à <strong>filter régulièrement les données selon une variable d’intérêt</strong>, on a tout intérêt à <strong>partitionner</strong> le fichier <code>Parquet</code> selon cette variable.</p>
+<ol type="1">
+<li><p>Parcourir la documentation de la fonction <a href="https://arrow.apache.org/docs/python/parquet.html#writing-to-partitioned-datasets"><code>pyarrow.parquet.write_to_dataset</code></a> pour comprendre comment spécifier une clé de partitionnement lors de l’écriture d’un fichier <code>Parquet</code>. Plusieurs méthodes sont possibles.</p></li>
+<li><p>Importer la table complète des individus du recensement depuis <code>"data/RPindividus.parquet"</code> avec la fonction <a href="https://arrow.apache.org/docs/python/generated/pyarrow.dataset.dataset.html"><code>pyarrow.dataset.dataset</code></a> et l’exporter en une table partitionnée <code>"data/RPindividus_partitionne.parquet"</code>, partitionnée par la région (<code>REGION</code>) et le département (<code>DEPT</code>).</p></li>
+<li><p>Observer l’arborescence des fichiers de la table exportée pour voir comment la partition a été appliquée.</p></li>
+<li><p>Modifier nos fonctions d’import, filtre et agrégations via <code>Arrow</code> ou <code>DuckDB</code> pour utiliser, cette fois, le <code>Parquet</code> partitionné. Comparer à l’utilisation du fichier non partitionné.</p></li>
+</ol>
+<div id="f4e1325a" class="cell" data-execution_count="9">
+<details class="code-fold">
+<summary>Correction de la question 2 (écriture du Parquet partitionné)</summary>
+<div class="sourceCode cell-code" id="cb9" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.parquet <span class="im">as</span> pq</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>dataset <span class="op">=</span> ds.dataset(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"data/RPindividus.parquet"</span>, <span class="bu">format</span><span class="op">=</span><span class="st">"parquet"</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>).to_table()</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>pq.write_to_dataset(</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    dataset,</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    root_path<span class="op">=</span><span class="st">"data/RPindividus_partitionne"</span>,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    partition_cols<span class="op">=</span>[<span class="st">"REGION"</span>, <span class="st">"DEPT"</span>]</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="586358a3" class="cell" data-execution_count="10">
+<details class="code-fold">
+<summary>Correction de la question 4 (lecture du Parquet partitionné)</summary>
+<div class="sourceCode cell-code" id="cb10" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.dataset <span class="im">as</span> ds</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.compute <span class="im">as</span> pc</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="at">@measure_performance</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> summarize_filter_parquet_partitioned_arrow(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    dataset <span class="op">=</span> ds.dataset(<span class="st">"data/RPindividus_partitionne/"</span>, partitioning<span class="op">=</span><span class="st">"hive"</span>)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    table <span class="op">=</span> dataset.to_table(<span class="bu">filter</span><span class="op">=</span>pc.field(<span class="st">"DEPT"</span>).isin([<span class="st">'18'</span>, <span class="st">'28'</span>, <span class="st">'36'</span>]))</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    grouped_table <span class="op">=</span> (</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>        table</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>        .group_by([<span class="st">"AGED"</span>, <span class="st">"DEPT"</span>])</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>        .aggregate([(<span class="st">"IPONDI"</span>, <span class="st">"sum"</span>)])</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>        .rename_columns([<span class="st">"AGED"</span>, <span class="st">"DEPT"</span>, <span class="st">"n_indiv"</span>])</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>        .to_pandas()</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>        grouped_table</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a><span class="at">@measure_performance</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> summarize_filter_parquet_complete_arrow(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>    dataset <span class="op">=</span> ds.dataset(<span class="st">"data/RPindividus.parquet"</span>)</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    table <span class="op">=</span> dataset.to_table(<span class="bu">filter</span><span class="op">=</span>pc.field(<span class="st">"DEPT"</span>).isin([<span class="st">'18'</span>, <span class="st">'28'</span>, <span class="st">'36'</span>]))</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>    grouped_table <span class="op">=</span> (</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>        table</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>        .group_by([<span class="st">"AGED"</span>, <span class="st">"DEPT"</span>])</span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>        .aggregate([(<span class="st">"IPONDI"</span>, <span class="st">"sum"</span>)])</span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>        .rename_columns([<span class="st">"AGED"</span>, <span class="st">"DEPT"</span>, <span class="st">"n_indiv"</span>])</span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>        .to_pandas()</span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>        grouped_table</span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a><span class="at">@measure_performance</span></span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> summarize_filter_parquet_complete_duckdb(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>    con <span class="op">=</span> duckdb.<span class="ex">connect</span>(<span class="st">":memory:"</span>)</span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>    query <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a><span class="st">    FROM read_parquet('data/RPindividus.parquet')</span></span>
+<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a><span class="st">    SELECT AGED, DEPT, SUM(IPONDI) AS n_indiv</span></span>
+<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a><span class="st">    WHERE DEPT IN ('11','31','34')</span></span>
+<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a><span class="st">    GROUP BY AGED, DEPT</span></span>
+<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a><span class="st">    """</span></span>
+<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (con.sql(query).to_df())</span>
+<span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-55"><a href="#cb10-55" aria-hidden="true" tabindex="-1"></a><span class="at">@measure_performance</span></span>
+<span id="cb10-56"><a href="#cb10-56" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> summarize_filter_parquet_partitioned_duckdb(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb10-57"><a href="#cb10-57" aria-hidden="true" tabindex="-1"></a>    con <span class="op">=</span> duckdb.<span class="ex">connect</span>(<span class="st">":memory:"</span>)</span>
+<span id="cb10-58"><a href="#cb10-58" aria-hidden="true" tabindex="-1"></a>    query <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb10-59"><a href="#cb10-59" aria-hidden="true" tabindex="-1"></a><span class="st">    FROM read_parquet('data/RPindividus_partitionne/**/*.parquet', hive_partitioning = True)</span></span>
+<span id="cb10-60"><a href="#cb10-60" aria-hidden="true" tabindex="-1"></a><span class="st">    SELECT AGED, DEPT, SUM(IPONDI) AS n_indiv</span></span>
+<span id="cb10-61"><a href="#cb10-61" aria-hidden="true" tabindex="-1"></a><span class="st">    WHERE DEPT IN ('11','31','34')</span></span>
+<span id="cb10-62"><a href="#cb10-62" aria-hidden="true" tabindex="-1"></a><span class="st">    GROUP BY AGED, DEPT</span></span>
+<span id="cb10-63"><a href="#cb10-63" aria-hidden="true" tabindex="-1"></a><span class="st">    """</span></span>
+<span id="cb10-64"><a href="#cb10-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-65"><a href="#cb10-65" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (con.sql(query).to_df())</span>
+<span id="cb10-66"><a href="#cb10-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-67"><a href="#cb10-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-68"><a href="#cb10-68" aria-hidden="true" tabindex="-1"></a>summarize_filter_parquet_complete_arrow()</span>
+<span id="cb10-69"><a href="#cb10-69" aria-hidden="true" tabindex="-1"></a>summarize_filter_parquet_partitioned_arrow()</span>
+<span id="cb10-70"><a href="#cb10-70" aria-hidden="true" tabindex="-1"></a>summarize_filter_parquet_complete_duckdb()</span>
+<span id="cb10-71"><a href="#cb10-71" aria-hidden="true" tabindex="-1"></a>summarize_filter_parquet_partitioned_duckdb()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</div>
+</div>
+</div>
+<p><em>❓️ Dans le cadre d’une mise à disposition de données en <code>Parquet</code>, comment bien choisir la/les clé(s) de partitionnement ? Quelle est la limite à garder en tête ?</em></p>
+</section>
+<section id="pour-aller-plus-loin" class="level2">
+<h2 class="anchored" data-anchor-id="pour-aller-plus-loin">Pour aller plus loin</h2>
+<ul>
+<li>La <a href="https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/">formation aux bonnes pratiques <code>R</code> et <code>Git</code></a> développée par l’Insee avec des éléments très similaires à ceux présentés dans ce chapitre.</li>
+<li>Un <a href="https://linogaliana.github.io/parquet-recensement-tutomate/">atelier</a> sur le format <code>Parquet</code> et l’écosystème <code>DuckDB</code> pour l’EHESS avec des exemples <code>R</code> et <code>Python</code> utilisant la même source de données que l’application.</li>
+<li>Le <a href="https://ssphub.netlify.app/post/parquetrp/">guide de prise en main</a> des données du recensement au format <code>Parquet</code> avec des exemples d’utilisation de <code>DuckDB</code> en WASM (directement depuis le navigateur, sans installation <code>R</code> ou <code>Python</code>)</li>
+</ul>
+
+
+
+</section>
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-abdelaziz2023optimizing" class="csl-entry" role="listitem">
+Abdelaziz, Abdullah I, Kent A Hanson, Charles E Gaber, and Todd A Lee. 2023. <span>“Optimizing Large Real-World Data Analysis with Parquet Files in r: A Step-by-Step Tutorial.”</span> <em>Pharmacoepidemiology and Drug Safety</em>.
+</div>
+<div id="ref-chaudhuri1997overview" class="csl-entry" role="listitem">
+Chaudhuri, Surajit, and Umeshwar Dayal. 1997. <span>“An Overview of Data Warehousing and OLAP Technology.”</span> <em>ACM Sigmod Record</em> 26 (1): 65–74.
+</div>
+<div id="ref-dean2008mapreduce" class="csl-entry" role="listitem">
+Dean, Jeffrey, and Sanjay Ghemawat. 2008. <span>“MapReduce: Simplified Data Processing on Large Clusters.”</span> <em>Communications of the ACM</em> 51 (1): 107–13.
+</div>
+<div id="ref-dondon2023quels" class="csl-entry" role="listitem">
+Dondon, Alexis, and Pierre Lamarche. 2023. <span>“Quels Formats Pour Quelles Donn<span>é</span>es?”</span> <em>Courrier Des Statistiques</em>, 86–103.
+</div>
+<div id="ref-ghemawat2003google" class="csl-entry" role="listitem">
+Ghemawat, Sanjay, Howard Gobioff, and Shun-Tak Leung. 2003. <span>“The Google File System.”</span> In <em>Proceedings of the Nineteenth ACM Symposium on Operating Systems Principles</em>, 29–43.
+</div>
+<div id="ref-li2020big" class="csl-entry" role="listitem">
+Li, Yun, Manzhu Yu, Mengchao Xu, Jingchao Yang, Dexuan Sha, Qian Liu, and Chaowei Yang. 2020. <span>“Big Data and Cloud Computing.”</span> <em>Manual of Digital Earth</em>, 325–55.
+</div>
+<div id="ref-mesnier2003object" class="csl-entry" role="listitem">
+Mesnier, Mike, Gregory R Ganger, and Erik Riedel. 2003. <span>“Object-Based Storage.”</span> <em>IEEE Communications Magazine</em> 41 (8): 84–90.
+</div>
+<div id="ref-sagiroglu2013big" class="csl-entry" role="listitem">
+Sagiroglu, Seref, and Duygu Sinanc. 2013. <span>“Big Data: A Review.”</span> In <em>2013 International Conference on Collaboration Technologies and Systems (CTS)</em>, 42–47. IEEE.
+</div>
+<div id="ref-samundiswary2017object" class="csl-entry" role="listitem">
+Samundiswary, S, and Nilma M Dongre. 2017. <span>“Object Storage Architecture in Cloud for Unstructured Data.”</span> In <em>2017 International Conference on Inventive Systems and Control (ICISC)</em>, 1–6. IEEE.
+</div>
+<div id="ref-Tigani_2023" class="csl-entry" role="listitem">
+Tigani, Jordan. 2023. <span>“Big Data Is Dead.”</span> <a href="https://motherduck.com/blog/big-data-is-dead/">https://motherduck.com/blog/big-data-is-dead/</a>.
+</div>
+</div></section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.js" defer="true"></script>
+</body></html>
