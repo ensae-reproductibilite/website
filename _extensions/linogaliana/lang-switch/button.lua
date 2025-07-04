@@ -14,7 +14,7 @@ function RawBlock(el)
 
   // Gérer les cas avec un sous-répertoire comme /website
   const normalizedPath = currentPath.replace(/^\/website/, "");
-  const isEnglish = normalizedPath.startsWith("/en/");
+  const isEnglish = normalizedPath.includes("/en/");
   let targetHref, label, svg;
 
   if (isEnglish) {
