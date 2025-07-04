@@ -1,0 +1,129 @@
+
+::: {.content-visible when-profile="fr"}
+
+# Les bonnes pratiques de développement
+
+## Origine
+
+La notion de "bonnes pratiques" qui nous intéresse dans ce cours trouve son origine au sein de la communauté des développeurs logiciels.
+Elle constitue une réponse à plusieurs constats :
+
+- le _"code est beaucoup plus souvent lu qu'il n'est écrit"_ (Guido Van Rossum) ;
+- la maintenance d'un code demande souvent (beaucoup) plus de ressources que son développement initial ;
+- la personne qui maintient une base de code a de fortes chances de ne pas être celle qui l'a écrite.
+
+Face à ces constats, un **ensemble de règles informelles** ont été conventionnellement acceptées par la communauté des développeurs comme **produisant des logiciels plus fiables, évolutifs et maintenables dans le temps**. Comme toutes conventions de langue, certaines peuvent paraître arbitraires. Ces règles favorisent néanmoins la capacité à communiquer du code, un aspect communautaire qui peut paraître secondaire au premier abord mais qui est pourtant le principe ayant fait le succès d'un langage _open source_ en favorisant le partage d'expérience et d'assistance.
+
+:::: {.callout-note collapse="true"}
+## La [`12 Factor App`](https://12factor.net/fr/)
+
+Récemment, dans le contexte d'une évolution des logiciels vers des applications web vivant dans le *cloud*, un certain nombre de ces bonnes pratiques ont été formalisées dans un manifeste : la [`12 Factor App`](https://12factor.net/fr/).
+Le développement du _cloud_, c'est-à-dire d'infrastructures standardisées hors des
+systèmes d'information des détenteurs de données,
+rend les besoins de bonnes pratiques plus prégnant.
+::::
+
+## Pourquoi s'intéresser aux bonnes pratiques ?
+
+> En quoi est-ce pertinent pour le *data scientist*, dont le rôle n'est pas de développer des applications mais de donner du sens aux données ?
+
+Du fait du développement rapide de la *data science* et conséquemment de la croissance de la taille moyenne des projets, l'activité du *data scientist* tend à se rapprocher par certains aspects de celle du développeur :
+
+- les projets sur lesquels travaille le *data scientist* sont __intenses en code__ ;
+- il doit travailler de manière __collaborative__ au sein de projets de __grande envergure__ ;
+- il est de plus en plus amené à travailler à partir de données massives, ce qui nécessite de travailler sur des __infrastructures *big data* informatiquement complexes__ ;
+- il est amené à __interagir avec des profils informatiques__ pour déployer ses modèles et les rendre accessibles à des utilisateurs.
+
+Aussi, il fait sens pour le *data scientist* moderne de s'intéresser aux bonnes pratiques en vigueur dans la communauté des développeurs. Bien entendu, celles-ci doivent être adaptées aux spécificités des projets basés sur des données.
+L'effet bénéfique de ces bonnes pratiques est que les projets les adoptant auront un coût bien plus minimal
+pour évoluer, ce qui les rend plus compétitif dans un écosystème mouvant comme l'est la _data science_
+où les données, les outils et les attentes des utilisateurs sont en changements continuels.
+
+## Un continuum de bonnes pratiques
+
+La notion de bonnes pratiques ne doit pas être vue de manière binaire : il n'y a pas d'un côté les projets qui les appliquent et de l'autre ceux qui ne les appliquent pas. Les bonnes pratiques ont un __coût__, qu'il ne faut pas négliger — même si leur application évite aussi des coûts futurs, notamment en terme de maintenance. Il faut donc plutôt **voir les bonnes pratiques comme un spectre, sur lequel on vient positionner son projet en fonction de différents critères**, notamment du coût-avantage à avancer d'un niveau dans le spectre de la reproductibilité.
+
+La détermination du seuil pertinent doit résulter d'un arbitrage entre différents critères liés au projet :
+
+- **ambitions** : le projet est-il amené à évoluer, prendre de l'ampleur ? Est-il destiné à devenir collaboratif, que ce soit dans le cadre d'une équipe en organisation ou bien en *open-source* ? Les *outputs* du projet ont-ils vocation à être diffusés au grand public ?
+- **ressources** : quels sont les moyens humain du projet ? Pour un projet *open-source*, existe-t-il une communauté potentielle de contributeurs ?
+- **contraintes** : le projet a-t-il une échéance proche ? Des exigences de qualité ont-elles été fixées ? Est-il destiné à la mise en production ? Existe-t-il des enjeux de sécurité forts ?
+- **public cible**: à quels profils s'adresse les différentes valorisations de données de ce projet ? Quel est leur niveau de technicité et le temps qu'elles vont consacrer à suivre votre projet ?
+
+Il n'est donc pas question pour nous de suggérer que tout projet de *data science* doit respecter toutes les bonnes pratiques présentées dans ce cours.
+Cela étant dit, nous sommes convaincus qu'il est important pour tout *data scientist* de réfléchir à ces questions pour améliorer ces pratiques au fil du temps.
+
+En particulier, nous pensons qu'il est possible de définir un socle, i.e. un **ensemble minimal de bonnes pratiques** qui apportent plus d'avantages qu'elles ne coûtent à implémenter. Notre suggestion pour un tel socle est la suivante :
+
+- Contrôler la qualité de son code en utilisant des outils dédiés (cf. chapitre [Qualité du Code](/chapters/code-quality.qmd)) ;
+- Adopter une structure standardisée de projet en utilisant des *templates* prêts à l'emploi (cf. chapitre [Architecture des Projets](/chapters/projects-architecture.qmd)) ;
+- Utiliser `Git` pour versionner le code de ses projets, qu'ils impliquent d'autres développeurs ou seulement vous (cf. chapitre [Versionner son code et travailler collaborativement avec Git](/chapters/git.html)) ;
+- contrôler les dépendances de son projet en développant dans des environnements virtuels (cf. chapitre [Portabilité](/chapters/portability.html)).
+
+Les étapes suivantes dans l'échelle de la reproductibilité dépendront de l'arbitrage coût-avantage.
+L'adoption du socle minimal de reproductibilité facilitera énormément l'avancée ultérieure
+dans l'ambition d'un projet.
+
+Faisons à présent un tour d'horizon des principes défendus dans ce cours
+et de la progression logique de celui-ci.
+
+:::
+::: {.content-visible when-profile="en"}
+
+# Development Best Practices
+
+## Origin
+
+The notion of “best practices” as used in this course originates from the software development community. It emerged in response to several observations:
+
+- _“Code is read much more often than it is written”_ (Guido Van Rossum);
+- Maintaining code often requires (much) more effort than writing it initially;
+- The person maintaining the codebase is likely not the one who wrote it.
+
+In light of these realities, the developer community has conventionally agreed on an **informal set of rules** recognized as producing **more reliable, scalable, and maintainable software over time**. Like language conventions, some may seem arbitrary—but they support a critical goal: enabling code to be shared and communicated effectively. This may seem secondary at first, but it's a key factor in the success of *open source* languages, which thrive on shared experience and collaboration.
+
+:::: {.callout-note collapse="true"}
+## The [`12 Factor App`](https://12factor.net/)
+
+Recently, as software has evolved toward cloud-based web applications, many of these best practices were formalized in a manifesto known as the [`12 Factor App`](https://12factor.net/). The rise of the *cloud*—i.e., standardized infrastructures external to traditional in-house data systems—makes adopting good practices more crucial than ever.
+::::
+
+## Why Care About Best Practices?
+
+> Why should this matter to a *data scientist*, whose job is to derive insights from data—not build applications?
+
+Due to the rapid growth of *data science* and the increasing size of typical projects, the *data scientist*'s work is becoming more similar in some ways to that of a developer:
+
+- *Data science* projects involve __intensive coding__;
+- Collaboration is required on __large-scale projects__;
+- Massive datasets require working on __technically complex big data infrastructures__;
+- The *data scientist* must __collaborate with technical roles__ to deploy models and make them accessible to users.
+
+Thus, it makes sense for modern *data scientists* to take interest in the best practices adopted by developers. Naturally, these need to be tailored to data-centered projects. The upside is significant: projects that adopt best practices are much cheaper to evolve—making them more competitive in the ever-changing data science ecosystem, where tools, data, and user expectations constantly shift.
+
+## A Continuum of Best Practices
+
+Best practices should not be viewed in a binary way: it's not that some projects follow them and others don’t. Best practices come with a __cost__, which should not be overlooked—even though they prevent future costs, especially in maintenance. It’s better to **view best practices as a spectrum**, and position your project on it based on cost-benefit analysis, particularly in terms of improving reproducibility.
+
+The appropriate threshold depends on trade-offs specific to your project:
+
+- **Ambitions**: Will the project grow or evolve? Is it meant to become collaborative—within a team or as open source? Are the outputs intended for public release?
+- **Resources**: What human resources are available? For open-source work, is there a potential contributor community?
+- **Constraints**: Are there tight deadlines? Specific quality requirements? Is deployment expected? Are there major security concerns?
+- **Target audience**: Who will consume the project’s data products? What’s their technical level, and how much time will they spend engaging with your work?
+
+We are not suggesting that every *data science* project must follow all the best practices covered in this course. That said, we strongly believe every *data scientist* should consider these questions and continuously improve their practices.
+
+In particular, we believe it’s possible to define a core set—i.e., a **minimal set of best practices** that provide more value than they cost to implement. Here’s our suggestion for such a baseline:
+
+- Use dedicated tools to check code quality (see [Code Quality](/chapters/code-quality.qmd));
+- Use a standardized project structure with ready-made templates (see [Project Architecture](/chapters/projects-architecture.qmd));
+- Use `Git` to version your code, whether or not you're working with others (see [Version Control and Collaboration with Git](/chapters/git.html));
+- Manage project dependencies with virtual environments (see [Portability](/chapters/portability.html)).
+
+Beyond this minimal baseline, decisions should weigh costs and benefits.
+But adopting this foundational level of reproducibility will make further progress much easier as your project grows.
+
+Let’s now look at the core principles promoted by this course and how the content is logically structured.
+
+:::
