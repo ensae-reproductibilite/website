@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Introduction à l’utilisation du terminal Linux, un outil essentiel pour le data scientist qui s’intéresse à la mise en production.">
+
+<title>Linux 101 – Putting into production course</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-a98ec624fb63d9b712fc3a6f62e2b305.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/fontawesome6-1.2.0/all.min.css" rel="stylesheet">
+<link href="../site_libs/quarto-contrib/fontawesome6-1.2.0/latex-fontsize.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<style>
+div.callout-application.callout {
+  border-left-color: #9c5bd9;
+}
+div.callout-application.callout-style-default > .callout-header {
+  background-color: rgba(156, 91, 217, 0.13);
+}
+div.callout-application .callout-toggle::before {  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(33, 37, 41)" class="bi bi-chevron-down" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/></svg>');}
+div.callout-application.callout-style-default .callout-icon::before, div.callout-application.callout-titled .callout-icon::before {
+  content: '🧠';
+  background-image: none;
+}
+</style>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Putting into production course</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://ensae-reproductibilite.github.io/"> 
+<span class="menu-text">Putting into production</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/introduction.html"> 
+<span class="menu-text">Introduction</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-fundamentals" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Fundamentals</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-fundamentals">    
+        <li>
+    <a class="dropdown-item" href="../chapters/linux101.html">
+ <span class="dropdown-text">Linux 101</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/git.html">
+ <span class="dropdown-text">Git</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-good-development-practices" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Good development practices</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-good-development-practices">    
+        <li>
+    <a class="dropdown-item" href="../chapters/code-quality.html">
+ <span class="dropdown-text">Code quality</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/projects-architecture.html">
+ <span class="dropdown-text">Projects structure</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/big-data.html">
+ <span class="dropdown-text">Big data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/portability.html">
+ <span class="dropdown-text">Portability</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-putting-into-production" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Putting into production</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-putting-into-production">    
+        <li>
+    <a class="dropdown-item" href="../chapters/yaml101.html">
+ <span class="dropdown-text">YAML 101</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/deployment.html">
+ <span class="dropdown-text">Deployment</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/mlops.html">
+ <span class="dropdown-text">MLOps</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="../chapters/application.html"> 
+<span class="menu-text">Application</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-projects" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Projects</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-projects">    
+        <li>
+    <a class="dropdown-item" href="../chapters/evaluation.html">
+ <span class="dropdown-text">Evaluations</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../chapters/galerie.html">
+ <span class="dropdown-text">Past student projects</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-github" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-bi-github">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/website">
+ <span class="dropdown-text">Website</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/slides">
+ <span class="dropdown-text">Slides</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/ensae-reproductibilite/application">
+ <span class="dropdown-text">Red thread application</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#le-terminal-linux" id="toc-le-terminal-linux" class="nav-link active" data-scroll-target="#le-terminal-linux">Le terminal Linux</a>
+  <ul class="collapse">
+  <li><a href="#pourquoi-sintéresser-au-terminal-linux" id="toc-pourquoi-sintéresser-au-terminal-linux" class="nav-link" data-scroll-target="#pourquoi-sintéresser-au-terminal-linux">Pourquoi s’intéresser au terminal Linux ?</a></li>
+  <li><a href="#environnement-de-travail" id="toc-environnement-de-travail" class="nav-link" data-scroll-target="#environnement-de-travail">Environnement de travail</a></li>
+  <li><a href="#introduction-au-terminal" id="toc-introduction-au-terminal" class="nav-link" data-scroll-target="#introduction-au-terminal">Introduction au terminal</a></li>
+  <li><a href="#notions-de-filesystem" id="toc-notions-de-filesystem" class="nav-link" data-scroll-target="#notions-de-filesystem">Notions de <em>filesystem</em></a></li>
+  <li><a href="#lancer-des-commandes" id="toc-lancer-des-commandes" class="nav-link" data-scroll-target="#lancer-des-commandes">Lancer des commandes</a>
+  <ul class="collapse">
+  <li><a href="#navigation-au-sein-du-filesystem" id="toc-navigation-au-sein-du-filesystem" class="nav-link" data-scroll-target="#navigation-au-sein-du-filesystem">Navigation au sein du <em>filesystem</em></a></li>
+  <li><a href="#manipulation" id="toc-manipulation" class="nav-link" data-scroll-target="#manipulation">Manipulation de fichiers</a></li>
+  <li><a href="#lancement" id="toc-lancement" class="nav-link" data-scroll-target="#lancement">Lancement de programmes</a></li>
+  </ul></li>
+  <li><a href="#variables-denvironnement" id="toc-variables-denvironnement" class="nav-link" data-scroll-target="#variables-denvironnement">Variables d’environnement</a></li>
+  <li><a href="#permissions" id="toc-permissions" class="nav-link" data-scroll-target="#permissions">Permissions</a></li>
+  <li><a href="#les-scripts-shell" id="toc-les-scripts-shell" class="nav-link" data-scroll-target="#les-scripts-shell">Les scripts shell</a></li>
+  <li><a href="#gestionnaire-de-paquets" id="toc-gestionnaire-de-paquets" class="nav-link" data-scroll-target="#gestionnaire-de-paquets">Gestionnaire de paquets</a></li>
+  <li><a href="#tricks" id="toc-tricks" class="nav-link" data-scroll-target="#tricks"><em>Tricks</em></a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<script>
+  const langButton = document.createElement("div");
+  langButton.className = "lang-switch-button";
+  langButton.style.textAlign = "right";
+  langButton.style.marginTop = "1rem";
+  langButton.style.marginBottom = "1rem";
+
+  const currentPath = window.location.pathname;
+
+  // Gérer les cas avec un sous-répertoire comme /website
+  const normalizedPath = currentPath.replace(/^\/website/, "");
+  const isEnglish = normalizedPath.includes("/en/");
+  let targetHref, label, svg;
+
+  if (isEnglish) {
+    targetHref = currentPath.replace("/en/", "/");  // conserve le préfixe /website si présent
+    label = "Passer à la version française";
+    svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" style="vertical-align: middle; margin-left: 0.5em; display: inline-block;"><mask id="circleFlagsLangFr"><circle cx="256" cy="256" r="256" fill="#fff"/></mask><g mask="url(#circleFlagsLangFr)"><path fill="#0055A4" d="M0 0h512v512H0z"/><path fill="#fff" d="M170.7 0h170.6v512H170.7z"/><path fill="#EF4135" d="M341.3 0H512v512H341.3z"/></g></svg>`;
+  } else {
+    const prefix = currentPath.startsWith("/website") ? "/website" : "";
+    targetHref = prefix + "/en" + currentPath.slice(prefix.length);
+    label = "Switch to English version";
+    svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="20" height="20" style="vertical-align: middle; margin-left: 0.5em; display: inline-block;"><mask id="circleFlagsLangEn"><circle cx="256" cy="256" r="256" fill="#fff"/></mask><g mask="url(#circleFlagsLangEn)"><path fill="#eee" d="M256 0L0 256v64l32 32l-32 32v128l22-8l23 8h23l54-32l54 32h32l48-32l48 32h32l54-32l54 32h68l-8-22l8-23v-23l-32-54l32-54v-32l-32-48l32-48v-32l-32-54l32-54V0z"/><path fill="#d80027" d="M224 64v64h160l64-64zm0 128l32 64l-48 48v208h96V304h208v-96H304l16-16zM0 320v64h128l-64 64H0v64h45l131-131v-45l16-16zm336 16l176 176v-45L381 336Z"/><path fill="#0052b4" d="M0 0v256h256V0zm512 68L404 176h108zM404 336l108 108V336zm-228 68L68 512h108zm160 0v108h108z"/><path fill="#eee" d="m187 243l57-41h-70l57 41l-22-67zm-81 0l57-41H93l57 41l-22-67zm-81 0l57-41H12l57 41l-22-67zm162-81l57-41h-70l57 41l-22-67zm-81 0l57-41H93l57 41l-22-67zm-81 0l57-41H12l57 41l-22-67Zm162-82l57-41h-70l57 41l-22-67zm-81 0l57-41H93l57 41l-22-67Zm-81 0l57-41H12l57 41l-22-67Z"/></g></svg>`;
+  }
+
+  langButton.innerHTML = `
+    <a href="${targetHref}" class="button-cta">
+      <button class="btn"><i class="fa fa-language"></i> ${label} ${svg}</button>
+    </a>
+  `;
+
+  const main = document.querySelector("main#quarto-document-content");
+  if (main) main.insertAdjacentElement("afterbegin", langButton);
+</script>
+    
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Linux 101</h1>
+</div>
+
+<div>
+  <div class="description">
+    <p>Introduction à l’utilisation du terminal Linux, un outil essentiel pour le data scientist qui s’intéresse à la mise en production.</p>
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="le-terminal-linux" class="level1">
+<h1>Le terminal Linux</h1>
+<section id="pourquoi-sintéresser-au-terminal-linux" class="level2">
+<h2 class="anchored" data-anchor-id="pourquoi-sintéresser-au-terminal-linux">Pourquoi s’intéresser au terminal Linux ?</h2>
+<p>Le terminal (ou ligne de commande) est une console interactive qui permet de lancer des commandes. Il existe dans la plupart des systèmes d’exploitation (y compris avec Windows !). Mais comme il a la réputation d’être austère et complexe, on utilise plutôt des interfaces graphiques pour effectuer nos opérations informatiques quotidiennes.</p>
+<p>Pourtant, avoir des notions quant à l’utilisation d’un terminal est une vraie source d’autonomie, dans la mesure où celui-ci permet de gérer bien plus finement les commandes que l’on réalise. Pour les data scientists qui s’intéressent aux bonnes pratiques et à la mise en production, sa maîtrise est essentielle. Les raisons sont multiples :</p>
+<ul>
+<li><p>les interfaces graphiques des logiciels sont généralement limitées par rapport à l’utilisation du programme en ligne de commande. C’est par exemple le cas de <code>Git</code> et de <code>Docker</code>. Dans les deux cas, seul le client en ligne de commande permet de réaliser toutes les opérations permises par le logiciel ;</p></li>
+<li><p>mettre un projet de <em>data science</em> en production nécessite d’utiliser un serveur, qui le rend disponible en permanence à son public potentiel. Or là où Windows domine le monde des ordinateurs personnels, une large majorité des serveurs et des infrastructures <em>cloud</em> fonctionnent sous <code>Linux</code> ;</p></li>
+<li><p>les principaux langages de programmation des <em>data scientists</em> (<i class="fa-brands fa-python" aria-label="python"></i>, <i class="fa-brands fa-r-project" aria-label="r-project"></i>, etc. ) visent à simplifier l’exécution d’opérations complexes par le biais de la ligne de commande mais héritent néanmoins de sa logique. Utiliser la ligne de commande permet de gagner en aisance dans son travail de programmation ;</p></li>
+<li><p>plus généralement, une utilisation régulière du terminal est source d’une meilleure compréhension du fonctionnement d’un système de fichiers et de l’exécution des processus sur un ordinateur. Ces connaissances s’avèrent très utiles dans la pratique quotidienne du <em>data scientist</em>, qui nécessite de plus en plus de développer dans différents environnements d’exécution.</p></li>
+</ul>
+<p>Dans le cadre de ce cours, on s’intéressera particulièrement au terminal Linux puisque l’écrasante majorité, si ce n’est l’ensemble, des serveurs de mise en production s’appuient sur un système Linux.</p>
+</section>
+<section id="environnement-de-travail" class="level2">
+<h2 class="anchored" data-anchor-id="environnement-de-travail">Environnement de travail</h2>
+<p>Différents environnements de travail peuvent être utilisés pour apprendre à se servir d’un terminal Linux :</p>
+<ul>
+<li><p>le <a href="https://datalab.sspcloud.fr">SSP Cloud</a>. Dans la mesure où les exemples de mise en production du cours seront illustrées sur cet environnement, nous recommandons de l’utiliser dès à présent pour se familiariser. Le terminal est accessible à partir de différents services (RStudio, Jupyter, etc.), mais nous recommandons d’utiliser le terminal d’un service VSCode, dans la mesure où se servir d’un <a href="https://fr.wikipedia.org/wiki/Environnement_de_d%C3%A9veloppement">IDE</a> pour organiser notre code est en soi déjà une bonne pratique ;</p></li>
+<li><p><a href="https://katacoda.com/scenario-examples/courses/environment-usages/ubuntu-2004">Katacoda</a>, un bac à sable dans un système Ubuntu, la distribution Linux la plus populaire ;</p></li>
+<li><p>sur Windows : Git Bash (émulation minimaliste d’un terminal Linux), qui est installée par défaut avec <code>Git</code>.</p></li>
+</ul>
+</section>
+<section id="introduction-au-terminal" class="level2">
+<h2 class="anchored" data-anchor-id="introduction-au-terminal">Introduction au terminal</h2>
+<p>Lançons un terminal pour présenter son fonctionnement basique. On prend pour exemple le terminal d’un service VSCode lancé via le SSP Cloud (<em>Application Menu</em> tout en haut à gauche de VSCode -&gt; <em>Terminal</em> -&gt; <em>New Terminal</em>). Voici à quoi ressemble le terminal en question.</p>
+<p><img src="../terminal.png" class="img-fluid"></p>
+<p>Décrivons d’abord les différentes inscriptions qui arrivent à l’initialisation :</p>
+<ul>
+<li><code>(base)</code> : cette inscription n’est pas directement liée au terminal, elle provient du fait que l’on utilise un environnement <code>conda</code>. Nous verrons le fonctionnement des environnements virtuels en détail dans le chapitre sur la <a href="XXXXXXXX">portabilité</a> ;</li>
+<li><code>coder@vscode-824991-64744dd6d8-zbgv5</code> : le nom de l’utilisateur (ici <code>coder</code>) et le nom de la machine (ici, un conteneur, notion que l’on verra là encore dans le chapitre sur la <a href="XXXXXX">portabilité</a></li>
+<li><code>~/work</code> : le chemin du répertoire courant, i.e.&nbsp;à partir duquel va être lancée toute commande. On comprendra mieux la signification de ce chemin dans la section suivante.</li>
+</ul>
+<p>Pour éviter la lourdeur des images et permettre de copier/coller facilement les commandes, on représentera dans la suite du tutoriel (et du cours) le terminal du service VSCode par des bandes de texte sur fond noir, comme dans l’exemple suivant. Les lignes commençant par un <code>$</code> sont celles avec lesquelles une commande est lancée, et les lignes sans <code>$</code> représentent le résultat d’une commande. Attention à ne pas inclure le <code>$</code> lorsque vous lancez les commandes, il sert simplement à différencier celles-ci des résultats.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb1" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"une première illustration"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="sourceCode" id="cb2" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>une première illustration</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="notions-de-filesystem" class="level2">
+<h2 class="anchored" data-anchor-id="notions-de-filesystem">Notions de <em>filesystem</em></h2>
+<p>Le terme <em>filesystem</em> (système de fichiers) désigne la manière dont sont organisés les fichiers au sein d’un système d’exploitation. Cette structure est hiérarchique, en forme d’arbre :</p>
+<ul>
+<li>elle part d’un répertoire racine (le dossier qui contient tous les autres) ;</li>
+<li>contient des dossiers ;</li>
+<li>les dossiers peuvent contenir à leur tour des dossiers (sous-dossiers) ou des fichiers.</li>
+</ul>
+<p>Intéressons nous à la structure du <em>filesystem</em> Linux standard.</p>
+<p><a href="../linux_fs.jpg"><img src="../linux_fs.jpg" height="300"></a></p>
+<p>Source : <a href="https://commons.wikimedia.org/wiki/File:Linux_file_system_foto_no_exif_(1).jpg">commons.wikimedia.org</a></p>
+<p>Quelques observations :</p>
+<ul>
+<li>la racine (<em>root</em>) sur Linux s’appelle <code>/</code>, là où elle s’appelle <code>C:\</code> par défaut sur Windows ;</li>
+<li>le répertoire racine contient un ensemble de sous-dossiers, dont la plupart ont un rôle essentiellement technique. Il est tout de même utile d’en décrire les principaux :
+<ul>
+<li><code>/bin</code> : contient les binaires, i.e.&nbsp;les programmes exécutables ;</li>
+<li><code>/etc</code> : contient les fichiers de configuration ;</li>
+<li><code>/home</code> : contient l’ensemble des dossiers et fichiers personnels des différents utilisateurs. Chaque utilisateur a un répertoire dit “HOME” qui a pour chemin <code>/home/&lt;username&gt;</code> Ce répertoire est souvent représenté par le symbole <code>~</code>. C’était notamment le cas dans l’illustration du terminal VSCode ci-dessus, ce qui signifie qu’on se trouvait formellement dans le répertoire <code>/home/coder/work</code>, <code>coder</code> étant l’utilisateur par défaut du service VSCode sur le SSP Cloud.</li>
+</ul></li>
+</ul>
+<p>Chaque dossier ou fichier est représenté par un chemin d’accès, qui correspond simplement à sa position dans le <em>filesystem</em>. Il existe deux moyens de spécifier un chemin :</p>
+<ul>
+<li>en utilisant un chemin <strong>absolu</strong>, c’est à dire en indiquant le chemin complet du dossier ou fichier depuis la racine. En Linux, on reconnaît donc un chemin absolu par le fait qu’il commence forcément par <code>/</code>.</li>
+<li>en utilisant un chemin <strong>relatif</strong>, c’est à dire en indiquant le chemin du dossier ou fichier <em>relativement</em> au répertoire courant.</li>
+</ul>
+<p>Comme tout ce qui touche de près ou de loin au terminal, la seule manière de bien comprendre ces notions est de les appliquer. Les exercices de fin de chapitre vous permettront d’appliquer ces concepts à des cas pratiques.</p>
+</section>
+<section id="lancer-des-commandes" class="level2">
+<h2 class="anchored" data-anchor-id="lancer-des-commandes">Lancer des commandes</h2>
+<p>Le rôle d’un terminal est de lancer des commandes. Ces commandes peuvent être classées en trois grandes catégories :</p>
+<ul>
+<li>navigation au sein du <em>filesystem</em></li>
+<li>manipulations de fichiers (créer, lire, modifier des dossiers/fichiers)</li>
+<li>lancement de programmes</li>
+</ul>
+<section id="navigation-au-sein-du-filesystem" class="level3">
+<h3 class="anchored" data-anchor-id="navigation-au-sein-du-filesystem">Navigation au sein du <em>filesystem</em></h3>
+<p>Lorsque l’on lance un programme à partir du terminal, celui-ci a pour référence le répertoire courant dans lequel on se trouve au moment du lancement. Par exemple, si l’on exécute un script Python en se trouvant dans un certain répertoire, tous les chemins des fichiers utilisés dans le script seront relatifs au répertoire courant d’exécution — à moins d’utiliser uniquement des chemins absolus, ce qui n’est pas une bonne pratique en termes de reproductibilité puisque cela lie votre projet à la structure de votre <em>filesystem</em> particulier.</p>
+<p>Ainsi, la très grande majorité des opérations que l’on est amené à réaliser dans un terminal consiste simplement à se déplacer au sein du <em>filesystem</em>. Les commandes principales pour naviguer et se repérer dans le <em>filesystem</em> sont présentées dans la table suivante.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 35%">
+<col style="width: 65%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Commande</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>pwd</code></td>
+<td>afficher (Print Working Directory) le chemin (absolu) du dossier courant</td>
+</tr>
+<tr class="even">
+<td><code>cd chemin</code></td>
+<td>changer (Change Directory) de dossier courant</td>
+</tr>
+<tr class="odd">
+<td><code>ls</code></td>
+<td>lister les fichiers dans le dossier courant</td>
+</tr>
+</tbody>
+</table>
+<p>La commande <code>cd</code> accepte aussi bien des chemins absolus que des chemins relatifs. En pratique, il est assez pénible de manipuler des chemins absolus, qui peuvent facilement être très longs. On utilisera donc essentiellement des chemins relatifs, ce qui revient à se déplacer à partir du répertoire courant. Pour se faire, voici quelques utilisations très fréquentes de la commande <code>cd</code>.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 35%">
+<col style="width: 65%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Commande</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>cd ..</code></td>
+<td>remonter d’un niveau dans l’arborescence (dossier parent)</td>
+</tr>
+<tr class="even">
+<td><code>cd ~</code></td>
+<td>revenir dans le répertoire HOME de l’utilisateur courant</td>
+</tr>
+</tbody>
+</table>
+<p>La première commande est l’occasion de revenir sur une convention d’écriture importante pour les chemins relatifs :</p>
+<ul>
+<li><code>.</code> représente le répertoire courant. Ainsi, <code>cd .</code> revient à changer de répertoire courant… pour le répertoire courant, ce qui bien sûr ne change rien. Mais le <code>.</code> est très utile pour la copie de fichiers (cf.&nbsp;<a href="#manipulation">section suivante</a>) ou encore lorsque l’on doit passer des paramètres à un programme (cf.&nbsp;section <a href="#lancement">Lancement de programmes</a>) ;</li>
+<li><code>..</code> représente le répertoire parent du répertoire courant.</li>
+</ul>
+<p>Ces différentes commandes constituent la très grande majorité des usages dans un terminal. Il est essentiel de les pratiquer jusqu’à ce qu’elles deviennent une seconde nature.</p>
+</section>
+<section id="manipulation" class="level3">
+<h3 class="anchored" data-anchor-id="manipulation">Manipulation de fichiers</h3>
+<p>Les commandes suivantes permettent de manipuler le <em>filesystem</em>. Il en existe beaucoup d’autres, mais elles couvrent la plupart des besoins.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Commande</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>cp fichierdepart fichierarrivee</code></td>
+<td>copier (CoPy) un fichier</td>
+</tr>
+<tr class="even">
+<td><code>mv fichierdepart fichierarrivee</code></td>
+<td>déplacer (MoVe) un fichier</td>
+</tr>
+<tr class="odd">
+<td><code>rm nomdufichier</code></td>
+<td>supprimer (ReMove) un fichier</td>
+</tr>
+<tr class="even">
+<td><code>cat nomdufichier</code></td>
+<td>afficher le contenu du fichier</td>
+</tr>
+<tr class="odd">
+<td><code>mkdir nomdudossier</code></td>
+<td>créer (MaKe DIRectory) un dossier</td>
+</tr>
+<tr class="even">
+<td><code>touch nomdufichier</code></td>
+<td>créer un fichier vide</td>
+</tr>
+</tbody>
+</table>
+<p>Dans la mesure où il est généralement possible de réaliser toutes ces opérations à l’aide d’interfaces graphiques (notamment, l’explorateur de fichiers), celles-ci sont moins essentielles que celles permettant de se déplacer dans le <em>filesystem</em>. Nous vous recommandons malgré tout de les pratiquer également, et ce pour plusieurs raisons :</p>
+<ul>
+<li>effectuer un maximum d’opérations via le terminal permet de bien comprendre son fonctionnement et donc de gagner en autonomie ;</li>
+<li>en devenant efficient sur ces commandes, vous vous rendrez compte que manipuler le <em>filesystem</em> via le terminal est en fait plus rapide que via une interface graphique ;</li>
+<li>lorsque l’on est amené à manipuler un terminal pour interagir avec un serveur, il n’y a souvent pas la moindre interface graphique, auquel cas il n’y a pas d’autre choix que d’opérer uniquement à partir du terminal.</li>
+</ul>
+</section>
+<section id="lancement" class="level3">
+<h3 class="anchored" data-anchor-id="lancement">Lancement de programmes</h3>
+<p>Le rôle du terminal est de lancer des programmes. Lancer un programme se fait à partir d’un fichier dit exécutable, qui peut être de deux formes :</p>
+<ul>
+<li>un <strong>binaire</strong>, i.e.&nbsp;un programme dont le code n’est pas lisible par l’humain ;</li>
+<li>un <strong>script</strong>, i.e.&nbsp;un fichier texte contenant une série d’instructions à exécuter. Le langage du terminal Linux est le <code>shell</code>, et les scripts associés ont pour extension <code>.sh</code>.</li>
+</ul>
+<p>Dans les deux cas, la syntaxe de lancement d’une commande est : le nom de l’exécutable, suivi d’éventuels paramètres, séparés par des espaces. Par exemple, la commande <code>python monscript.py</code> exécute le binaire <code>python</code> et lui passe comme unique argument le nom d’un script <code>.py</code> (contenu dans le répertoire courant), qui va donc être exécuté via <code>Python</code>. De la même manière, toutes les commandes vues précédemment pour se déplacer dans le <em>filesystem</em> ou manipuler des fichiers sont des exécutables et fonctionnent donc selon ce principe. Par exemple, <code>cp fichierdepart fichierarrivee</code> lance le binaire <code>cp</code> en lui passant deux arguments : le chemin du fichier à copier et le chemin d’arrivée.</p>
+<p>Dans les exemples de commandes précédents, les paramètres étaient passés en mode positionnel : l’exécutable attend des arguments dans un certain ordre, ce qui est clair dans le cas de <code>cp</code> par exemple. Mais le nombre des arguments n’est pas toujours fixé à l’avance, du fait de la présence de paramètres optionnels. Ainsi, la plupart des exécutables permettent le passage d’arguments optionnels, qui modifient le comportement de l’exécutable, via des <em>flags</em>. Par exemple, on a vu que <code>cp</code> permettait de copier un fichier à un autre endroit du <em>filesystem</em>, mais peut-on copier un dossier et l’ensemble de son contenu avec ? Nativement non, mais l’ajout d’un paramètre le permet : <code>cp -R dossierdepart dossierarrivee</code> permet de copier <em>récursivement</em> le dossier et tout son contenu. Notons que les <em>flags</em> ont très souvent un équivalent en toute lettre, qui s’écrit quant à lui avec deux tirers. Par exemple, la commande précédente peut s’écrire de manière équivalente <code>cp --recursive dossierdepart dossierarrivee</code>. Il est fréquent de voir les deux syntaxes en pratique, parfois même mélangées au sein d’une même commande.</p>
+</section>
+</section>
+<section id="variables-denvironnement" class="level2">
+<h2 class="anchored" data-anchor-id="variables-denvironnement">Variables d’environnement</h2>
+<p>Comme tout langage de programmation, le langage <code>shell</code> permet d’assigner et d’utiliser des variables dans des commandes. Pour afficher le contenu d’une variable, on utilise la commande <code>echo</code>, qui est l’équivalent de la fonction <code>print</code> en <code>Python</code> ou en <code>R</code>.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb3" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="va">MY_VAR</span><span class="op">=</span><span class="st">"toto"</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$MY_VAR</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="sourceCode" id="cb4" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>toto</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Quelques remarques importantes :</p>
+<ul>
+<li>la syntaxe pour la création de variable est précise : aucun espace d’un côté comme de l’autre du <code>=</code> ;</li>
+<li>en <code>Shell</code>, on ne manipule que du texte. Dans notre exemple, on aurait donc pu écrire <code>MY_VAR=toto</code> pour le même résultat. Par contre, si l’on veut assigner à une variable une valeur contenant des espaces, les guillemets deviennent indispensables pour ne pas obtenir un message d’erreur ;</li>
+<li>pour accéder à la valeur d’une variable, on la préfixe d’un <code>$</code>.</li>
+</ul>
+<p>Notre objectif avec ce tutoriel n’est pas de savoir coder en <code>shell</code>, on ne va donc pas s’attarder sur les propriétés des variables. En revanche, introduire ce concept était nécessaire pour en présenter un autre, essentiel quant à lui dans la pratique quotidienne du data scientist : les variables d’environnement. Pour faire une analogie — un peu simpliste — avec les langages de programmation, ce sont des sortes de variables “globales”, dans la mesure où elles vont être accessibles à tous les programmes lancés à partir d’un terminal, et vont modifier leur comportement.</p>
+<p>La liste des variables d’environnement peut être affichée à l’aide de la commande <code>env</code>. Il y a généralement un grand nombre de variables d’environnement prééxistantes ; en voici un échantillon obtenu à partir du terminal du service VSCode.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb5" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">env</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="sourceCode" id="cb6" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>SHELL<span class="op">=/</span><span class="bu">bin</span><span class="op">/</span>bash</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>HOME<span class="op">=/</span>home<span class="op">/</span>coder</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>LANG<span class="op">=</span>en_US.UTF<span class="op">-</span><span class="dv">8</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>CONDA_PYTHON_EXE<span class="op">=/</span>home<span class="op">/</span>coder<span class="op">/</span>local<span class="op">/</span><span class="bu">bin</span><span class="op">/</span>conda<span class="op">/</span><span class="bu">bin</span><span class="op">/</span>python</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Cette liste illustre la variété des utilisations des variables d’environnements :</p>
+<ul>
+<li>la variable <code>$SHELL</code> précise l’exécutable utilisé pour lancer le terminal ;</li>
+<li>la variable <code>$HOME</code> donne l’emplacement du répertoire utilisateur. En fait, le symbole <code>~</code> que l’on a rencontré plus haut référence cette même variable ;</li>
+<li>la variable <code>LANG</code> spécifie la <em>locale</em>, un concept qui permet de définir la langue et l’encodage utilisés par défaut par Linux ;</li>
+<li>la variable <code>CONDA_PYTHON_EXE</code> existe uniquement parce que l’on a installé <code>conda</code> comme système de gestion de packages <code>Python</code>. C’est l’existence de cette variable qui fait que la commande <code>python mon_script.py</code> va utiliser comme binaire la version de <code>Python</code> qui nous intéresse.</li>
+</ul>
+<p>Une variable d’environnement essentielle, et que l’on est fréquemment amené à modifier dans les applications de data science, est la variable <code>$PATH</code>. Elle consiste en une concaténation de chemins absolus, séparés par <code>:</code>, qui spécifie les dossiers dans lesquels Linux va chercher les exécutables lorsque l’on lance une commande, ainsi que l’ordre de la recherche. Regardons la valeur du <code>$PATH</code> sur le terminal du service VSCode.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb7" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$PATH</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="sourceCode" id="cb8" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">/</span>home<span class="op">/</span>coder<span class="op">/</span>local<span class="op">/</span><span class="bu">bin</span><span class="op">/</span>conda<span class="op">/</span><span class="bu">bin</span>:<span class="op">/</span>home<span class="op">/</span>coder<span class="op">/</span>local<span class="op">/</span><span class="bu">bin</span><span class="op">/</span>conda<span class="op">/</span>condabin:<span class="op">/</span>home<span class="op">/</span>coder<span class="op">/</span>local<span class="op">/</span><span class="bu">bin</span><span class="op">/</span>conda<span class="op">/</span>envs<span class="op">/</span>basesspcloud<span class="op">/</span><span class="bu">bin</span>:<span class="op">/</span>home<span class="op">/</span>coder<span class="op">/</span>local<span class="op">/</span><span class="bu">bin</span><span class="op">/</span>conda<span class="op">/</span><span class="bu">bin</span>:<span class="op">/</span>usr<span class="op">/</span>local<span class="op">/</span>sbin:<span class="op">/</span>usr<span class="op">/</span>local<span class="op">/</span><span class="bu">bin</span>:<span class="op">/</span>usr<span class="op">/</span>sbin:<span class="op">/</span>usr<span class="op">/</span><span class="bu">bin</span>:<span class="op">/</span>sbin:<span class="op">/</span><span class="bu">bin</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>L’ordre de recherche est de gauche à droite. C’est donc parce que le dossier <code>/home/coder/local/bin/conda/bin</code> est situé en premier que l’interpréteur <code>Python</code> qui sera choisi lorsque l’on lance un script <code>Python</code> est celui issu de <code>Conda</code>, et non celui contenu par défaut dans <code>/usr/bin</code> par exemple.</p>
+<p>L’existence et la configuration adéquate des variables d’environnement est essentielle pour le bon fonctionnement de nombreux outils très utilisés en data science, comme <code>Git</code> ou encore <code>Spark</code> par exemple. Il est donc nécessaire de comprendre leur fonctionnement pour pouvoir lire des documentations techniques et adapter la configuration d’un serveur en cas de bug lié à une variable d’environnement manquante ou mal configurée.</p>
+</section>
+<section id="permissions" class="level2">
+<h2 class="anchored" data-anchor-id="permissions">Permissions</h2>
+<p>La sécurité est un enjeu central en Linux, qui permet une gestion très fine des permissions sur les différents fichiers et programmes.</p>
+<p>Une différence majeure par rapport à d’autres systèmes d’exploitation, notamment Windows, est qu’aucun utilisateur n’a par défaut les droits complets d’administrateur (<em>root</em>). Il n’est donc pas possible nativement d’accéder au parties sensibles du système, ou bien de lancer certains types de programme. Par exemple, si l’on essaie de lister les fichiers du dossier <code>/root</code>, on obtient une erreur.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb9" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> /root</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="sourceCode" id="cb10" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ls: cannot <span class="bu">open</span> directory <span class="st">'/root'</span>: Permission denied</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Dans la pratique du quotidien, certaines opérations telles que l’installation de binaires ou de packages nécessitent cependant des droits administrateurs. Dans ce cas, il est d’usage d’utiliser la commande <code>sudo</code> (Substitute User DO), qui permet de prendre les droits <em>root</em> le temps de l’exécution de la commande.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb11" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> ls /root</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Le dossier <code>/root</code> étant vide, la commande <code>ls</code> renvoie une chaîne de caractères vide, mais nous n’avons plus de problème de permission. Notons qu’une bonne pratique de sécurité, en particulier dans les scripts <code>shell</code> que l’on peut être amenés à écrire ou exécuter, est de limiter l’utilisation de cette commande aux cas où elle s’avère nécessaire.</p>
+<p>Une autre subtilité concerne justement l’exécution de scripts <code>shell</code>. Par défaut, qu’il soit créé par l’utilisateur ou téléchargé d’internet, un script n’est pas exécutable.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="sourceCode" id="annotated-cell-12" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-annotation-code code-with-copy code-annotated"><code class="sourceCode bash"><a class="code-annotation-anchor" data-target-cell="annotated-cell-12" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-12-1" class="code-annotation-target"><a href="#annotated-cell-12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">touch</span> test.sh</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-12" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-12-2" class="code-annotation-target"><a href="#annotated-cell-12-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./test.sh</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-12" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-12" data-code-lines="1" data-code-annotation="1">Créer le script test.sh (vide)</span>
+</dd>
+<dt data-target-cell="annotated-cell-12" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-cell="annotated-cell-12" data-code-lines="2" data-code-annotation="2">Exécuter le script test.sh</span>
+</dd>
+</dl>
+<div class="sourceCode" id="cb12" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>bash: .<span class="op">/</span>test.sh: Permission denied</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>C’est bien entendu une mesure de sécurité pour éviter l’exécution automatique de scripts potentiellement malveillants. Pour pouvoir exécuter un tel script, il faut attribuer des droits d’exécution au fichier avec la commande <code>chmod</code>. Il devient alors possible d’exécuter le script classiquement.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="sourceCode" id="annotated-cell-14" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-annotation-code code-with-copy code-annotated"><code class="sourceCode bash"><a class="code-annotation-anchor" data-target-cell="annotated-cell-14" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-14-1" class="code-annotation-target"><a href="#annotated-cell-14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> +x test.sh</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-14" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-14-2" class="code-annotation-target"><a href="#annotated-cell-14-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./test.sh</span></span>
+<span id="annotated-cell-14-3"><a href="#annotated-cell-14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-14-4"><a href="#annotated-cell-14-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Le script étant vide, il ne se passe rien</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-14" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-14" data-code-lines="1" data-code-annotation="1">Donner des droits d’exécution au script <code>test.sh</code></span>
+</dd>
+<dt data-target-cell="annotated-cell-14" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-cell="annotated-cell-14" data-code-lines="2" data-code-annotation="2">Exécuter le script test.sh</span>
+</dd>
+</dl>
+</section>
+<section id="les-scripts-shell" class="level2">
+<h2 class="anchored" data-anchor-id="les-scripts-shell">Les scripts shell</h2>
+<p>Maintenant que nous avons vu les variables et les permissions, revenons sur les scripts <code>shell</code> précédemment évoqués. A l’instar d’un script <code>Python</code>, un script <code>shell</code> permet d’automatiser une série de commandes lancées dans un terminal. Le but de ce tutoriel n’est pas de savoir écrire des scripts <code>shell</code> complexes, travail généralement dévolu aux les <em>data engineers</em> ou les <em>sysadmin</em> (administrateurs système), mais de comprendre leur structure, leur fonctionnement, et de savoir lancer des scripts simples. Ces compétences sont essentielles lorsque l’on se préoccupe de mise en production. A titre d’exemple, comme nous le verrons dans le chapitre sur la <a href="../chapters/portability.html">portabilité</a>, il est fréquent d’utiliser un script <code>shell</code> comme <em>entrypoint</em> d’une image <code>docker</code>, afin de spécifier les commandes que doit lancer le conteneur lors de son initialisation.</p>
+<p>Illustrons leur structure ainsi que leur fonctionnement à l’aide d’un script simple. Considérons les commandes suivantes, que l’on met dans un fichier <code>monscript.sh</code> dans le répertoire courant.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb13" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="va">SECTION</span><span class="op">=</span><span class="va">$1</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="va">CHAPTER</span><span class="op">=</span><span class="va">$2</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="va">FORMATION_DIR</span><span class="op">=</span>/home/coder/work/formation</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="va">$FORMATION_DIR</span>/<span class="va">$SECTION</span>/<span class="va">$CHAPTER</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="fu">touch</span> <span class="va">$FORMATION_DIR</span>/<span class="va">$SECTION</span>/<span class="va">$CHAPTER</span>/test.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Analysons la structure de ce script :</p>
+<ul>
+<li>la première ligne est classique, elle se nomme le <em>shebang</em> : elle indique au système quel interpréteur utiliser pour exécuter ce script. Dans notre cas, et de manière générale, on utilise <code>bash</code> (Bourne-Again SHell, l’implémentation moderne du <code>shell</code>) ;</li>
+<li>les lignes 2 et 3 assignent à des variables les arguments passés au script dans la commande. Par défaut, ceux-ci sont assignés à des variables <code>n</code> où <code>n</code> est la position de l’argument, en commençant à 1 ;</li>
+<li>la ligne 4 assigne un chemin à une variable</li>
+<li>la ligne 5 crée le chemin complet, défini à partir des variables créées précédemment. Le paramètre <code>-p</code> est important : il précise à <code>mkdir</code> d’agir de manière récursive, c’est à dire de créer les dossiers intermédiaires qui n’existent pas encore ;</li>
+<li>la ligne 6 crée un fichier texte vide dans le dossier créé avec la commande précédente.</li>
+</ul>
+<p>Exécutons maintenant ce script, en prenant soin de lui donner les permission adéquates au préalable.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb14" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">chmod</span> +x monscript.sh</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> monscript.sh section2 chapitre3</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> formation/section1/chapitre2/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="sourceCode" id="cb15" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>text.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Opération réussie : le dossier a bien été créé et contient un fichier <code>test.txt</code>.</p>
+<p>Pour en savoir plus, une <a href="https://devhints.io/bash">Cheat Sheet</a> sur <code>bash</code> très bien réalisée.</p>
+</section>
+<section id="gestionnaire-de-paquets" class="level2">
+<h2 class="anchored" data-anchor-id="gestionnaire-de-paquets">Gestionnaire de paquets</h2>
+<p>Une différence fondamentale entre Linux et Windows tient à la manière dont on installe un logiciel. Sur Windows, on va chercher un installateur (un fichier exécutable en <code>.exe</code>) sur le site du logiciel, et on l’exécute. En Linux, on passe généralement par un gestionnaire de packages qui va chercher les logiciels sur un répertoire centralisé, à la manière de <code>pip</code> en <code>Python</code> par exemple.</p>
+<p>Pourquoi cette différence ? Une raison importante est que, contrairement à Windows, il existe une multitude de distributions différentes de Linux (Debian, Ubuntu, Mint, etc.), qui fonctionnent différemment et peuvent avoir différentes versions. En utilisant le <em>package manager</em> (gestionnaire de paquets) propre à la distribution en question, on s’assure de télécharger le logiciel adapté à sa distribution. Dans ce cours, on fait le choix d’utiliser une distribution <code>Debian</code> et son gestionnaire de paquets associé <code>apt</code>. <code>Debian</code> est en effet un choix populaire pour les servers de part sa stabilité et sa simplicité, et sera également familière aux utilisateurs d’<code>Ubuntu</code>, distribution très populaire pour les ordinateurs personnels et qui est basée sur <code>Debian</code>.</p>
+<p>L’utilisation d’<code>apt</code> est très simple. La seule difficulté est de savoir le nom du paquet que l’on souhaite installer, ce qui nécessite en général d’utiliser un moteur de recherche. L’installation de paquets est également un cas où il faut utiliser <code>sudo</code>, puisque cela implique souvent l’accès à des répertoires protégés.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb16" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install tree</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="sourceCode" id="cb17" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>Reading package lists... Done</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>Building dependency tree... Done</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>Reading state information... Done</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>The following NEW packages will be installed:</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  tree</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="dv">0</span> upgraded, <span class="dv">1</span> newly installed, <span class="dv">0</span> to remove <span class="kw">and</span> <span class="dv">0</span> <span class="kw">not</span> upgraded.</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Désinstaller un package est également simple : c’est l’opération inverse. Par sécurité, le terminal vous demande si vous êtes sûr de votre choix en vous demandant de tapper la lettre y (yes) ou la lettre n.&nbsp;On peut passer automatiquement cette étape en ajoutant le paramètre <code>-y</code></p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb18" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt remove <span class="at">-y</span> tree</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="sourceCode" id="cb19" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>Reading package lists... Done</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>Building dependency tree... Done</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>Reading state information... Done</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>The following packages will be REMOVED:</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  tree</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="dv">0</span> upgraded, <span class="dv">0</span> newly installed, <span class="dv">1</span> to remove <span class="kw">and</span> <span class="dv">0</span> <span class="kw">not</span> upgraded.</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Avant d’installer un package, il est toujours préférable de mettre à jour la base des packages, pour s’assurer qu’on obtiendra bien la dernière version.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb20" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt update</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="sourceCode" id="cb21" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>Hit:<span class="dv">1</span> http:<span class="op">//</span>deb.debian.org<span class="op">/</span>debian bullseye InRelease</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>Hit:<span class="dv">2</span> http:<span class="op">//</span>deb.debian.org<span class="op">/</span>debian bullseye<span class="op">-</span>updates InRelease</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>Hit:<span class="dv">3</span> http:<span class="op">//</span>security.debian.org<span class="op">/</span>debian<span class="op">-</span>security bullseye<span class="op">-</span>security InRelease</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>Reading package lists... Done</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>Building dependency tree... Done</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>Reading state information... Done</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>All packages are up to date.</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="tricks" class="level2">
+<h2 class="anchored" data-anchor-id="tricks"><em>Tricks</em></h2>
+<p>On l’a dit et redit : devenir à l’aise avec le terminal Linux est essentiel et demande de la pratique. Il existe néanmoins quelques astuces qui peuvent grandement simplifier la vie et donc faciliter la prise de bonnes habitudes.</p>
+<p>La première est l’<strong>autocomplétion</strong>. Dès lors que vous écrivez une commande contenant un nom d’exécutable, un chemin sur le <em>filesystem</em>, ou autre, n’hésitez pas à utiliser la touche <code>TAB</code> (touche au-dessus de celle qui verrouille la majuscule) de votre clavier. Dans la majorité des cas, cela va vous faire gagner un temps précieux.</p>
+<p>La deuxième est de parcourir l’<strong>historique</strong> de commandes : la flèche vers le haut (↑) permet de parcourir l’historique des commandes que vous avez précédemment exécutées. Chaque fois que vous appuyez sur cette touche, le terminal affiche la dernière commande exécutée, en remontant dans l’historique à chaque appui supplémentaire.</p>
+<p>La troisième, dans le même esprit que la deuxième mais plus élaborée, est la <strong>recherche</strong> inverse dans l’historique de commandes avec les touches <code>Ctrl+R</code>. Lorsque vous appuyez sur <code>Ctrl+R</code>, une invite de recherche apparaît. Vous pouvez alors commencer à taper des caractères de la commande que vous recherchez. Le terminal cherchera dans l’historique des commandes la dernière commande correspondant à ce que vous avez tapé, et la montrera à l’écran. Si ce n’est pas la commande exacte que vous cherchez, vous pouvez continuer à taper pour affiner la recherche ou appuyer à nouveau sur <code>Ctrl+R</code> pour rechercher la commande précédente correspondant à vos critères.</p>
+<p>Une quatrième astuce, qui n’en est pas vraiment une, est de lire la <strong>documentation</strong> d’une commande lorsque l’on n’est pas sûr de sa syntaxe ou des paramètres admissibles. Via le terminal, la documentation d’une commande peut être affichée en exécutant <code>man</code> suivie de la commande en question, par exemple : <code>man cp</code>. Comme il n’est pas toujours très pratique de lire de longs textes dans un petit terminal, on peut également chercher la documentation d’une commande sur le site <a href="https://man7.org/linux/man-pages/index.html">man7</a>.</p>
+
+
+</section>
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<script src="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.js" defer="true"></script>
+</body></html>
