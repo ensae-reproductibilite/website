@@ -1,66 +1,41 @@
+::: {.content-visible when-profile="fr"}
+
 # 2️⃣ Favoriser une structure modulaire
 
-Dans le chapitre précédent, nous avons recommandé l'utilisation  
-des fonctions. Le regroupement de plusieurs fonctions dans  
-un fichier est appelé un **module**.
+Dans le chapitre précédent, nous avons recommandé l'utilisation des fonctions. Le regroupement de plusieurs fonctions dans un fichier est appelé un **module**.
 
-La modularité est un principe fondamental de programmation  
-qui consiste à diviser un programme en plusieurs modules ou scripts indépendants,  
-chacun ayant une fonctionnalité spécifique.  
-Comme indiqué précédemment, la structuration d'un projet sous forme de modules  
-permet de rendre le code plus **lisible**, **facile à maintenir** et **réutilisable**.  
-`Python` fournit un système d'importation flexible et puissant, qui permet de contrôler la portée des variables, les conflits de noms et les dépendances entre les modules[^1].
+La modularité est un principe fondamental de programmation qui consiste à diviser un programme en plusieurs modules ou scripts indépendants, chacun ayant une fonctionnalité spécifique. Comme indiqué précédemment, la structuration d'un projet sous forme de modules permet de rendre le code plus **lisible**, **facile à maintenir** et **réutilisable**. `Python` fournit un système d'importation flexible et puissant, qui permet de contrôler la portée des variables, les conflits de noms et les dépendances entre les modules[^1].
 
-[^1]: À cet égard, `Python` est beaucoup plus fiable que `R`.  
-Dans `R`, si deux scripts utilisent des fonctions  
-dont le nom est identique mais issues de packages  
-différents, il y aura un conflit. En `Python`,  
-chaque module sera importé comme un _package_  
-en soi.
-
----
+[^1]: À cet égard, `Python` est beaucoup plus fiable que `R`. Dans `R`, si deux scripts utilisent des fonctions dont le nom est identique mais issues de packages différents, il y aura un conflit. En `Python`, chaque module sera importé comme un _package_ en soi.
 
 ## Vers la séparation du stockage du code, des données et de l'environnement d'exécution
 
-La séparation du stockage du **code**, des **données**  
-et de **l’environnement d’exécution** est importante pour plusieurs raisons :
+La séparation du stockage du **code**, des **données** et de **l’environnement d’exécution** est importante pour plusieurs raisons :
 
 1. **Sécurité des données**  
-   En séparant les données du code, il est plus difficile  
-   d'accéder aux informations sensibles par erreur.
-
+   En séparant les données du code, il est plus difficile d'accéder aux informations sensibles par erreur.
 2. **Cohérence et portabilité**  
-   Un environnement isolé garantit que le code fonctionne  
-   de façon reproductible, indépendamment de la machine hôte.
-
+   Un environnement isolé garantit que le code fonctionne de façon reproductible, indépendamment de la machine hôte.
 3. **Modularité et flexibilité**  
-   On peut adapter ou mettre à jour les composants  
-   (code, données, environnement) indépendamment.
+   On peut adapter ou mettre à jour les composants (code, données, environnement) indépendamment.
 
-Le prochain chapitre sera consacré à la gestion des dépendances.  
-Il montrera comment lier environnement et code pour améliorer  
-la portabilité du projet.
-
----
+Le prochain chapitre sera consacré à la gestion des dépendances. Il montrera comment lier environnement et code pour améliorer la portabilité du projet.
 
 ## Configurations sensibles : secrets et jetons
 
-L'exécution d'un code peut dépendre de paramètres  
-personnels (jetons d’authentification, mots de passe...).  
-**Ils ne doivent jamais apparaître dans le code source partagé.**
+L'exécution d'un code peut dépendre de paramètres personnels (jetons d’authentification, mots de passe...). **Ils ne doivent jamais apparaître dans le code source partagé.**
 
-✅ Bonne pratique : stocker ces configurations dans un **fichier séparé**,  
-non versionné (`.gitignore`), au format `YAML` — plus lisible que `JSON`.
+✅ Bonne pratique : stocker ces configurations dans un **fichier séparé**, non versionné (`.gitignore`), au format `YAML` — plus lisible que `JSON`.
 
 ### Exemple `secrets.yaml`
 
-```yaml
+````yaml
 token:
     api_insee: "toto"
     api_github: "tokengh"
 pwd:
     base_pg: "monmotdepasse"
-```
+````
 
 ### Lecture en Python
 
@@ -74,7 +49,61 @@ with open('secrets.yaml') as f:
 jeton_insee = secrets['token']['api_insee']
 ```
 
-Ce mécanisme transforme le fichier en un **dictionnaire Python**  
-dans lequel il est facile de naviguer.
+Ce mécanisme transforme le fichier en un **dictionnaire Python** dans lequel il est facile de naviguer.
 
----
+:::
+
+::: {.content-visible when-profile="en"}
+
+# 2️⃣ Fostering a Modular Structure
+
+In the previous chapter, we recommended using functions. Grouping several functions into a file is called a **module**.
+
+Modularity is a fundamental programming principle that involves dividing a program into several independent modules or scripts, each with a specific purpose. As previously mentioned, structuring a project into modules makes the code more **readable**, **maintainable**, and **reusable**. `Python` provides a flexible and powerful import system, which allows control over variable scope, name conflicts, and dependencies between modules[^1].
+
+[^1]: In this regard, `Python` is much more reliable than `R`. In `R`, if two scripts use functions with the same name but from different packages, there will be a conflict. In `Python`, each module is imported as its own _package_.
+
+## Separating Code, Data, and Execution Environment Storage
+
+Separating the storage of **code**, **data**, and the **execution environment** is important for several reasons:
+
+1. **Data Security**  
+   By separating data from code, it's harder to accidentally access sensitive information.
+2. **Consistency and Portability**  
+   An isolated environment ensures that the code runs reproducibly, regardless of the host machine.
+3. **Modularity and Flexibility**  
+   You can adapt or update components (code, data, environment) independently.
+
+The next chapter will focus on dependency management. It will show how to link the environment and code to improve project portability.
+
+## Sensitive Configurations: Secrets and Tokens
+
+Running code may depend on personal parameters (authentication tokens, passwords...). **They should never appear in shared source code.**
+
+✅ Best practice: store these configurations in a **separate file**, not versioned (`.gitignore`), in `YAML` format — more readable than `JSON`.
+
+### Example `secrets.yaml`
+
+````yaml
+token:
+    api_insee: "toto"
+    api_github: "tokengh"
+pwd:
+    base_pg: "monmotdepasse"
+````
+
+### Reading in Python
+
+```python
+import yaml
+
+with open('secrets.yaml') as f:
+    secrets = yaml.safe_load(f)
+
+# using the secret
+jeton_insee = secrets['token']['api_insee']
+```
+
+This mechanism turns the file into a **Python dictionary** that is easy to navigate.
+
+:::
