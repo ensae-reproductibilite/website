@@ -1,0 +1,305 @@
+::: {.content-visible when-profile="fr"}
+
+# Introduction
+
+La structuration d'un projet  
+permet d'immédiatement identifier les éléments de code et les éléments  
+annexes, par exemple les dépendances à gérer, la documentation, etc.  
+Des scripts de bonne qualité ne sont pas suffisants pour assurer la qualité  
+d'un projet de _data science_.
+
+Une organisation claire et méthodique du code et des données  
+facilite la compréhension du projet et la capacité  
+à reprendre et faire évoluer le code. Il est plus facile  
+de faire évoluer une chaine de production dont les éléments  
+s'enchainent de manière distincte et claire que lorsque tout est mélangé.
+
+::: {layout-ncol=2}
+![Un projet mal structuré](/workflow1.png)
+
+![L'horizon vers lequel nous nous dirigeons dans ce cours](/workflow2.png)
+:::
+
+Comme dans le chapitre précédent, l'objectif d'une bonne  
+structure de projets est de favoriser la __lisibilité__  
+et la __maintenabilité__ du code. Comme dans le chapitre  
+précédent, l'organisation  
+d'un projet est l'association de règles formelles  
+liées à la nature d'un  
+langage (manière dont le langage gère l'interdépendance entre  
+plusieurs scripts par exemple) et de conventions arbitraires  
+qui peuvent être amenées à évoluer.
+
+L'objectif est d'être pragmatique dans la structure du projet  
+et d'adapter celle-ci aux finalités de celui-ci.  
+Selon que le livrable du modèle est une API ou un site web la  
+solution technique mise en œuvre  
+attendra une structure différente de scripts. Néanmoins,  
+certains principes universels peuvent s'appliquer et rien  
+n'empêche de  
+se laisser  
+une marge d'adaptation si les _output_ du projet sont amenés à évoluer.
+
+Le premier geste à mettre en œuvre, qui est non négociable,  
+est d'utiliser `Git` ([voir chapitre dédié](/chapters/application.qmd)).  
+Avec `Git`, les mauvaises pratiques qui risquent de pénaliser  
+le développement ultérieur du projet vont être particulièrement criantes  
+et pourront être corrigées de manière très précoce.
+
+Les principes généraux sont les suivants :
+
+1. Privilégier les scripts aux _notebooks_, un enjeu spécifique aux projets  
+de _data science_
+2. Organiser son projet de manière modulaire  
+3. Adopter les standards communautaires de structure de projets  
+4. (Auto)-documenter son projet
+
+Il s'agit donc de la continuité des principes évoqués dans le chapitre précédent.
+
+## Démonstration par l'exemple
+
+Voici un exemple d'organisation de projet, qui vous rappellera peut-être des souvenirs :
+
+:::
+
+::: {.content-visible when-profile="en"}
+
+# Introduction
+
+Structuring a project  
+immediately helps identify both the code elements and ancillary parts,  
+such as dependencies to manage, documentation, etc.  
+High-quality scripts alone are not enough to ensure the overall quality  
+of a _data science_ project.
+
+A clear and methodical organization of code and data  
+makes the project easier to understand  
+and facilitates updating and evolving the code.  
+It’s much easier to improve a production pipeline  
+when its components are clearly and distinctly separated rather than all mixed together.
+
+::: {layout-ncol=2}
+![A poorly structured project](/workflow1.png)
+
+![The structure we aim for in this course](/workflow2.png)
+:::
+
+As in the previous chapter, the goal of a good  
+project structure is to enhance both the __readability__  
+and __maintainability__ of the code. Also like before,  
+the organization of a project combines formal rules  
+driven by the language (e.g., how the language handles interdependence  
+between scripts) with arbitrary conventions  
+that may evolve over time.
+
+The goal is to remain pragmatic in how we structure the project,  
+adapting it to its intended purpose.  
+Depending on whether the final deliverable is an API or a web app,  
+the technical solution we implement  
+will require different script structures. However,  
+some universal principles can still apply,  
+and we should allow ourselves  
+flexibility if the project's _outputs_ change over time.
+
+The first and non-negotiable step is to use `Git`  
+([see dedicated chapter](/chapters/application.qmd)).  
+With `Git`, bad practices that could hinder  
+the project’s future development become very obvious  
+and can be fixed early on.
+
+The key principles are as follows:
+
+1. Favor scripts over notebooks — a specific concern for _data science_ projects  
+2. Organize your project modularly  
+3. Adopt community standards for project structure  
+4. (Self)-document your project
+
+These principles are a direct continuation of those covered in the previous chapter.
+
+## Demonstration by Example
+
+Here’s an example of a project structure that might bring back memories:
+
+:::
+
+
+
+```
+├── report.qmd
+├── correlation.png
+├── data.csv
+├── data2.csv
+├── fig1.png
+├── figure 2 (copy).png
+├── report.pdf
+├── partial data.csv
+├── script.R
+└── script_final.py
+```
+_Source : [eliocamp.github.io](https://eliocamp.github.io/reproducibility-with-r/materials/day1/02-projects/)_
+
+
+::: {.content-visible when-profile="fr"}
+
+La structure du projet suivante rend compliquée  
+la compréhension du projet. Parmi les principales  
+questions :
+
+- Quelles sont les données en entrée de chaine ?
+- Dans quel ordre les données intermédiaires sont-elles créées ?
+- Quel est l'objet des productions graphiques ?
+- Tous les codes sont-ils utilisés dans ce projet ?
+
+En structurant le dossier en suivant des règles  
+simples, par exemple  
+en organisant le projet par des dossiers _inputs_, _outputs_,  
+on améliore déjà grandement la lisibilité du projet
+
+:::
+
+::: {.content-visible when-profile="en"}
+
+The following project structure makes it difficult  
+to understand the project. Some key questions arise:
+
+- What are the input data to the pipeline?
+- In what order are the intermediate data generated?
+- What is the purpose of the graphical outputs?
+- Are all the scripts actually used in this project?
+
+By structuring the folder using simple rules —  
+for example, organizing it into _inputs_ and _outputs_ folders —  
+we can significantly improve the project's readability.
+
+:::
+
+```
+├── README.md
+├── .gitignore
+├── data
+│   ├── raw
+│   │   ├── data.csv
+│   │   └── data2.csv
+│   └── derived
+│       └── partial data.csv
+├── src
+|   ├── script.py
+│   ├── script_final.py
+│   └── report.qmd
+└── output
+    ├── fig1.png
+    ├── figure 2 (copy).png
+    ├── figure10.png
+    ├── correlation.png
+    └── report.pdf
+```
+```
+├── README.md
+├── .gitignore
+├── data
+│   ├── raw
+│   │   ├── data.csv
+│   │   └── data2.csv
+│   └── derived
+│       └── partial data.csv
+├── src
+|   ├── script.py
+│   ├── script_final.py
+│   └── report.qmd
+└── output
+    ├── fig1.png
+    ├── figure 2 (copy).png
+    ├── figure10.png
+    ├── correlation.png
+    └── report.pdf
+```
+
+::: {.content-visible when-profile="fr"}
+
+::: {.callout-note}
+
+Comme `Git` est un prérequis, tout projet présente un fichier `.gitignore`  
+(il est très important, surtout quand on manipule des données qui ne  
+doivent pas se retrouver sur `Github` ou `Gitlab`).
+
+Un projet présente aussi un fichier `README.md` à la racine, nous  
+reviendrons dessus.
+
+Un projet qui utilise l'intégration continue contiendra également des fichiers spécifiques :
+
+- si vous utilisez `Gitlab`, les instructions sont stockées dans  
+le fichier `gitlab-ci.yml` ;
+- si vous utilisez `Github`, cela se passe dans le dossier `.github/workflows`.
+
+:::
+
+En changeant simplement le nom des fichiers, on rend  
+la structure du projet très lisible :
+
+:::
+
+::: {.content-visible when-profile="en"}
+
+::: {.callout-note}
+
+Since `Git` is a prerequisite, every project includes a `.gitignore` file  
+(this is especially important when working with data that must not  
+end up on `Github` or `Gitlab`).
+
+A project also includes a `README.md` file at the root —  
+we will come back to this later.
+
+A project using continuous integration will also include specific files:
+
+- if you're using `Gitlab`, the instructions are stored in  
+the `gitlab-ci.yml` file;
+- if you're using `Github`, this happens in the `.github/workflows` directory.
+
+:::
+
+By simply changing the file names, the project structure becomes  
+much more readable:
+
+:::
+
+
+
+```
+├── README.md
+├── .gitignore
+├── data
+│   ├── raw
+│   │   ├── dpe_logement_202103.csv
+│   │   └── dpe_logement_202003.csv
+│   └── derived
+│       └── dpe_logement_merged_preprocessed.csv
+├── src
+|   ├── preprocessing.py
+│   ├── generate_plots.py
+│   └── report.qmd
+└── output
+    ├── histogram_energy_diagnostic.png
+    ├── barplot_consumption_pcs.png
+    ├── correlation_matrix.png
+    └── report.pdf
+```
+
+
+::: {.content-visible when-profile="fr"}
+
+Maintenant, le type de données en entrée de chaine  
+est clair, le lien entre  
+les scripts, les données intermédiaires et les _output_ est  
+transparent.
+
+:::
+
+::: {.content-visible when-profile="en"}
+
+Now, the type of input data to the pipeline  
+is clear, and the relationship between  
+scripts, intermediate data, and outputs  
+is transparent.
+
+:::
+

@@ -1,0 +1,141 @@
+::: {.content-visible when-profile="fr"}
+
+# 1️⃣ Les _notebooks_ montrent leurs limites pour la mise en production
+
+Les _notebooks_ Jupyter sont très pratiques pour tâtonner,  
+expérimenter et communiquer. Ils sont donc un point d'entrée  
+intéressant en début de projet (pour l'expérimentation)  
+et en fin de projet (pour la communication).
+
+Cependant, ils présentent un certain  
+nombre d'inconvénients à long terme qui peuvent  
+rendre difficile, voire impossible à maintenir le code écrit  
+dans un _notebook_. Pour les citer, en vrac :
+
+- Tous les objets (fonctions, classes et données)  
+sont définis et disponibles dans le même fichier.  
+Le moindre changement à une fonction nécessite de retrouver  
+l'emplacement dans le code, écrire et faire tourner à nouveau  
+une ou plusieurs cellules.  
+- Lorsque l'on tâtonne, on écrit du code dans des cellules.  
+Dans un cahier, on utiliserait la marge mais cela n'existe  
+pas avec un notebook. On crée donc de nouvelles cellules,  
+pas nécessairement dans l'ordre. Quand il est  
+nécessaire de faire tourner à nouveau le notebook, cela  
+provoque des erreurs difficiles à debugger (il est nécessaire  
+de retrouver l'ordre logique du code, ce qui n'est pas  
+évident).  
+- Les notebooks incitent à faire des copier-coller de cellules  
+et modifier marginalement le code plutôt qu'à utiliser  
+des fonctions.  
+- Il est quasi impossible d'avoir un versioning avec Git des notebooks  
+qui fonctionne. Les notebooks étant, en arrière-plan, de gros fichiers  
+JSON, ils ressemblent plus à des données que des codes sources. Git ne  
+parvient pas bien à identifier les blocs de code qui ont changé.  
+- Le passage en production des notebooks est coûteux alors qu'un script bien  
+fait est beaucoup plus facile à passer en production (voir suite cours).  
+- Jupyter manque d'extensions pour mettre en œuvre les bonnes pratiques  
+(linters, etc.). VSCode, au contraire, est parfaitement adapté.  
+- Risques de révélation de données confidentielles puisque les outputs  
+des blocs de code, par exemple les `head`, sont écrits en dur dans  
+le code source.
+
+Plus synthétiquement, on peut résumer les inconvénients de cette  
+manière :
+
+- **Reproductibilité** limitée ;  
+- Pas adaptés pour **l’automatisation** ;  
+- **Contrôle de version** difficile.
+
+En fait, ces problèmes sont liés à plusieurs enjeux  
+spécifiques liés à la _data science_ :
+
+* Le début du cycle de vie d'un projet de _data science_  
+revêt un aspect expérimental où l'interactivité d'un _notebook_  
+est un réel avantage. Cependant, dans une phase ultérieure du cycle  
+de vie, la stabilité devient plus importante ;  
+* Le développement d'un code de traitement des données est souvent  
+non linéaire : on lit les données, on effectue des opérations sur celles-ci,  
+produits des sorties (par exemple des tableaux descriptifs)  
+avant de revenir en arrière pour compléter la source avec d'autres bases  
+et adapter le _pipeline_. Si cette phase exploratoire est non linéaire, renouer  
+le fil pour rendre le _pipeline_ linéaire et reproductible nécessite  
+une autodiscipline importante.
+
+Les  
+recommandations de ce cours visent à rendre le plus léger possible  
+la maintenance à long terme de projets _data science_ en favorisant  
+la reprise par d'autres (ou par soi-même dans le futur).  
+La bonne pratique est de privilégier des projets utilisant des  
+scripts `Python` autosuffisants (du point de vue des dépendances) qui  
+vont être encapsulés dans une chaine de traitement  
+plus ou moins formalisée. Selon les projets et l'infrastructure disponible,  
+cette dernière pourra  
+être un simple script `Python` ou un _pipeline_ plus formel. L'arbitrage  
+sur le formalisme à adopter dépend du temps de disponible.
+
+:::
+
+::: {.content-visible when-profile="en"}
+
+# 1️⃣ Notebooks Show Their Limits for Production
+
+Jupyter notebooks are very useful for tinkering,  
+experimenting, and communicating. They are thus a good entry point  
+at the beginning of a project (for experimentation)  
+and at the end (for communication).
+
+However, they come with a number  
+of long-term drawbacks that can make the code written  
+in a notebook difficult—or even impossible—to maintain. Here are a few examples:
+
+- All objects (functions, classes, and data)  
+are defined and available in the same file.  
+Any change to a function requires finding its location in the code,  
+editing, and rerunning one or more cells.  
+- When experimenting, we write code in cells.  
+In a notebook, there is no "margin" to jot down code like in a physical notebook.  
+So we create new cells, not necessarily in order.  
+When rerunning the notebook, this can cause hard-to-debug errors  
+(since the logical execution order is not obvious).  
+- Notebooks encourage copy-pasting of cells and tweaking code  
+rather than defining reusable functions.  
+- It is nearly impossible to version control notebooks effectively with Git.  
+Since notebooks are large JSON files behind the scenes, they look more like data than source code.  
+Git cannot easily identify which code blocks have changed.  
+- Moving notebooks into production is cumbersome, whereas well-written scripts  
+are much easier to productionize (see next parts of the course).  
+- Jupyter lacks extensions that enforce good practices (linters, etc.),  
+whereas VSCode is perfectly suited.  
+- Risk of leaking sensitive data, since notebook outputs  
+(e.g., `head` commands) are written to disk by default.
+
+In summary, their main drawbacks are:
+
+- Limited **reproducibility**  
+- Not suited for **automation**  
+- Poor **version control**
+
+These issues are particularly tied to the challenges of _data science_:
+
+* The early stages of a data science project are exploratory,  
+and notebooks provide a great interface for this.  
+However, stability becomes more important in later phases.  
+* Data processing code is often developed non-linearly:  
+you load data, transform it, produce outputs (e.g., summary tables),  
+then go back to modify sources or join with other datasets.  
+Although this exploratory phase is nonlinear,  
+making the pipeline linear and reproducible later  
+requires significant discipline.
+
+The  
+recommendations in this course aim to make long-term maintenance  
+of data science projects as lightweight as possible  
+by promoting code that can be reused by others (or yourself in the future).  
+The best practice is to use self-contained `Python` scripts (with respect to dependencies)  
+encapsulated within a more or less formal processing pipeline.  
+Depending on the project and infrastructure,  
+this might be a single `Python` script or a formal pipeline.  
+The level of formalism should be adjusted depending on available time.
+
+:::
