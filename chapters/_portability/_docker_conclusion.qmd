@@ -1,0 +1,159 @@
+:::: {.content-visible when-profile="fr"}
+
+## Exporter une image `Docker` {#exp-docker}
+
+Jusqu'à maintenant, toutes les commandes `Docker` que nous avons exécutées se sont passées en local. Ce mode de fonctionnement peut être intéressant pour la phase de développement et d'expérimentation. Mais comme on l'a vu, un des gros avantages de `Docker` est la facilité de redistribution des images construites, qui peuvent ensuite être utilisées par de nombreux utilisateurs pour faire tourner notre application. Pour cela, il nous faut _uploader_ notre image sur un dépôt distant, à partir duquel les utilisateurs pourront la télécharger.
+
+Plusieurs possibilités existent selon le contexte de travail : une entreprise peut avoir un dépôt interne par exemple. Si le projet est _open source_, on peut utiliser le [DockerHub](https://hub.docker.com/).
+
+Le *workflow* pour uploader une image est le suivant :
+
+- créer un compte sur `DockerHub` ;
+- créer un projet (public) sur `DockerHub`, qui va héberger les images `Docker` du projet ;
+- sur un terminal, utiliser `docker login` pour s'authentifier au `DockerHub` ;
+- on va modifier le *tag* que l'on fournit lors du *build* pour spécifier le chemin attendu. Dans notre cas : `docker build -t compte/projet:version .` ;
+- uploader l'image avec `docker push compte/projet:version`
+
+```{.bash filename="terminal"}
+docker push avouacr/myflaskapp:1.0.0
+```
+
+```{.python}
+The push refers to repository [docker.io/avouacr/myflaskapp]
+71db96687fe6: Pushed
+624877ac887b: Pushed
+ea4ab6b86e70: Pushed
+b5120a5bc48d: Pushed
+5fa484a3c9d8: Pushed
+c5ec52c98b31: Pushed
+1.0.0: digest: sha256:b75fe53fd1990c3092ec41ab0966a9fbbb762f3047957d99327cc16e27c68cc9 size: 1574
+```
+
+## Importer une image `Docker` {#imp-docker}
+
+En supposant que le dépôt utilisé pour uploader l'image est public, la procédure que doit suivre un utilisateur pour la télécharger se résume à utiliser la commande `docker pull compte/projet:version`
+
+```{.bash filename="terminal"}
+docker pull avouacr/myflaskapp:1.0.0
+```
+
+```{.python}
+1.0.0: Pulling from avouacr/myflaskapp
+e0b25ef51634: Pull complete
+c0445e4b247e: Pull complete
+48ba4e71d1c2: Pull complete
+ffd728caa80a: Pull complete
+906a95f00510: Pull complete
+d7d49b6e17ab: Pull complete
+Digest: sha256:b75fe53fd1990c3092ec41ab0966a9fbbb762f3047957d99327cc16e27c68cc9
+Status: Downloaded newer image for avouacr/myflaskapp:1.0.0
+docker.io/avouacr/myflaskapp:1.0.0
+```
+
+`Docker` télécharge et extrait chacune des couches qui constituent l'image (ce qui peut parfois être long). L'utilisateur peut alors créer un conteneur à partir de l'image, en utilisant `docker run` comme illustré précédemment.
+
+## Aide-mémoire
+
+Voici une première aide-mémoire sur les principales commandes à intégrer dans
+un `Dockerfile`:
+
+| Commande | Principe |
+|----------|----------|
+| `FROM <image>:<tag>` | Utiliser comme point de départ l'image `<image>` ayant le tag `<tag>` |
+| `RUN <instructions>` | Utiliser la suite d'instructions `<instructions>` dans un terminal `Linux`. Pour passer plusieurs commandes dans un `RUN`, utiliser `&&`. Cette suite de commande peut avoir plusieurs lignes, dans ce cas, mettre `\` en fin de ligne |
+| `COPY <source> <dest>` | Récupérer le fichier présent dans le système de fichier local à l'emplacement `<source>` pour que les instructions ultérieures puissent le trouver à l'emplacement `<dest>`   |
+| `ADD <source> <dest>` | Globalement, même rôle que `COPY` |
+| `ENV MY_NAME="John Doe"` | Création d'une variable d'environnement (qui devient disponible sous l'alias `$MY_NAME`)   |
+| `WORKDIR <path>` | Définir le _working directory_ du conteuneur Docker dans le dossier `<path>`  |
+| `USER <username>` | Création d'un utilisateur non _root_ nommé `<username>`  |
+| `EXPOSE <PORT_ID>` | Lorsqu'elle tournera, l'application sera disponible depuis le port `<PORT_ID>`
+| `CMD ["executable","param1","param2"]` | Au lancement de l'instance Docker la commande `executable` (par exemple `python3`) sera lancée avec les paramètres additionnels fournis  |
+
+Une seconde aide-mémoire pour les principales commandes `Linux` est disponible ci-dessous:
+
+| Commande | Principe |
+|----------|----------|
+| `docker build . -t <tag>` | Construire l'image `Docker` à partir des fichiers dans le répertoire courant (`.`) en l'identifiant avec le tag `<tag>`  |
+| `docker run -it <tag>` | Lancer l'instance docker identifiée par `<tag>`  |
+| `docker images` | Lister les images disponibles sur la machine et quelques unes de leurs propriétés (tags, volume, etc.) |
+| `docker system prune` | Faire un peu de ménage dans ses images `Docker` (bien réfléchir avant de faire tourner cette commande) |
+
+
+
+::::
+
+
+:::: {.content-visible when-profile="en"}
+
+## Exporting a Docker Image {#exp-docker}
+
+So far, all Docker commands we’ve run were executed locally. This is fine for development and experimentation. But as we've seen, one of Docker’s biggest strengths is the ability to easily share images with others. These images can then be used by multiple users to run the same application on their own machines.
+
+To do this, we need to **upload** our image to a remote repository from which others can **download** it.
+
+There are various options depending on your context: a company might have a private registry, while open-source projects can use [DockerHub](https://hub.docker.com/).
+
+Here is the typical workflow for uploading an image:
+
+- Create an account on DockerHub;
+- Create a (public) project on DockerHub to host your Docker images;
+- Use `docker login` in your terminal to authenticate with DockerHub;
+- Modify the image tag during the build to include the expected path. For example: `docker build -t username/project:version .`;
+- Push the image with `docker push username/project:version`.
+
+```{.bash filename="terminal"}
+docker push avouacr/myflaskapp:1.0.0
+```
+
+```{.python}
+The push refers to repository [docker.io/avouacr/myflaskapp]
+71db96687fe6: Pushed
+624877ac887b: Pushed
+ea4ab6b86e70: Pushed
+...
+```
+
+## Importing a Docker Image {#imp-docker}
+
+If the image repository is public, users can pull the image using a single command:
+
+```{.bash filename="terminal"}
+docker pull avouacr/myflaskapp:1.0.0
+```
+
+```{.python}
+1.0.0: Pulling from avouacr/myflaskapp
+e0b25ef51634: Pull complete
+c0445e4b247e: Pull complete
+...
+Status: Downloaded newer image for avouacr/myflaskapp:1.0.0
+```
+
+Docker will download and unpack each layer of the image (which may take time). Once downloaded, users can run the container with the `docker run` command as shown earlier.
+
+## Cheat Sheet
+
+Here’s a quick reference of common `Dockerfile` commands:
+
+| Command | Description |
+|---------|-------------|
+| `FROM <image>:<tag>` | Use `<image>` with `<tag>` as the base image |
+| `RUN <instructions>` | Execute Linux shell instructions. Use `&&` to chain commands. Use `\` to split long commands across multiple lines |
+| `COPY <source> <dest>` | Copy a file from the local machine into the image |
+| `ADD <source> <dest>` | Similar to `COPY`, but can also handle URLs and tar archives |
+| `ENV MY_NAME="John Doe"` | Define an environment variable available via `$MY_NAME` |
+| `WORKDIR <path>` | Set the working directory inside the container |
+| `USER <username>` | Set a non-root user named `<username>` |
+| `EXPOSE <PORT_ID>` | Indicate that the application will listen on port `<PORT_ID>` |
+| `CMD ["executable","param1","param2"]` | Define the default command to run when the container starts |
+
+And a second cheat sheet with basic Docker CLI commands:
+
+| Command | Description |
+|---------|-------------|
+| `docker build . -t <tag>` | Build the Docker image from current directory, tagging it with `<tag>` |
+| `docker run -it <tag>` | Run the container interactively from image with `<tag>` |
+| `docker images` | List locally available images and metadata (tags, size, etc.) |
+| `docker system prune` | Clean up unused images and containers (use with caution) |
+
+::::

@@ -1,0 +1,339 @@
+:::: {.content-visible when-profile="fr"}
+
+### Installer un package
+
+Notre environnement peut être enrichi, lorsque nécessaire,
+avec l'installation d'un _package_ par le biais de la ligne
+de commande. La procédure
+est très similaire entre `pip` (pour les environnements `venv`) et `conda`.
+
+::: {.callout-caution collapse="true"}
+## Mélanger `pip` et `conda`
+
+Il est techniquement possible d'installer des _packages_ par le biais de `pip`
+en étant situé dans un environnement virtuel `conda`[^sspcloud-note].
+Ce n'est pas un problème pour de l'expérimentation et ça permet de développer
+rapidement.
+
+Néanmoins, dans un environnement
+de production c'est une [pratique à éviter](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#using-pip-in-an-environment).
+
+- Soit on initialise un environnement
+`conda` autosuffisant avec un `env.yml` (voir plus bas) ;
+- Soit on crée un environnement `venv` et on fait exclusivement des `pip install`.
+:::
+
+[^sspcloud-note]: D'ailleurs, si vous utilisez `pip` sur le SSPCloud,
+c'est ce que vous faites, sans vous en rendre compte.
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+```{.bash filename="terminal" env="dev"}
+pip install nom_du_package
+```
+
+## `conda`
+
+```{.bash filename="terminal" env="dev"}
+conda install nom_du_package
+```
+
+:::
+
+La différence est que là où `pip install` va installer un package à partir du répertoire [PyPI](https://pypi.org/), `conda install` va chercher le package sur les répertoires maintenus par les développeurs de Conda[^1].
+
+Installons par exemple le package phare de *machine learning* `scikit-learn`.
+
+[^1]: Ces répertoires sont, dans le langage `conda`, les _canaux_.
+Le canal par défaut est maintenu par les développeurs d`Anaconda`.
+Cependant, pour en assurer la stabilité, ce canal a une forte inertie.
+La `conda-forge` a émergé pour offrir plus de flexibilité aux développeurs
+de _package_ qui peuvent ainsi mettre à disposition des versions plus
+récentes de leurs packages, comme sur  [PyPI](https://pypi.org/).
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+```{.bash filename="terminal" env="dev"}
+pip install scikit-learn
+```
+
+```{.python}
+pip install scikit-learn
+Collecting scikit-learn
+  Obtaining dependency information for scikit-learn from https://files.pythonhosted.org/packages/5b/be/208f17ce87a5e55094b0e8ffd55b06919ab9b56e7e4ce2a64cd9095ec5d2/scikit_learn-1.4.0-1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata
+  Downloading scikit_learn-1.4.0-1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (11 kB)
+Collecting numpy<2.0,>=1.19.5 (from scikit-learn)
+  Obtaining dependency information for numpy<2.0,>=1.19.5 from https://files.pythonhosted.org/packages/5a/62/007b63f916aca1d27f5fede933fda3315d931
+...
+```
+
+Les dépendances nécessaires (par exemple `Numpy` sont automatiquement installées).
+L'environnement s'enrichit donc:
+
+```{.bash filename="terminal" env="dev"}
+pip list
+```
+
+```{.python}
+Package       Version
+------------- -------
+joblib        1.3.2
+numpy         1.26.3
+pip           23.2.1
+scikit-learn  1.4.0
+scipy         1.12.0
+setuptools    65.5.0
+threadpoolctl 3.2.0
+```
+
+
+## `conda`
+
+
+```{.bash filename="terminal" env="dev"}
+conda install scikit-learn
+```
+
+<details>
+<summary>
+Voir la sortie
+</summary>
+
+```{.python}
+Channels:
+ - conda-forge
+Platform: linux-64
+Collecting package metadata (repodata.json): done
+Solving environment: done
+
+## Package Plan ##
+
+  environment location: /opt/mamba/envs/dev
+
+  added / updated specs:
+    - scikit-learn
+
+
+The following packages will be downloaded:
+
+    package                    |            build
+    ---------------------------|-----------------
+    joblib-1.3.2               |     pyhd8ed1ab_0         216 KB  conda-forge
+    libblas-3.9.0              |21_linux64_openblas          14 KB  conda-forge
+    libcblas-3.9.0             |21_linux64_openblas          14 KB  conda-forge
+    libgfortran-ng-13.2.0      |       h69a702a_3          23 KB  conda-forge
+    libgfortran5-13.2.0        |       ha4646dd_3         1.4 MB  conda-forge
+    liblapack-3.9.0            |21_linux64_openblas          14 KB  conda-forge
+    libopenblas-0.3.26         |pthreads_h413a1c8_0         5.3 MB  conda-forge
+    libstdcxx-ng-13.2.0        |       h7e041cc_3         3.7 MB  conda-forge
+    numpy-1.26.3               |   py39h474f0d3_0         6.6 MB  conda-forge
+    python_abi-3.9             |           4_cp39           6 KB  conda-forge
+    scikit-learn-1.4.0         |   py39ha22ef79_0         8.7 MB  conda-forge
+    scipy-1.12.0               |   py39h474f0d3_2        15.6 MB  conda-forge
+    threadpoolctl-3.2.0        |     pyha21a80b_0          20 KB  conda-forge
+    ------------------------------------------------------------
+                                           Total:        41.6 MB
+
+The following NEW packages will be INSTALLED:
+
+  joblib             conda-forge/noarch::joblib-1.3.2-pyhd8ed1ab_0
+  libblas            conda-forge/linux-64::libblas-3.9.0-21_linux64_openblas
+  libcblas           conda-forge/linux-64::libcblas-3.9.0-21_linux64_openblas
+  libgfortran-ng     conda-forge/linux-64::libgfortran-ng-13.2.0-h69a702a_3
+  libgfortran5       conda-forge/linux-64::libgfortran5-13.2.0-ha4646dd_3
+  liblapack          conda-forge/linux-64::liblapack-3.9.0-21_linux64_openblas
+  libopenblas        conda-forge/linux-64::libopenblas-0.3.26-pthreads_h413a1c8_0
+  libstdcxx-ng       conda-forge/linux-64::libstdcxx-ng-13.2.0-h7e041cc_3
+  numpy              conda-forge/linux-64::numpy-1.26.3-py39h474f0d3_0
+  python_abi         conda-forge/linux-64::python_abi-3.9-4_cp39
+  scikit-learn       conda-forge/linux-64::scikit-learn-1.4.0-py39ha22ef79_0
+  scipy              conda-forge/linux-64::scipy-1.12.0-py39h474f0d3_2
+  threadpoolctl      conda-forge/noarch::threadpoolctl-3.2.0-pyha21a80b_0
+
+
+
+Downloading and Extracting Packages:
+
+Preparing transaction: done
+Verifying transaction: done
+Executing transaction: done
+```
+</details>
+
+Là encore, `conda` nous demande d'installer d'autres packages, qui sont des dépendances de `scikit-learn`. Par exemple, la librairie de calcul scientifique `NumPy`.
+
+
+```python
+(dev) $ conda list
+```
+
+```
+# packages in environment at /opt/mamba/envs/dev:
+#
+# Name                    Version                   Build  Channel
+_libgcc_mutex             0.1                 conda_forge    conda-forge
+_openmp_mutex             4.5                       2_gnu    conda-forge
+ca-certificates           2023.11.17           hbcca054_0    conda-forge
+joblib                    1.3.2              pyhd8ed1ab_0    conda-forge
+ld_impl_linux-64          2.40                 h41732ed_0    conda-forge
+libblas                   3.9.0           21_linux64_openblas    conda-forge
+libcblas                  3.9.0           21_linux64_openblas    conda-forge
+libffi                    3.4.2                h7f98852_5    conda-forge
+libgcc-ng                 13.2.0               h807b86a_3    conda-forge
+libgfortran-ng            13.2.0               h69a702a_3    conda-forge
+libgfortran5              13.2.0               ha4646dd_3    conda-forge
+libgomp                   13.2.0               h807b86a_3    conda-forge
+liblapack                 3.9.0           21_linux64_openblas    conda-forge
+libopenblas               0.3.26          pthreads_h413a1c8_0    conda-forge
+libsqlite                 3.44.2               h2797004_0    conda-forge
+libstdcxx-ng              13.2.0               h7e041cc_3    conda-forge
+libzlib                   1.2.13               hd590300_5    conda-forge
+ncurses                   6.4                  h59595ed_2    conda-forge
+numpy                     1.26.3           py39h474f0d3_0    conda-forge
+openssl                   3.2.0                hd590300_1    conda-forge
+pip                       23.3.2             pyhd8ed1ab_0    conda-forge
+python                    3.9.7           hf930737_3_cpython    conda-forge
+python_abi                3.9                      4_cp39    conda-forge
+readline                  8.2                  h8228510_1    conda-forge
+scikit-learn              1.4.0            py39ha22ef79_0    conda-forge
+scipy                     1.12.0           py39h474f0d3_2    conda-forge
+setuptools                69.0.3             pyhd8ed1ab_0    conda-forge
+sqlite                    3.44.2               h2c6b66d_0    conda-forge
+threadpoolctl             3.2.0              pyha21a80b_0    conda-forge
+tk                        8.6.13          noxft_h4845f30_101    conda-forge
+tzdata                    2023d                h0c530f3_0    conda-forge
+wheel                     0.42.0             pyhd8ed1ab_0    conda-forge
+xz                        5.2.6                h166bdaf_0    conda-forge
+zlib                      1.2.13               hd590300_5    conda-forge
+```
+
+:::
+
+::::
+
+
+:::: {.content-visible when-profile="en"}
+
+### Installing a package
+
+Your environment can be extended, when needed,  
+by installing a package via the command line.  
+The procedure is very similar between `pip` (for `venv` environments) and `conda`.
+
+::: {.callout-caution collapse="true"}
+## Mixing `pip` and `conda`
+
+It is technically possible to install packages using `pip`  
+while working within a `conda` virtual environment[^sspcloud-note].  
+This is fine for experimentation and speeds up development.
+
+However, in a production environment, it is a [practice to avoid](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#using-pip-in-an-environment).
+
+- Either you initialize a fully self-sufficient `conda` environment with an `env.yml` (see below);
+- Or you create a `venv` environment and use only `pip install`.
+
+:::
+
+[^sspcloud-note]: In fact, if you're using `pip` on SSPCloud,  
+you're doing exactly this—without realizing it.
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+```{.bash filename="terminal" env="dev"}
+pip install nom_du_package
+```
+
+## `conda`
+
+```{.bash filename="terminal" env="dev"}
+conda install nom_du_package
+```
+
+:::
+
+The difference is that while `pip install` installs a package from the [PyPI](https://pypi.org/) repository, `conda install` fetches the package from repositories maintained by the Conda developers[^1].
+
+Let’s install the flagship *machine learning* package `scikit-learn`.
+
+[^1]: These repositories are known as _channels_ in the `conda` ecosystem.  
+The default channel is maintained by the developers at `Anaconda`.  
+To ensure stability, this channel updates more slowly.  
+The `conda-forge` channel emerged to offer developers more flexibility,  
+letting them publish newer versions of their packages, much like [PyPI](https://pypi.org/).
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+```{.bash filename="terminal" env="dev"}
+pip install scikit-learn
+```
+
+```{.python}
+pip install scikit-learn
+Collecting scikit-learn
+...
+```
+
+Required dependencies (like `Numpy`) are automatically installed.  
+The environment is thus enriched:
+
+```{.bash filename="terminal" env="dev"}
+pip list
+```
+
+```{.python}
+Package       Version
+------------- -------
+joblib        1.3.2
+numpy         1.26.3
+pip           23.2.1
+scikit-learn  1.4.0
+scipy         1.12.0
+setuptools    65.5.0
+threadpoolctl 3.2.0
+```
+
+## `conda`
+
+```{.bash filename="terminal" env="dev"}
+conda install scikit-learn
+```
+
+<details>
+<summary>
+See output
+</summary>
+
+```{.python}
+Channels:
+ - conda-forge
+...
+Executing transaction: done
+```
+</details>
+
+Again, `conda` requires installing additional packages that are dependencies of `scikit-learn`. For example, the scientific computing library `NumPy`.
+
+```python
+(dev) $ conda list
+```
+
+```
+# packages in environment at /opt/mamba/envs/dev:
+#
+# Name                    Version                   Build  Channel
+_libgcc_mutex             0.1                 conda-forge    conda-forge
+...
+zlib                      1.2.13               hd590300_5    conda-forge
+```
+
+:::
+
+::::
