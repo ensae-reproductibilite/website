@@ -1,0 +1,191 @@
+:::: {.content-visible when-profile="fr"}
+
+# Les conteneurs 🐋
+
+![Image trouvée sur [reddit](https://www.reddit.com/r/ProgrammerHumor/comments/cw58z7/it_works_on_my_machine/)
+](https://external-preview.redd.it/aR6WdUcsrEgld5xUlglgKX_0sC_NlryCPTXIHk5qdu8.jpg?auto=webp&s=5fe64dd318eec71711d87805d43def2765dd83cd){fig-align="center"}
+
+## Introduction
+
+Avec les environnements virtuels,  
+l'idée était de permettre à chaque utilisateur potentiel de notre projet d'installer sur son environnement d'exécution les packages nécessaires à la bonne exécution du projet.
+
+Néanmoins, comme on l'a vu, cette approche ne garantit pas une reproductibilité parfaite et a l'inconvénient de demander beaucoup de gestion manuelle.
+
+Changeons de perspective : _au lieu de distribuer une recette permettant à l'utilisateur de recréer l'environnement nécessaire sur sa machine, ne pourrait-on pas directement distribuer à l'utilisateur une machine contenant l'environnement pré-configuré ?_
+
+Bien entendu, on ve pas configurer et envoyer des ordinateurs portables à tous les utilisateurs potentiels d'un projet.  
+On va donc essayer de livrer une version virtuelle  
+de notre ordinateur. Il existe deux approches principales pour cela:
+
+- Les __machines virtuelles__. Cette approche n'est pas nouvelle.  Elle consiste à recréer, sur un serveur, un environnement informatique complet (matériel et système d'exploitation) qui réplique le comportement d'un véritable ordinateur.
+- Les __conteneurs__, une solution plus légère pour empaqueter un environnement informatique afin de répliquer le comportement d'une machine réelle.
+
+## Fonctionnement
+
+Les machines virtuelles ont l'inconvénient d'être assez lourdes, et complexes à répliquer et distribuer. Pour pallier ces différentes limites, les conteneurs se sont imposés au cours de la dernière décennie. Toutes les infrastructures _cloud_ modernes ont progressivement abandonné les machines virtuelles pour privilégier des conteneurs pour les raisons que nous allons évoquer ultérieurement.
+
+Comme les machines virtuelles, les conteneurs permettent d'empaqueter complètement l'environnement (librairies systèmes, application, configuration) qui permet de faire tourner l'application.  
+Mais à l'inverse d'une machine virtuelle, le conteneur n'inclut pas de système d'exploitation propre, il utilise celui de la machine hôte qui l'exécute.  
+Cela signifie que si on désire reproduire le comportement d'une machine Windows, il n'est pas nécessaire d'avoir un gros serveur avec Windows. Il est tout à fait possible d'avoir un serveur Linux, ce qui est la norme, et de répliquer le comportement d'une machine Windows à l'intérieur. A l'inverse, cela peut permettre de tester des configurations Linux ou Mac sur un ordinateur Windows. C'est le rôle du logiciel de conteneurisation qui fera la traduction entre les instructions voulues par le _software_ et le système d'exploitation du _hardware_.
+
+La technologie des conteneurs permet ainsi de garantir une très forte reproductibilité tout en restant suffisamment légère pour permettre une distribution et un déploiement simple aux utilisateurs. En effet, l'adhérence forte entre un système d'exploitation et un logiciel dans l'approche des machines virtuelles rend plus complexe la montée en charge d'un serveur. Si plus d'utilisateurs commencent à utiliser l'application, il est nécessaire de s'assurer que des serveurs correspondant aux besoins de l'application (système d'exploitation, configurations techniques, etc.) soient disponibles. Avec les conteneurs, la montée en charge est plus simple puisque les restrictions matérielles sont moins fortes: ajouter un serveur Linux avec les logiciels adéquats peut être suffisant.
+
+![Différences entre l'approche conteneurs (gauche) et l'approche machines virtuelles (droite) (Source : [docker.com](https://www.docker.com/resources/what-container/))](/docker-vm.png)
+
+Du point de vue de l'utilisateur, la différence n'est pas toujours perceptible pour des besoins standards.  
+L'utilisateur accédera à son application par une application dédiée (un navigateur, un logiciel spécialisé...) et les calculs issus des opérations effectuées seront déportés sur les serveurs où est hébergée cette application. Néanmoins, pour l'organisation qui gère cette application, les conteneurs offriront plus de liberté et de flexibilité comme nous l'avons évoqué.
+
+## `Docker` {{< fa brands docker >}}, l'implémentation standard
+
+Comme nous l'avons évoqué, le logiciel de conteneurisation fait office de couche tampon entre les applications et le système d'exploitation du serveur.
+
+Comme pour les environnements virtuels, il existe différentes implémentations de la technologie des conteneurs. En pratique, l'implémentation offerte par `Docker` est devenue largement prédominante, au point qu'il est devenu courant d'utiliser de manière interchangeable les termes _"conteneuriser"_ et _"Dockeriser"_ une application. C'est donc cette implémentation que nous allons étudier et utiliser dans ce cours.
+
+### Installation et environnements bacs à sable
+
+`Docker` {{< fa brands docker >}} est un logiciel qui peut s'installer sur différents système d'exploitation.  
+Les instructions sont détaillées dans la [documentation officielle](https://docs.docker.com/get-docker/).  
+Il est nécessaire d'avoir des droits administrateurs sur son poste pour pouvoir faire cette installation.
+
+::: {.callout-warning collapse="true"}
+## Besoins en espace disque
+
+Il est également recommandé d'avoir de l'espace disque libre car certaines images (concept sur lequel nous reviendrons), une fois décompressées et construites, peuvent être lourdes selon la richesse des librairies installées dessus. Elles peuvent rapidement prendre quelques Gigas d'espace disque.
+
+Ceci est néanmoins à comparer à l'espace disque monstrueux que peut prendre un système d'exploitation complet (autour de 15GB pour Ubuntu ou Mac OS, 20GB par exemple pour Windows...). La distribution Linux la plus minimaliste ([Alpine](https://hub.docker.com/_/alpine/tags)) ne fait que 3Mo compressée et 5Mo une fois décompressée.
+:::
+
+Il existe également des environnements en ligne gratuits pouvant servir de bacs à sable s'il n'est pas possible pour vous d'installer `Docker`.  
+_[Play with Docker](https://labs.play-with-docker.com)_ permet de tester en ligne `Docker` comme on pourrait le faire sur une installation personnelle. Néanmoins, ces services sont limités: la taille maximale des images décompressées est limitée à 2Go, les services connaissent des coupures en cas d'utilisation massive...
+
+Comme nous le verrons ultérieurement, l'utilisation de `Docker` en interactif est pratique pour apprendre et expérimenter. Néanmoins, en pratique, on utilise principalement `Docker` par le biais de l'intégration continue via `Github Actions` ou `Gitlab CI`.
+
+### Principes
+
+![Source : [k21academy.com](https://k21academy.com/docker-kubernetes/docker-and-kubernetes/)](https://ensae-reproductibilite.github.io/slides/img/docker-workflow.png)
+
+Un conteneur Docker est mis à disposition sous la forme d'une **image**, c'est à dire d'un fichier binaire qui contient l'environnement nécessaire à l'exécution de l'application. Celui-ci est mis à disposition de tous sous une forme compressée sur un dépôt d'images publiques (le plus connu est `Dockerhub`).
+
+Avant de mettre à disposition une image, il est nécessaire de la construire (*build*).  
+Pour cela on utilise un `Dockerfile`, un fichier texte qui contient la recette — sous forme de commandes Linux — de construction de l'environnement.
+
+Une fois l'image construite, il est possible de faire deux actions:
+
+- La lancer (*run*) en local. Cela permet de tester l'application, éventuellement de la corriger en cas de mauvais fonctionnement. Le lancement de l'application permet de faire tourner l'image dans un environnement isolé qu'on appelle le conteneur (*container*), une instance vivante de l'image en quelques sortes[^assimilation].
+- La mettre à disposition sur un dépôt public pour permettre à d'autres (ou à soi-même) de la tester.  
+L'image va être uploadée (*push*) sur un dépôt (*registry*), public ou privé, depuis lequel les utilisateurs vont pouvoir télécharger l'image (*pull*).
+
+[^assimilation]: Par abus de langage, on mélange souvent les termes _"image"_ et _"conteneur"_. En pratique ces deux concepts sont très proches.  
+Le second correspond à la version vivante du premier.
+
+::: {.callout-note collapse="true"}
+## Mettre à disposition son image `Docker`
+
+Le répertoire d'images publiques le plus connu est [`DockerHub`](https://hub.docker.com/). Il s'agit d'un répertoire où n'importe qui peut proposer une image `Docker`, associée ou non à un projet disponible sur `Github` ou `Gitlab`. Il est possible de mettre à disposition de manière manuelle des images mais, comme nous le montrerons dans le chapitre sur la [mise en production](/chapters/deployment.html), il est beaucoup plus pratique d'utiliser des fonctionalités d'interaction automatique entre `DockerHub` et un dépôt `GitHub`.
+:::
+
+::::
+:::: {.content-visible when-profile="en"}
+
+# Containers 🐋
+
+![Image found on [reddit](https://www.reddit.com/r/ProgrammerHumor/comments/cw58z7/it_works_on_my_machine/)
+](https://external-preview.redd.it/aR6WdUcsrEgld5xUlglgKX_0sC_NlryCPTXIHk5qdu8.jpg?auto=webp&s=5fe64dd318eec71711d87805d43def2765dd83cd){fig-align="center"}
+
+## Introduction
+
+With virtual environments,  
+the goal was to allow every potential user of our project to install the required packages on their system for proper execution.
+
+However, as we’ve seen, this approach doesn’t ensure perfect reproducibility and requires significant manual effort.
+
+Let’s shift perspective: _instead of giving users a recipe to recreate the environment on their machine, couldn’t we just give them a pre-configured machine?_
+
+Of course, we’re not going to configure and ship laptops to every potential user.  
+So we aim to deliver a virtual version  
+of our machine. There are two main approaches:
+
+- __Virtual machines__: not a new approach. They simulate a full computing environment (hardware + OS) on a server to replicate a real computer’s behavior.
+- __Containers__: a more lightweight solution to bundle a computing environment and mimic a real machine's behavior.
+
+## How it works
+
+Virtual machines are heavy and difficult to replicate or distribute.  
+To overcome these limitations, containers have emerged in the past decade.  
+Modern cloud infrastructure has largely moved from virtual machines to containers for the reasons we’ll discuss.
+
+Like VMs, containers package the full environment (system libraries, app, configs) needed to run an app.  
+But unlike VMs, containers don’t include their own OS. Instead, they use the host machine’s OS.  
+This means to simulate a Windows machine, you don’t need a Windows server — a Linux one will do. Conversely, you can test Linux/Mac setups on a Windows machine.  
+The containerization software handles the translation between software-level instructions and the host OS.
+
+This technology guarantees strong reproducibility while remaining lightweight enough for easy distribution and deployment.  
+With VMs, strong coupling between the OS and the app makes scaling harder. You need to spin up new servers matching your app’s needs (OS, configs).  
+With containers, scaling is easier: just add Linux servers with the right tools and you're good to go.
+
+![Differences between containers (left) and VMs (right) (Source: [docker.com](https://www.docker.com/resources/what-container/))](/docker-vm.png)
+
+From the user’s point of view, the difference is often invisible for typical usage.  
+They access the app via a browser or tool, and computations happen on the remote server.  
+But for the organization hosting the app, containers bring more freedom and flexibility.
+
+## `Docker` {{< fa brands docker >}}, the standard implementation
+
+As mentioned, the containerization software acts as a bridge between applications and the server’s OS.
+
+As with virtual environments, there are multiple container technologies.  
+In practice, `Docker` has become the dominant one — to the point where “containerize” and “Dockerize” are often used interchangeably.  
+We will focus on Docker in this course.
+
+### Installation & sandbox environments
+
+`Docker` {{< fa brands docker >}} can be installed on various operating systems.  
+Installation instructions are in the [official documentation](https://docs.docker.com/get-docker/).  
+You need admin rights on your computer to install it.
+
+::: {.callout-warning collapse="true"}
+## Disk space requirements
+
+It’s also recommended to have free disk space, as some images (we’ll come back to that) can be large once decompressed and built.  
+They may take up several GBs depending on the libraries included.
+
+Still, this is small compared to a full OS (15GB for Ubuntu or macOS, 20GB for Windows...).  
+The smallest Linux distribution ([Alpine](https://hub.docker.com/_/alpine/tags)) is only 3MB compressed and 5MB uncompressed.
+:::
+
+If you can't install Docker, there are free online sandboxes.  
+_[Play with Docker](https://labs.play-with-docker.com)_ lets you test Docker as if it were on your local machine.  
+These services are limited though (2GB max image size, outages under heavy load...).
+
+As we’ll see, interactive Docker usage is great for learning.  
+But in practice, Docker is mostly used via CI systems like `GitHub Actions` or `Gitlab CI`.
+
+### Concepts
+
+![Source: [k21academy.com](https://k21academy.com/docker-kubernetes/docker-and-kubernetes/)](https://ensae-reproductibilite.github.io/slides/img/docker-workflow.png)
+
+A Docker container is delivered as an **image**: a binary file containing the environment needed to run an app.  
+It’s shared in compressed form on a public image repository (e.g., `Dockerhub`).
+
+Before sharing, you must *build* the image.  
+That’s done using a `Dockerfile`, a text file with Linux commands describing how to set up the environment.
+
+Once built, you can:
+
+- *Run* it locally to test and debug the app.  
+  Running it creates an isolated environment called a *container* — a live instance of the image[^assimilation].
+- *Push* it to a public or private repository so others (or yourself) can *pull* and use it.
+
+[^assimilation]: The terms “image” and “container” are often used interchangeably.  
+Technically, a container is the live version of an image.
+
+::: {.callout-note collapse="true"}
+## Publishing your Docker image
+
+The most well-known image repository is [`DockerHub`](https://hub.docker.com/).  
+Anyone can publish a Docker image there, optionally linked to a GitHub or Gitlab project.  
+While you can upload images manually, as we’ll see in the [deployment chapter](/chapters/deployment.html), it's much better to use automated links between `DockerHub` and your `GitHub` repo.
+:::
+
+::::

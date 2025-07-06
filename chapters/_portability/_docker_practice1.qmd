@@ -1,0 +1,238 @@
+::: {.content-visible when-profile="fr"}
+
+# `Docker` en pratique: un exemple
+
+[L'application fil rouge](/chapters/application.qmd)
+présente des exemples similaires sur notre cas d'usage
+qu'est une application visant à rendre public les résultats de notre modèle de _machine learning_.
+
+## Application
+
+Afin de présenter l'utilisation de `Docker` en pratique, nous allons présenter les différentes étapes permettant de _"dockeriser"_ une application web minimaliste construite avec le _framework_ `Python` [`Flask`](https://flask.palletsprojects.com/en/2.1.x/)[^3].
+
+[^3]: [`Flask`](https://flask.palletsprojects.com/en/2.1.x/) est un
+_framework_ permettant de déployer, de manière légère,
+des applications reposant sur
+`Python`.
+
+La structure de notre projet est la suivante.
+
+```
+├── myflaskapp
+│   ├── Dockerfile
+│   ├── hello-world.py
+│   └── requirements.txt
+```
+
+
+Le script `hello-world.py` contient le code d'une application minimaliste, qui affiche simplement _"Hello, World!"_ sur une page web. Nous verrons
+dans l'[application fil rouge](/chapters/application.qmd) comment construire une application interactive plus complète.
+
+```{.python filename="hello-world.py"}
+from flask import Flask
+
+app = Flask(__name__)
+
+
+@app.route("/")
+def hello_world():
+    return "<p>Hello, World!</p>"
+```
+
+Pour faire tourner l'application, il nous faut donc à la fois `Python` et le package `Flask`.
+Il est donc nécessaire de contrôler l'environnement virtuel autour de `Python` ce qui va impliquer:
+
+- Installer `Python` ;
+- Installer les _packages_ nécessaires à l'exécution de notre code. En l'occurrence, on n'a besoin que de `Flask`.
+
+Si la version de `Python` utilisée par notre application nous importe peu, il est plus simple d'adopter un environnement virtuel `venv` que `conda`. Nous allons donc proposer d'utiliser ceci ce qui tombe bien car nous avons déjà notre `requirements.txt` qui
+prend la forme suivante:
+
+```{.python filename="requirements.txt"}
+Flask==2.1.1
+```
+
+Ces installations en deux temps (`Python` et packages nécessaires)  doivent être spécifiées dans le `Dockerfile` (cf. [section suivante](#dockerfile)).
+
+## Le `Dockerfile` {#dockerfile}
+
+Pour faire un plat, il faut une recette. Pour faire
+une image image `Docker`, il faut un `Dockerfile`.
+
+Ce fichier texte contient une série de commandes qui permettent de construire l'image. Ces fichiers peuvent être plus ou moins complexes selon l'application que l'on cherche à conteneuriser, mais leur structure est assez normalisée.
+
+L'idée est de partir d'une couche de base (une distribution Linux minimaliste) et y ajouter des couches en fonction des besoins de notre application.
+
+Pour illustrer cela, analysons ligne à ligne le `Dockerfile` nécessaire pour construire une image `Docker` de notre application `Flask.`
+
+```{.python}
+#| filename: Dockerfile
+
+FROM ubuntu:20.04 #<1>
+
+RUN apt-get update -y && \
+    apt-get install -y python3-pip python3-dev #<2>
+
+WORKDIR /app #<3>
+
+COPY requirements.txt /app/requirements.txt #<4>
+RUN pip install -r requirements.txt #<4>
+
+COPY . /app #<4>
+
+ENV FLASK_APP="hello-world.py" #<5>
+EXPOSE 5000 #<6>
+
+CMD ["flask", "run", "--host=0.0.0.0"] #<7>
+```
+1. `FROM` : spécifie l'image de base. Une image `Docker` hérite toujours d'une image de base. Ici, on choisit l'image `Ubuntu` version `20.04`, tout va donc se passer comme si l'on développait sur une machine virtuelle vierge ayant pour système d'exploitation `Ubuntu 20.04` {{< fa brands linux >}} ;
+2. `RUN` : lance une commande Linux. Ici, on met d'abord à jour la liste des packages téléchargeables via `apt`, puis on installe `Python` {{< fa brands python >}} ainsi que des librairies système nécessaires au bon fonctionnement de notre application ;
+3. `WORKDIR` : spécifie le répertoire de travail de l'image. Ainsi, toutes les commandes suivantes seront exécutées depuis ce répertoire. C'est l'équivalent `Docker` de la commande `cd` (voir [Linux 101](/chapters/linux101.qmd)) ;
+4. `COPY` : copie un fichier local sur l'image `Docker`. Cela est lié à la manière dont fonctionne `Docker`. Pour ne pas polluer l'image de fichiers non nécessaires (qui affecteront de manière incidente sa configuration et le poids de celle-ci), par défaut, votre image ne contient pas de fichiers de votre projet. Si certains sont nécessaires pour construire l'image, il faut explicitement le dire à `Docker`.
+Ici, on copie d'abord le fichier `requirements.txt` du projet, qui spécifie les dépendances `Python` de notre application, puis on les installe avec une commande `RUN`. La seconde instruction `COPY` copie le répertoire du projet sur l'image ;
+5. `ENV` : crée une variable d'environnement qui sera accessible à l'application dans le conteneur. Ici, on définit une variable d'environnement attendue par `Flask`, qui spécifie le nom du script permettant de lancer l'application ;
+6. `EXPOSE` : informe `Docker` que le conteneur "écoute" sur le port 5000, qui est le port par défaut utilisé par le serveur web de `Flask`. Ceci est lié à la nature du fonctionnement de `Flask` qui lance un _localhost_ sur un port donné, en l'occurrence le port 5000. ;
+7. `CMD` : spécifie la commande que doit exécuter le conteneur lors de son lancement. Il s'agit d'une liste, qui contient les différentes parties de la commande sous forme de chaînes de caractères. Ici, on lance la commande `flask run` qui sait automatiquement quelle application lancer du fait de la commande `ENV` spécifiée précédemment. On ajoute l'option `--host=0.0.0.0` pour que ce soit l'application déployée sur le _localhost_ (notre application `Flask`) qui soit mis à disposition de l'utilisateur final.
+
+::: {.callout-tip collapse="true"}
+## Choisir l'image de base
+
+Dans l'idéal, on essaie de partir d'une couche la plus petite possible
+pour limiter la taille de l'image finalement obtenue. Il n'est en effet
+pas nécessaire d'utiliser une image disposant de {{< fa brands r-project >}} si on n'utilise que
+du {{< fa brands python >}}.
+
+En général, les différents langages proposent des images de petite taille dans lequel un interpréteur est déjà installé et proprement configuré. Dans cette application, on aurait par exemple pu utiliser l'image [`python:3.9-slim-buster`](https://hub.docker.com/layers/python/library/python/3.9-slim-buster/images/sha256-e07b35c0c81c21995a43cefd64730ac0e57a5164cc440b6a5c94c118cfacd0ca?context=explore).
+:::
+
+
+Avec la première commande `RUN` du `Dockerfile`, nous installons `Python` mais aussi des librairies système nécessaires au bon fonctionnement de l'application. Mais comment les avons-nous trouvées ?
+
+Par essai et erreur. Lors de l'étape de [build](#build) que l'on verra juste après, le moteur `Docker` va essayer de construire l'image selon les spécifications du `Dockerfile`, comme s'il partait d'un ordinateur vide contenant simplement `Ubuntu 20.04`. Si des librairies manquent, le processus de *build* devrait renvoyer une erreur, qui s'affichera dans les *logs* de l'application, affichés par défaut dans la console. Quand on a de la chance, les _logs_ décrivent explicitement les librairies système manquantes. Mais souvent, les messages d'erreur ne sont pas très explicites, et il faut alors les copier dans un moteur de recherche bien connu pour trouver la réponse, souvent sur [StackOverflow](https://stackoverflow.com/).
+
+Il est recommandé, avant d'essayer de créer une image `Docker`, de passer par l'étape intermédiaire dans la démarche de reproductibilité qu'est la création d'un script shell (`.sh`). Cette approche graduelle est illustrée dans [l'application fil rouge](/chapters/application.qmd).
+
+
+::: {.callout-note collapse="true"}
+## L'instruction `COPY`
+La recette présente dans le `Dockerfile` peut nécessiter l'utilisation de
+fichiers appartenant au dossier de travail. Pour que `Docker` les trouve
+dans son contexte, il est nécessaire d'introduire une
+commande `COPY`. C'est un petit peu comme pour la cuisine: pour utiliser
+un produit dans une recette, il faut le sortir du frigo (fichier local)
+et le mettre sur la table.
+:::
+
+
+Nous n'avons ici vu que les commandes `Docker` les plus fréquentes, il en existe beaucoup d'autres en pratique. N'hésitez pas à consulter la [documentation officielle](https://docs.docker.com/engine/reference/builder/) pour comprendre leur utilisation.
+
+:::
+
+::: {.content-visible when-profile="en"}
+
+# `Docker` in Practice: An Example
+
+The [running example](/chapters/application.qmd) presents similar steps applied to a use case: deploying a web application that publicly exposes the results of a machine learning model.
+
+## Application
+
+To demonstrate Docker in practice, we'll walk through the steps to _Dockerize_ a minimal web application built with the Python web framework [`Flask`](https://flask.palletsprojects.com/en/2.1.x/)[^3].
+
+[^3]: [`Flask`](https://flask.palletsprojects.com/en/2.1.x/) is a lightweight framework for deploying Python-based web applications.
+
+Our project structure is as follows:
+
+```
+├── myflaskapp
+│   ├── Dockerfile
+│   ├── hello-world.py
+│   └── requirements.txt
+```
+
+The `hello-world.py` script contains the code of a basic app that simply displays _"Hello, World!"_ on a web page. We'll explore how to build a more interactive application in the [running example](/chapters/application.qmd).
+
+```{.python filename="hello-world.py"}
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def hello_world():
+    return "<p>Hello, World!</p>"
+```
+
+To run the app, we need both Python and the `Flask` package. This means we need to control the Python environment:
+
+- Install Python;
+- Install the packages required by our code—in this case, only `Flask`.
+
+Since we're not tied to a specific version of Python, using a `venv` virtual environment is simpler than `conda`. Conveniently, we already have a `requirements.txt` file that looks like this:
+
+```{.python filename="requirements.txt"}
+Flask==2.1.1
+```
+
+Both steps (installing Python and its required packages) must be declared in the `Dockerfile` (see [next section](#dockerfile)).
+
+## The `Dockerfile` {#dockerfile}
+
+Just like a dish needs a recipe, a Docker image needs a `Dockerfile`.
+
+This text file contains a sequence of instructions to build the image. These files can range from simple to complex depending on the application being containerized, but their structure follows some standards.
+
+The idea is to start from a base layer (typically a minimal Linux distribution) and layer on the tools and configuration needed by our app.
+
+Let’s go through the `Dockerfile` for our `Flask` application line by line:
+
+```{.python}
+#| filename: Dockerfile
+
+FROM ubuntu:20.04 #<1>
+
+RUN apt-get update -y && \
+    apt-get install -y python3-pip python3-dev #<2>
+
+WORKDIR /app #<3>
+
+COPY requirements.txt /app/requirements.txt #<4>
+RUN pip install -r requirements.txt #<4>
+
+COPY . /app #<4>
+
+ENV FLASK_APP="hello-world.py" #<5>
+EXPOSE 5000 #<6>
+
+CMD ["flask", "run", "--host=0.0.0.0"] #<7>
+```
+
+1. `FROM`: defines the base image. All Docker images inherit from a base. Here we choose `ubuntu:20.04`, so our environment will act like a blank virtual machine running Ubuntu 20.04 {{< fa brands linux >}};
+2. `RUN`: executes a Linux command. We first update the list of installable packages, then install Python {{< fa brands python >}} and any required system libraries;
+3. `WORKDIR`: sets the working directory inside the image. All following commands will run from this path—Docker’s equivalent to the `cd` command (see [Linux 101](/chapters/linux101.qmd));
+4. `COPY`: transfers files from the host to the Docker image. This is important because Docker builds images in isolation—your project files don’t exist inside the image unless explicitly copied. First, we copy `requirements.txt` to install dependencies, then copy the full project directory;
+5. `ENV`: defines an environment variable accessible inside the container. Here, we use `FLASK_APP` to tell Flask which script to run;
+6. `EXPOSE`: tells Docker the app will listen on port 5000—the default port for Flask’s development server;
+7. `CMD`: defines the command to run when the container starts. Here, it launches the Flask server and binds it to all IPs in the container with `--host=0.0.0.0`.
+
+::: {.callout-tip collapse="true"}
+## Choosing the Base Image
+
+Ideally, you want the smallest base image possible to reduce final image size. For example, there's no need to use an image with {{< fa brands r-project >}} if your project only uses {{< fa brands python >}}.
+
+Most languages provide lightweight base images with preinstalled and well-configured interpreters. In our case, we could have used [`python:3.9-slim-buster`](https://hub.docker.com/layers/python/library/python/3.9-slim-buster/images/sha256-e07b35c0c81c21995a43cefd64730ac0e57a5164cc440b6a5c94c118cfacd0ca?context=explore).
+:::
+
+The first `RUN` installs Python and system libraries required by our app. But how did we know which libraries to include?
+
+Trial and error. During the [build](#build) phase, Docker attempts to construct the image from the `Dockerfile`—as if it's starting from a clean Ubuntu 20.04 machine. If a system dependency is missing, the build will fail and show an error message in the console logs. With luck, the logs will explicitly name the missing library. More often, the messages are vague and require some web searching—StackOverflow is a frequent lifesaver.
+
+Before creating a Docker image, it's helpful to go through an intermediate step: writing a shell script (`.sh`) to automate setup locally. This approach is outlined in the [running example](/chapters/application.qmd).
+
+::: {.callout-note collapse="true"}
+## The `COPY` Instruction
+
+Your `Dockerfile` recipe might require files from your working folder. To ensure Docker sees them during the build, you need a `COPY` command. Think of it like cooking: if you want to use an ingredient, you need to take it out of the fridge (your local disk) and place it on the table (Docker build context).
+:::
+
+We’ve covered only the most common `Docker` commands. For a full reference, check the [official documentation](https://docs.docker.com/engine/reference/builder/).
+
+:::

@@ -1,0 +1,78 @@
+::: {.content-visible when-profile="fr"}
+
+# Introduction : la notion de portabilité
+
+![Image empruntée à la page "Les joies du code"](/berk.png){fig-align="center"}
+
+Dans les chapitres précédents, nous avons vu un ensemble de bonnes pratiques qui permettent de considérablement améliorer la qualité d'un projet : rendre le code plus lisible, adopter une structure du projet normalisée et évolutive et versionner proprement son code sur un dépôt `GitHub` {{< fa brands github >}}.
+
+Une fois ces bonnes pratiques appliquées à notre projet, ce dernier apparaît largement partageable. Du moins en théorie, car la pratique est souvent plus compliquée : il y a fort à parier que si vous essayez d'exécuter votre projet sur un autre environnement d'exécution (un autre ordinateur, un serveur, etc.), les choses ne se passent pas du tout comme attendu. Cela signifie que qu'**en l'état, le projet n'est pas [portable]{.colorized} : il n'est pas possible, sans modifications coûteuses, de l'exécuter dans un environnement différent de celui dans lequel il a été développé**.
+
+La raison principale est qu'un code ne vit pas dans une bulle isolée, il contient en général de nombreuses adhérences, plus ou moins visibles, au langage et à l'environnement dans lesquels il a été développé :
+
+- des __dépendances `Python`__ propres au langage du projet. C'est l'environnement des _packages_ nécessaires à exécuter le code ;
+- des __dépendances dans d'autres langages__ nécessaires au fonctionnement de certaines librairies `Python`. En effet, `Python` est un langage de haut niveau et certains _packages_ nécessitent des librairies bas-niveau pour être efficaces. Par exemple, `NumPy` est écrit en `C` et nécessite donc un compilateur `C` et `Pytorch` a quant à lui besoin de `C++` ;
+- des __dépendances à des librairies systèmes__ nécessaires pour installer certains _packages_
+qui ne seront pas les mêmes selon le système d'exploitation utilisé et certains paramètres matériels (par exemple, selon que Windows utilise une version 32 ou 64 bits). Par exemple, les librairies
+de manipulation ou de visualisation de données spatiales (`GeoPandas`, `Folium`) reposent sur des librairies systèmes `GDAL` qui sont propres à chaque système d'exploitation[^wheels].
+
+[^wheels]: Nous reviendrons plus tard sur la manière dont la mise à disposition de _packages_ sous forme précompilée par le biais de _wheels_ offre une solution à ce problème.
+
+Le premier problème peut être géré relativement facilement en adoptant une structure de projet ([chapitre précédent](/chapters/projects-architecture.qmd)) avec un fichier
+`requirements.txt` bien structuré et versionné.
+Les deux autres nécessitent en général des outils plus avancés.
+
+Nous allons progresser dans la démarche de reproductibilité en visant un projet
+portable, c'est-à-dire qui peut être
+exécuté dans un environnement différent de celui dans lequel il a été développé.
+Nous allons avoir besoin de nouveaux outils qui
+seront, chacun, des avancées sur l'échelle de la
+reproductibilité:
+
+* Les [environnements virtuels](#virtualenv) ;
+* Les [conteneurs](#conteneurs).
+
+Ces outils vont nous permettre de **normaliser l'environnement afin de produire un projet portable**. Cette étape est primordiale lorsque l'on se préoccupe de la mise en production d'un projet, car elle assure une transition relativement indolore entre l'environnement de développement et celui de production.
+
+![Image empruntée à [devrant.com](https://devrant.com/rants/174386/when-i-say-but-it-works-on-my-machine)](https://img.devrant.com/devrant/rant/r_174386_yx6zV.jpg){fig-align="center"}
+
+Le choix de la méthode à privilégier dépend d'un arbitrage temps-opportunité. Tous les projets
+n'ont pas vocation à être mis à disposition par
+le biais de conteneurs. Néanmoins,
+l'intérêt d'adopter une démarche de bonnes
+pratiques est que si le projet gagne en ambition
+et que la conteneurisation s'avère adéquate, celle-ci
+sera peu coûteuse à mettre en oeuvre.
+
+:::
+
+::: {.content-visible when-profile="en"}
+
+# Introduction: The Notion of Portability
+
+In previous chapters, we explored a set of best practices that significantly improve project quality: making code more readable, adopting a standardized and scalable project structure, and properly versioning code on a `GitHub` {{< fa brands github >}} repository.
+
+Once these best practices are applied, the project seems highly shareable — at least in theory. In practice, things are often more complicated: chances are that if you try to run your project on a different execution environment (another computer, a server, etc.), it won’t behave as expected. That means that **in its current state, the project is not [portable]{.colorized}: it cannot be run in a different environment without costly modifications**.
+
+The main reason is that code doesn’t live in a bubble — it typically includes many, often invisible, dependencies on the language and the environment in which it was developed:
+
+- __`Python` dependencies__: these are the _packages_ required for the code to run;
+- __Dependencies in other languages__: many `Python` libraries rely on low-level implementations for performance. For example, `NumPy` is written in `C`, requiring a C compiler, while `Pytorch` depends on `C++`;
+- __System library dependencies__: installing some _packages_ requires system-level libraries that vary by operating system and hardware setup (e.g., 32-bit vs. 64-bit Windows). For instance, spatial data libraries like `GeoPandas` and `Folium` rely on `GDAL` system libraries, which differ per OS[^wheels].
+
+[^wheels]: We’ll later explain how distributing _packages_ as precompiled _wheels_ addresses this issue.
+
+The first problem can be handled fairly easily by adopting a proper project structure ([see previous chapter](/chapters/projects-architecture.qmd)) and including a well-maintained `requirements.txt` file. The other two typically require more advanced tools.
+
+We're now moving up the ladder of reproducibility by aiming to make the project portable — that is, runnable in a different environment from where it was developed. This requires new tools, each marking a new step toward reproducibility:
+
+* [Virtual environments](#virtualenv);
+* [Containers](#conteneurs).
+
+These tools allow us to **standardize the environment and make the project portable**. This step is crucial when aiming to deploy a project into production, as it ensures a smooth transition from the development environment to the production one.
+
+![Image borrowed from [devrant.com](https://devrant.com/rants/174386/when-i-say-but-it-works-on-my-machine)](https://img.devrant.com/devrant/rant/r_174386_yx6zV.jpg){fig-align="center"}
+
+Which method to use depends on a time-versus-benefit tradeoff. Not all projects are meant to be containerized. However, the benefit of adopting best practices is that if the project grows in ambition and containerization becomes relevant, it will be inexpensive to implement.
+
+:::

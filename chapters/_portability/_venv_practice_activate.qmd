@@ -1,0 +1,219 @@
+:::: {.content-visible when-profile="fr"}
+
+### Activer un environnement
+
+### Activer un environnement
+
+Comme plusieurs environnements peuvent coexister sur un même système,
+il faut dire à notre gestionnaire d'environnement d'activer celui-ci.
+Dès lors, ce sera celui-ci qui sera utilisé implicitement lorsqu'on
+utilisera `python`, `pip`, etc. dans
+la ligne de commande active[^sourceactivate].
+
+[^sourceactivate]: Cela signifie que si on ouvre un nouveau terminal, il faudra à nouveau activer cet environnement si on désire l'utiliser. Si on désire activer par défaut un environnement,
+il est possible de configurer le terminal pour qu'il active automatiquement un environnement spécifique lors de son ouverture. Cela peut être réalisé en modifiant les fichiers de configuration du shell, par le biais par exemple du script `.bashrc` sur `Linux`.
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+```{.bash filename="terminal"}
+source dev/bin/activate
+```
+
+`venv` active l'environnement virtuel `dev`, indiqué par le changement du nom de l'environnement qui apparaît au début de la ligne de commande dans le terminal. Une fois activé, `dev` devient temporairement notre environnement par défaut pour les opérations `Python`. Pour confirmer cela, nous pouvons utiliser la commande `which` pour déterminer l'emplacement de l'interpréteur Python qui sera utilisé pour exécuter des scripts comme `python mon-script.py`.
+
+```{.bash filename="terminal" env=dev}
+which python
+```
+
+```{.python}
+/home/onyxia/work/dev/bin/python
+```
+
+## `conda`
+
+```{.bash filename="terminal"}
+conda activate dev
+```
+
+`Conda` nous indique que l'on travaille à partir de maintenant dans l'environnement `dev` en indiquant son nom entre parenthèses au début de la ligne de commandes. Autrement dit, `dev` devient pour un temps notre
+environnement par défaut.
+Pour s'en assurer,
+vérifions avec la commande `which` l'emplacement de l'interpréteur Python qui sera utilisé si on lance une commande du type `python mon-script.py`.
+
+```{.bash filename="terminal" env=dev}
+which python
+```
+
+```{.python}
+/opt/mamba/envs/dev/bin/python
+```
+
+:::
+
+
+On travaille bien dans l'environnement attendu : l'interpréteur qui se lance n'est pas celui du système global, mais bien celui spécifique à notre environnement virtuel.
+
+### Lister les packages installés
+
+Une fois l'environnement activé, on peut lister les packages installés et leur version.
+Cela confirme qu'un certain nombre de packages sont installés par défaut lors de la création d'un environnement virtuel.
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+On part d'un environnement vraiment réduit à l'os:
+
+```{.bash filename="terminal" env=dev}
+pip list
+```
+
+```{.python}
+Package    Version
+---------- -------
+pip        23.3.2
+setuptools 69.0.3
+wheel      0.42.0
+```
+
+
+## `conda`
+
+L'environnement est assez minimaliste, quoique plus garni que lors
+de la création d'un environnement virtuel par `venv`
+
+```{.bash filename="terminal" env="dev"}
+conda list
+```
+
+```{.python}
+# packages in environment at /opt/mamba/envs/dev:
+#
+# Name                    Version                   Build  Channel
+_libgcc_mutex             0.1                 conda_forge    conda-forge
+_openmp_mutex             4.5                       2_gnu    conda-forge
+ca-certificates           2023.11.17           hbcca054_0    conda-forge
+...
+```
+
+:::
+
+Pour se convaincre, on peut vérifier que `Numpy`
+est bien absent de notre environnement:
+
+```{.bash filename="terminal" env="dev"}
+python -c "import numpy as np"
+```
+
+```{.python}
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+ModuleNotFoundError: No module named 'numpy'
+```
+
+::::
+
+:::: {.content-visible when-profile="en"}
+
+### Activating an Environment
+
+Since multiple environments can coexist on the same system, you need to tell your environment manager which one to activate. From then on, it will implicitly be used for commands like `python`, `pip`, etc., in the current command-line session[^sourceactivate].
+
+[^sourceactivate]: This means that if you open a new terminal, you'll need to activate the environment again if you want to use it. To activate an environment by default, you can configure your terminal (e.g., by editing `.bashrc` on Linux) to automatically activate a specific environment when it starts.
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+```bash
+source dev/bin/activate
+```
+
+`venv` activates the virtual environment `dev`, which is confirmed by the name of the environment appearing at the beginning of the command line. Once activated, `dev` temporarily becomes our default Python environment. To confirm, use the `which` command to see which Python interpreter will be used:
+
+```bash
+which python
+```
+
+```python
+/home/onyxia/work/dev/bin/python
+```
+
+## `conda`
+
+```bash
+conda activate dev
+```
+
+`Conda` indicates that you're now working in the `dev` environment by showing its name in parentheses at the beginning of the command line. This means `dev` is temporarily your default environment. Again, we can verify it using `which`:
+
+```bash
+which python
+```
+
+```python
+/opt/mamba/envs/dev/bin/python
+```
+
+:::
+
+You're now working in the correct environment: the Python interpreter being used is not the system one, but the one from your virtual environment.
+
+### Listing Installed Packages
+
+Once the environment is activated, you can list the installed packages and their versions. This confirms that some packages are present by default when creating a virtual environment.
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+We start with a truly bare-bones environment:
+
+```bash
+pip list
+```
+
+```python
+Package    Version
+---------- -------
+pip        23.3.2
+setuptools 69.0.3
+wheel      0.42.0
+```
+
+## `conda`
+
+The environment is fairly minimal, though more populated than a fresh `venv` environment:
+
+```bash
+conda list
+```
+
+```python
+# packages in environment at /opt/mamba/envs/dev:
+#
+# Name                    Version                   Build  Channel
+_libgcc_mutex             0.1                 conda_forge    conda-forge
+_openmp_mutex             4.5                       2_gnu    conda-forge
+ca-certificates           2023.11.17           hbcca054_0    conda-forge
+...
+```
+
+:::
+
+As a quick check, we can confirm that `Numpy` is indeed not available in the environment:
+
+```bash
+python -c "import numpy as np"
+```
+
+```python
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+ModuleNotFoundError: No module named 'numpy'
+```
+
+::::
+

@@ -1,0 +1,314 @@
+::: {.content-visible when-profile="fr"}
+
+### Exporter les spécifications de l'environnement
+
+Développer à partir d'un environnement vierge est une bonne pratique de reproductibilité :  
+en partant d'une base minimale, on s'assure que seuls les packages effectivement nécessaires  
+au bon fonctionnement de notre application ont été installés au fur et à mesure du projet.
+
+Cela rend également notre projet plus aisé à rendre portable.  
+On peut exporter les spécifications de l'environnement  
+dans un fichier spécial qui peut permettre de créer un nouvel environnement similaire  
+à celui ayant servi initialement.
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+```{.bash filename="terminal" env="dev"}
+pip freeze > requirements.txt
+```
+
+<details>
+<summary>
+Voir le fichier `requirements.txt` généré
+</summary>
+
+```{.python filename="requirements.txt"}
+joblib==1.3.2
+numpy==1.26.3
+scikit-learn==1.4.0
+scipy==1.12.0
+threadpoolctl==3.2.0
+```
+
+</details>
+
+## `conda`
+
+```{.bash filename="terminal" env="dev"}
+conda env export > environment.yml
+```
+
+</details>
+
+:::
+
+Ce fichier est mis par convention à la racine du dépôt `Git` du projet.  
+Ainsi, les personnes souhaitant tester l'application peuvent recréer le même environnement Conda que celui qui a servi au développement via la commande suivante.
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+On refait la démarche précédente de création d'un  
+environnement vierge puis un `pip install -r requirements.txt`
+
+```{.bash filename="terminal"}
+python -m venv newenv
+source newenv/bin/activate
+```
+
+```{.bash filename="terminal" env="newenv"}
+pip install -r requirements.txt
+```
+
+## `conda`
+
+Cela se fait en une seule commande:
+
+```{.bash filename="terminal"}
+conda env create -f environment.yml
+```
+
+:::
+
+### Changer d'environnement
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+Pour changer d'environnement virtuel, il suffit d'en activer un autre.
+
+```{.bash filename="terminal" no-prefix="true"}
+(myenv) $ deactivate
+$ source anotherenv/bin/activate
+(anotherenv) $ which python
+/chemin/vers/anotherenv/bin/python
+```
+
+Pour quitter l'environnement virtuel actif, on utilise simplement la commande `deactivate` :
+
+```{.bash filename="terminal" no-prefix="true"}
+(anotherenv) $ deactivate
+$
+```
+
+## `conda`
+
+Pour changer d'environnement, il suffit d'en activer un autre.
+
+```{.bash filename="terminal" no-prefix="true"}
+(dev) $ conda activate base
+(base) $ which python
+/opt/mamba/bin/python
+```
+
+Pour sortir de tout environnement conda, on utilise la commande `conda deactivate` :
+
+```{.bash filename="terminal" no-prefix="true"}
+(base) $ conda deactivate
+$
+```
+
+:::
+
+<details>
+<summary>
+Voir le fichier `environment.yml` généré
+</summary>
+
+```{.python filename="environment.yml"}
+name: dev
+channels:
+  - conda-forge
+dependencies:
+  - _libgcc_mutex=0.1=conda_forge
+  - _openmp_mutex=4.5=2_gnu
+  - ca-certificates=2023.11.17=hbcca054_0
+  - joblib=1.3.2=pyhd8ed1a
+```
+
+</details>
+
+### Aide-mémoire
+
+| `venv` | `conda` | Principe |
+|--------|---------|----------|
+| `python -m venv <env_name>` | `conda create -n <env_name> python=<python_version>` | Création d'un environnement nommé `<env_name>` dont la version de Python est `<python_version>` |
+|        | `conda info --envs` | Lister les environnements |
+| `source <env_name>/bin/activate` | `conda activate <env_name>` | Utiliser l'environnement `<env_name>` pour la session du terminal |
+| `pip list` | `conda list` | Lister les _packages_ dans l'environnement actif |
+| `pip install <pkg>` | `conda install <pkg>` | Installer le _package_ `<pkg>` dans l'environnement actif |
+| `pip freeze > requirements.txt` | `conda env export > environment.yml` | Exporter les spécifications de l’environnement dans un fichier `requirements.txt` |
+
+## Limites
+
+Développer dans des environnements virtuels est une bonne pratique, car cela accroît la portabilité d'une application. Néanmoins, il y a plusieurs limites à leur utilisation :
+
+- les librairies système nécessaires à l'installation des packages ne sont pas gérées ;
+- les environnements virtuels ne permettent pas toujours de gérer des projets faisant intervenir différents langages de programmation ;
+- devoir installer `conda`, `Python`, et les packages nécessaires à chaque changement d'environnement peut être assez long et pénible en pratique ;
+- dans un environnement de production, gérer des environnements virtuels différents pour chaque projet peut s'avérer rapidement complexe pour les administrateurs système.
+
+La technologie des conteneurs permet de répondre à ces différents problèmes.
+
+:::
+::: {.content-visible when-profile="en"}
+
+### Exporting environment specifications
+
+Starting from a clean environment is a good reproducibility practice:  
+by beginning with a minimal setup, we ensure that only the packages  
+strictly necessary for the application’s functionality are installed as the project evolves.
+
+This also makes the project easier to port.  
+You can export the environment’s specifications into a special file  
+to recreate a similar setup elsewhere.
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+```{.bash filename="terminal" env="dev"}
+pip freeze > requirements.txt
+```
+
+<details>
+<summary>
+View the generated `requirements.txt` file
+</summary>
+
+```{.python filename="requirements.txt"}
+joblib==1.3.2
+numpy==1.26.3
+scikit-learn==1.4.0
+scipy==1.12.0
+threadpoolctl==3.2.0
+```
+
+</details>
+
+## `conda`
+
+```{.bash filename="terminal" env="dev"}
+conda env export > environment.yml
+```
+
+</details>
+
+:::
+
+This file is conventionally stored at the root of the project’s `Git` repository.  
+This way, collaborators can recreate the exact same Conda environment used during development via the following command:
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+Repeat the earlier process of creating a clean environment,  
+then run `pip install -r requirements.txt`.
+
+```{.bash filename="terminal"}
+python -m venv newenv
+source newenv/bin/activate
+```
+
+```{.bash filename="terminal" env="newenv"}
+pip install -r requirements.txt
+```
+
+## `conda`
+
+This can be done in a single command:
+
+```{.bash filename="terminal"}
+conda env create -f environment.yml
+```
+
+:::
+
+### Switching environments
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+To switch environments, simply activate a different one.
+
+```{.bash filename="terminal" no-prefix="true"}
+(myenv) $ deactivate
+$ source anotherenv/bin/activate
+(anotherenv) $ which python
+/chemin/vers/anotherenv/bin/python
+```
+
+To exit the active virtual environment, just use `deactivate`:
+
+```{.bash filename="terminal" no-prefix="true"}
+(anotherenv) $ deactivate
+$
+```
+
+## `conda`
+
+To switch environments, just activate another one.
+
+```{.bash filename="terminal" no-prefix="true"}
+(dev) $ conda activate base
+(base) $ which python
+/opt/mamba/bin/python
+```
+
+To exit all conda environments, use `conda deactivate`:
+
+```{.bash filename="terminal" no-prefix="true"}
+(base) $ conda deactivate
+$
+```
+
+:::
+
+<details>
+<summary>
+View the generated `environment.yml` file
+</summary>
+
+```{.python filename="environment.yml"}
+name: dev
+channels:
+  - conda-forge
+dependencies:
+  - _libgcc_mutex=0.1=conda_forge
+  - _openmp_mutex=4.5=2_gnu
+  - ca-certificates=2023.11.17=hbcca054_0
+  - joblib=1.3.2=pyhd8ed1a
+```
+
+</details>
+
+### Cheat sheet
+
+| `venv` | `conda` | Description |
+|--------|---------|-------------|
+| `python -m venv <env_name>` | `conda create -n <env_name> python=<python_version>` | Create a new environment named `<env_name>` with Python version `<python_version>` |
+|        | `conda info --envs` | List available environments |
+| `source <env_name>/bin/activate` | `conda activate <env_name>` | Activate the environment for the current terminal session |
+| `pip list` | `conda list` | List packages in the active environment |
+| `pip install <pkg>` | `conda install <pkg>` | Install the `<pkg>` package in the active environment |
+| `pip freeze > requirements.txt` | `conda env export > environment.yml` | Export environment specs to a `requirements.txt` or `environment.yml` file |
+
+## Limitations
+
+Using virtual environments is good practice as it improves application portability.  
+However, there are some limitations:
+
+- system libraries needed by packages aren't managed;
+- environments may not handle multi-language projects well;
+- installing `conda`, `Python`, and required packages every time can be tedious;
+- in production, managing separate environments per project can quickly become complex for system administrators.
+
+Containerization technologies help address these limitations.
+
+:::
