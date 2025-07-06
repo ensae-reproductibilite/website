@@ -260,15 +260,22 @@ div.callout-application.callout-style-default .callout-icon::before, div.callout
   <li><a href="#demonstration-by-example" id="toc-demonstration-by-example" class="nav-link" data-scroll-target="#demonstration-by-example">Demonstration by Example</a></li>
   </ul></li>
   <li><a href="#notebooks-show-their-limits-for-production" id="toc-notebooks-show-their-limits-for-production" class="nav-link" data-scroll-target="#notebooks-show-their-limits-for-production">1️⃣ Notebooks Show Their Limits for Production</a></li>
-  <li><a href="#favoriser-une-structure-modulaire" id="toc-favoriser-une-structure-modulaire" class="nav-link" data-scroll-target="#favoriser-une-structure-modulaire">2️⃣ Favoriser une structure modulaire</a>
+  <li><a href="#fostering-a-modular-structure" id="toc-fostering-a-modular-structure" class="nav-link" data-scroll-target="#fostering-a-modular-structure">2️⃣ Fostering a Modular Structure</a>
   <ul class="collapse">
-  <li><a href="#vers-la-séparation-du-stockage-du-code-des-données-et-de-lenvironnement-dexécution" id="toc-vers-la-séparation-du-stockage-du-code-des-données-et-de-lenvironnement-dexécution" class="nav-link" data-scroll-target="#vers-la-séparation-du-stockage-du-code-des-données-et-de-lenvironnement-dexécution">Vers la séparation du stockage du code, des données et de l’environnement d’exécution</a></li>
-  <li><a href="#configurations-sensibles-secrets-et-jetons" id="toc-configurations-sensibles-secrets-et-jetons" class="nav-link" data-scroll-target="#configurations-sensibles-secrets-et-jetons">Configurations sensibles : secrets et jetons</a>
+  <li><a href="#separating-code-data-and-execution-environment-storage" id="toc-separating-code-data-and-execution-environment-storage" class="nav-link" data-scroll-target="#separating-code-data-and-execution-environment-storage">Separating Code, Data, and Execution Environment Storage</a></li>
+  <li><a href="#sensitive-configurations-secrets-and-tokens" id="toc-sensitive-configurations-secrets-and-tokens" class="nav-link" data-scroll-target="#sensitive-configurations-secrets-and-tokens">Sensitive Configurations: Secrets and Tokens</a>
   <ul class="collapse">
-  <li><a href="#exemple-secrets.yaml" id="toc-exemple-secrets.yaml" class="nav-link" data-scroll-target="#exemple-secrets.yaml">Exemple <code>secrets.yaml</code></a></li>
-  <li><a href="#lecture-en-python" id="toc-lecture-en-python" class="nav-link" data-scroll-target="#lecture-en-python">Lecture en Python</a></li>
+  <li><a href="#example-secrets.yaml" id="toc-example-secrets.yaml" class="nav-link" data-scroll-target="#example-secrets.yaml">Example <code>secrets.yaml</code></a></li>
+  <li><a href="#reading-in-python" id="toc-reading-in-python" class="nav-link" data-scroll-target="#reading-in-python">Reading in Python</a></li>
   </ul></li>
+  <li><a href="#transformer-son-projet-en-package-python" id="toc-transformer-son-projet-en-package-python" class="nav-link" data-scroll-target="#transformer-son-projet-en-package-python">Transformer son projet en <em>package</em> <code>Python</code></a></li>
   </ul></li>
+  <li><a href="#adopt-community-standards" id="toc-adopt-community-standards" class="nav-link" data-scroll-target="#adopt-community-standards">3️⃣ Adopt Community Standards</a>
+  <ul class="collapse">
+  <li><a href="#cookiecutters" id="toc-cookiecutters" class="nav-link" data-scroll-target="#cookiecutters"><em>Cookiecutters</em></a></li>
+  <li><a href="#turning-your-project-into-a-python-package" id="toc-turning-your-project-into-a-python-package" class="nav-link" data-scroll-target="#turning-your-project-into-a-python-package">Turning Your Project Into a <code>Python</code> <em>Package</em></a></li>
+  </ul></li>
+  <li><a href="#documenting-your-project" id="toc-documenting-your-project" class="nav-link" data-scroll-target="#documenting-your-project">4️⃣ Documenting Your Project</a></li>
   </ul>
 </nav>
     </div>
@@ -347,64 +354,23 @@ Dérouler les <em>slides</em> ci-dessous ou <a href="https://ensae-reproductibil
 </details>
 <section id="introduction-1" class="level1">
 <h1>Introduction</h1>
-<p>Structuring a project<br>
-immediately helps identify both the code elements and ancillary parts,<br>
-such as dependencies to manage, documentation, etc.<br>
-High-quality scripts alone are not enough to ensure the overall quality<br>
-of a <em>data science</em> project.</p>
-<p>A clear and methodical organization of code and data<br>
-makes the project easier to understand<br>
-and facilitates updating and evolving the code.<br>
-It’s much easier to improve a production pipeline<br>
-when its components are clearly and distinctly separated rather than all mixed together.</p>
+<p>Structuring a project immediately helps identify both the code elements and ancillary parts, such as dependencies to manage, documentation, etc. High-quality scripts alone are not enough to ensure the overall quality of a <em>data science</em> project.</p>
+<p>A clear and methodical organization of code and data makes the project easier to understand and facilitates updating and evolving the code. It’s much easier to improve a production pipeline when its components are clearly and distinctly separated rather than all mixed together.</p>
 <div class="quarto-layout-panel" data-layout-ncol="2">
 <div class="quarto-layout-row">
 <div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../workflow1.png" class="img-fluid figure-img"></p>
-<figcaption>A poorly structured project</figcaption>
-</figure>
-</div>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../workflow2.png" class="img-fluid figure-img"></p>
-<figcaption>The structure we aim for in this course</figcaption>
-</figure>
+<p><img src="../workflow1.png" class="img-fluid" alt="A poorly structured project"> <img src="../workflow2.png" class="img-fluid" alt="The structure we aim for in this course"></p>
 </div>
 </div>
 </div>
-</div>
-<p>As in the previous chapter, the goal of a good<br>
-project structure is to enhance both the <strong>readability</strong><br>
-and <strong>maintainability</strong> of the code. Also like before,<br>
-the organization of a project combines formal rules<br>
-driven by the language (e.g., how the language handles interdependence<br>
-between scripts) with arbitrary conventions<br>
-that may evolve over time.</p>
-<p>The goal is to remain pragmatic in how we structure the project,<br>
-adapting it to its intended purpose.<br>
-Depending on whether the final deliverable is an API or a web app,<br>
-the technical solution we implement<br>
-will require different script structures. However,<br>
-some universal principles can still apply,<br>
-and we should allow ourselves<br>
-flexibility if the project’s <em>outputs</em> change over time.</p>
-<p>The first and non-negotiable step is to use <code>Git</code><br>
-(<a href="../chapters/application.html">see dedicated chapter</a>).<br>
-With <code>Git</code>, bad practices that could hinder<br>
-the project’s future development become very obvious<br>
-and can be fixed early on.</p>
+<p>As in the previous chapter, the goal of a good project structure is to enhance both the <strong>readability</strong> and <strong>maintainability</strong> of the code. Also like before, the organization of a project combines formal rules driven by the language (e.g., how the language handles interdependence between scripts) with arbitrary conventions that may evolve over time.</p>
+<p>The goal is to remain pragmatic in how we structure the project, adapting it to its intended purpose. Depending on whether the final deliverable is an API or a web app, the technical solution we implement will require different script structures. However, some universal principles can still apply, and we should allow ourselves flexibility if the project’s <em>outputs</em> change over time.</p>
+<p>The first and non-negotiable step is to use <code>Git</code> (<a href="../chapters/application.html">see dedicated chapter</a>). With <code>Git</code>, bad practices that could hinder the project’s future development become very obvious and can be fixed early on.</p>
 <p>The key principles are as follows:</p>
 <ol type="1">
-<li>Favor scripts over notebooks — a specific concern for <em>data science</em> projects<br>
-</li>
-<li>Organize your project modularly<br>
-</li>
-<li>Adopt community standards for project structure<br>
-</li>
+<li>Favor scripts over notebooks — a specific concern for <em>data science</em> projects</li>
+<li>Organize your project modularly</li>
+<li>Adopt community standards for project structure</li>
 <li>(Self)-document your project</li>
 </ol>
 <p>These principles are a direct continuation of those covered in the previous chapter.</p>
@@ -422,17 +388,14 @@ and can be fixed early on.</p>
 ├── script.R
 └── script_final.py</code></pre>
 <p><em>Source : <a href="https://eliocamp.github.io/reproducibility-with-r/materials/day1/02-projects/">eliocamp.github.io</a></em></p>
-<p>The following project structure makes it difficult<br>
-to understand the project. Some key questions arise:</p>
+<p>The following project structure makes it difficult to understand the project. Some key questions arise:</p>
 <ul>
 <li>What are the input data to the pipeline?</li>
 <li>In what order are the intermediate data generated?</li>
 <li>What is the purpose of the graphical outputs?</li>
 <li>Are all the scripts actually used in this project?</li>
 </ul>
-<p>By structuring the folder using simple rules —<br>
-for example, organizing it into <em>inputs</em> and <em>outputs</em> folders —<br>
-we can significantly improve the project’s readability.</p>
+<p>By structuring the folder using simple rules — for example, organizing it into <em>inputs</em> and <em>outputs</em> folders — we can significantly improve the project’s readability.</p>
 <pre data-code-line-numbers=""><code>├── README.md
 ├── .gitignore
 ├── data
@@ -442,25 +405,7 @@ we can significantly improve the project’s readability.</p>
 │   └── derived
 │       └── partial data.csv
 ├── src
-|   ├── script.py
-│   ├── script_final.py
-│   └── report.qmd
-└── output
-    ├── fig1.png
-    ├── figure 2 (copy).png
-    ├── figure10.png
-    ├── correlation.png
-    └── report.pdf</code></pre>
-<pre data-code-line-numbers=""><code>├── README.md
-├── .gitignore
-├── data
-│   ├── raw
-│   │   ├── data.csv
-│   │   └── data2.csv
-│   └── derived
-│       └── partial data.csv
-├── src
-|   ├── script.py
+│   ├── script.py
 │   ├── script_final.py
 │   └── report.qmd
 └── output
@@ -479,21 +424,16 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Since <code>Git</code> is a prerequisite, every project includes a <code>.gitignore</code> file<br>
-(this is especially important when working with data that must not<br>
-end up on <code>Github</code> or <code>Gitlab</code>).</p>
-<p>A project also includes a <code>README.md</code> file at the root —<br>
-we will come back to this later.</p>
+<p>Since <code>Git</code> is a prerequisite, every project includes a <code>.gitignore</code> file (this is especially important when working with data that must not end up on <code>Github</code> or <code>Gitlab</code>).</p>
+<p>A project also includes a <code>README.md</code> file at the root — we will come back to this later.</p>
 <p>A project using continuous integration will also include specific files:</p>
 <ul>
-<li>if you’re using <code>Gitlab</code>, the instructions are stored in<br>
-the <code>gitlab-ci.yml</code> file;</li>
+<li>if you’re using <code>Gitlab</code>, the instructions are stored in the <code>gitlab-ci.yml</code> file;</li>
 <li>if you’re using <code>Github</code>, this happens in the <code>.github/workflows</code> directory.</li>
 </ul>
 </div>
 </div>
-<p>By simply changing the file names, the project structure becomes<br>
-much more readable:</p>
+<p>By simply changing the file names, the project structure becomes much more readable:</p>
 <pre data-code-line-numbers=""><code>├── README.md
 ├── .gitignore
 ├── data
@@ -503,7 +443,7 @@ much more readable:</p>
 │   └── derived
 │       └── dpe_logement_merged_preprocessed.csv
 ├── src
-|   ├── preprocessing.py
+│   ├── preprocessing.py
 │   ├── generate_plots.py
 │   └── report.qmd
 └── output
@@ -511,153 +451,264 @@ much more readable:</p>
     ├── barplot_consumption_pcs.png
     ├── correlation_matrix.png
     └── report.pdf</code></pre>
-<p>Now, the type of input data to the pipeline<br>
-is clear, and the relationship between<br>
-scripts, intermediate data, and outputs<br>
-is transparent.</p>
+<p>Now, the type of input data to the pipeline is clear, and the relationship between scripts, intermediate data, and outputs is transparent.</p>
 </section>
 </section>
 <section id="notebooks-show-their-limits-for-production" class="level1">
 <h1>1️⃣ Notebooks Show Their Limits for Production</h1>
-<p>Jupyter notebooks are very useful for tinkering,<br>
-experimenting, and communicating. They are thus a good entry point<br>
-at the beginning of a project (for experimentation)<br>
-and at the end (for communication).</p>
-<p>However, they come with a number<br>
-of long-term drawbacks that can make the code written<br>
-in a notebook difficult—or even impossible—to maintain. Here are a few examples:</p>
+<p>Jupyter notebooks are very useful for tinkering, experimenting, and communicating. They are thus a good entry point at the beginning of a project (for experimentation) and at the end (for communication).</p>
+<p>However, they come with a number of long-term drawbacks that can make the code written in a notebook difficult—or even impossible—to maintain. Here are a few examples:</p>
 <ul>
-<li>All objects (functions, classes, and data)<br>
-are defined and available in the same file.<br>
-Any change to a function requires finding its location in the code,<br>
-editing, and rerunning one or more cells.<br>
-</li>
-<li>When experimenting, we write code in cells.<br>
-In a notebook, there is no “margin” to jot down code like in a physical notebook.<br>
-So we create new cells, not necessarily in order.<br>
-When rerunning the notebook, this can cause hard-to-debug errors<br>
-(since the logical execution order is not obvious).<br>
-</li>
-<li>Notebooks encourage copy-pasting of cells and tweaking code<br>
-rather than defining reusable functions.<br>
-</li>
-<li>It is nearly impossible to version control notebooks effectively with Git.<br>
-Since notebooks are large JSON files behind the scenes, they look more like data than source code.<br>
-Git cannot easily identify which code blocks have changed.<br>
-</li>
-<li>Moving notebooks into production is cumbersome, whereas well-written scripts<br>
-are much easier to productionize (see next parts of the course).<br>
-</li>
-<li>Jupyter lacks extensions that enforce good practices (linters, etc.),<br>
-whereas VSCode is perfectly suited.<br>
-</li>
-<li>Risk of leaking sensitive data, since notebook outputs<br>
-(e.g., <code>head</code> commands) are written to disk by default.</li>
+<li>All objects (functions, classes, and data) are defined and available in the same file. Any change to a function requires finding its location in the code, editing, and rerunning one or more cells.</li>
+<li>When experimenting, we write code in cells. In a notebook, there is no “margin” to jot down code like in a physical notebook. So we create new cells, not necessarily in order. When rerunning the notebook, this can cause hard-to-debug errors (since the logical execution order is not obvious).</li>
+<li>Notebooks encourage copy-pasting of cells and tweaking code rather than defining reusable functions.</li>
+<li>It is nearly impossible to version control notebooks effectively with Git. Since notebooks are large JSON files behind the scenes, they look more like data than source code. Git cannot easily identify which code blocks have changed.</li>
+<li>Moving notebooks into production is cumbersome, whereas well-written scripts are much easier to productionize (see next parts of the course).</li>
+<li>Jupyter lacks extensions that enforce good practices (linters, etc.), whereas VSCode is perfectly suited.</li>
+<li>Risk of leaking sensitive data, since notebook outputs (e.g., <code>head</code> commands) are written to disk by default.</li>
 </ul>
 <p>In summary, their main drawbacks are:</p>
 <ul>
-<li>Limited <strong>reproducibility</strong><br>
-</li>
-<li>Not suited for <strong>automation</strong><br>
-</li>
+<li>Limited <strong>reproducibility</strong></li>
+<li>Not suited for <strong>automation</strong></li>
 <li>Poor <strong>version control</strong></li>
 </ul>
 <p>These issues are particularly tied to the challenges of <em>data science</em>:</p>
 <ul>
-<li>The early stages of a data science project are exploratory,<br>
-and notebooks provide a great interface for this.<br>
-However, stability becomes more important in later phases.<br>
-</li>
-<li>Data processing code is often developed non-linearly:<br>
-you load data, transform it, produce outputs (e.g., summary tables),<br>
-then go back to modify sources or join with other datasets.<br>
-Although this exploratory phase is nonlinear,<br>
-making the pipeline linear and reproducible later<br>
-requires significant discipline.</li>
+<li>The early stages of a data science project are exploratory, and notebooks provide a great interface for this. However, stability becomes more important in later phases.</li>
+<li>Data processing code is often developed non-linearly: you load data, transform it, produce outputs (e.g., summary tables), then go back to modify sources or join with other datasets. Although this exploratory phase is nonlinear, making the pipeline linear and reproducible later requires significant discipline.</li>
 </ul>
-<p>The<br>
-recommendations in this course aim to make long-term maintenance<br>
-of data science projects as lightweight as possible<br>
-by promoting code that can be reused by others (or yourself in the future).<br>
-The best practice is to use self-contained <code>Python</code> scripts (with respect to dependencies)<br>
-encapsulated within a more or less formal processing pipeline.<br>
-Depending on the project and infrastructure,<br>
-this might be a single <code>Python</code> script or a formal pipeline.<br>
-The level of formalism should be adjusted depending on available time.</p>
+<p>The recommendations in this course aim to make long-term maintenance of data science projects as lightweight as possible by promoting code that can be reused by others (or yourself in the future). The best practice is to use self-contained <code>Python</code> scripts (with respect to dependencies) encapsulated within a more or less formal processing pipeline. Depending on the project and infrastructure, this might be a single <code>Python</code> script or a formal pipeline. The level of formalism should be adjusted depending on available time.</p>
 </section>
-<section id="favoriser-une-structure-modulaire" class="level1">
-<h1>2️⃣ Favoriser une structure modulaire</h1>
-<p>Dans le chapitre précédent, nous avons recommandé l’utilisation<br>
-des fonctions. Le regroupement de plusieurs fonctions dans<br>
-un fichier est appelé un <strong>module</strong>.</p>
-<p>La modularité est un principe fondamental de programmation<br>
-qui consiste à diviser un programme en plusieurs modules ou scripts indépendants,<br>
-chacun ayant une fonctionnalité spécifique.<br>
-Comme indiqué précédemment, la structuration d’un projet sous forme de modules<br>
-permet de rendre le code plus <strong>lisible</strong>, <strong>facile à maintenir</strong> et <strong>réutilisable</strong>.<br>
-<code>Python</code> fournit un système d’importation flexible et puissant, qui permet de contrôler la portée des variables, les conflits de noms et les dépendances entre les modules<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p>
-<hr>
-<section id="vers-la-séparation-du-stockage-du-code-des-données-et-de-lenvironnement-dexécution" class="level2">
-<h2 class="anchored" data-anchor-id="vers-la-séparation-du-stockage-du-code-des-données-et-de-lenvironnement-dexécution">Vers la séparation du stockage du code, des données et de l’environnement d’exécution</h2>
-<p>La séparation du stockage du <strong>code</strong>, des <strong>données</strong><br>
-et de <strong>l’environnement d’exécution</strong> est importante pour plusieurs raisons :</p>
+<section id="fostering-a-modular-structure" class="level1">
+<h1>2️⃣ Fostering a Modular Structure</h1>
+<p>In the previous chapter, we recommended using functions. Grouping several functions into a file is called a <strong>module</strong>.</p>
+<p>Modularity is a fundamental programming principle that involves dividing a program into several independent modules or scripts, each with a specific purpose. As previously mentioned, structuring a project into modules makes the code more <strong>readable</strong>, <strong>maintainable</strong>, and <strong>reusable</strong>. <code>Python</code> provides a flexible and powerful import system, which allows control over variable scope, name conflicts, and dependencies between modules<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p>
+<section id="separating-code-data-and-execution-environment-storage" class="level2">
+<h2 class="anchored" data-anchor-id="separating-code-data-and-execution-environment-storage">Separating Code, Data, and Execution Environment Storage</h2>
+<p>Separating the storage of <strong>code</strong>, <strong>data</strong>, and the <strong>execution environment</strong> is important for several reasons:</p>
 <ol type="1">
-<li><p><strong>Sécurité des données</strong><br>
-En séparant les données du code, il est plus difficile<br>
-d’accéder aux informations sensibles par erreur.</p></li>
-<li><p><strong>Cohérence et portabilité</strong><br>
-Un environnement isolé garantit que le code fonctionne<br>
-de façon reproductible, indépendamment de la machine hôte.</p></li>
-<li><p><strong>Modularité et flexibilité</strong><br>
-On peut adapter ou mettre à jour les composants<br>
-(code, données, environnement) indépendamment.</p></li>
+<li><strong>Data Security</strong><br>
+By separating data from code, it’s harder to accidentally access sensitive information.</li>
+<li><strong>Consistency and Portability</strong><br>
+An isolated environment ensures that the code runs reproducibly, regardless of the host machine.</li>
+<li><strong>Modularity and Flexibility</strong><br>
+You can adapt or update components (code, data, environment) independently.</li>
 </ol>
-<p>Le prochain chapitre sera consacré à la gestion des dépendances.<br>
-Il montrera comment lier environnement et code pour améliorer<br>
-la portabilité du projet.</p>
-<hr>
+<p>The next chapter will focus on dependency management. It will show how to link the environment and code to improve project portability.</p>
 </section>
-<section id="configurations-sensibles-secrets-et-jetons" class="level2">
-<h2 class="anchored" data-anchor-id="configurations-sensibles-secrets-et-jetons">Configurations sensibles : secrets et jetons</h2>
-<p>L’exécution d’un code peut dépendre de paramètres<br>
-personnels (jetons d’authentification, mots de passe…).<br>
-<strong>Ils ne doivent jamais apparaître dans le code source partagé.</strong></p>
-<p>✅ Bonne pratique : stocker ces configurations dans un <strong>fichier séparé</strong>,<br>
-non versionné (<code>.gitignore</code>), au format <code>YAML</code> — plus lisible que <code>JSON</code>.</p>
-<section id="exemple-secrets.yaml" class="level3">
-<h3 class="anchored" data-anchor-id="exemple-secrets.yaml">Exemple <code>secrets.yaml</code></h3>
-<div class="sourceCode" id="cb5" data-code-line-numbers=""><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">token</span><span class="kw">:</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">api_insee</span><span class="kw">:</span><span class="at"> </span><span class="st">"toto"</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">api_github</span><span class="kw">:</span><span class="at"> </span><span class="st">"tokengh"</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">pwd</span><span class="kw">:</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">base_pg</span><span class="kw">:</span><span class="at"> </span><span class="st">"monmotdepasse"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="sensitive-configurations-secrets-and-tokens" class="level2">
+<h2 class="anchored" data-anchor-id="sensitive-configurations-secrets-and-tokens">Sensitive Configurations: Secrets and Tokens</h2>
+<p>Running code may depend on personal parameters (authentication tokens, passwords…). <strong>They should never appear in shared source code.</strong></p>
+<p>✅ Best practice: store these configurations in a <strong>separate file</strong>, not versioned (<code>.gitignore</code>), in <code>YAML</code> format — more readable than <code>JSON</code>.</p>
+<section id="example-secrets.yaml" class="level3">
+<h3 class="anchored" data-anchor-id="example-secrets.yaml">Example <code>secrets.yaml</code></h3>
+<div class="sourceCode" id="cb4" data-code-line-numbers=""><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">token</span><span class="kw">:</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">api_insee</span><span class="kw">:</span><span class="at"> </span><span class="st">"toto"</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">api_github</span><span class="kw">:</span><span class="at"> </span><span class="st">"tokengh"</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">pwd</span><span class="kw">:</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">base_pg</span><span class="kw">:</span><span class="at"> </span><span class="st">"monmotdepasse"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="lecture-en-python" class="level3">
-<h3 class="anchored" data-anchor-id="lecture-en-python">Lecture en Python</h3>
-<div class="sourceCode" id="cb6" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yaml</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">'secrets.yaml'</span>) <span class="im">as</span> f:</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    secrets <span class="op">=</span> yaml.safe_load(f)</span>
+<section id="reading-in-python" class="level3">
+<h3 class="anchored" data-anchor-id="reading-in-python">Reading in Python</h3>
+<div class="sourceCode" id="cb5" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yaml</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">'secrets.yaml'</span>) <span class="im">as</span> f:</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    secrets <span class="op">=</span> yaml.safe_load(f)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># using the secret</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>jeton_insee <span class="op">=</span> secrets[<span class="st">'token'</span>][<span class="st">'api_insee'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This mechanism turns the file into a <strong>Python dictionary</strong> that is easy to navigate.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tests unitaires
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Les tests unitaires sont des tests automatisés qui vérifient le bon fonctionnement d’une unité de code, comme une fonction ou une méthode. L’objectif est de s’assurer que chaque unité de code fonctionne correctement avant d’être intégrée dans le reste du programme.</p>
+<p>Les tests unitaires sont utiles lorsqu’on travaille sur un code de taille conséquente ou lorsqu’on partage son code à d’autres personnes, car ils permettent de s’assurer que les modifications apportées ne créent pas de nouvelles erreurs.</p>
+<p>En <code>Python</code>, on peut utiliser le package <code>unittest</code> pour écrire des tests unitaires. Voici un exemple tiré de ce <a href="https://gayerie.dev/docs/python/python3/unittest.html">site</a> :</p>
+<div class="sourceCode" id="cb6" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fichier test_str.py</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> unittest</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> ChaineDeCaractereTest(unittest.TestCase):</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co"># utilisation du secret</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>jeton_insee <span class="op">=</span> secrets[<span class="st">'token'</span>][<span class="st">'api_insee'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Ce mécanisme transforme le fichier en un <strong>dictionnaire Python</strong><br>
-dans lequel il est facile de naviguer.</p>
-<hr>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> test_reversed(<span class="va">self</span>):</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        resultat <span class="op">=</span> <span class="bu">reversed</span>(<span class="st">"abcd"</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.assertEqual(<span class="st">"dcba"</span>, <span class="st">""</span>.join(resultat))</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> test_sorted(<span class="va">self</span>):</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        resultat <span class="op">=</span> <span class="bu">sorted</span>(<span class="st">"dbca"</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.assertEqual([<span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'c'</span>, <span class="st">'d'</span>], resultat)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> test_upper(<span class="va">self</span>):</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>        resultat <span class="op">=</span> <span class="st">"hello"</span>.upper()</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.assertEqual(<span class="st">"HELLO"</span>, resultat)</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> test_erreur</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">'__main__'</span>:</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    unittest.main()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Pour vérifier que les tests fonctionnent, on exécute ce script depuis la ligne de commande :</p>
+<div class="sourceCode" id="cb7" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>python3 test_str.py</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>.</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="op">----------------------------------------------------------------------</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>Ran <span class="dv">1</span> test <span class="kw">in</span> <span class="fl">0.000</span><span class="er">s</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>OK</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Si on écrit des tests unitaires, il est important de les maintenir ! Prendre du temps pour écrire des tests unitaires qui ne sont pas maintenus et donc ne renvoient plus de diagnostics pertinents est du temps perdu.</p>
+</div>
+</div>
+</div>
 </section>
 </section>
+<section id="transformer-son-projet-en-package-python" class="level2">
+<h2 class="anchored" data-anchor-id="transformer-son-projet-en-package-python">Transformer son projet en <em>package</em> <code>Python</code></h2>
+<p>Le <em>package</em> est la structure aboutie d’un projet <code>Python</code> autosuffisant. Il s’agit d’une manière formelle de contrôler la reproductibilité d’un projet car :</p>
+<ul>
+<li>le <em>package</em> assure une gestion cohérente des dépendances</li>
+<li>le <em>package</em> offre une certaine structure pour la documentation</li>
+<li>le <em>package</em> facilite la réutilisation du code</li>
+<li>le <em>package</em> permet des économies d’échelle, car on peut réutiliser l’un des packages pour un autre projet</li>
+<li>le <em>package</em> facilite le debuggage car il est plus facile d’identifier une erreur quand elle est dans un package</li>
+<li>…</li>
+</ul>
+<p>En <code>Python</code>, le <em>package</em> est une structure peu contraignante si on a adopté les bonnes pratiques de structuration de projet. À partir de la structure modulaire précédemment évoquée, il n’y a qu’un pas vers le package : l’ajout d’un fichier <code>pyproject.toml</code> qui contrôle la construction du <em>package</em> (<a href="https://py-pkgs.org/03-how-to-package-a-python">voir ici</a>).</p>
+<p>Il existe plusieurs outils pour installer un package dans le système à partir d’une structure de fichiers locale. Les deux principaux sont :</p>
+<ul>
+<li><a href="https://pypi.org/project/setuptools/"><code>setuptools</code></a></li>
+<li><a href="https://python-poetry.org/"><code>poetry</code></a></li>
+</ul>
+<p>Le package fait la transition entre un code modulaire et un code portable, concept sur lequel nous reviendrons dans le prochain chapitre.</p>
+<p>:::</p>
+</section>
+</section>
+<section id="adopt-community-standards" class="level1">
+<h1>3️⃣ Adopt Community Standards</h1>
+<section id="cookiecutters" class="level2">
+<h2 class="anchored" data-anchor-id="cookiecutters"><em>Cookiecutters</em></h2>
+<p>In <code>Python</code>, there are standardized project structure templates: called <a href="https://cookiecutter.readthedocs.io/en/stable/"><code>cookiecutters</code></a>. These are community-maintained templates for project directory trees (<code>.py</code> files as well as documentation, config, etc.) that can be used as a starting point.</p>
+<p>The idea behind <a href="https://cookiecutter.readthedocs.io/en/stable/"><code>cookiecutter</code></a> is to offer ready-to-use templates to <strong>initialize</strong> a project with a scalable structure. We’ll follow the structure proposed by the <a href="https://drivendata.github.io/cookiecutter-data-science/"><em>cookiecutter data science</em></a> community template.<br>
+The syntax to use is:</p>
+<div class="sourceCode" id="cb8" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> pip install cookiecutter</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cookiecutter https://github.com/drivendata/cookiecutter-data-science</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The template is customizable, particularly for integrating with remote storage systems. The generated directory tree is large enough to support diverse project types — you typically won’t need every single component included by default.</p>
+<details>
+<summary>
+Full structure generated by the cookiecutter data science template
+</summary>
+<p><em>(Identique au bloc ci-dessus – déjà internationalisé)</em></p>
+</details>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Unit Tests
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Unit tests are automated tests that verify the proper functioning of a unit of code, such as a function or a method. The goal is to ensure that each unit of code works correctly before being integrated into the rest of the program.</p>
+<p>Unit tests are helpful when working with large codebases or when sharing code with others, because they ensure that modifications don’t introduce new bugs.</p>
+<p>In <code>Python</code>, the <code>unittest</code> package can be used to write unit tests. Here’s an example from <a href="https://gayerie.dev/docs/python/python3/unittest.html">this site</a>:</p>
+<div class="sourceCode" id="cb9" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># file test_str.py</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> unittest</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> StringTest(unittest.TestCase):</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> test_reversed(<span class="va">self</span>):</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>        result <span class="op">=</span> <span class="bu">reversed</span>(<span class="st">"abcd"</span>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.assertEqual(<span class="st">"dcba"</span>, <span class="st">""</span>.join(result))</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> test_sorted(<span class="va">self</span>):</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>        result <span class="op">=</span> <span class="bu">sorted</span>(<span class="st">"dbca"</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.assertEqual([<span class="st">'a'</span>, <span class="st">'b'</span>, <span class="st">'c'</span>, <span class="st">'d'</span>], result)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> test_upper(<span class="va">self</span>):</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>        result <span class="op">=</span> <span class="st">"hello"</span>.upper()</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.assertEqual(<span class="st">"HELLO"</span>, result)</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> test_erreur</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">'__main__'</span>:</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    unittest.main()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>To verify that the tests work, run this script from the command line:</p>
+<div class="sourceCode" id="cb10" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>python3 test_str.py</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>.</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="op">----------------------------------------------------------------------</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>Ran <span class="dv">1</span> test <span class="kw">in</span> <span class="fl">0.000</span><span class="er">s</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>OK</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>If you write unit tests, it’s important to maintain them! Spending time writing unit tests that are no longer maintained and no longer provide useful diagnostics is time wasted.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="turning-your-project-into-a-python-package" class="level2">
+<h2 class="anchored" data-anchor-id="turning-your-project-into-a-python-package">Turning Your Project Into a <code>Python</code> <em>Package</em></h2>
+<p>A <em>package</em> is the finalized structure of a self-contained <code>Python</code> project. It provides a formal way to ensure the reproducibility of a project because:</p>
+<ul>
+<li>the <em>package</em> handles dependencies consistently</li>
+<li>the <em>package</em> offers built-in documentation structure</li>
+<li>the <em>package</em> facilitates code reuse</li>
+<li>the <em>package</em> enables scalability—you can reuse a package across projects</li>
+<li>the <em>package</em> simplifies debugging since it’s easier to pinpoint errors in a package</li>
+<li>…</li>
+</ul>
+<p>In <code>Python</code>, packages are relatively easy to set up if you follow good project structuring practices. From the previously discussed modular structure, it’s a short step to a package: simply add a <code>pyproject.toml</code> file to control how the <em>package</em> is built (<a href="https://py-pkgs.org/03-how-to-package-a-python">see here</a>).</p>
+<p>There are several tools for installing a package locally from a file structure. The two most common are:</p>
+<ul>
+<li><a href="https://pypi.org/project/setuptools/"><code>setuptools</code></a></li>
+<li><a href="https://python-poetry.org/"><code>poetry</code></a></li>
+</ul>
+<p>The package bridges the gap between modular and portable code, a topic we’ll revisit in the next chapter.</p>
+</section>
+</section>
+<section id="documenting-your-project" class="level1">
+<h1>4️⃣ Documenting Your Project</h1>
+<p>The first principle, illustrated in the example, is to favor <strong>self-documentation</strong> through meaningful names for folders and files.</p>
+<p>The <code>README.md</code> file, located at the root of the project, serves as both the identity card and showcase of the project. On platforms like <code>GitHub</code> and <code>GitLab</code>, this file is shown by default on the homepage, making it the first impression—a very brief moment that can be crucial for how the project’s value is perceived.</p>
+<p>Ideally, the <code>README.md</code> includes:</p>
+<ul>
+<li>A description of the context and objectives of the project</li>
+<li>An explanation of how it works</li>
+<li>A contribution guide if the project welcomes input as part of an <em>open-source</em> initiative</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A few examples of complete <code>README.md</code> files in <code>R</code>:</p>
+<ul>
+<li><a href="https://github.com/InseeFrLab/utilitR/blob/master/README.md">utilitR</a></li>
+<li><a href="https://github.com/InseeFrLab/DoReMIFaSol">DoReMIFaSol</a></li>
+</ul>
+</div>
+</div>
+
+
 </section>
 
 
 <div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
 
 <ol>
-<li id="fn1"><p>À cet égard, <code>Python</code> est beaucoup plus fiable que <code>R</code>.<br>
-Dans <code>R</code>, si deux scripts utilisent des fonctions<br>
-dont le nom est identique mais issues de packages<br>
-différents, il y aura un conflit. En <code>Python</code>,<br>
-chaque module sera importé comme un <em>package</em><br>
-en soi.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn1"><p>In this regard, <code>Python</code> is much more reliable than <code>R</code>. In <code>R</code>, if two scripts use functions with the same name but from different packages, there will be a conflict. In <code>Python</code>, each module is imported as its own <em>package</em>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
