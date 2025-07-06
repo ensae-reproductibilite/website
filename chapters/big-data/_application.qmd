@@ -1,0 +1,429 @@
+::: {.content-visible when-profile="fr"}
+
+# Applications
+
+Tout au long de cette application, nous allons voir comment utiliser le format `Parquet` de la manière la plus efficiente possible. Afin de comparer les différents formats et méthodes d'utilisation, nous allons **comparer le temps d'exécution et l'usage mémoire d'une requête standard**. Commençons déjà, sur un premier exemple avec une donnée légère, pour comparer les formats `CSV` et `Parquet`.
+
+Pour cela, nous allons avoir besoin de récupérer des données au format `Parquet`. Nous proposons d'utiliser les données détaillées et anonymisées du recensement de la population française : environ 20 millions de lignes pour 80 colonnes. Le code pour récupérer celles-ci est donné ci-dessous
+
+<details>
+<summary>
+Code pour récupérer les données
+</summary>
+
+:::
+
+::: {.content-visible when-profile="en"}
+
+# Applications
+
+Throughout this application, we will explore how to use the `Parquet` format as efficiently as possible. To compare different formats and usage methods, we will **compare execution time and memory usage for a standard query**. Let's start with a small dataset example to compare the `CSV` and `Parquet` formats.
+
+To do this, we need to retrieve some data in `Parquet` format. We suggest using detailed and anonymized population census data from France: about 20 million rows and 80 columns. The code to retrieve the data is given below
+
+<details>
+<summary>
+Code to retrieve the data
+</summary>
+
+:::
+```{python}
+#| eval: false
+import pyarrow.parquet as pq
+import pyarrow as pa
+import os
+
+# Définir le fichier de destination
+filename_table_individu = "data/RPindividus.parquet"
+
+# Copier le fichier depuis le stockage distant (remplacer par une méthode adaptée si nécessaire)
+os.system("mc cp s3/projet-formation/bonnes-pratiques/data/RPindividus.parquet data/RPindividus.parquet") #<1>
+
+# Charger le fichier Parquet
+table = pq.read_table(filename_table_individu)
+df = table.to_pandas()
+
+# Filtrer les données pour REGION == "24"
+df_filtered = df.loc[df["REGION"] == "24"]
+
+# Sauvegarder en CSV
+df_filtered.to_csv("data/RPindividus_24.csv", index=False)
+
+# Sauvegarder en Parquet
+pq.write_table(pa.Table.from_pandas(df_filtered), "data/RPindividus_24.parquet")
+```
+1. Cette ligne de code utilise l'utilitaire Minio Client disponible sur le `SSPCloud`. Si vous n'êtes pas sur cette infrastructure, vous pouvez vous référer à la boite dédiée
+
+::: {.content-visible when-profile="fr"}
+
+::: {.callout-important collapse="true"}
+## Si vous n'êtes pas sur le `SSPCloud`
+
+Vous devrez remplacer la ligne
+
+```{.python}
+os.system("mc cp s3/projet-formation/bonnes-pratiques/data/RPindividus.parquet data/RPindividus.parquet")
+```
+
+qui utilise l'outil en ligne de commande `mc` par un code téléchargeant cette donnée à partir de l'URL [https://projet-formation.minio.lab.sspcloud.fr/bonnes-pratiques/data/RPindividus.parquet](https://projet-formation.minio.lab.sspcloud.fr/bonnes-pratiques/data/RPindividus.parquet).
+
+Il y a de nombreuses manières de faire. Vous pouvez par exemple le faire en pur `Python` avec `requests`. Si vous avez `curl` installé, vous pouvez aussi l'utiliser. Par l'intermédiaire de `Python`, cela donnera la commande `os.system("curl -o data/RPindividus.parquet https://projet-formation/bonnes-pratiques/data/RPindividus.parquet")`.
+
+:::
+
+</details>
+
+Ces exercices vont utiliser des décorateurs `Python`, c'est-à-dire des fonctions qui surchargent le comportement d'une autre fonction. En l’occurrence, nous allons créer une fonction exécutant une chaine d'opérations et la surcharger avec une autre chargée de contrôler l'usage mémoire et le temps d'exécution.
+
+:::
+
+::: {.content-visible when-profile="en"}
+
+::: {.callout-important collapse="true"}
+## If you are not on `SSPCloud`
+
+You will need to replace the line
+
+```{.python}
+os.system("mc cp s3/projet-formation/bonnes-pratiques/data/RPindividus.parquet data/RPindividus.parquet")
+```
+
+which uses the `mc` command-line tool, with a line of code that downloads this file from the URL [https://projet-formation.minio.lab.sspcloud.fr/bonnes-pratiques/data/RPindividus.parquet](https://projet-formation.minio.lab.sspcloud.fr/bonnes-pratiques/data/RPindividus.parquet).
+
+There are several ways to do this. For example, you can use pure `Python` with `requests`. If you have `curl` installed, you can also use it. Via `Python`, this would be the command `os.system("curl -o data/RPindividus.parquet https://projet-formation/bonnes-pratiques/data/RPindividus.parquet")`.
+
+:::
+
+</details>
+
+These exercises will use `Python` decorators, i.e., functions that override the behavior of another function. In this case, we will create a function that runs a chain of operations and override it with another one that monitors memory usage and execution time.
+
+:::
+
+
+
+:::: {.content-visible when-profile="fr"}
+
+:::{.application collapse="false"}
+# Partie 1 : Du `CSV` au `Parquet`
+
+* Créer un notebook `benchmark_parquet.ipynb` afin de réaliser les différentes comparaisons de performance de l'application
+* Créons notre décorateur, en charge de _benchmarker_ le code `Python`:
+
+{{< include "/chapters/big-data/application/_benchmark_function.qmd" >}}
+
+* La requête suivante permet de calculer les données pour construire une pyramide des âges sur un département donné, à partir du fichier `CSV` du recensement. La tester dans votre _notebook_:
+
+  ```{python}
+  #| eval: false
+  #| code-fold: true
+  #| code-summary: "Dérouler pour récupérer le code de lecture du CSV"
+  import pandas as pd
+
+  # Charger le fichier CSV
+  df = pd.read_csv("data/RPindividus_24.csv")
+  res = (
+      df.loc[df["DEPT"] == 36]
+      .groupby(["AGED", "DEPT"])["IPONDI"]
+      .sum().reset_index()
+      .rename(columns={"IPONDI": "n_indiv"})
+  )
+  ```
+
+* Reprendre ce code pour encapsuler ces opérations dans une fonction `process_csv_appli1` :
+
+  ```{python}
+  #| eval: false
+  #| code-fold: true
+  #| code-summary: "Dérouler pour récupérer le code pour mesurer les performances de la lecture en CSV"
+
+  # Apply the decorator to functions
+  @measure_performance
+  def process_csv_appli1(*args, **kwargs):
+      df = pd.read_csv("data/RPindividus_24.csv")
+      return (
+          df.loc[df["DEPT"] == 36]
+          .groupby(["AGED", "DEPT"])["IPONDI"]
+          .sum().reset_index()
+          .rename(columns={"IPONDI": "n_indiv"})
+      )
+  ```
+
+* Exécuter `process_csv_appli1()` et `process_csv_appli1(return_output=True)`
+
+* Sur le même modèle, construire une fonction `process_parquet_appli1` basée cette fois sur le fichier `data/RPindividus_24.parquet` chargé avec la fonction [read_parquet](https://pandas.pydata.org/docs/reference/api/pandas.read_parquet.html) de `Pandas`
+* Comparer les performances (temps d'exécution et allocation mémoire) de ces deux méthodes grâce à la fonction.
+
+{{< include "/chapters/big-data/application/_measure_perf.qmd" >}}
+
+
+:::
+
+_❓️ Quelle semble être la limite de la fonction `read_parquet` ?_
+
+On gagne déjà un temps conséquent en lecture mais on ne bénéficie pas vraiment de l'optimisation permise par `Parquet` car on transforme les données directement après la lecture en `DataFrame` `Pandas`. On n'utilise donc pas l'une des fonctionnalités principales du format `Parquet`, qui explique ses excellentes performances: le _predicate pushdown_ qui consiste à optimiser notre traitement pour faire remonter, le plus tôt possible, les filtres sur les colonnes pour ne garder que celles vraiment utilisées dans le traitement.
+
+::::
+
+:::: {.content-visible when-profile="en"}
+
+
+:::{.application collapse="false"}
+# Part 1: From `CSV` to `Parquet`
+
+* Create a notebook `benchmark_parquet.ipynb` to perform various performance comparisons for the application.
+* Let's create our decorator, responsible for benchmarking the `Python` code:
+
+{{< include "/chapters/big-data/application/_benchmark_function.qmd" >}}
+
+
+* The following query calculates the data needed to build a population pyramid for a given department, using the census `CSV` file. Test it in your notebook:
+  ```{python}
+  #| eval: false
+  #| code-fold: true
+  #| code-summary: "Dérouler pour récupérer le code de lecture du CSV"
+  import pandas as pd
+
+  # Charger le fichier CSV
+  df = pd.read_csv("data/RPindividus_24.csv")
+  res = (
+      df.loc[df["DEPT"] == 36]
+      .groupby(["AGED", "DEPT"])["IPONDI"]
+      .sum().reset_index()
+      .rename(columns={"IPONDI": "n_indiv"})
+  )
+  ```
+
+* Repeat this code to encapsulate these operations in a `process_csv_appli1` function:
+
+  ```{python}
+  #| eval: false
+  #| code-fold: true
+  #| code-summary: "Dérouler pour récupérer le code pour mesurer les performances de la lecture en CSV"
+
+  # Apply the decorator to functions
+  @measure_performance
+  def process_csv_appli1(*args, **kwargs):
+      df = pd.read_csv("data/RPindividus_24.csv")
+      return (
+          df.loc[df["DEPT"] == 36]
+          .groupby(["AGED", "DEPT"])["IPONDI"]
+          .sum().reset_index()
+          .rename(columns={"IPONDI": "n_indiv"})
+      )
+  ```
+
+* Run `process_csv_appli1()` and `process_csv_appli1(return_output=True)`
+
+* Following the same model, build a `process_parquet_appli1` function based this time on the file `data/RPindividus_24.parquet` loaded with Pandas’ [read_parquet](https://pandas.pydata.org/docs/reference/api/pandas.read_parquet.html) function.
+* Compare the performance (execution time and memory allocation) of these two methods using the function.
+
+{{< include "/chapters/big-data/application/_measure_perf.qmd" >}}
+
+:::
+
+_❓️ What seems to be the limitation of the `read_parquet` function?_
+
+We already save a significant amount of time on reading, but we don't fully benefit from the optimizations enabled by `Parquet` because we immediately transform the data into a `Pandas` `DataFrame` after reading it. This means we are not using one of `Parquet`’s key features that explains its excellent performance: _predicate pushdown_, which optimizes processing by applying filters on columns as early as possible to retain only those actually used in the operation.
+
+::::
+
+
+
+::: {.content-visible when-profile="fr"}
+
+::: {.application collapse="false"}
+## Partie 2 : Exploiter la *lazy evaluation* et les optimisations d'`Arrow` ou de `DuckDB`
+
+La partie précédente a montré un **gain de temps considérable** du passage de `CSV` à `Parquet`. Néanmoins, l'**utilisation mémoire était encore très élevée** alors qu'on utilise de fait qu'une infime partie du fichier.
+
+Dans cette partie, on va voir comment utiliser la ***lazy evaluation*** et les **optimisations du plan d'exécution** effectuées par `Arrow` pour exploiter pleinement la puissance du format `Parquet`.
+
+* Ouvrir le fichier  `data/RPindividus_24.parquet` avec [pyarrow.dataset](https://arrow.apache.org/docs/python/dataset.html). Regarder la classe de l'objet obtenu.
+* Tester le code ci-dessous pour lire un échantillon de données:
+
+```{python}
+#| eval: false
+(
+    dataset.scanner()
+    .head(5)
+    .to_pandas()
+)
+```
+
+Comprenez-vous la différence avec précédemment ? Observez dans la documentation la méthode `to_table` : comprenez-vous son principe ?
+
+* Construire une fonction `summarize_parquet_arrow` (resp. `summarize_parquet_duckdb`) qui importe cette fois les données avec la fonction [`pyarrow.dataset`](https://arrow.apache.org/docs/python/dataset.html) (resp. avec `DuckDB`) et effectue l'agrégation voulue.
+* Comparer les performances (temps d'exécution et allocation mémoire) des trois méthodes (`Parquet` lu et processé avec `Pandas`, `Arrow` et `DuckDB`) grâce à notre fonction.
+
+{{< include "/chapters/big-data/application/_measure_perf2.qmd" >}}
+:::
+
+Avec l'évaluation différée, on obtient donc un processus en plusieurs temps:
+
+* `Arrow` ou `DuckDB` reçoit des instructions, les optimise, exécute les requêtes
+* Seules les données en sortie de cette chaîne sont renvoyées à `Python`
+
+![](https://linogaliana.github.io/parquet-recensement-tutomate/img/duckdb-delegation1.png)
+:::
+
+::: {.content-visible when-profile="en"}
+
+::: {.application collapse="false"}
+## Part 2: Leveraging *lazy evaluation* and `Arrow` or `DuckDB` optimizations
+
+The previous section showed a **significant time gain** when switching from `CSV` to `Parquet`. However, **memory usage remained very high**, even though only a small portion of the file was actually used.
+
+In this section, we'll explore how to use ***lazy evaluation*** and **execution plan optimizations** performed by `Arrow` to fully harness the power of the `Parquet` format.
+
+* Open the file `data/RPindividus_24.parquet` with [pyarrow.dataset](https://arrow.apache.org/docs/python/dataset.html). Check the class of the resulting object.
+* Try the code below to read a data sample:
+
+```{python}
+#| eval: false
+(
+    dataset.scanner()
+    .head(5)
+    .to_pandas()
+)
+```
+
+Do you understand the difference compared to before? Look at the documentation for the `to_table` method: do you grasp its purpose?
+
+* Build a function `summarize_parquet_arrow` (or `summarize_parquet_duckdb`) which now imports the data using the [`pyarrow.dataset`](https://arrow.apache.org/docs/python/dataset.html) function (or with `DuckDB`) and performs the desired aggregation.
+* Compare the performance (execution time and memory allocation) of the three methods (`Parquet` read and processed with `Pandas`, `Arrow`, and `DuckDB`) using our function.
+
+{{< include "/chapters/big-data/application/_measure_perf2.qmd" >}}
+
+:::
+
+With lazy evaluation, the process unfolds in multiple stages:
+
+* `Arrow` or `DuckDB` receives instructions, optimizes them, and executes the queries
+* Only the output data from this chain is sent back to `Python`
+
+![](https://linogaliana.github.io/parquet-recensement-tutomate/img/duckdb-delegation1.png)
+:::
+
+
+::: {.content-visible when-profile="fr"}
+## Application 3 {.smaller}
+
+::: {.application collapse="false"}
+# Partie 3a : Et si on filtrait sur les lignes ?
+
+Ajoutez une étape de filtre sur les lignes dans nos requêtes:
+
+* Avec `DuckDB`, vous devez modifier la requête avec un `WHERE DEPT IN ('18', '28', '36')`
+* Avec `Arrow`, vous devez modifier l'étape `to_table` de cette manière: `dataset.to_table(filter=pc.field("DEPT").isin(['18', '28', '36']))`
+
+{{< include "/chapters/big-data/application/_measure_perf3.qmd" >}}
+
+
+:::
+
+*❓️ Pourquoi ne gagne-t-on pas de temps avec nos filtres sur les lignes (voire pourquoi en perdons nous?) comme c'est le cas avec les filtres sur les colonnes ?*
+
+La donnée n'est pas organisée par blocs de lignes comme elle l'est pas bloc de colonne. Heureusement, il existe pour cela un moyen: le partitionnement !
+
+::: {.application collapse="false"}
+# Partie 3 : Le `Parquet` partitionné
+
+La *lazy evaluation* et les optimisations d'`Arrow` apportent des gain de performance considérables. Mais on peut encore faire mieux ! Lorsqu'on sait qu'on va être amené à **filter régulièrement les données selon une variable d'intérêt**, on a tout intérêt à **partitionner** le fichier `Parquet` selon cette variable.
+
+1. Parcourir la documentation de la fonction [`pyarrow.parquet.write_to_dataset`](https://arrow.apache.org/docs/python/parquet.html#writing-to-partitioned-datasets) pour comprendre comment spécifier une clé de partitionnement lors de l’écriture d’un fichier `Parquet`. Plusieurs méthodes sont possibles.
+
+2. Importer la table complète des individus du recensement depuis `"data/RPindividus.parquet"` avec la fonction [`pyarrow.dataset.dataset`](https://arrow.apache.org/docs/python/generated/pyarrow.dataset.dataset.html) et l'exporter en une table partitionnée `"data/RPindividus_partitionne.parquet"`, partitionnée par la région (`REGION`) et le département (`DEPT`).
+
+3. Observer l’arborescence des fichiers de la table exportée pour voir comment la partition a été appliquée.
+
+4. Modifier nos fonctions d'import, filtre et agrégations via `Arrow` ou `DuckDB` pour utiliser, cette fois, le `Parquet` partitionné. Comparer à l'utilisation du fichier non partitionné.
+
+```{python}
+#| eval: false
+#| code-fold: true
+#| code-summary: "Correction de la question 2 (écriture du Parquet partitionné)"
+import pyarrow.parquet as pq
+dataset = ds.dataset(
+    "data/RPindividus.parquet", format="parquet"
+).to_table()
+
+pq.write_to_dataset(
+    dataset,
+    root_path="data/RPindividus_partitionne",
+    partition_cols=["REGION", "DEPT"]
+)
+```
+
+{{< include "/chapters/big-data/application/_measure_perf3b.qmd" >}}
+
+:::
+
+*❓️ Dans le cadre d'une mise à disposition de données en `Parquet`, comment bien choisir la/les clé(s) de partitionnement ? Quelle est la limite à garder en tête ?*
+
+## Pour aller plus loin
+
+* La [formation aux bonnes pratiques `R` et `Git`](https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/) développée par l'Insee avec des éléments très similaires à ceux présentés dans ce chapitre.
+* Un [atelier](https://linogaliana.github.io/parquet-recensement-tutomate/) sur le format `Parquet` et l'écosystème `DuckDB` pour l'EHESS avec des exemples `R` et `Python` utilisant la même source de données que l'application.
+* Le [guide de prise en main](https://ssphub.netlify.app/post/parquetrp/) des données du recensement au format `Parquet` avec des exemples d'utilisation de `DuckDB` en WASM (directement depuis le navigateur, sans installation `R` ou `Python`)
+:::
+::: {.content-visible when-profile="en"}
+## Application 3 {.smaller}
+
+::: {.application collapse="false"}
+# Part 3a: What if we filter rows?
+
+Add a row filtering step in our queries:
+
+* With `DuckDB`, modify the query with `WHERE DEPT IN ('18', '28', '36')`
+* With `Arrow`, modify the `to_table` step as follows: `dataset.to_table(filter=pc.field("DEPT").isin(['18', '28', '36']))`
+
+{{< include "/chapters/big-data/application/_measure_perf3.qmd" >}}
+
+:::
+
+*❓️ Why don’t we save time with row filters (or even lose time), unlike with column filters?*
+
+Data is not organized in row blocks the way it is in column blocks. Fortunately, there’s a way around this: partitioning!
+
+::: {.application collapse="false"}
+# Part 3: Partitioned `Parquet`
+
+*Lazy evaluation* and `Arrow` optimizations already bring considerable performance gains. But we can do even better! When we know that data will regularly be **filtered based on a specific variable**, it is a good idea to **partition** the `Parquet` file by that variable.
+
+1. Browse the documentation for [`pyarrow.parquet.write_to_dataset`](https://arrow.apache.org/docs/python/parquet.html#writing-to-partitioned-datasets) to understand how to specify a partitioning key when writing a `Parquet` file. Several methods are possible.
+
+2. Import the full census individual table from `"data/RPindividus.parquet"` using [`pyarrow.dataset.dataset`](https://arrow.apache.org/docs/python/generated/pyarrow.dataset.dataset.html) and export it as a partitioned table to `"data/RPindividus_partitionne.parquet"`, partitioned by region (`REGION`) and department (`DEPT`).
+
+3. Examine the file tree structure of the exported table to see how the partitioning was applied.
+
+4. Modify the import, filtering, and aggregation functions using `Arrow` or `DuckDB` to now use the partitioned `Parquet` file. Compare this to using the non-partitioned file.
+
+```{python}
+#| eval: false
+#| code-fold: true
+#| code-summary: "Answer to question 2 (writing the partitioned Parquet)"
+import pyarrow.parquet as pq
+dataset = ds.dataset(
+    "data/RPindividus.parquet", format="parquet"
+).to_table()
+
+pq.write_to_dataset(
+    dataset,
+    root_path="data/RPindividus_partitionne",
+    partition_cols=["REGION", "DEPT"]
+)
+```
+
+{{< include "/chapters/big-data/application/_measure_perf3b.qmd" >}}
+
+:::
+
+*❓️ When making data available in `Parquet` format, how should you choose the partitioning key(s)? What limitation should be kept in mind?*
+
+## To go further
+
+* The [training on good practices with `R` and `Git`](https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/) developed by Insee, with content very similar to what’s presented in this chapter.
+* A [workshop](https://linogaliana.github.io/parquet-recensement-tutomate/) on the `Parquet` format and `DuckDB` ecosystem for EHESS, with `R` and `Python` examples using the same data source as this application.
+* The [getting started guide](https://ssphub.netlify.app/post/parquetrp/) for census data in `Parquet` format with examples using `DuckDB` in WASM (directly in the browser, without `R` or `Python` installation).
+:::

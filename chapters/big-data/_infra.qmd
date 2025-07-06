@@ -1,0 +1,51 @@
+::: {.content-visible when-profile="fr"}
+
+# Infrastructures
+
+## Evolution des infrastructures de données
+
+[Texte en français inchangé]
+
+:::
+
+::: {.content-visible when-profile="en"}
+
+# Infrastructures
+
+## Evolution of Data Infrastructures
+
+Historically, data has been stored in databases, systems designed to store and organize information. These systems emerged in the 1950s and saw significant growth with relational databases in the 1980s. This technology proved especially effective for organizing corporate “business” data and served as the foundation of *data warehouses*, long considered the standard for data storage infrastructure [@chaudhuri1997overview]. While technical implementations can vary, their core idea is simple: data from various heterogeneous sources is integrated into a relational database system according to business rules via *ETL* (extract-transform-load) processes, making it accessible for a range of uses (statistical analysis, reporting, etc.) using the standardized `SQL` language (@fig-datawarehouse).
+
+![Architecture of a data warehouse. Source: [airbyte.com](https://airbyte.com/data-engineering-resources/business-intelligence-data-warehouse)](/datawharehouse.png){#fig-datawarehouse fig-align="center"}
+
+In the early 2000s, the growing adoption of *big data* practices exposed the limitations of traditional data warehouses. On one hand, data increasingly came in diverse formats (structured, semi-structured, and unstructured), often evolving as new features were added to data collection platforms. These dynamic, heterogeneous formats fit poorly with the ordered nature of data warehouses, which require schemas to be defined *a priori*. To address this, *data lakes* were developed—systems that allow for the collection and storage of large volumes of diverse data types (@fig-datalake).
+
+![Architecture of a data lake. Source: [cartelis.com](https://www.cartelis.com/blog/data-lake-definition-enjeux/)](/datalake.png){#fig-datalake fig-align="center"}
+
+Additionally, the enormous size of these data sets made it increasingly difficult to process them on a single machine. This is when Google introduced the `MapReduce` paradigm [@ghemawat2003google; @dean2008mapreduce], which laid the foundation for a new generation of distributed data processing systems. Traditional infrastructures used vertical scalability—adding more powerful or additional resources to a single machine. However, this quickly became expensive and hit hardware limits. Distributed architectures use horizontal scalability: by using many parallel, lower-powered servers and adapting algorithms to this distributed logic, massive datasets can be processed using commodity hardware. This led to the emergence of the `Hadoop` ecosystem, combining complementary technologies: a data lake (`HDFS` - Hadoop Distributed File System), a distributed processing engine (`MapReduce`), and tools for data integration and transformation (@fig-hadoop). This ecosystem expanded with tools like `Hive` (which converts `SQL` queries into distributed `MapReduce` tasks) and `Spark` (which overcomes certain technical limitations of `MapReduce` and provides APIs in multiple languages, including `Java`, `Scala`, and `Python`). Hadoop’s success was profound—it enabled organizations to process petabyte-scale datasets in real-time using widely accessible programming languages.
+
+This technological shift fueled the *big data* revolution, enabling new types of questions to be answered using vast datasets. Philosophically, it marked a shift from collecting only the data needed for known purposes, to storing as much data as possible and evaluating its usefulness later during analysis. This approach is typical of [NoSQL](https://en.wikipedia.org/wiki/NoSQL) environments ("Not only SQL"), where data is stored at each transactional event but in more flexible formats than traditional databases. JSON, derived from web transactions, is especially prominent. Depending on the structure of the data, different tools are used to query it: `ElasticSearch` or `MongoDB` for text data, `Spark` for tabular data, and so on. All these tools share a common trait: they are highly horizontally scalable, making them ideal for server farms.
+
+![Schematic of a Hadoop architecture. Large datasets are split into blocks, and both storage and processing are distributed across multiple compute nodes. Algorithms are adapted to this distributed setup via `MapReduce`: first, a "map" function is applied to each block (e.g., count word frequencies), then a "reduce" step aggregates these results (e.g., compute total frequencies across blocks). Output data is often much smaller than input data and can be brought back locally for further tasks like visualization. Source: [glennklockwood.com](https://www.glennklockwood.com/data-intensive/hadoop/overview.html)](/mapreduce-hdfs.png){#fig-hadoop fig-align="center" height=350}
+
+By the late 2010s, `Hadoop` architectures began to decline in popularity. In traditional Hadoop setups, storage and compute are co-located by design: data segments are processed on the servers where they are stored, avoiding network traffic. This architecture scales linearly, increasing both storage and compute capacity—even if only one is needed. In a provocative article titled "*Big Data is Dead*" [@Tigani_2023], Jordan Tigani (one of the founding engineers of Google BigQuery) argues that this model no longer suits modern data workloads. First, he explains, “in practice, data size grows much faster than compute needs.” Most use cases don’t require querying all stored data—just recent subsets or specific columns. Second, "the big data frontier keeps receding": thanks to more powerful and cheaper servers, fewer workloads require distributed systems (@fig-bigdata-frontier). Additionally, new storage formats (see @sec-new-formats) make data handling more efficient. As a result, properly decoupling storage from compute often leads to simpler, more efficient infrastructures.
+
+!["The big data frontier keeps receding": the share of data workloads that cannot be handled by a single machine has steadily declined. Source: [motherduck.com](https://motherduck.com/blog/big-data-is-dead/)](/bigdatafrontier.jpg){#fig-bigdata-frontier fig-align="center" height=350}
+
+## The Role of *Cloud* Technologies
+
+Building on Tigani’s analysis, we observe a growing shift toward more flexible, loosely coupled architectures. The rise of *cloud* technologies has been pivotal in this transition, for several reasons. Technically, network latency is no longer the bottleneck it was during Hadoop’s heyday, making the co-location of compute and storage less necessary. In terms of usage, it’s not just that data volumes are growing—it’s also the **diversity** of data and processing needs that is expanding. Modern infrastructures must support various data formats (from structured tables to unstructured media) and a wide range of compute requirements—from parallel data processing to deep learning on GPUs [@li2020big].
+
+Two cloud-native technologies have become central to this modern flexibility: **containerization** and **object storage**. Containerization ensures reproducibility and portability—crucial for production environments—and will be discussed in the [Portability](/chapters/portability.html) and [Deployment](/chapters/deployment.html) chapters. In this section, we focus on **object storage**, the default standard in modern data infrastructures.
+
+Since containers are *stateless* by nature, a persistent storage layer is needed to store input and output data across computations (@fig-types-storage). In container-based infrastructures, **object storage** has become dominant—popularized by Amazon’s `S3` (Simple Storage Service) [@mesnier2003object; @samundiswary2017object]. To understand its popularity, it's helpful to contrast object storage with other storage types.
+
+There are three main storage models: file systems, block storage, and object storage (@fig-types-storage). File systems organize data in a hierarchical structure—like a traditional desktop environment—but they don’t scale well and require manual access management. Block storage, like that on hard drives, offers fast low-latency access—ideal for databases—but also struggles with scalability and cost. Object storage, on the other hand, breaks data into "objects" stored in a flat namespace and assigned unique IDs and metadata. It removes the need for hierarchical structures, lowering storage costs.
+
+![Comparison of storage types. Source: [bytebytego.com](https://blog.bytebytego.com/p/storage-systems-overview)](/types-storage.png){#fig-types-storage fig-align="center" height=250}
+
+Object storage’s characteristics make it ideal for containerized *data science* infrastructures. It’s highly scalable, supports large files, and works well with distributed systems. It also enhances user autonomy by exposing data via APIs like Amazon’s `S3`, allowing direct interaction from code (`R`, `Python`, etc.) and fine-grained access control via tokens. Most importantly, object storage supports **decoupled architectures**, where compute and storage are independent and remotely accessible. This improves flexibility and efficiency.
+
+![In container-based infrastructure (which is stateless by nature), object storage provides the persistence layer. MinIO is an open-source object storage solution that integrates natively with Kubernetes and supports the S3 API—now the industry standard—ensuring compatibility across environments. Source: [lemondeinformatique.fr](https://www.lemondeinformatique.fr/actualites/lire-les-donnees-sont-plus-importantes-que-le-cloud--assure-minio%C2%A0%C2%A0-77730.html)](/minio-s3.png){#fig-minio-s3 fig-align="center" height=300}
+
+:::

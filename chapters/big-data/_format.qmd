@@ -1,0 +1,25 @@
+::: {.content-visible when-profile="fr"}
+
+# Formats de données {#sec-new-formats}
+
+[Texte en français inchangé]
+
+:::
+
+::: {.content-visible when-profile="en"}
+
+# Data Formats {#sec-new-formats}
+
+Another major dimension to consider for processing massive datasets is how data is stored. Choosing a data format involves balancing several factors, such as the purpose (processing, analysis, dissemination), the target audience (general public, project members, etc.), volume, and interoperability. Traditional formats like CSV, JSON, and XML are widely used due to their convenience: they are plain text formats, making them easily viewable in any text editor — they are considered *human-readable*. Additionally, they are naturally interoperable: plain text can be read by almost any programming language, and most libraries provide built-in support for reading these formats. However, these formats quickly show their limitations when dealing with massive datasets. The lack of compression results in high disk usage, and their row-based representation (@fig-columnar-storage) on disk and in memory makes them inefficient — you often need to load the entire file into memory to perform operations on specific rows or columns.
+
+One of the major innovations in the data ecosystem over the past decade is the emergence of data formats that address the limitations of traditional formats. The most popular and now standard format for data storage is `Apache Parquet`. It offers several features that make it especially well-suited for *data science* applications. First, it is a compressed format, making it ideal for storing large datasets. Depending on data structure, it’s not uncommon for a dataset in `Parquet` format to take up 10 times less space than its `CSV` equivalent. Second, `Parquet` is interoperable: files in this format can be queried not only with common languages like `Python`, `R`, or `SQL`, but also with big data processing tools like `Spark`.
+
+However, the key reason for `Parquet`’s widespread adoption in *data science* is its **read performance**. Intuitively, one might expect that a compressed format would be slower to read than a text format like `CSV`—after all, decompressing takes time. But `Parquet` uses highly optimized compression that actually **outperforms** reading from a plain CSV file. A crucial feature of `Parquet` that contributes to this performance is that it is **column-oriented**, meaning data is stored by columns rather than by rows as in traditional text formats (@fig-columnar-storage). This makes it highly efficient for analytical workloads (also known as OLAP — *Online Analytical Processing*), which often involve selecting specific columns, computing derived variables, and aggregating data by groups. Row-based formats like CSV require reading the entire dataset into memory to execute such queries. In contrast, columnar formats allow reading only the relevant columns, significantly reducing read and compute times for analytics tasks [@abdelaziz2023optimizing]. In practice, popular columnar formats like `Parquet` use a hybrid approach: they are mainly column-oriented, but also include row-grouping techniques to further optimize filtering operations.
+
+![Row-based vs column-based data storage representation.](/columnar-storage.png){#fig-columnar-storage}
+
+Another important feature of the `Parquet` format is its **native support for partitioned files**, which means a dataset can be split across multiple files based on one or more partition keys. In most statistical processing, the entire dataset isn't required at once — you typically filter by geographic area, time window, etc. If all data is stored in a single file, you’d still need to load all rows — at least the relevant columns — into memory to perform such filtering. With `Parquet`, datasets can be partitioned by frequently used filters — similar to indexes in a `SQL` database — enabling much faster and more efficient queries (@fig-parquet-partitions). This feature makes `Parquet` especially well-suited for analytical tasks common in *data science* [@dondon2023quels].
+
+![Filesystem representation of a `Parquet` file partitioned by two keys: year and month. In this example, querying only a few months is highly efficient because only the relevant partitions are loaded into memory.](/parquet-partitions.png){#fig-parquet-partitions fig-align="center" height=300}
+
+:::

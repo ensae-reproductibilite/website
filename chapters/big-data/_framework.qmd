@@ -1,0 +1,39 @@
+::: {.content-visible when-profile="fr"}
+
+# *Frameworks* de traitement
+
+Le format `Parquet` rend le stockage de données au format tabulaire beaucoup plus efficient. Mais pour pleinement bénéficier de cette structure de données, il est également nécessaire de s'intéresser à l'étape suivante : le traitement des données en mémoire.
+
+Deux outils majeurs ont émergé à cette fin au cours des dernières années. Le premier est [Apache Arrow](https://arrow.apache.org/), un format tabulaire de données en mémoire interopérable entre de nombreux langages (`Python`, `R`, `Java`, etc.). Le second est [`DuckDB`](https://duckdb.org/), un système de base de données portable et interopérable permettant de requêter des sources de données de nature très variée (@fig-duckdb-multisrc). Ces deux outils, bien que techniquement très différents en termes d'implémentation, présentent des avantages et des gains de performance semblables. D'abord, ils sont tous deux orientés-colonne et travaillent ainsi en synergie avec le format `Parquet`, dans la mesure où ils font persister les bénéfices de ce format de stockage dans la mémoire (@fig-arrow-memory).
+
+![Représentation en mémoire des données au format `Arrow`. Avec ce format, le stockage en mémoire est également orienté-colonne. Cela permet d'une part de faire perdurer en mémoire les avantages du format `Parquet` pour le stockage, et d'autre part d'exploiter les avancées des processeurs récents en matière de vectorisation des opérations. Dans cet exemple, la représentation en colonne des données dans la mémoire permet à la requête de filtrage sur les données de la colonne `session_id` d'être beaucoup plus efficiente que dans un format en mémoire traditionnel.](/arrow-memory.png){#fig-arrow-memory fig-align="center" height=400}
+
+Par ailleurs, `Arrow` comme `DuckDB` permettent tous deux d'augmenter considérablement les performances des requêtes sur les données grâce à l'utilisation de la *lazy evaluation* ("évaluation paresseuse"). Là où les opérations sur des données sont généralement exécutées de manière linéaire par les langages de programmation — par exemple, sélectionner des colonnes et/ou filtrer des lignes, puis calculer de nouvelles colonnes, puis effectuer des agrégations, etc. — `Arrow` et `DuckDB` exécutent quant à eux ces dernières selon un plan d'exécution pré-calculé qui optimise de manière globale la chaîne de traitements. Dans ce paradigme, les calculs sont non seulement beaucoup plus performants, mais également beaucoup plus efficients dans la mesure où ils n'impliquent de récupérer que les données effectivement nécessaires pour les traitements demandés. Ces innovations permettent ainsi d'envisager des traitements basés sur des données dont le volume total dépasse la mémoire RAM effectivement disponible sur une machine.
+
+![Un avantage majeur de `DuckDB` est sa capacité à requêter de manière standardisée des sources de données très variées. DuckDB étant un format de base de données en mémoire, il est naturellement très adapté au requêtage de bases de données relationnelles (comme PostgreSQL ou MySQL). Mais ce *framework* peut également requêter de la même manière des fichiers de données (`CSV`, `Parquet`, etc.), qu'ils soient locaux ou stockés dans le *cloud*.](/duckdb-multisrc.png){#fig-duckdb-multisrc fig-align="center" height=400}
+
+La meilleure manière de se convaincre de l'apport du format `Parquet` consiste à tester celui-ci et à la comparer avec la même donnée enregistrée sous la forme d'un CSV, à la manière de la @fig-tableau-parquet. Les applications proposées ci-dessous proposent d'illustrer les concepts évoqués précédemment (_lazy evaluation_, partionnemement, etc.) et les deux écosystèmes mentionnés (`Arrow` et `DuckDB`) à partir d'exemples simples, montrant la simplicité d'usage de ceux-ci lorsqu'on est familier du traitement de données. L'[application fil rouge](/chapters/application.qmd) est plus succincte sur la partie `Parquet`.
+
+![Exemple de comparaison des performances du format `Parquet` dans plusieurs cas d'usage sur les données détaillées du recensement de la population diffusées par l'Insee en 2023](https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/slides/img/tableau-perf-parquet.png){#fig-tableau-parquet width="80%"}
+
+:::
+
+::: {.content-visible when-profile="en"}
+
+# Processing *Frameworks*
+
+The `Parquet` format makes tabular data storage significantly more efficient. But to fully benefit from this structure, one must also consider the next step: in-memory data processing.
+
+Two major tools have emerged in recent years to address this need. The first is [Apache Arrow](https://arrow.apache.org/), an in-memory tabular data format interoperable across many languages (`Python`, `R`, `Java`, etc.). The second is [`DuckDB`](https://duckdb.org/), a portable and interoperable database engine capable of querying highly diverse data sources (@fig-duckdb-multisrc). While technically quite different in their implementations, both tools offer similar advantages and performance gains. First, both are column-oriented and thus work synergistically with the `Parquet` format by preserving the benefits of columnar storage in memory (@fig-arrow-memory).
+
+![In-memory representation of data in `Arrow` format. With this format, in-memory storage is also columnar. This preserves the storage advantages of `Parquet` in memory and leverages modern CPU improvements in vectorized operations. In this example, filtering the `session_id` column is significantly more efficient than in traditional row-based in-memory formats.](/arrow-memory.png){#fig-arrow-memory fig-align="center" height=400}
+
+Moreover, both `Arrow` and `DuckDB` drastically improve query performance through *lazy evaluation*. While most programming languages execute data operations sequentially — e.g., select columns, filter rows, compute new variables, then perform aggregations — `Arrow` and `DuckDB` use a precomputed execution plan that globally optimizes the processing chain. This approach not only makes computations faster, but also more efficient, as only the necessary data is retrieved and processed. These innovations make it feasible to work with datasets that exceed the available RAM on a machine.
+
+![A major strength of `DuckDB` is its ability to query a wide range of data sources in a standardized way. Since DuckDB is an in-memory database engine, it is naturally suited for querying relational databases (e.g., PostgreSQL, MySQL). But it can also query data files like `CSV` and `Parquet`, whether local or cloud-hosted.](/duckdb-multisrc.png){#fig-duckdb-multisrc fig-align="center" height=400}
+
+The best way to appreciate the benefits of the `Parquet` format is to test it and compare it against the same data stored as CSV, as shown in @fig-tableau-parquet. The applications below illustrate the previously mentioned concepts (*lazy evaluation*, partitioning, etc.) and demonstrate the usability of the `Arrow` and `DuckDB` ecosystems through simple examples. The [capstone application](/chapters/application.qmd) covers `Parquet` in less detail.
+
+![Example performance comparison of the `Parquet` format in various use cases using detailed population census data released by Insee in 2023](https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/slides/img/tableau-perf-parquet.png){#fig-tableau-parquet width="80%"}
+
+:::
