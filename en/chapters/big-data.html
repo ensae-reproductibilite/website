@@ -21,6 +21,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 /* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
@@ -247,6 +282,11 @@ div.callout-application.callout-style-default .callout-icon::before, div.callout
   </ul></li>
   <li><a href="#sec-new-formats" id="toc-sec-new-formats" class="nav-link" data-scroll-target="#sec-new-formats">Data Formats</a></li>
   <li><a href="#processing-frameworks" id="toc-processing-frameworks" class="nav-link" data-scroll-target="#processing-frameworks">Processing <em>Frameworks</em></a></li>
+  <li><a href="#applications-1" id="toc-applications-1" class="nav-link" data-scroll-target="#applications-1">Applications</a>
+  <ul class="collapse">
+  <li><a href="#application-3-1" id="toc-application-3-1" class="nav-link" data-scroll-target="#application-3-1">Application 3</a></li>
+  <li><a href="#to-go-further" id="toc-to-go-further" class="nav-link" data-scroll-target="#to-go-further">To go further</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -481,7 +521,495 @@ Figure&nbsp;11: Example performance comparison of the <code>Parquet</code> forma
 </figcaption>
 </figure>
 </div>
+</section>
+<section id="applications-1" class="level1">
+<h1>Applications</h1>
+<p>Throughout this application, we will explore how to use the <code>Parquet</code> format as efficiently as possible. To compare different formats and usage methods, we will <strong>compare execution time and memory usage for a standard query</strong>. Let’s start with a small dataset example to compare the <code>CSV</code> and <code>Parquet</code> formats.</p>
+<p>To do this, we need to retrieve some data in <code>Parquet</code> format. We suggest using detailed and anonymized population census data from France: about 20 million rows and 80 columns. The code to retrieve the data is given below</p>
+<div id="e2c677a9" class="cell" data-execution_count="2">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="annotated-cell-1" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-1-1"><a href="#annotated-cell-1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.parquet <span class="im">as</span> pq</span>
+<span id="annotated-cell-1-2"><a href="#annotated-cell-1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow <span class="im">as</span> pa</span>
+<span id="annotated-cell-1-3"><a href="#annotated-cell-1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="annotated-cell-1-4"><a href="#annotated-cell-1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-1-5"><a href="#annotated-cell-1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Définir le fichier de destination</span></span>
+<span id="annotated-cell-1-6"><a href="#annotated-cell-1-6" aria-hidden="true" tabindex="-1"></a>filename_table_individu <span class="op">=</span> <span class="st">"data/RPindividus.parquet"</span></span>
+<span id="annotated-cell-1-7"><a href="#annotated-cell-1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-1-8"><a href="#annotated-cell-1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Copier le fichier depuis le stockage distant (remplacer par une méthode adaptée si nécessaire)</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-1" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-1-9" class="code-annotation-target"><a href="#annotated-cell-1-9" aria-hidden="true" tabindex="-1"></a>os.system(<span class="st">"mc cp s3/projet-formation/bonnes-pratiques/data/RPindividus.parquet data/RPindividus.parquet"</span>)</span>
+<span id="annotated-cell-1-10"><a href="#annotated-cell-1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-1-11"><a href="#annotated-cell-1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Charger le fichier Parquet</span></span>
+<span id="annotated-cell-1-12"><a href="#annotated-cell-1-12" aria-hidden="true" tabindex="-1"></a>table <span class="op">=</span> pq.read_table(filename_table_individu)</span>
+<span id="annotated-cell-1-13"><a href="#annotated-cell-1-13" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> table.to_pandas()</span>
+<span id="annotated-cell-1-14"><a href="#annotated-cell-1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-1-15"><a href="#annotated-cell-1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Filtrer les données pour REGION == "24"</span></span>
+<span id="annotated-cell-1-16"><a href="#annotated-cell-1-16" aria-hidden="true" tabindex="-1"></a>df_filtered <span class="op">=</span> df.loc[df[<span class="st">"REGION"</span>] <span class="op">==</span> <span class="st">"24"</span>]</span>
+<span id="annotated-cell-1-17"><a href="#annotated-cell-1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-1-18"><a href="#annotated-cell-1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Sauvegarder en CSV</span></span>
+<span id="annotated-cell-1-19"><a href="#annotated-cell-1-19" aria-hidden="true" tabindex="-1"></a>df_filtered.to_csv(<span class="st">"data/RPindividus_24.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="annotated-cell-1-20"><a href="#annotated-cell-1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-1-21"><a href="#annotated-cell-1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Sauvegarder en Parquet</span></span>
+<span id="annotated-cell-1-22"><a href="#annotated-cell-1-22" aria-hidden="true" tabindex="-1"></a>pq.write_table(pa.Table.from_pandas(df_filtered), <span class="st">"data/RPindividus_24.parquet"</span>)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-annotation">
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-1" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-1" data-code-lines="9" data-code-annotation="1">This line of code uses the Minio Client utility available on the <code>SSPCloud</code>. If you are not on this infrastructure, you can refer to the dedicated warning</span>
+</dd>
+</dl>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+If you are not on <code>SSPCloud</code>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>You will need to replace the line</p>
+<div class="sourceCode" id="cb1" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>os.system(<span class="st">"mc cp s3/projet-formation/bonnes-pratiques/data/RPindividus.parquet data/RPindividus.parquet"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>which uses the <code>mc</code> command-line tool, with a line of code that downloads this file from the URL <a href="https://projet-formation.minio.lab.sspcloud.fr/bonnes-pratiques/data/RPindividus.parquet">https://projet-formation.minio.lab.sspcloud.fr/bonnes-pratiques/data/RPindividus.parquet</a>.</p>
+<p>There are several ways to do this. For example, you can use pure <code>Python</code> with <code>requests</code>. If you have <code>curl</code> installed, you can also use it. Via <code>Python</code>, this would be the command <code>os.system("curl -o data/RPindividus.parquet https://projet-formation/bonnes-pratiques/data/RPindividus.parquet")</code>.</p>
+</div>
+</div>
+</div>
+<p>These exercises will use <code>Python</code> decorators, i.e., functions that override the behavior of another function. In this case, we will create a function that runs a chain of operations and override it with another one that monitors memory usage and execution time.</p>
+<div class="callout callout-style-default callout-application callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Part 1: From <code>CSV</code> to <code>Parquet</code>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<ul>
+<li><p>Create a notebook <code>benchmark_parquet.ipynb</code> to perform various performance comparisons for the application.</p></li>
+<li><p>Let’s create our decorator, responsible for benchmarking the <code>Python</code> code:</p>
+<div id="2575b0f8" class="cell" data-execution_count="7">
+<details class="code-fold">
+<summary>Dérouler pour retrouver le code du décorateur permettant de mesurer la performance</summary>
+<div class="sourceCode cell-code" id="cb2" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> memory_profiler <span class="im">import</span> memory_usage</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> functools <span class="im">import</span> wraps</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">def</span> convert_size(size_bytes):</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> size_bytes <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>      <span class="cf">return</span> <span class="st">"0B"</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  size_name <span class="op">=</span> (<span class="st">"B"</span>, <span class="st">"KB"</span>, <span class="st">"MB"</span>, <span class="st">"GB"</span>, <span class="st">"TB"</span>, <span class="st">"PB"</span>, <span class="st">"EB"</span>, <span class="st">"ZB"</span>, <span class="st">"YB"</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  i <span class="op">=</span> <span class="bu">int</span>(math.floor(math.log(size_bytes, <span class="dv">1024</span>)))</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  p <span class="op">=</span> math.<span class="bu">pow</span>(<span class="dv">1024</span>, i)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  s <span class="op">=</span> <span class="bu">round</span>(size_bytes <span class="op">/</span> p, <span class="dv">2</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span> <span class="st">"</span><span class="sc">%s</span><span class="st"> </span><span class="sc">%s</span><span class="st">"</span> <span class="op">%</span> (s, size_name[i])</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Decorator to measure execution time and memory usage</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="kw">def</span> measure_performance(func, return_output<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">@wraps</span>(func)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>      <span class="kw">def</span> wrapper(return_output<span class="op">=</span><span class="va">False</span>, <span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>          warnings.filterwarnings(<span class="st">"ignore"</span>)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>          start_time <span class="op">=</span> time.time()</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>          mem_usage <span class="op">=</span> memory_usage((func, args, kwargs), interval<span class="op">=</span><span class="fl">0.1</span>)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>          end_time <span class="op">=</span> time.time()</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>          warnings.filterwarnings(<span class="st">"always"</span>)</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>          exec_time <span class="op">=</span> end_time <span class="op">-</span> start_time</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>          peak_mem <span class="op">=</span> <span class="bu">max</span>(mem_usage)  <span class="co"># Peak memory usage</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>          exec_time_formatted <span class="op">=</span> <span class="ss">f"</span><span class="ch">\033</span><span class="ss">[92m</span><span class="sc">{</span>exec_time<span class="sc">:.4f}</span><span class="ss"> sec</span><span class="ch">\033</span><span class="ss">[0m"</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>          peak_mem_formatted <span class="op">=</span> <span class="ss">f"</span><span class="ch">\033</span><span class="ss">[92m</span><span class="sc">{</span>convert_size(<span class="dv">1024</span><span class="op">*</span>peak_mem)<span class="sc">}</span><span class="ch">\033</span><span class="ss">[0m"</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>          <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>func<span class="sc">.</span><span class="va">__name__</span><span class="sc">}</span><span class="ss"> - Execution Time: </span><span class="sc">{</span>exec_time_formatted<span class="sc">}</span><span class="ss"> | Peak Memory Usage: </span><span class="sc">{</span>peak_mem_formatted<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>          <span class="cf">if</span> return_output <span class="kw">is</span> <span class="va">True</span>:</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>              <span class="cf">return</span> func(<span class="op">*</span>args, <span class="op">**</span>kwargs)</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>      <span class="cf">return</span> wrapper</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div></li>
+<li><p>The following query calculates the data needed to build a population pyramid for a given department, using the census <code>CSV</code> file. Test it in your notebook:</p>
+<div id="df426c64" class="cell" data-execution_count="8">
+<details class="code-fold">
+<summary>Dérouler pour récupérer le code de lecture du CSV</summary>
+<div class="sourceCode cell-code" id="cb3" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Charger le fichier CSV</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">"data/RPindividus_24.csv"</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>res <span class="op">=</span> (</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    df.loc[df[<span class="st">"DEPT"</span>] <span class="op">==</span> <span class="dv">36</span>]</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    .groupby([<span class="st">"AGED"</span>, <span class="st">"DEPT"</span>])[<span class="st">"IPONDI"</span>]</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    .<span class="bu">sum</span>().reset_index()</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    .rename(columns<span class="op">=</span>{<span class="st">"IPONDI"</span>: <span class="st">"n_indiv"</span>})</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div></li>
+<li><p>Repeat this code to encapsulate these operations in a <code>process_csv_appli1</code> function:</p>
+<div id="5669b1fa" class="cell" data-execution_count="9">
+<details class="code-fold">
+<summary>Dérouler pour récupérer le code pour mesurer les performances de la lecture en CSV</summary>
+<div class="sourceCode cell-code" id="cb4" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply the decorator to functions</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at">@measure_performance</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_csv_appli1(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.read_csv(<span class="st">"data/RPindividus_24.csv"</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        df.loc[df[<span class="st">"DEPT"</span>] <span class="op">==</span> <span class="dv">36</span>]</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        .groupby([<span class="st">"AGED"</span>, <span class="st">"DEPT"</span>])[<span class="st">"IPONDI"</span>]</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        .<span class="bu">sum</span>().reset_index()</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        .rename(columns<span class="op">=</span>{<span class="st">"IPONDI"</span>: <span class="st">"n_indiv"</span>})</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div></li>
+<li><p>Run <code>process_csv_appli1()</code> and <code>process_csv_appli1(return_output=True)</code></p></li>
+<li><p>Following the same model, build a <code>process_parquet_appli1</code> function based this time on the file <code>data/RPindividus_24.parquet</code> loaded with Pandas’ <a href="https://pandas.pydata.org/docs/reference/api/pandas.read_parquet.html">read_parquet</a> function.</p></li>
+<li><p>Compare the performance (execution time and memory allocation) of these two methods using the function.</p></li>
+</ul>
+<div id="de596d27" class="cell" data-execution_count="10">
+<details class="code-fold">
+<summary>Code complet de l’application</summary>
+<div class="sourceCode cell-code" id="cb5" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> memory_profiler <span class="im">import</span> memory_usage</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> functools <span class="im">import</span> wraps</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> convert_size(size_bytes):</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>   <span class="cf">if</span> size_bytes <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>       <span class="cf">return</span> <span class="st">"0B"</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>   size_name <span class="op">=</span> (<span class="st">"B"</span>, <span class="st">"KB"</span>, <span class="st">"MB"</span>, <span class="st">"GB"</span>, <span class="st">"TB"</span>, <span class="st">"PB"</span>, <span class="st">"EB"</span>, <span class="st">"ZB"</span>, <span class="st">"YB"</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>   i <span class="op">=</span> <span class="bu">int</span>(math.floor(math.log(size_bytes, <span class="dv">1024</span>)))</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>   p <span class="op">=</span> math.<span class="bu">pow</span>(<span class="dv">1024</span>, i)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>   s <span class="op">=</span> <span class="bu">round</span>(size_bytes <span class="op">/</span> p, <span class="dv">2</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>   <span class="cf">return</span> <span class="st">"</span><span class="sc">%s</span><span class="st"> </span><span class="sc">%s</span><span class="st">"</span> <span class="op">%</span> (s, size_name[i])</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Decorator to measure execution time and memory usage</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> measure_performance(func, return_output<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">@wraps</span>(func)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> wrapper(return_output<span class="op">=</span><span class="va">False</span>, <span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>        warnings.filterwarnings(<span class="st">"ignore"</span>)</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>        start_time <span class="op">=</span> time.time()</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>        mem_usage <span class="op">=</span> memory_usage((func, args, kwargs), interval<span class="op">=</span><span class="fl">0.1</span>)</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>        end_time <span class="op">=</span> time.time()</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>        warnings.filterwarnings(<span class="st">"always"</span>)</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>        exec_time <span class="op">=</span> end_time <span class="op">-</span> start_time</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>        peak_mem <span class="op">=</span> <span class="bu">max</span>(mem_usage)  <span class="co"># Peak memory usage</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>        exec_time_formatted <span class="op">=</span> <span class="ss">f"</span><span class="ch">\033</span><span class="ss">[92m</span><span class="sc">{</span>exec_time<span class="sc">:.4f}</span><span class="ss"> sec</span><span class="ch">\033</span><span class="ss">[0m"</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>        peak_mem_formatted <span class="op">=</span> <span class="ss">f"</span><span class="ch">\033</span><span class="ss">[92m</span><span class="sc">{</span>convert_size(<span class="dv">1024</span><span class="op">*</span>peak_mem)<span class="sc">}</span><span class="ch">\033</span><span class="ss">[0m"</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>func<span class="sc">.</span><span class="va">__name__</span><span class="sc">}</span><span class="ss"> - Execution Time: </span><span class="sc">{</span>exec_time_formatted<span class="sc">}</span><span class="ss"> | Peak Memory Usage: </span><span class="sc">{</span>peak_mem_formatted<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> return_output <span class="kw">is</span> <span class="va">True</span>:</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> func(<span class="op">*</span>args, <span class="op">**</span>kwargs)</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> wrapper</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply the decorator to functions</span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="at">@measure_performance</span></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_csv(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.read_csv(<span class="st">"data/RPindividus_24.csv"</span>)</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>        df.loc[df[<span class="st">"DEPT"</span>] <span class="op">==</span> <span class="dv">36</span>]</span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>        .groupby([<span class="st">"AGED"</span>, <span class="st">"DEPT"</span>])[<span class="st">"IPONDI"</span>]</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>        .<span class="bu">sum</span>().reset_index()</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>        .rename(columns<span class="op">=</span>{<span class="st">"IPONDI"</span>: <span class="st">"n_indiv"</span>})</span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a><span class="at">@measure_performance</span></span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_parquet(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.read_parquet(<span class="st">"data/RPindividus_24.parquet"</span>)</span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>        df.loc[df[<span class="st">"DEPT"</span>] <span class="op">==</span> <span class="st">"36"</span>]</span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>        .groupby([<span class="st">"AGED"</span>, <span class="st">"DEPT"</span>])[<span class="st">"IPONDI"</span>]</span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>        .<span class="bu">sum</span>().reset_index()</span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>        .rename(columns<span class="op">=</span>{<span class="st">"IPONDI"</span>: <span class="st">"n_indiv"</span>})</span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>process_csv()</span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>process_parquet()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</div>
+</div>
+</div>
+<p><em>❓️ What seems to be the limitation of the <code>read_parquet</code> function?</em></p>
+<p>We already save a significant amount of time on reading, but we don’t fully benefit from the optimizations enabled by <code>Parquet</code> because we immediately transform the data into a <code>Pandas</code> <code>DataFrame</code> after reading it. This means we are not using one of <code>Parquet</code>’s key features that explains its excellent performance: <em>predicate pushdown</em>, which optimizes processing by applying filters on columns as early as possible to retain only those actually used in the operation.</p>
+<div class="callout callout-style-default callout-application callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Part 2: Leveraging <em>lazy evaluation</em> and <code>Arrow</code> or <code>DuckDB</code> optimizations
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>The previous section showed a <strong>significant time gain</strong> when switching from <code>CSV</code> to <code>Parquet</code>. However, <strong>memory usage remained very high</strong>, even though only a small portion of the file was actually used.</p>
+<p>In this section, we’ll explore how to use <strong><em>lazy evaluation</em></strong> and <strong>execution plan optimizations</strong> performed by <code>Arrow</code> to fully harness the power of the <code>Parquet</code> format.</p>
+<ul>
+<li>Open the file <code>data/RPindividus_24.parquet</code> with <a href="https://arrow.apache.org/docs/python/dataset.html">pyarrow.dataset</a>. Check the class of the resulting object.</li>
+<li>Try the code below to read a data sample:</li>
+</ul>
+<div id="7ce448cf" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb6" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    dataset.scanner()</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    .head(<span class="dv">5</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    .to_pandas()</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Do you understand the difference compared to before? Look at the documentation for the <code>to_table</code> method: do you grasp its purpose?</p>
+<ul>
+<li>Build a function <code>summarize_parquet_arrow</code> (or <code>summarize_parquet_duckdb</code>) which now imports the data using the <a href="https://arrow.apache.org/docs/python/dataset.html"><code>pyarrow.dataset</code></a> function (or with <code>DuckDB</code>) and performs the desired aggregation.</li>
+<li>Compare the performance (execution time and memory allocation) of the three methods (<code>Parquet</code> read and processed with <code>Pandas</code>, <code>Arrow</code>, and <code>DuckDB</code>) using our function.</li>
+</ul>
+<div id="261e7281" class="cell" data-execution_count="14">
+<details class="code-fold">
+<summary>Code complet de l’application</summary>
+<div class="sourceCode cell-code" id="cb7" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.dataset <span class="im">as</span> ds</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="at">@measure_performance</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> summarize_parquet_duckdb(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    con <span class="op">=</span> duckdb.<span class="ex">connect</span>(<span class="st">":memory:"</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    query <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="st">    FROM read_parquet('data/RPindividus_24.parquet')</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="st">    SELECT AGED, DEPT, SUM(IPONDI) AS n_indiv</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="st">    GROUP BY AGED, DEPT</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="st">    """</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (con.sql(query).to_df())</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="at">@measure_performance</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> summarize_parquet_arrow(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    dataset <span class="op">=</span> ds.dataset(<span class="st">"data/RPindividus_24.parquet"</span>, <span class="bu">format</span><span class="op">=</span><span class="st">"parquet"</span>)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    table <span class="op">=</span> dataset.to_table()</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    grouped_table <span class="op">=</span> (</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>        table</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>        .group_by([<span class="st">"AGED"</span>, <span class="st">"DEPT"</span>])</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>        .aggregate([(<span class="st">"IPONDI"</span>, <span class="st">"sum"</span>)])</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>        .rename_columns([<span class="st">"AGED"</span>, <span class="st">"DEPT"</span>, <span class="st">"n_indiv"</span>])</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>        .to_pandas()</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>        grouped_table</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>process_parquet()</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>summarize_parquet_duckdb()</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>summarize_parquet_arrow()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</div>
+</div>
+</div>
+<p>With lazy evaluation, the process unfolds in multiple stages:</p>
+<ul>
+<li><code>Arrow</code> or <code>DuckDB</code> receives instructions, optimizes them, and executes the queries</li>
+<li>Only the output data from this chain is sent back to <code>Python</code></li>
+</ul>
+<p><img src="https://linogaliana.github.io/parquet-recensement-tutomate/img/duckdb-delegation1.png" class="img-fluid"></p>
+<section id="application-3-1" class="level2 smaller">
+<h2 class="smaller anchored" data-anchor-id="application-3-1">Application 3</h2>
+<div class="callout callout-style-default callout-application callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Part 3a: What if we filter rows?
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p>Add a row filtering step in our queries:</p>
+<ul>
+<li>With <code>DuckDB</code>, modify the query with <code>WHERE DEPT IN ('18', '28', '36')</code></li>
+<li>With <code>Arrow</code>, modify the <code>to_table</code> step as follows: <code>dataset.to_table(filter=pc.field("DEPT").isin(['18', '28', '36']))</code></li>
+</ul>
+<div id="ca06672c" class="cell" data-execution_count="18">
+<details class="code-fold">
+<summary>Correction de cet exercice</summary>
+<div class="sourceCode cell-code" id="cb8" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.dataset <span class="im">as</span> ds</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.compute <span class="im">as</span> pc</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="at">@measure_performance</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> summarize_filter_parquet_arrow(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    dataset <span class="op">=</span> ds.dataset(<span class="st">"data/RPindividus.parquet"</span>, <span class="bu">format</span><span class="op">=</span><span class="st">"parquet"</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    table <span class="op">=</span> dataset.to_table(<span class="bu">filter</span><span class="op">=</span>pc.field(<span class="st">"DEPT"</span>).isin([<span class="st">'18'</span>, <span class="st">'28'</span>, <span class="st">'36'</span>]))</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    grouped_table <span class="op">=</span> (</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>        table</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        .group_by([<span class="st">"AGED"</span>, <span class="st">"DEPT"</span>])</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        .aggregate([(<span class="st">"IPONDI"</span>, <span class="st">"sum"</span>)])</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>        .rename_columns([<span class="st">"AGED"</span>, <span class="st">"DEPT"</span>, <span class="st">"n_indiv"</span>])</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>        .to_pandas()</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        grouped_table</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="at">@measure_performance</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> summarize_filter_parquet_duckdb(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    con <span class="op">=</span> duckdb.<span class="ex">connect</span>(<span class="st">":memory:"</span>)</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    query <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a><span class="st">    FROM read_parquet('data/RPindividus_24.parquet')</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="st">    SELECT AGED, DEPT, SUM(IPONDI) AS n_indiv</span></span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="st">    WHERE DEPT IN ('11','31','34')</span></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a><span class="st">    GROUP BY AGED, DEPT</span></span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="st">    """</span></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (con.sql(query).to_df())</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>summarize_filter_parquet_arrow()</span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>summarize_filter_parquet_duckdb()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</div>
+</div>
+</div>
+<p><em>❓️ Why don’t we save time with row filters (or even lose time), unlike with column filters?</em></p>
+<p>Data is not organized in row blocks the way it is in column blocks. Fortunately, there’s a way around this: partitioning!</p>
+<div class="callout callout-style-default callout-application callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="true" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Part 3: Partitioned <code>Parquet</code>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse show">
+<div class="callout-body-container callout-body">
+<p><em>Lazy evaluation</em> and <code>Arrow</code> optimizations already bring considerable performance gains. But we can do even better! When we know that data will regularly be <strong>filtered based on a specific variable</strong>, it is a good idea to <strong>partition</strong> the <code>Parquet</code> file by that variable.</p>
+<ol type="1">
+<li><p>Browse the documentation for <a href="https://arrow.apache.org/docs/python/parquet.html#writing-to-partitioned-datasets"><code>pyarrow.parquet.write_to_dataset</code></a> to understand how to specify a partitioning key when writing a <code>Parquet</code> file. Several methods are possible.</p></li>
+<li><p>Import the full census individual table from <code>"data/RPindividus.parquet"</code> using <a href="https://arrow.apache.org/docs/python/generated/pyarrow.dataset.dataset.html"><code>pyarrow.dataset.dataset</code></a> and export it as a partitioned table to <code>"data/RPindividus_partitionne.parquet"</code>, partitioned by region (<code>REGION</code>) and department (<code>DEPT</code>).</p></li>
+<li><p>Examine the file tree structure of the exported table to see how the partitioning was applied.</p></li>
+<li><p>Modify the import, filtering, and aggregation functions using <code>Arrow</code> or <code>DuckDB</code> to now use the partitioned <code>Parquet</code> file. Compare this to using the non-partitioned file.</p></li>
+</ol>
+<div id="e58e9357" class="cell" data-execution_count="19">
+<details class="code-fold">
+<summary>Answer to question 2 (writing the partitioned Parquet)</summary>
+<div class="sourceCode cell-code" id="cb9" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.parquet <span class="im">as</span> pq</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>dataset <span class="op">=</span> ds.dataset(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"data/RPindividus.parquet"</span>, <span class="bu">format</span><span class="op">=</span><span class="st">"parquet"</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>).to_table()</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>pq.write_to_dataset(</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    dataset,</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    root_path<span class="op">=</span><span class="st">"data/RPindividus_partitionne"</span>,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    partition_cols<span class="op">=</span>[<span class="st">"REGION"</span>, <span class="st">"DEPT"</span>]</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="420f1aa2" class="cell" data-execution_count="20">
+<details class="code-fold">
+<summary>Correction de la question 4 (lecture du Parquet partitionné)</summary>
+<div class="sourceCode cell-code" id="cb10" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.dataset <span class="im">as</span> ds</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.compute <span class="im">as</span> pc</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="at">@measure_performance</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> summarize_filter_parquet_partitioned_arrow(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    dataset <span class="op">=</span> ds.dataset(<span class="st">"data/RPindividus_partitionne/"</span>, partitioning<span class="op">=</span><span class="st">"hive"</span>)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    table <span class="op">=</span> dataset.to_table(<span class="bu">filter</span><span class="op">=</span>pc.field(<span class="st">"DEPT"</span>).isin([<span class="st">'18'</span>, <span class="st">'28'</span>, <span class="st">'36'</span>]))</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    grouped_table <span class="op">=</span> (</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>        table</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>        .group_by([<span class="st">"AGED"</span>, <span class="st">"DEPT"</span>])</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>        .aggregate([(<span class="st">"IPONDI"</span>, <span class="st">"sum"</span>)])</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>        .rename_columns([<span class="st">"AGED"</span>, <span class="st">"DEPT"</span>, <span class="st">"n_indiv"</span>])</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>        .to_pandas()</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>        grouped_table</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a><span class="at">@measure_performance</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> summarize_filter_parquet_complete_arrow(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>    dataset <span class="op">=</span> ds.dataset(<span class="st">"data/RPindividus.parquet"</span>)</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    table <span class="op">=</span> dataset.to_table(<span class="bu">filter</span><span class="op">=</span>pc.field(<span class="st">"DEPT"</span>).isin([<span class="st">'18'</span>, <span class="st">'28'</span>, <span class="st">'36'</span>]))</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>    grouped_table <span class="op">=</span> (</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>        table</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>        .group_by([<span class="st">"AGED"</span>, <span class="st">"DEPT"</span>])</span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>        .aggregate([(<span class="st">"IPONDI"</span>, <span class="st">"sum"</span>)])</span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>        .rename_columns([<span class="st">"AGED"</span>, <span class="st">"DEPT"</span>, <span class="st">"n_indiv"</span>])</span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>        .to_pandas()</span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>        grouped_table</span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a><span class="at">@measure_performance</span></span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> summarize_filter_parquet_complete_duckdb(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>    con <span class="op">=</span> duckdb.<span class="ex">connect</span>(<span class="st">":memory:"</span>)</span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>    query <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a><span class="st">    FROM read_parquet('data/RPindividus.parquet')</span></span>
+<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a><span class="st">    SELECT AGED, DEPT, SUM(IPONDI) AS n_indiv</span></span>
+<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a><span class="st">    WHERE DEPT IN ('11','31','34')</span></span>
+<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a><span class="st">    GROUP BY AGED, DEPT</span></span>
+<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a><span class="st">    """</span></span>
+<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (con.sql(query).to_df())</span>
+<span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-55"><a href="#cb10-55" aria-hidden="true" tabindex="-1"></a><span class="at">@measure_performance</span></span>
+<span id="cb10-56"><a href="#cb10-56" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> summarize_filter_parquet_partitioned_duckdb(<span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb10-57"><a href="#cb10-57" aria-hidden="true" tabindex="-1"></a>    con <span class="op">=</span> duckdb.<span class="ex">connect</span>(<span class="st">":memory:"</span>)</span>
+<span id="cb10-58"><a href="#cb10-58" aria-hidden="true" tabindex="-1"></a>    query <span class="op">=</span> <span class="st">"""</span></span>
+<span id="cb10-59"><a href="#cb10-59" aria-hidden="true" tabindex="-1"></a><span class="st">    FROM read_parquet('data/RPindividus_partitionne/**/*.parquet', hive_partitioning = True)</span></span>
+<span id="cb10-60"><a href="#cb10-60" aria-hidden="true" tabindex="-1"></a><span class="st">    SELECT AGED, DEPT, SUM(IPONDI) AS n_indiv</span></span>
+<span id="cb10-61"><a href="#cb10-61" aria-hidden="true" tabindex="-1"></a><span class="st">    WHERE DEPT IN ('11','31','34')</span></span>
+<span id="cb10-62"><a href="#cb10-62" aria-hidden="true" tabindex="-1"></a><span class="st">    GROUP BY AGED, DEPT</span></span>
+<span id="cb10-63"><a href="#cb10-63" aria-hidden="true" tabindex="-1"></a><span class="st">    """</span></span>
+<span id="cb10-64"><a href="#cb10-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-65"><a href="#cb10-65" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (con.sql(query).to_df())</span>
+<span id="cb10-66"><a href="#cb10-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-67"><a href="#cb10-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-68"><a href="#cb10-68" aria-hidden="true" tabindex="-1"></a>summarize_filter_parquet_complete_arrow()</span>
+<span id="cb10-69"><a href="#cb10-69" aria-hidden="true" tabindex="-1"></a>summarize_filter_parquet_partitioned_arrow()</span>
+<span id="cb10-70"><a href="#cb10-70" aria-hidden="true" tabindex="-1"></a>summarize_filter_parquet_complete_duckdb()</span>
+<span id="cb10-71"><a href="#cb10-71" aria-hidden="true" tabindex="-1"></a>summarize_filter_parquet_partitioned_duckdb()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</div>
+</div>
+</div>
+<p><em>❓️ When making data available in <code>Parquet</code> format, how should you choose the partitioning key(s)? What limitation should be kept in mind?</em></p>
+</section>
+<section id="to-go-further" class="level2">
+<h2 class="anchored" data-anchor-id="to-go-further">To go further</h2>
+<ul>
+<li>The <a href="https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/">training on good practices with <code>R</code> and <code>Git</code></a> developed by Insee, with content very similar to what’s presented in this chapter.</li>
+<li>A <a href="https://linogaliana.github.io/parquet-recensement-tutomate/">workshop</a> on the <code>Parquet</code> format and <code>DuckDB</code> ecosystem for EHESS, with <code>R</code> and <code>Python</code> examples using the same data source as this application.</li>
+<li>The <a href="https://ssphub.netlify.app/post/parquetrp/">getting started guide</a> for census data in <code>Parquet</code> format with examples using <code>DuckDB</code> in WASM (directly in the browser, without <code>R</code> or <code>Python</code> installation).</li>
+</ul>
 
+
+
+</section>
 </section>
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
