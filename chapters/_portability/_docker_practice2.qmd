@@ -1,0 +1,267 @@
+::: {.content-visible when-profile="fr"}
+
+## Construction d'une image Docker {#build}
+
+Pour construire une image à partir d'un `Dockerfile`, il suffit d'utiliser la commande `docker build` depuis la ligne de commande[^windows]. Il faut ensuite spécifier deux éléments importants :
+
+- le __*build context*__. Il faut indiquer à `Docker` le chemin de notre projet, qui doit contenir le `Dockerfile`. En pratique, il est plus simple de se mettre dans le dossier du projet via la commande `cd`, puis de passer `.` comme *build context* pour indiquer à `Docker` de *build* "d'ici" ;
+- le __*tag*__, c'est à dire le nom de l'image. Tant que l'on utilise `Docker` en local, le *tag* importe peu. On verra par la suite que la structure du *tag* a de l'importance lorsque l'on souhaite [exporter](#imp-docker) ou [importer](#exp-docker) une image `Docker` à partir d'un dépôt distant.
+
+[^windows]: Si vous êtes sur Windows, les lignes de commande disponibles par défaut (`cmd` ou `Powershell`) sont peu pratiques. Il est recommandé d'utiliser la ligne de commande de `Git Bash` (une émulation minimaliste d'une ligne de commande `Linux`) qui vous permettra de faire des opérations en ligne de commande.
+
+Regardons ce qui se passe en pratique lorsque l'on essaie de construire notre image. Le tag de celle-ci est `myflaskapp`:
+
+```{.bash filename="terminal"}
+docker build -t myflaskapp .
+```
+
+```{.python}
+Sending build context to Docker daemon     47MB
+Step 1/8 : FROM ubuntu:20.04
+ ---> 825d55fb6340
+Step 2/8 : RUN apt-get update && apt-get install -y python3-pip python3-dev
+ ---> Running in 92b42d579cfa
+...
+done.
+Removing intermediate container 92b42d579cfa
+ ---> 8826d53e3c01
+Step 3/8 : WORKDIR /app
+ ---> Running in 153b32893c23
+Removing intermediate container 153b32893c23
+ ---> 7b4d22021986
+Step 4/8 : COPY requirements.txt /app/requirements.txt
+...
+Successfully built 125bd8da70ff
+Successfully tagged myflaskapp:latest
+```
+
+
+
+Le moteur `Docker` essaie de construire notre image séquentiellement à partir des commandes spécifiées dans le `Dockerfile`. S'il rencontre une erreur, la procédure s'arrête, et il faut alors trouver la source du problème dans les *logs* et adapter le `Dockerfile` en conséquence.
+
+Si tout se passe bien, `Docker` nous indique que le *build* a réussi et l'image est prête à être utilisée. On peut vérifier que l'image est bien disponible à l'aide de la commande `docker images`.
+
+```{.bash filename="terminal"}
+docker images
+```
+
+```{.python}
+REPOSITORY                               TAG       IMAGE ID       CREATED          SIZE
+myflaskapp                               latest    57d2f410a631   2 hours ago      433MB
+```
+
+Intéressons nous un peu plus en détail aux *logs* de l'étape de *build* 👆️.
+
+Entre les étapes, `Docker` affiche des suites de lettres et de chiffres un peu ésotériques, et nous parle de conteneurs intermédiaires. En fait, il faut voir une image `Docker` comme un empilement de couches (*layers*), qui sont elles-mêmes des images `Docker`. Quand on hérite d'une image avec l'instruction `FROM`, on spécifie donc à `Docker` la couche initiale, sur laquelle il va construire le reste de notre environnement. A chaque étape sa nouvelle couche, et à chaque couche son *hash*, un identifiant unique fait de lettres et de chiffres.
+
+Cela peut ressembler à des détails techniques, mais c'est en fait extrêmement utile en pratique car cela permet à `Docker` de faire du *caching*. Lorsqu'on développe un `Dockerfile`, il est fréquent de devoir modifier ce dernier de nombreuses fois avant de trouver la bonne recette, et on aimerait bien ne pas avoir à *rebuild* l'environnement complet à chaque fois. `Docker` gère cela très bien : il *cache* chacune des couches intermédiaires[^cacheCI].
+
+Par exemple, si l'on modifie la 5ème commande du `Dockerfile`, `Docker` va utiliser le cache pour ne pas avoir à recalculer les étapes précédentes, qui n'ont pas changé. Cela s'appelle l'_"invalidation du cache"_ :
+dès lors qu'une étape du `Dockerfile` est modifiée, `Docker` va recalculer toutes les étapes suivantes, mais seulement celles-ci. Conséquence directe de cette observation : il faut toujours ordonner les étapes d'un `Dockerfile` de sorte à ce qui est le plus susceptible d'être souvent modifié soit à la fin du fichier, et inversement.
+
+[^cacheCI]: Le _cache_ est très pratique pour une construction expérimentale en local. Malheureusement, lorsqu'on passe par des services d'intégration continue, l'utilisation du _cache_ est moins évidente car chaque `run` se fait sur une machine indépendante de la précédente.
+
+Pour illustrer cela, regardons ce qui se passe si l'on modifie le nom du script qui lance l'application, et donc la valeur de la variable d'environnement `FLASK_APP` dans le `Dockerfile`.
+
+```{.bash filename="terminal"}
+docker build . -t myflaskapp
+```
+
+```{.python}
+Sending build context to Docker daemon  4.096kB
+Step 1/10 : FROM ubuntu:20.04
+ ---> 825d55fb6340
+Step 2/10 : ENV DEBIAN_FRONTEND=noninteractive
+ ---> Using cache
+ ---> ea1c7c083ac9
+Step 3/10 : RUN apt-get update -y &&     apt-get install -y python3-pip python3-dev
+ ---> Using cache
+ ---> 078b8ac0e1cb
+Step 4/10 : WORKDIR /app
+ ---> Using cache
+ ---> cd19632825b3
+Step 5/10 : COPY requirements.txt /app/requirements.txt
+ ---> Using cache
+ ---> 271cd1686899
+Step 6/10 : RUN pip install -r requirements.txt
+ ---> Using cache
+ ---> 3ea406fdf383
+Step 7/10 : COPY . /app
+ ---> 3ce5bd3a9572
+Step 8/10 : ENV FLASK_APP="new.py"
+ ---> Running in b378d16bb605
+Removing intermediate container b378d16bb605
+ ---> e1f50490287b
+Step 9/10 : EXPOSE 5000
+ ---> Running in ab53c461d3de
+Removing intermediate container ab53c461d3de
+ ---> 0b86eca40a80
+Step 10/10 : CMD ["flask", "run", "--host=0.0.0.0"]
+ ---> Running in 340eec151a51
+Removing intermediate container 340eec151a51
+ ---> 16d7a5b8db28
+Successfully built 16d7a5b8db28
+Successfully tagged myflaskapp:latest
+```
+
+L'étape de *build* a pris quelques secondes au lieu de plusieurs minutes, et les *logs* montrent bien l'utilisation du cache faite par `Docker` : les étapes précédant le changement réutilisent les couches cachées, mais celle d'après sont recalculées.
+
+## Exécuter (_run_) une image `Docker` {#execution}
+
+L'étape de *build* a permis de créer une *image* `Docker`. Une image doit être vue comme un *template* : elle permet d'exécuter l'application sur n'importe quel environnement d'exécution sur lequel un moteur `Docker` est installé.
+
+En l'état, on a donc juste *construit*, mais rien *lancé* : notre application ne tourne pas encore. Pour cela, il faut créer un *conteneur*, i.e. une instance vivante de l'image qui permet d'accéder à l'application. Cela se fait via la commande `docker run`.
+
+```{.bash filename="terminal" no-prefix=true}
+$ docker run -d -p 8000:5000 myflaskapp:latest
+6a2ab0d82d051a3829b182ede7b9152f7b692117d63fa013e7dfe6232f1b9e81
+```
+
+Détaillons la syntaxe de cette commande :
+
+- `docker run tag` : lance l'image dont on fournit le *tag*. Le *tag* est de la forme `repository/projet:version`. Ici, il n'y a pas de *repository* puisque tout est fait en local ;
+- `-d` : "détache" le conteneur du terminal qui le lance ;
+- `-p` : effectue un *mapping* entre un port de la machine qui exécute le conteneur, et le conteneur lui-même. Notre conteneur écoute sur le port 5000, et l'on veut que notre application soit exposée sur le port 8000 de notre machine.
+
+Lorsque l'on exécute `docker run`, `Docker` nous répond simplement un *hash* qui identifie le conteneur que l'on a lancé. On peut vérifier qu'il tourne bien avec la commande `docker ps`, qui renvoie toutes les informations associées au conteneur.
+
+```{.bash filename="terminal"}
+docker ps
+```
+
+```{.python}
+CONTAINER ID   IMAGE        COMMAND                  CREATED         STATUS         PORTS                                   NAMES
+6a2ab0d82d05   myflaskapp   "flask run --host=0.…"   7 seconds ago   Up 6 seconds   0.0.0.0:8000->5000/tcp, :::8000->5000/tcp   vigorous_kalam
+```
+
+Les conteneurs peuvent être utilisés pour réaliser des tâches très différentes. Grossièrement, on peut distinguer deux situations :
+
+- le conteneur effectue une tâche "one-shot", c'est à dire une opération qui a vocation à s'effectuer en un certain temps, suite à quoi le conteneur peut s'arrêter ;
+- le conteneur exécute une application. Dans ce cas, on souhaite que le conteneur reste en vie aussi longtemps que l'on souhaite utiliser l'application en question.
+
+Dans notre cas d'application, on se situe dans la seconde configuration puisque l'on veut exécuter une application web. Lorsque l'application tourne, elle expose sur le *localhost*, accessible depuis un navigateur web — en l'occurence, à l'adresse [localhost:5000/](localhost:5000/). Les calculs sont effectués sur un serveur local, et le navigateur sert d'interface avec l'utilisateur — comme lorsque vous utilisez un _notebook_ `Jupyter` par exemple.
+
+Finalement, on a pu développer et exécuter une application complète sur notre environnement local, sans avoir eu à installer quoi que ce soit sur notre machine personnelle, à part `Docker.`
+
+
+::::
+
+:::: {.content-visible when-profile="en"}
+
+## Building a Docker Image {#build}
+
+To build an image from a `Dockerfile`, use the `docker build` command from the terminal[^windows]. Two important arguments must be provided:
+
+- the **build context**: this tells Docker where the project is located (it should contain the `Dockerfile`). The simplest approach is to navigate into the project directory via `cd` and pass `.` to indicate "build from here";
+- the **tag**, i.e., the name of the image. While working locally, the tag doesn’t matter much, but we’ll see later that it becomes important when [exporting](#imp-docker) or [importing](#exp-docker) an image from/to a remote repository.
+
+[^windows]: On Windows, the default command lines (`cmd` or `PowerShell`) are not very convenient. We recommend using the `Git Bash` terminal, a lightweight Linux command-line emulator, for better compatibility with command-line operations.
+
+Let’s see what happens when we try to build our image with the tag `myflaskapp`:
+
+```{.bash filename="terminal"}
+docker build -t myflaskapp .
+```
+
+```{.python}
+Sending build context to Docker daemon     47MB
+Step 1/8 : FROM ubuntu:20.04
+ ---> 825d55fb6340
+Step 2/8 : RUN apt-get update && apt-get install -y python3-pip python3-dev
+ ---> Running in 92b42d579cfa
+...
+done.
+Removing intermediate container 92b42d579cfa
+ ---> 8826d53e3c01
+...
+Successfully built 125bd8da70ff
+Successfully tagged myflaskapp:latest
+```
+
+Docker’s engine processes the instructions from the `Dockerfile` one at a time. If there’s an error, the build stops, and you’ll need to debug the problem using the log output and adjust the `Dockerfile` accordingly.
+
+If successful, Docker will indicate that the build was completed and that the image is ready for use. You can confirm its presence with the `docker images` command:
+
+```{.bash filename="terminal"}
+docker images
+```
+
+```{.python}
+REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
+myflaskapp   latest    57d2f410a631   2 hours ago      433MB
+```
+
+Let’s look more closely at the build logs 👆️.
+
+Between each step, Docker prints cryptic hashes and mentions intermediate containers. Think of a Docker image as a stack of **layers**, each layer being itself a Docker image. The `FROM` instruction specifies the starting layer. Each command adds a new layer with a unique hash.
+
+This design is not just technical trivia—it’s incredibly useful in practice because Docker **caches** each intermediate layer[^cacheCI].
+
+For example, if you modify the 5th instruction in the `Dockerfile`, Docker will reuse the cache for previous layers and only rebuild from the change onward. This is called **cache invalidation**: once a step changes, Docker recalculates that step and all that follow, but no more. As a result, you should always place frequently changing steps at the end of the file.
+
+[^cacheCI]: Caching is very useful for local development. Unfortunately, it’s harder to leverage in CI environments, since each run usually happens on a fresh machine.
+
+Let’s illustrate this by changing the `FLASK_APP` environment variable in the `Dockerfile`:
+
+```{.bash filename="terminal"}
+docker build . -t myflaskapp
+```
+
+```{.python}
+Sending build context to Docker daemon  4.096kB
+Step 1/10 : FROM ubuntu:20.04
+ ---> 825d55fb6340
+Step 2/10 : ENV DEBIAN_FRONTEND=noninteractive
+ ---> Using cache
+ ---> ea1c7c083ac9
+Step 3/10 : RUN apt-get update -y && ...
+ ---> Using cache
+ ---> 078b8ac0e1cb
+...
+Step 8/10 : ENV FLASK_APP="new.py"
+ ---> Running in b378d16bb605
+...
+Successfully built 16d7a5b8db28
+Successfully tagged myflaskapp:latest
+```
+
+The build finishes in seconds instead of minutes. The logs show that previous steps were cached, and only modified or dependent ones were rebuilt.
+
+## Running a Docker Image {#execution}
+
+The `build` step created a **Docker image**—essentially a blueprint for your app. It can be executed on any environment with Docker installed.
+
+So far, we’ve built the image but haven’t **run** it. To launch the app, we must create a **container**, i.e., a live instance of the image. This is done with the `docker run` command:
+
+```{.bash filename="terminal" no-prefix=true}
+$ docker run -d -p 8000:5000 myflaskapp:latest
+6a2ab0d82d051a3829b182ede7b9152f7b692117d63fa013e7dfe6232f1b9e81
+```
+
+Here’s a breakdown of the command:
+
+- `docker run tag`: runs the image specified by `tag`. Tags usually follow the format `repository/project:version`. Since we're local, there's no repository;
+- `-d`: runs the container in **detached** mode (in the background);
+- `-p`: maps a port on the host machine (8000) to a port inside the container (5000). Since Flask listens on port 5000, this makes the app accessible via `localhost:8000`.
+
+The command returns a long hash—this is the container ID. You can verify that it’s running with:
+
+```{.bash filename="terminal"}
+docker ps
+```
+
+```{.python}
+CONTAINER ID   IMAGE        COMMAND                  CREATED         STATUS         PORTS                                   NAMES
+6a2ab0d82d05   myflaskapp   "flask run --host=0.…"   7 seconds ago   Up 6 seconds   0.0.0.0:8000->5000/tcp, :::8000->5000/tcp   vigorous_kalam
+```
+
+Docker containers serve different purposes. Broadly, they fall into two categories:
+
+- **One-shot jobs**: containers that execute a task and terminate;
+- **Running apps**: containers that persist while serving an application.
+
+In our case, we’re in the second category. We want to run a web app, so the container must stay alive. Flask launches a server on a local port (5000), and we’ve mapped it to port 8000 on our machine. You can access the app from your browser at [localhost:8000](http://localhost:8000/), just like a Jupyter notebook.
+
+In the end, we’ve built and launched a fully working application on our local machine—without installing anything beyond Docker itself.
+
+::::

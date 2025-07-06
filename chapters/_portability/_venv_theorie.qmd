@@ -1,0 +1,154 @@
+:::: {.content-visible when-profile="fr"}
+
+# Les environnements virtuels {{< fa brands python >}} {#virtualenv}
+
+## Introduction
+
+Pour illustrer l'importance de travailler avec des environnements virtuels, mettons-nous à la place d'un.e aspirant.e *data scientist* qui commencerait ses premiers projets.
+
+Selon toute vraisemblance, on va commencer par installer une distribution de `Python` — souvent, via `Anaconda` — sur son poste et commencer à développer, projet après projet. S'il est nécessaire d'installer une librairie supplémentaire, on le fera sans trop se poser de question. Puis, on passera au projet suivant en adoptant la même démarche. Et ainsi de suite.
+
+Cette démarche naturelle présentera l'avantage de permettre d'aller vite dans les expérimentations.
+Néanmoins, elle deviendra problématique s'il devient
+nécessaire de partager son projet, ou de reprendre celui-ci dans le futur.
+
+Dans cette approche, les différents *packages* qu'on va être amené à utiliser vont être installés au même endroit. Ceci peut apparaître secondaire, après tout nous utilisons `Python` pour sa simplicité d'usage qui ne nécessite pas de passer des heures à se poser des questions avant d'écrire la moindre ligne de code, mais cela va finir par nous poser plusieurs problèmes :
+
+- **conflits de version** : une application A peut dépendre de la version 1 d'un package là où une application B peut dépendre de la version 2 de ce même package. Ces versions d'un même package peuvent avoir des incompatibilités[^release]. Une seule application peut donc fonctionner dans cette configuration ;
+- **version de `Python` fixe** — on ne peut avoir qu'une seule installation par système — là où on voudrait pouvoir avoir des versions différentes selon le projet ;
+- **reproductiblité limitée** : difficile de dire quel projet repose sur tel package, dans la mesure où ceux-ci s'accumulent en un même endroit au fil des projets ;
+- **portabilité limitée** : conséquence du point précédent, il est difficile de fixer dans un fichier les dépendances spécifiques à un projet, et exclusivement celles-ci.
+
+Les environnements virtuels constituent une solution à ces différents problèmes.
+
+[^release]: S'il est impossible de suivre les évolutions de tous les _packages_ de la _data science_,
+il est recommandé de faire une veille sur les principaux comme `Pandas` ou `Scikit` en suivant
+les _release notes_ des versions majeures qui introduisent
+généralement des non-compatibilités.
+
+## Fonctionnement
+
+Le concept d'environnement virtuel est techniquement très simple.
+On peut lui donner la définition suivante pour `Python` :
+
+> _"dossier auto-suffisant qui contient une installation de `Python`
+pour une version particulière de `Python` ainsi que des *packages* additionnels
+et qui est isolé des autres environnements existants."_
+
+On peut donc simplement voir les environnements virtuels comme un moyen de faire cohabiter sur un même système différentes installations de `Python` avec chacune leur propre liste de packages installés et leurs versions. Développer dans des environnements virtuels vierges à chaque début de projet est une très bonne pratique pour accroître la reproductibilité des analyses.
+
+## Implémentations
+
+Il existe différentes implémentations des environnements virtuels en `Python`, dont chacune ont leurs spécificités et leur communauté d'utilisateurs :
+
+* L'implémentation standard en `Python` est `venv`.
+* `conda` propose une implémentation plus complète.
+
+En pratique pour les utilisateurs, ces implémentations sont relativement proches. La différence conceptuelle majeure est que `conda` est à la fois un *package manager* (comme `pip`) et un gestionnaire d'environnements virtuels (comme `venv`).
+
+Pendant longtemps, `conda` en tant que *package manager* s'est avéré très pratique en *data science*, dans la mesure où il gérait non seulement les dépendances `Python` mais aussi dans d'autres langages, comme des dépendances `C`, très utilisées
+par les principales librairies de _data science_ et dont l'installation peut être complexe sur certains systèmes d'exploitation. Néanmoins, depuis quelques années, l'installation de _packages_ par `pip` se fait de plus en plus par le biais de [_wheels_](https://pythonwheels.com/) qui sont des versions pré-compilées des librairies systèmes, propres à chaque configuration système.
+
+::: {.callout-note collapse="true"}
+## Une différence conceptuelle entre `pip` et `conda`
+
+L'autre différence majeure avec `pip` est que `Conda` utilise une méthode plus avancée — et donc également plus coûteuse en temps — de résolution des dépendances.
+
+En effet, différents packages peuvent spécifier différentes versions d'un même package dont ils dépendent tous les deux, ce qui provoque un conflit de version. `Conda` va par défaut appliquer un algorithme qui vise à gérer au mieux ces conflits, là où `pip` va choisir une approche plus minimaliste[^2].
+:::
+
+[^2]: Le _solver_ de `conda`, qui est un algorithme de recherche de chemin optimal dans des graphes pour gérer
+les (in)compatibilités de versions, est
+lourd à mettre en oeuvre. Le projet [`mamba`](https://mamba.readthedocs.io/en/latest/) a permis d'offrir
+une réimplémentation de `Conda` en `C++` par le biais d'un _solver_ plus efficace. Cela a permis de franchement accélérer la vitesse d'installation des _packages_ par le biais de `conda`. Néanmoins,
+l'accès de plus en plus fréquent à des [_wheels_](https://pythonwheels.com/) a permis un retour en grâce des environnements virtuels implémentés par `venv` au cours des dernières années.
+
+`pip+venv` présente l'avantage de la simplicité, `conda` de la fiabilité. Selon les projets, on
+privilégiera l'un ou l'autre. Néanmoins, si
+le projet est amené à fonctionner de manière isolée
+dans un conteneur, `venv` suffira amplement car
+l'isolation sera fournie par le conteneur comme
+nous le verrons ultérieurement.
+
+::: {.callout-note collapse="true"}
+## C'est différent en {{< fa brands r-project >}} ?
+
+On lit souvent, notamment chez les _afficionados_ de {{< fa brands r-project >}} que la gestion des environnements en `Python` est chaotique. C'était vrai au début des années 2010 mais c'est quelques peu exagéré aujourd'hui.
+
+La qualité supérieure des outils {{< fa brands r-project >}} pour la gestion des dépendances ne saute pas aux yeux: [`renv`](https://rstudio.github.io/renv/articles/renv.html) est très intéressant mais [ne permet pas de définir la version de
+{{< fa brands r-project >}}](https://rstudio.github.io/renv/articles/renv.html#caveats) :
+
+> R version: renv tracks, but doesn’t help with, the version of R used with the packge. renv can’t easily help with this because it’s run inside of R, but you might find tools like rig helpful, as they make it easier to switch between multiple version of R on one computer.
+
+C'est, en fait, le problème principal des outils {{< fa brands r-project >}} pour la reproductibilité. Pour les utiliser, il faut souvent se trouver dans une session {{< fa brands r-project >}}, avec ses spécificités. Les outils {{< fa brands python >}} qui s'utilisent pas le biais de la ligne de commande offrent une robustesse plus importante. `venv` est certes dépendant de la version de {{< fa brands python >}} utilisée lors de la création de l'environnement mais le fait de passer par le terminal permet de choisir la version de {{< fa brands python >}} qui servira à créer l'environnement. Quant à `conda`, la version de {{< fa brands python >}} est définie dans le `environment.yml` ce qui donne une grande liberté.
+:::
+
+Puisqu'il n'y a pas de raison absolue d'imposer `pip+venv` ou `conda`, nous recommandons le pragmatisme. Personnellement, nous utilisons plutôt `venv` car nous travaillons principalement dans des microservices basés sur des conteneurs et non sur des postes personnels, ce qui est l'approche moderne dans le monde de la _data science_. Nous présentons néanmoins les deux approches par la suite. L'[application fil rouge](/chapters/application.qmd) propose les deux approches, à vous de choisir celle que vous désirez privilégier.
+
+::::
+
+:::: {.content-visible when-profile="en"}
+
+# Virtual Environments {{< fa brands python >}} {#virtualenv}
+
+## Introduction
+
+To illustrate the importance of working with virtual environments, let’s take the perspective of an aspiring data scientist starting their first projects.
+
+Most likely, they begin by installing a Python distribution—often via Anaconda—on their machine and start developing project after project. If they need to install an additional library, they do so without much thought. Then they move on to the next project using the same approach. And so on.
+
+This natural workflow allows for quick experimentation. However, it becomes problematic when it comes time to share a project or revisit it later.
+
+In this setup, all packages used across various projects are installed in the same location. While this might seem trivial—after all, Python’s simplicity is one of its strengths—several issues will eventually arise:
+
+- **Version conflicts**: Application A may require version 1 of a package, while application B needs version 2. These versions may be incompatible. In such a setup, only one application may work;
+- **Fixed Python version** — Only one Python installation is available per system, whereas you'd want different versions for different projects;
+- **Limited reproducibility**: It’s difficult to trace which project relies on which packages, since everything accumulates in the same environment;
+- **Limited portability**: As a result of the above, it’s hard to generate a file listing only the dependencies of a specific project.
+
+Virtual environments provide a solution to these issues.
+
+## How It Works
+
+The concept of a virtual environment is technically quite simple. In Python, it can be defined as:
+
+> _"A self-contained directory tree that contains a Python installation for a particular version of Python, plus additional packages."_ 
+
+You can think of virtual environments as a way to maintain multiple isolated Python setups on the same system, each with its own package list and versions. Starting every new project in a clean virtual environment is a great practice to improve reproducibility.
+
+## Implementations
+
+There are various implementations of virtual environments in Python, each with its own community and features:
+
+- The standard Python implementation is `venv`.
+- `conda` provides a more comprehensive implementation.
+
+From the user’s perspective, these implementations are fairly similar. The key conceptual difference is that `conda` acts as both a package manager (like `pip`) and a virtual environment manager (like `venv`).
+
+For a long time, `conda` was the go-to tool for data science, as it handled not only Python dependencies but also system-level dependencies (e.g., C libraries) used by many data science packages. However, in recent years, the widespread use of [wheels](https://pythonwheels.com/)—precompiled packages tailored for each system—has made `pip` more viable again.
+
+::: {.callout-note collapse="true"}
+## Conceptual difference between `pip` and `conda`
+
+Another major difference is how they resolve dependency conflicts.
+
+Multiple packages might require different versions of a shared dependency. `conda` uses an advanced (and slower) solver to resolve such conflicts optimally, while `pip` follows a simpler approach.
+:::
+
+[^2]: `conda`’s solver, which uses graph search algorithms to manage version compatibility, is computationally heavy. The [`mamba`](https://mamba.readthedocs.io/en/latest/) project offers a reimplementation of `conda` in C++ with a more efficient solver. This significantly speeds up package installation. Meanwhile, the increasing availability of precompiled [wheels](https://pythonwheels.com/) has made `venv` more appealing in recent years.
+
+`pip+venv` offers simplicity, while `conda` offers robustness. Depending on your project’s context, either can be appropriate. If your project runs in an isolated container, `venv` is usually sufficient since the container already provides isolation.
+
+::: {.callout-note collapse="true"}
+## Is it different in {{< fa brands r-project >}}?
+
+Some {{< fa brands r-project >}} enthusiasts claim Python's environment management is chaotic. That was true in the early 2010s, but not so much today.
+
+R’s tools, like [`renv`](https://rstudio.github.io/renv/articles/renv.html), are great but have limitations—for example, [`renv`](https://rstudio.github.io/renv/articles/renv.html#caveats) doesn’t let you specify the R version.
+
+In contrast, Python’s command-line tools offer stronger portability: `venv` lets you choose the Python version when creating the environment; `conda` lets you define the version directly in the `environment.yml` file.
+:::
+
+Since there’s no absolute reason to choose between `pip+venv` or `conda`, we recommend pragmatism. We personally lean toward `venv` because we mainly work in container-based microservices—an increasingly common practice in modern data science. However, we present both approaches, and the [application section](/chapters/application.qmd) includes both, so you can choose what suits your needs best.
+
+::::

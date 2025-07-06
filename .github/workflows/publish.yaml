@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - trad2
   workflow_dispatch:
 
 jobs:
@@ -22,10 +23,9 @@ jobs:
       - run: pip install -r requirements.txt
       - name: "Build website in multiple languages"
         run: |
-          quarto render --profile en --to html
           quarto render --profile fr --to html
+          quarto render --profile en --to html
       - name: Publish to Pages
-        if: github.ref == 'refs/heads/main'
         run: |
           git config --global user.email quarto-github-actions-publish@example.com
           git config --global user.name "Quarto GHA Workflow Runner"

@@ -1,0 +1,238 @@
+:::: {.content-visible when-profile="fr"}
+
+## Guide pratique d'utilisation d'un environnement virtuel
+
+## Guide pratique d'utilisation d'un environnement virtuel
+
+
+### Installation
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+`venv` est un module inclus par défaut dans `Python`, ce qui le rend facilement accessible pour la gestion d'environnements virtuels.
+
+Les instructions pour utiliser `venv`, l'outil de création d'environnements virtuels intégré à Python, sont détaillées dans la [documentation officielle de Python](https://docs.python.org/fr/3/library/venv.html).
+
+![Illustration du principe (Source: [dataquest](https://www.dataquest.io/blog/a-complete-guide-to-python-virtual-environments/))](https://www.dataquest.io/wp-content/uploads/2022/01/python-virtual-envs1-1024x576.webp)
+
+## `conda`
+
+Les instructions à suivre pour installer `conda` sont détaillées dans la [documentation officielle](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html). `conda` seul étant peu utile en pratique, il est généralement installé dans le cadre de distributions. Les deux plus populaires sont :
+
+- `Miniconda` : une distribution minimaliste contenant `conda`, `Python` ainsi qu'un petit nombre de packages techniques très utiles ;
+- `Anaconda` : une distribution assez volumineuse contenant `conda`, `Python`, d'autres logiciels (`R`, `Spyder`, etc.) ainsi qu'un ensemble de packages utiles pour la *data science* (`SciPy`, `NumPy`, etc.).
+
+![](/conda-eco.png)
+
+Le choix de la distribution importe assez peu en pratique, dans la mesure où nous allons de toute manière utiliser des environnements virtuels vierges pour développer nos projets.
+
+:::
+
+### Créer un environnement
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+Pour commencer à utiliser `venv`, commençons par créer un environnement vierge, nommé `dev`. Pour créer
+un environnement virtuel, cela se fait en ligne de commande par le biais de
+`Python`. Cela signifie que la version de `Python` utilisée
+par cet environnement sera celle utilisée lors de la création de celui-ci.
+
+```{.bash filename="terminal"}
+python -m venv dev #<1>
+```
+1. Sur un système `Windows`, ce sera `python.exe -m venv dev`
+
+Cette commande crée un dossier nommé `dev/` contenant une installation Python isolée.
+
+<details>
+<summary>
+Exemple sur un système `Linux`
+</summary>
+![Exemple sur un système `Linux`](/venv_local.png)
+</details>
+
+Celle-ci est de la version de `Python` enregistrée par défaut dans le `PATH`, en l'occurrence
+`Python 3.11`. Pour créer un environnement virtuel avec une autre version de `Python`, il faudra
+définir le chemin de manière formelle, par exemple:
+
+```{.bash filename="terminal"}
+/chemin_local/python3.8 -m venv dev-old #<1>
+```
+
+
+## `conda`
+
+
+Pour commencer à utiliser `conda`, commençons par créer un environnement vierge, nommé `dev`, en spécifiant la version de Python que l'on souhaite installer pour notre projet.
+
+```{.bash filename="terminal"}
+conda create -n dev python=3.9.7
+```
+
+```{.python}
+Retrieving notices: ...working... done
+Channels:
+ - conda-forge
+Platform: linux-64
+Collecting package metadata (repodata.json): done
+Solving environment: done
+
+## Package Plan ##
+
+  environment location: /opt/mamba/envs/dev
+
+  added / updated specs:
+    - python=3.9.7
+
+
+The following packages will be downloaded:
+...
+The following NEW packages will be INSTALLED:
+...
+Proceed ([y]/n)? y
+Downloading and Extracting Packages
+...
+```
+
+
+Comme indiqué dans les _logs_,
+`Conda` a créé notre environnement et nous indique son emplacement sur le *filesystem*.
+En réalité, l'environnement n'est jamais vraiment vierge :
+`Conda` nous demande — et il faut répondre oui en tapant `y` —
+d'installer un certain nombre de packages,
+qui sont ceux qui viennent avec la distribution `Miniconda`.
+
+On peut vérifier que l'environnement a bien été créé en listant les environnements installés sur le système.
+
+```{.bash filename="terminal"}
+conda info --envs
+```
+
+```{.python}
+# conda environments:
+#
+base                  *  /opt/mamba
+dev                      /opt/mamba/envs/dev
+```
+
+:::
+
+::::
+
+:::: {.content-visible when-profile="en"}
+
+## Practical Guide to Using a Virtual Environment
+
+### Installation
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+`venv` is a module included by default in Python, making it easily accessible for managing virtual environments.
+
+Instructions for using `venv`, Python’s built-in tool for creating virtual environments, are available in the [official Python documentation](https://docs.python.org/3/library/venv.html).
+
+![Illustration of the concept (Source: [dataquest](https://www.dataquest.io/blog/a-complete-guide-to-python-virtual-environments/))](https://www.dataquest.io/wp-content/uploads/2022/01/python-virtual-envs1-1024x576.webp)
+
+## `conda`
+
+Instructions for installing `conda` are provided in the [official documentation](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html). `conda` alone is not very useful in practice and is generally included in distributions. The two most popular ones are:
+
+- `Miniconda`: a minimalist distribution that includes `conda`, `Python`, and a small set of useful technical packages;
+- `Anaconda`: a large distribution that includes `conda`, `Python`, other tools (`R`, `Spyder`, etc.), and many packages useful for data science (`SciPy`, `NumPy`, etc.).
+
+![](/conda-eco.png)
+
+In practice, the choice of distribution matters little, since we will use clean virtual environments to develop our projects.
+
+:::
+
+### Creating an Environment
+
+::: {.panel-tabset group="language"}
+
+## `venv`
+
+To start using `venv`, we first create a clean environment named `dev`. This is done from the command line using `Python`. That means the version of Python used in the environment will be the one active at the time of creation.
+
+```bash
+python -m venv dev  # <1>
+```
+1. On a Windows system, use `python.exe -m venv dev`
+
+This command creates a folder named `dev/` containing an isolated Python installation.
+
+<details>
+<summary>
+Example on a Linux system
+</summary>
+![Example on a Linux system](/venv_local.png)
+</details>
+
+The Python version used will be the one set as default in your `PATH`, e.g., `Python 3.11`. To create an environment with a different version of Python, specify the path explicitly:
+
+```bash
+/path/to/python3.8 -m venv dev-old
+```
+
+## `conda`
+
+To start using `conda`, we first create a clean environment named `dev`, specifying the Python version we want to install for the project:
+
+```bash
+conda create -n dev python=3.9.7
+```
+
+```python
+Retrieving notices: ...working... done
+Channels:
+ - conda-forge
+Platform: linux-64
+Collecting package metadata (repodata.json): done
+Solving environment: done
+
+## Package Plan ##
+
+  environment location: /opt/mamba/envs/dev
+
+  added / updated specs:
+    - python=3.9.7
+
+
+The following packages will be downloaded:
+...
+The following NEW packages will be INSTALLED:
+...
+Proceed ([y]/n)? y
+Downloading and Extracting Packages
+...
+```
+
+As noted in the logs,
+`conda` created the environment and tells us where it's located on the file system.
+In reality, the environment isn’t completely empty:
+`conda` asks—requiring confirmation with `y`—to install a number of packages,
+those that come bundled with the `Miniconda` distribution.
+
+We can verify that the environment was created by listing all environments on the system:
+
+```bash
+conda info --envs
+```
+
+```python
+# conda environments:
+#
+base                  *  /opt/mamba
+dev                      /opt/mamba/envs/dev
+```
+
+:::
+
+::::
+
