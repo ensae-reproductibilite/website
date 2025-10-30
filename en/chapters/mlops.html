@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.8.25">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -88,14 +88,15 @@ div.csl-indent {
 <meta name="quarto:offset" content="../">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-e5be4814725dea48736acb40950f1f11.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-b66d9f3da4d84aca26cc7cc1c94b0445.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <link href="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
@@ -152,7 +153,7 @@ const typesetMath = (el) => {
     var macros = [];
     for (var i = 0; i < mathElements.length; i++) {
       var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
         window.katex.render(texText.data, mathElements[i], {
           displayMode: mathElements[i].classList.contains('display'),
           throwOnError: false,
@@ -177,6 +178,10 @@ window.Quarto = {
   <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    </a>
+  </div>
             <div id="quarto-search" class="" title="Search"></div>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
@@ -404,11 +409,11 @@ window.Quarto = {
 <summary>
 Dérouler les <em>slides</em> ci-dessous ou <a href="https://ensae-reproductibilite.github.io/slides/#/mlops">cliquer ici</a> pour afficher les slides en plein écran.
 </summary>
-<div id="cb1" class="sourceCode">
-<pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
+<div class="code-copy-outer-scaffold"><div id="cb1" class="sourceCode">
+<pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre>
 <iframe class="sourceCode yaml code-with-copy" src="https://ensae-reproductibilite.github.io/slides/#/mlops">
 </iframe>
-</div>
+</div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <p>Dans les chapitres précédents, nous avons vu qu’une majorité des projets <em>data-driven</em> restaient au stade de l’expérimentation, et qu’une des raisons pour expliquer ce phénomène était l’existence de <strong>frictions</strong> empêchant l’<strong>amélioration continue</strong> des projets. Dans le cadre des projets basés sur des modèles de <em>machine learning</em>, cette problématique devient encore plus cruciale : en supplément des enjeux sur le cycle de vie de la donnée intervient la dimension supplémentaire du cycle de vie des modèles. Parmi les principaux enjeux, une question souvent éludée dans les enseignements ou les nombreuses ressources en ligne sur le <em>machine learning</em> est la problématique des <strong>ré-entraînements périodiques</strong>, guidés par l’utilisation faite des modèles et les retours des utilisateurs, afin de maintenir à jour la base de connaissance des modèles et ainsi garantir leur pouvoir prédictif. Ce sujet du ré-entraînement des modèles rend les <strong>aller-retours entre les phases d’expérimentation et de production</strong> nécessairement fréquents. Pour faciliter la mise en place de <em>pipelines</em> favorisant ces boucles de rétroaction, une nouvelle approche a émergé : le <strong>MLOps</strong>, qui vise là encore à mobiliser les concepts et outils issus de l’approche <strong><em>DevOps</em></strong> tout en les adaptant au contexte et aux spécificités des projets de machine learning.</p>
 <section id="fondements-du-mlops" class="level1">
@@ -454,7 +459,7 @@ A mettre en regard à la boucle du <em>DevOps</em>
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Le <em>tracking server</em> de <code>MLFlow</code>, un environnement idéal pour archiver des expérimentations
+<span class="screen-reader-only">Note</span>Le <em>tracking server</em> de <code>MLFlow</code>, un environnement idéal pour archiver des expérimentations
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -660,8 +665,8 @@ Tip
 </figure>
 </div>
 <p>En arrière plan, MLFlow va enregistrer tout ceci dans un <em>bucket</em> S3. Néanmoins, l’utilisateur n’aura pas à se soucier de cela puisque c’est <code>MLFLow</code> qui fera l’interface entre l’utilisateur et le système de stockage. Avec son API, <code>MLFLow</code> fournit même une manière simplifiée de récupérer ces objets archivés, par exemple avec un code prenant la forme</p>
-<div class="sourceCode" id="cb2" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> mlflow.pyfunc.load_model(model_uri<span class="op">=</span><span class="st">"runs:/d16076a3ec534311817565e6527539c"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> mlflow.pyfunc.load_model(model_uri<span class="op">=</span><span class="st">"runs:/d16076a3ec534311817565e6527539c"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Le <em>tracking server</em> est très utile pour comparer les différentes expérimentations que vous avez effectuées, pour les stocker et également pour être capable de les reproduire. En effet, chaque <em>run</em> sauvegarde la source des données utilisées, mais également le <em>commit</em> sur lequel le <em>run</em> est basé.</p>
 <p>A la manière de <code>Git</code> qui permet d’identifier chaque moment de l’histoire d’un projet à partir d’un identifiant unique, <code>MLFlow</code> permet de récupérer chaque entraînement d’un modèle à partir d’un SHA. Néanmoins, en pratique, certains modèles ont un statut à part, notamment ceux en production.</p>
 </section>
@@ -755,13 +760,14 @@ Kreuzberger, Dominik, Niklas Kühl, and Sebastian Hirschl. 2023. <span>“Machin
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
