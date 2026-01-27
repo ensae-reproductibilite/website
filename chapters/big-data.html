@@ -527,7 +527,7 @@ Figure&nbsp;11: Exemple de comparaison des performances du format <code>Parquet<
 <h1>Applications</h1>
 <p>Tout au long de cette application, nous allons voir comment utiliser le format <code>Parquet</code> de la manière la plus efficiente possible. Afin de comparer les différents formats et méthodes d’utilisation, nous allons <strong>comparer le temps d’exécution et l’usage mémoire d’une requête standard</strong>. Commençons déjà, sur un premier exemple avec une donnée légère, pour comparer les formats <code>CSV</code> et <code>Parquet</code>.</p>
 <p>Pour cela, nous allons avoir besoin de récupérer des données au format <code>Parquet</code>. Nous proposons d’utiliser les données détaillées et anonymisées du recensement de la population française : environ 20 millions de lignes pour 80 colonnes. Le code pour récupérer celles-ci est donné ci-dessous</p>
-<div id="96cead1f" class="cell" data-execution_count="1">
+<div id="d71d8956" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="annotated-cell-1" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-1-1"><a href="#annotated-cell-1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.parquet <span class="im">as</span> pq</span>
@@ -597,7 +597,7 @@ Figure&nbsp;11: Exemple de comparaison des performances du format <code>Parquet<
 <ul>
 <li><p>Créer un notebook <code>benchmark_parquet.ipynb</code> afin de réaliser les différentes comparaisons de performance de l’application</p></li>
 <li><p>Créons notre décorateur, en charge de <em>benchmarker</em> le code <code>Python</code>:</p>
-<div id="65e26c4e" class="cell" data-execution_count="3">
+<div id="f2c0eef1" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Dérouler pour retrouver le code du décorateur permettant de mesurer la performance</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
@@ -637,7 +637,7 @@ Figure&nbsp;11: Exemple de comparaison des performances du format <code>Parquet<
 </details>
 </div></li>
 <li><p>La requête suivante permet de calculer les données pour construire une pyramide des âges sur un département donné, à partir du fichier <code>CSV</code> du recensement. La tester dans votre <em>notebook</em>:</p>
-<div id="3f2ea5a6" class="cell" data-execution_count="4">
+<div id="493f3a8c" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Dérouler pour récupérer le code de lecture du CSV</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -653,7 +653,7 @@ Figure&nbsp;11: Exemple de comparaison des performances du format <code>Parquet<
 </details>
 </div></li>
 <li><p>Reprendre ce code pour encapsuler ces opérations dans une fonction <code>process_csv_appli1</code> :</p>
-<div id="ffc8bbd0" class="cell" data-execution_count="5">
+<div id="c6d8499b" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Dérouler pour récupérer le code pour mesurer les performances de la lecture en CSV</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply the decorator to functions</span></span>
@@ -672,7 +672,7 @@ Figure&nbsp;11: Exemple de comparaison des performances du format <code>Parquet<
 <li><p>Sur le même modèle, construire une fonction <code>process_parquet_appli1</code> basée cette fois sur le fichier <code>data/RPindividus_24.parquet</code> chargé avec la fonction <a href="https://pandas.pydata.org/docs/reference/api/pandas.read_parquet.html">read_parquet</a> de <code>Pandas</code></p></li>
 <li><p>Comparer les performances (temps d’exécution et allocation mémoire) de ces deux méthodes grâce à la fonction.</p></li>
 </ul>
-<div id="ffad65a1" class="cell" data-execution_count="6">
+<div id="1acb6b9f" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code complet de l’application</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
@@ -760,7 +760,7 @@ Figure&nbsp;11: Exemple de comparaison des performances du format <code>Parquet<
 <li>Ouvrir le fichier <code>data/RPindividus_24.parquet</code> avec <a href="https://arrow.apache.org/docs/python/dataset.html">pyarrow.dataset</a>. Regarder la classe de l’objet obtenu.</li>
 <li>Tester le code ci-dessous pour lire un échantillon de données:</li>
 </ul>
-<div id="daa59bf8" class="cell" data-execution_count="11">
+<div id="61f55e03" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>(</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    dataset.scanner()</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    .head(<span class="dv">5</span>)</span>
@@ -772,7 +772,7 @@ Figure&nbsp;11: Exemple de comparaison des performances du format <code>Parquet<
 <li>Construire une fonction <code>summarize_parquet_arrow</code> (resp. <code>summarize_parquet_duckdb</code>) qui importe cette fois les données avec la fonction <a href="https://arrow.apache.org/docs/python/dataset.html"><code>pyarrow.dataset</code></a> (resp. avec <code>DuckDB</code>) et effectue l’agrégation voulue.</li>
 <li>Comparer les performances (temps d’exécution et allocation mémoire) des trois méthodes (<code>Parquet</code> lu et processé avec <code>Pandas</code>, <code>Arrow</code> et <code>DuckDB</code>) grâce à notre fonction.</li>
 </ul>
-<div id="8099209c" class="cell" data-execution_count="12">
+<div id="c003fbf6" class="cell" data-execution_count="12">
 <details class="code-fold">
 <summary>Code complet de l’application</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
@@ -839,7 +839,7 @@ Figure&nbsp;11: Exemple de comparaison des performances du format <code>Parquet<
 <li>Avec <code>DuckDB</code>, vous devez modifier la requête avec un <code>WHERE DEPT IN ('18', '28', '36')</code></li>
 <li>Avec <code>Arrow</code>, vous devez modifier l’étape <code>to_table</code> de cette manière: <code>dataset.to_table(filter=pc.field("DEPT").isin(['18', '28', '36']))</code></li>
 </ul>
-<div id="eddc27ae" class="cell" data-execution_count="15">
+<div id="2f514d76" class="cell" data-execution_count="15">
 <details class="code-fold">
 <summary>Correction de cet exercice</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.dataset <span class="im">as</span> ds</span>
@@ -904,7 +904,7 @@ Figure&nbsp;11: Exemple de comparaison des performances du format <code>Parquet<
 <li><p>Observer l’arborescence des fichiers de la table exportée pour voir comment la partition a été appliquée.</p></li>
 <li><p>Modifier nos fonctions d’import, filtre et agrégations via <code>Arrow</code> ou <code>DuckDB</code> pour utiliser, cette fois, le <code>Parquet</code> partitionné. Comparer à l’utilisation du fichier non partitionné.</p></li>
 </ol>
-<div id="1b6cfe36" class="cell" data-execution_count="16">
+<div id="369aba0d" class="cell" data-execution_count="16">
 <details class="code-fold">
 <summary>Correction de la question 2 (écriture du Parquet partitionné)</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.parquet <span class="im">as</span> pq</span>
@@ -919,7 +919,7 @@ Figure&nbsp;11: Exemple de comparaison des performances du format <code>Parquet<
 <span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="c10383f2" class="cell" data-execution_count="17">
+<div id="72ffa08e" class="cell" data-execution_count="17">
 <details class="code-fold">
 <summary>Correction de la question 4 (lecture du Parquet partitionné)</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.dataset <span class="im">as</span> ds</span>
