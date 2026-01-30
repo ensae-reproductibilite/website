@@ -11,7 +11,7 @@ image: https://minio.lab.sspcloud.fr/lgaliana/generative-art/mise-en-prod/rocket
 
 L'objectif de cette mise en application est d'**illustrer les différentes étapes qui séparent la phase de développement d'un projet de celle de la mise en production**. Elle permettra de mettre en pratique les différents concepts présentés tout au long du cours.
 
-L'objectif pédagogique principal de cette application est d'adopter un point de vue pragmatique en choisissant des outils et des méthodes de travail qui permettent de réaliser des objectifs ambitieux de valorisation de données. `Python` sera le trait d'union entre les différentes technologies ou infrastructures que nous utiliserons.
+L'objectif pédagogique principal de cette application est d'adopter un point de vue pragmatique en choisissant des outils et des méthodes de travail qui permettent de réaliser des objectifs ambitieux de valorisation de données. `Python` {{< fa brands python >}} sera le trait d'union entre les différentes technologies ou infrastructures que nous utiliserons.
 
 Cette application est un tutoriel pas à pas pour avoir un projet reproductible et disponible sous plusieurs livrables.
 Toutes les étapes ne sont pas indispensables à tous les projets de _data science_ et il existe des outils alternatifs à ceux présentés. Néanmoins, les outils présentés ont l'avantage d'être très bien intégrés à `Python`, bien configurés si vous utilisez le `SSPCloud` comme nous le recommandons, tout en étant agnostiques sur le reste des outils que vous utilisez ; de sorte à ne pas être bloquants si on remplace l'une des briques logicielles par une autre.
@@ -29,15 +29,19 @@ On a un _notebook_ un peu monolithique, qui réalise les étapes classiques d'un
 
 **L'objectif est d'améliorer le projet de manière incrémentale jusqu'à pouvoir le mettre en production, en le valorisant sous une forme adaptée et en adoptant une méthode de travail fluidifiant les évolutions futures.**
 
+En améliorant et enrichissant progressivement notre projet, nous aboutirons sur le cercle infini du MLOps (@fig-mlops-circle)
+permettant la coexistence de versions en production et en développement 
+
 La @fig-start montre que notre point de départ initial, à savoir un _notebook_, mélange tout. Ceci rend très complexe la mise à jour de notre modèle ou l'exploitation de notre modèle sur de nouvelles données, ce qui est pourtant la raison d'être du _machine learning_ qui est pensé pour l'extrapolation. Si on vous demande de valoriser votre modèle sur de nouvelles données, vous risquez de devoir refaire tourner tout votre _notebook_, avec le risque de ne pas retrouver les mêmes résultats que dans la version précédente.
 
 La @fig-end illustre l'horizon auquel nous aboutirons à la fin de cette application. Nous désynchronisons les étapes d'entraînement et de prédiction, en identifiant mieux les pré-requis de chacune et en adoptant des briques technologiques adaptées à celles-ci. Les noms présents sur cette figure sont encore obscurs, c'est normal, mais ils vous deviendrons familiers si vous adoptez une infrastructure et une méthode de travail à l'état de l'art.
 
 
+![Le cercle infini du MLOps](/static/mlops.png){#fig-mlops-circle width="60%"}
+
 ![Illustration de notre point de départ](/drawio/starting_point.png){#fig-start width="60%"}
 
-
-![Illustration de l'horizon vers lequel on se dirige](/drawio/end_point.png){#fig-end}
+![Illustration de l'horizon vers lequel on se dirige](/drawio/end_point.png){#fig-end width="60%"}
 
 
 
@@ -71,7 +75,7 @@ Si vous faites évoluer votre projet de manière expérimentale mais désirez to
 
 {{< checkpoint appli9 "Checkpoint d'exemple">}}
 
-Celui-ci sauvegarde votre avancée dans un tag nommé `dev_before_appli9`, le pousse sur votre dépôt `Github` {{< fa brands github >}} puis force votre branche à adopter l'état du tag `appli9`.
+Celui-ci sauvegarde votre avancée dans un tag nommé `dev_before_appli9` (au cas où vous voudriez revenir sur votre version ultérieurement) puis force votre branche à adopter l'état du tag `appli9`.
 
 
 
@@ -409,13 +413,40 @@ L'exercice suivant peut être fait avec les deux librairies, cela ne change pas 
 
 ## Étape 4 : stocker les données de manière externe {#stockageS3}
 
-Pour cette partie, il faut avoir un service `VSCode` dont les jetons d'authentification à `S3` sont valides. Pour cela, si vous êtes sur le `SSPCloud`, le plus simple est de recréer un nouveau service avec le bouton suivant
+Jusqu'à présent, nous avons une chaîne reproductible puisque si on récupère le code, on récupère aussi les données. Ce n'est pas une bonne pratique. Nous allons maintenant séparer conceptuellement code et données. Cela va nous amener à nous poser trois questions : où stocker les données ? dans quel format ? comment les lire ? 
+
+La réponse à ces trois formats permettra d'avoir le _nec plus ultra_ des bonnes pratiques: des données au format `Parquet` hébergé sur le _cloud_ et lues dans `Python` par l'intermédiaire de `DuckDB`.  
+
+Pour cette partie, il faut avoir un service `VSCode` dont les jetons d'authentification à `S3` sont valides. Si vous avez un doute, vous reporter à @tip-example. 
+
+::: {#tip-example .callout-tip collapse="true"}
+
+## Pré-requis pour la prochaine application
+
+Pour les prochaines applications, on va supposer l'utilisation d'un système de stockage _cloud_ de type `S3` (pour en savoir plus sur l'intérêt de cette approche, se reporter au [chapitre dédié](/big-data.qmd)). 
+
+
+Sans perte de généralité, on va supposer que le S3 en question est celui du SSPCloud (mais cela fonctionnerait de manière assez transparente si nous proposions d'utiliser un _cloud provider_ privé comme AWS). Pour en savoir plus sur l'adaptation de ce tutoriel hors du SSPCloud, se reporter vers l'encadré dédié (@imp-no-sspcloud).
+
+Pour que votre `Python` interagisse avec `S3`, il vous faut des jetons d'authentification. Ils permettent de dire à S3 que c'est bien vous qui essayez de consommer la donnée à laquelle vous avez le droit par le biais d'un Python qu'il ne connaît pas _a priori_. 
+
+Des jetons d'authentification sont créés automatiquement pour vous lorsque vous lancez un service interactif VSCode sur le SSPCloud. Ils ont cependant une durée de vie limitée (5 jours). Si votre service a des jetons ayant expiré, vous allez avoir une erreur 403 lorsque vous essaierai d'interagir avec `S3`. 
+
+Deux approches sont possibles:
+
+* Récupérer des jetons valides sur https://datalab.sspcloud.fr/account/storage et les renseigner à l'endroit adéquat dans votre service VSCode.
+* Créer un nouveau service qui bénéficiera automatiquement de l'injection de jetons à jour. 
+
+La 2e voie est recommandé.  Le plus simple est de 1/ cliquer sur le bouton suivant  
 
 <a href="https://datalab.sspcloud.fr/launcher/ide/vscode-python?name=ENSAE%20Mise%20en%20production&version=2.1.24&s3=region-ec97c721&init.personalInit=«https%3A%2F%2Fraw.githubusercontent.com%2Fensae-reproductibilite%2Fwebsite%2Frefs%2Fheads%2Fmain%2Fchapters%2Fapplications%2Finit.sh»&kubernetes.role=«admin»&networking.user.enabled=true&autoLaunch=false" target="_blank" rel="noopener" data-original-href="https://datalab.sspcloud.fr/launcher/ide/vscode-python?name=ENSAE%20Mise%20en%20production&version=2.1.24&s3=region-ec97c721&init.personalInit=«https%3A%2F%2Fraw.githubusercontent.com%2Fensae-reproductibilite%2Fwebsite%2Frefs%2Fheads%2Fmain%2Fchapters%2Fapplications%2Finit.sh»&kubernetes.role=«admin»&networking.user.enabled=true&autoLaunch=false"><img src="https://img.shields.io/badge/SSP%20Cloud-Lancer_avec_VSCode-blue?logo=visualstudiocode&amp;logoColor=blue" alt="Onyxia"></a>
 
-et remplir l'onglet `Git` comme ça votre `VSCode` sera pré à l'emploi (cf. application 0).
+2/ remplir l'onglet `Git` avec l'url de votre dépôt pour bénéficier du clonage automatique de celui-ci et 3/ faire le checkpoint _post_ appli7. 
 
-Une fois que vous avez un `VSCode` fonctionnel, il est possible de reprendre cette application fil rouge depuis le _checkpoint_ précédent.
+De cette manière votre `VSCode` sera pré à l'emploi, à l'image de ce que vous aviez fait pour l'application 0.
+
+:::
+
 
 {{< checkpoint appli7 "Reprendre à partir d'ici" "true" "pre-appli8" >}}
 
@@ -423,26 +454,7 @@ Enfin, il vous suffira d'ouvrir un terminal et faire `pip install -r requirement
 
 L'étape précédente nous a permis d'isoler la configuration. Nous avons conceptuellement isolé les données du code lors des applications précédentes. Cependant, nous n'avons pas été au bout du chemin car le stockage des données reste conjoint à celui du code. Nous allons maintenant dissocier ces deux éléments.
 
-::: {.callout-warning collapse="true"}
-## Pour en savoir plus sur le système de stockage `S3`
-
-Pour mettre en oeuvre cette étape, il peut être utile de
-comprendre un peu comme fonctionne le SSP Cloud.
-Vous devrez suivre la [documentation du SSP Cloud](https://inseefrlab.github.io/docs.sspcloud.fr/docs/fr/storage.html) pour la réaliser. Une aide-mémoire est également disponible dans le cours
-de 2e année de l'ENSAE [Python pour la _data science_](https://linogaliana-teaching.netlify.app/reads3/#).
-:::
-
-::: {.callout-warning collapse="true"}
-## Pour en savoir plus sur le format `Parquet`
-
-L'objectif de cette application est de montrer comment utiliser le format `Parquet` dans une chaîne production  ; un objectif somme toute modeste.
-
-Si vous voulez aller plus loin dans la découverte du format `Parquet`, vous pouvez consulter [cette ressource `R`](https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/slides/complete.html#/application-3-2) très similaire à ce cours (oui elle est faite par les mêmes auteurs...) et essayer de faire les exercices avec votre librairie `Python` de prédilection (`PyArrow` ou `DuckDB`)
-
-:::
-
-
-::: {.callout-important collapse="true"}
+::: {#imp-no-sspcloud .callout-important collapse="true"}
 ## Et si vous utilisez une infrastructure _cloud_ qui n'est pas le `SSPCloud` ? (une idée saugrenue mais sait-on jamais)
 
 Les exemples à venir peuvent très bien être répliqués sur n'importe quel _cloud provider_ qui propose une solution de type `S3`, qu'il s'agisse d'un _cloud provider_ privé (AWS, GCP, Azure, etc.) ou d'une réinstanciation _ad hoc_ du projet [`Onyxia`](https://www.onyxia.sh/), le logiciel derrière le `SSPCloud`.
@@ -452,55 +464,20 @@ Pour un système de stockage `S3`, il suffit de changer les paramètres de conne
 :::
 
 
-Le chapitre sur la [structure des projets](/chapters/projects-architecture.qmd)
-développe l'idée qu'il est recommandé de converger vers un modèle
-où environnements d'exécution, de stockage du code et des données sont conceptuellement
-séparés. Ce haut niveau d'exigence est un gain de temps important
-lors de la mise en production car au cours de cette dernière, le projet
-est amené à être exécuté sur une infrastructure informatique dédiée
-qu'il est bon d'anticiper. Schématiquement, nous visons la structure de projet suivante:
-
-![](https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/slides/img/environment_clean.png)
-
-A l'heure actuelle, les données sont stockées dans le dépôt. C'est une
-mauvaise pratique. En premier lieu, `Git` n'est techniquement
-pas bien adapté au stockage de données. Ici ce n'est pas très grave
-car il ne s'agit pas de données volumineuses et ces dernières ne sont
-pas modifiées au cours de notre chaine de traitement.
-
-La raison principale
-est que les données traitées par les _data scientists_
-sont généralement soumises à des clauses de
-confidentialités ([RGPD](https://www.cnil.fr/fr/rgpd-de-quoi-parle-t-on), [secret statistique](https://www.insee.fr/fr/information/1300624)...). Mettre ces données sous contrôle de version
-c'est prendre le risque de les divulguer à un public non habilité.
-Il est donc recommandé de privilégier des outils techniques adaptés au
-stockage de données.
-
-L'idéal, dans notre cas, est d'utiliser une solution de stockage externe.
-On va utiliser pour cela `MinIO`, la solution de stockage de type `S3` offerte par le SSP Cloud.
-Cela nous permettra de supprimer les données de `Github` tout en maintenant la reproductibilité
-de notre projet [^history].
-
-[^history]: Attention, les données ont été _committées_ au moins une fois. Les supprimer
-du dépôt ne les efface pas de l'historique. Si cette erreur arrive, le mieux est de supprimer
-le dépôt en ligne, créer un nouvel historique `Git` et partir de celui-ci pour des publications
-ultérieures sur `Github`. Néanmoins l'idéal serait de ne pas s'exposer à cela. C'est justement
-l'objet des bonnes pratiques de ce cours: un `.gitignore` bien construit et une séparation des
-environnements de stockage du code et
-des données seront bien plus efficaces pour vous éviter ces problèmes que tout les conseils de
-vigilance que vous pourrez trouver ailleurs.
-
-Plus concrètement, nous allons adopter le pipeline suivant pour notre projet:
+Concrètement, nous allons adopter le pipeline suivant pour notre projet:
 
 ![](/chapters/applications/figures/pipeline_appli8.png)
 
-Le scénario type est que nous avons une source brute, reçue sous forme de CSV, dont on ne peut changer le format. Il aurait été idéal d'avoir un format plus adapté au traitement de données pour ce fichier mais ce n'était pas de notre ressort. Notre chaine va aller chercher ce fichier, travailler dessus jusqu'à valoriser celui-ci sous la forme de notre matrice de confusion. Si on imagine que notre chaine prend un certain temps, il n'est pas inutile d'écrire des données intermédiaires. Pour faire cela, puisque nous avons la main, autant choisir un format adapté, à savoir le format `Parquet`.
+Le scénario type de la première partie de l'application (appli8a). Dans celle-ci, nous avons une source brute, reçue sous forme de CSV, dont on ne peut changer le format. Il aurait été idéal d'avoir un format plus adapté au traitement de données pour ce fichier mais ce n'était pas de notre ressort. Notre chaine va aller chercher ce fichier, travailler dessus jusqu'à valoriser celui-ci sous la forme de notre matrice de confusion. Si on imagine que notre chaine prend un certain temps, il n'est pas inutile d'écrire des données intermédiaires. Pour faire cela, puisque nous avons la main, autant choisir un format adapté, à savoir le format `Parquet`.
 
-Cette application va se dérouler en trois temps:
+Néanmoins, ici, nous avons une donnée qui ne change jamais. On n'a pas de mise à jour fréquente de données qui justifie de ne pas changer, une fois pour toute, notre format de données afin d'en adopter un plus pertinent. C'est l'objet de l'appli 8c. 
 
-1. _Upload_ de notre source brute (CSV) sur S3
-2. Illustration de l'usage des librairies _cloud native_ pour lire celle-ci
-3. Partage public de cette donnée pour la rendre accessible de manière plus simple à nos futures applications.
+Cette application va se dérouler en quatre temps:
+
+1. _Upload_ de notre source brute (CSV) sur S3.
+2. Illustration de l'usage des librairies _cloud native_ pour lire celle-ci.
+3. Conversion au format `Parquet` de cette donnée et utilisation de `DuckDB` pour la lire. 
+4. Partage public de cette donnée pour la rendre accessible de manière plus simple à nos futures applications.
 
 {{< include "./applications/_appli8.qmd" >}}
 
