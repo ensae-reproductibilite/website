@@ -419,12 +419,12 @@ La réponse à ces trois formats permettra d'avoir le _nec plus ultra_ des bonne
 
 Pour cette partie, il faut avoir un service `VSCode` dont les jetons d'authentification à `S3` sont valides. Si vous avez un doute, vous reporter à @tip-example. 
 
+
 ::: {#tip-example .callout-tip collapse="true"}
 
 ## Pré-requis pour la prochaine application
 
-Pour les prochaines applications, on va supposer l'utilisation d'un système de stockage _cloud_ de type `S3` (pour en savoir plus sur l'intérêt de cette approche, se reporter au [chapitre dédié](/big-data.qmd)). 
-
+Pour les prochaines applications, on va supposer l'utilisation d'un système de stockage _cloud_ de type `S3` (pour en savoir plus sur l'intérêt de cette approche, se reporter au [chapitre dédié](/chapters/big-data.qmd)). 
 
 Sans perte de généralité, on va supposer que le S3 en question est celui du SSPCloud (mais cela fonctionnerait de manière assez transparente si nous proposions d'utiliser un _cloud provider_ privé comme AWS). Pour en savoir plus sur l'adaptation de ce tutoriel hors du SSPCloud, se reporter vers l'encadré dédié (@imp-no-sspcloud).
 
@@ -437,20 +437,19 @@ Deux approches sont possibles:
 * Récupérer des jetons valides sur https://datalab.sspcloud.fr/account/storage et les renseigner à l'endroit adéquat dans votre service VSCode.
 * Créer un nouveau service qui bénéficiera automatiquement de l'injection de jetons à jour. 
 
-La 2e voie est recommandé.  Le plus simple est de 1/ cliquer sur le bouton suivant  
+La 2e voie est recommandée.  Le plus simple est de 1/ cliquer sur le bouton suivant  
 
 <a href="https://datalab.sspcloud.fr/launcher/ide/vscode-python?name=ENSAE%20Mise%20en%20production&version=2.1.24&s3=region-ec97c721&init.personalInit=«https%3A%2F%2Fraw.githubusercontent.com%2Fensae-reproductibilite%2Fwebsite%2Frefs%2Fheads%2Fmain%2Fchapters%2Fapplications%2Finit.sh»&kubernetes.role=«admin»&networking.user.enabled=true&autoLaunch=false" target="_blank" rel="noopener" data-original-href="https://datalab.sspcloud.fr/launcher/ide/vscode-python?name=ENSAE%20Mise%20en%20production&version=2.1.24&s3=region-ec97c721&init.personalInit=«https%3A%2F%2Fraw.githubusercontent.com%2Fensae-reproductibilite%2Fwebsite%2Frefs%2Fheads%2Fmain%2Fchapters%2Fapplications%2Finit.sh»&kubernetes.role=«admin»&networking.user.enabled=true&autoLaunch=false"><img src="https://img.shields.io/badge/SSP%20Cloud-Lancer_avec_VSCode-blue?logo=visualstudiocode&amp;logoColor=blue" alt="Onyxia"></a>
 
 2/ remplir l'onglet `Git` avec l'url de votre dépôt pour bénéficier du clonage automatique de celui-ci et 3/ faire le checkpoint _post_ appli7. 
 
-De cette manière votre `VSCode` sera pré à l'emploi, à l'image de ce que vous aviez fait pour l'application 0.
+De cette manière votre `VSCode` sera presque prêt à l'emploi, à l'image de ce que vous aviez fait pour l'application 0. Il vous suffira d'ouvrir un terminal et faire `pip install -r requirements.txt && python main.py` pour pouvoir démarrer l'application.
 
 :::
 
 
 {{< checkpoint appli7 "Reprendre à partir d'ici" "true" "pre-appli8" >}}
 
-Enfin, il vous suffira d'ouvrir un terminal et faire `pip install -r requirements.txt && python main.py` pour pouvoir démarrer l'application.
 
 L'étape précédente nous a permis d'isoler la configuration. Nous avons conceptuellement isolé les données du code lors des applications précédentes. Cependant, nous n'avons pas été au bout du chemin car le stockage des données reste conjoint à celui du code. Nous allons maintenant dissocier ces deux éléments.
 
@@ -464,13 +463,9 @@ Pour un système de stockage `S3`, il suffit de changer les paramètres de conne
 :::
 
 
-Concrètement, nous allons adopter le pipeline suivant pour notre projet:
+Le scénario type de la première partie de l'application (appli8a) est que nous avons une source brute, reçue sous forme de CSV, dont on ne peut changer le format. Un doublon de celle-ci a été écrit sur `S3` et nous allons utiliser le fichier depuis cet emplacement  Il aurait été idéal d'avoir un format plus adapté au traitement de données pour ce fichier mais ce n'était pas de notre ressort. 
 
-![](/chapters/applications/figures/pipeline_appli8.png)
-
-Le scénario type de la première partie de l'application (appli8a). Dans celle-ci, nous avons une source brute, reçue sous forme de CSV, dont on ne peut changer le format. Il aurait été idéal d'avoir un format plus adapté au traitement de données pour ce fichier mais ce n'était pas de notre ressort. Notre chaine va aller chercher ce fichier, travailler dessus jusqu'à valoriser celui-ci sous la forme de notre matrice de confusion. Si on imagine que notre chaine prend un certain temps, il n'est pas inutile d'écrire des données intermédiaires. Pour faire cela, puisque nous avons la main, autant choisir un format adapté, à savoir le format `Parquet`.
-
-Néanmoins, ici, nous avons une donnée qui ne change jamais. On n'a pas de mise à jour fréquente de données qui justifie de ne pas changer, une fois pour toute, notre format de données afin d'en adopter un plus pertinent. C'est l'objet de l'appli 8c. 
+Notre chaine va aller chercher ce fichier, travailler dessus jusqu'à valoriser celui-ci sous la forme de notre matrice de confusion. Néanmoins, ici, nous avons une donnée qui ne change jamais. On n'a pas de mise à jour fréquente de données qui justifie de ne pas changer, une fois pour toute, notre format de données afin d'en adopter un plus pertinent. En l'occurrence, nous allons utiliser le format `Parquet`. C'est l'objet de l'appli 8c. 
 
 Cette application va se dérouler en quatre temps:
 
@@ -480,6 +475,7 @@ Cette application va se dérouler en quatre temps:
 4. Partage public de cette donnée pour la rendre accessible de manière plus simple à nos futures applications.
 
 {{< include "./applications/_appli8.qmd" >}}
+
 
 
 # Partie 2bis: packagisation de son projet (optionnel)

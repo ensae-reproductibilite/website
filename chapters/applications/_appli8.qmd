@@ -2,14 +2,11 @@
 
 ## Application 8a: ajout de données sur le système de stockage `S3`
 
-Pour commencer, à partir de la ligne de commande,
-utiliser l'utilitaire [MinIO](https://min.io/docs/minio/linux/reference/minio-mc.html)
-pour copier les données `data/raw/data.csv`
-vers votre
-bucket personnel. Les données intermédiaires
-peuvent être laissées en local mais doivent être ajoutées
-au `.gitignore`.
+Le SSPCloud repose sur une implémentation particulière du protocole S3 qui s'appelle [MinIO](https://min.io/docs/minio/linux/reference/minio-mc.html). Cela étend les fonctionnalités de manipulation de fichiers en ligne de commande à des données n'étant pas présentes dans le _filesystem_ local mais dans le _cloud_. En pratique
 
+En pratique, l'implémentation MinIO permet notamment de manipuler des fichiers à distance comme s'ils étaient en local. Les commandes de manipulation de fichier du chapitre [Linux 101](/chapters/linux101.qmd) (lister, copier, supprimer...) sont étendues grâce à l'ajout d'un petit `mc` devant celle-ci. 
+
+Illustrons cela en copiant les données de départ vers votre bucket personnel. 
 
 <details>
 <summary>Indice</summary>
@@ -18,48 +15,15 @@ Structure à adopter:
 
 ```{.python filename="terminal"}
 BUCKET_PERSONNEL="nom_utilisateur_sspcloud"
-mc cp data/raw/data.csv s3/${BUCKET_PERSONNEL}/ensae-reproductibilite/data/raw/data.csv
+mc cp data.csv s3/${BUCKET_PERSONNEL}/ensae-reproductibilite/data/raw/data.csv
 ```
 
 en modifiant la variable `BUCKET_PERSONNEL`, l'emplacement de votre bucket personnel
 </details>
 
-Pour se simplifier la vie, dans les prochaines applications,
-on va utiliser des URL de téléchargement des fichiers
-(comme si ceux-ci étaient sur n'importe quel espace de stockage) plutôt que d'utiliser
-une librairie `S3` compatible comme `boto3` ou `s3fs`.
+Avant de modifier notre code `Python`, on va lister les fichiers se trouvant dans notre _bucket_. En ligne de commande, sur notre poste local, on ferait `ls` ([cf. Linux 101](/chapters/linux101.qmd)). Cela ne va pas beaucoup différer avec les librairies _cloud native_:
 
-Néanmoins, il est utile de les utiliser une fois pour comprendre la logique. Pour aller plus loin sur ces librairies, vous pouvez consulter [cette page](https://pythonds.linogaliana.fr/content/modern-ds/s3.html#cas-pratique-stocker-les-donn%C3%A9es-de-son-projet-sur-le-ssp-cloud) du cours de 2A de _Python pour la data science_.
-
-Pour commencer, on va lister les fichiers se trouvant dans un _bucket_. En ligne de commande, sur notre poste local, on ferait `ls` ([cf. Linux 101](/chapters/linux101.qmd)). Cela ne va pas beaucoup différer avec les librairies _cloud native_:
-
-::: {.panel-tabset}
-
-## Avec `s3fs`
-
-Dans un _notebook_, copier-coller ce code, le modifier et exécuter:
-
-```{.python}
-import s3fs
-
-fs = s3fs.S3FileSystem(client_kwargs={"endpoint_url": "https://minio.lab.sspcloud.fr"})
-
-MY_BUCKET = "mon_nom_utilisateur_sspcloud" #<1>
-CHEMIN = "ensae-reproductibilite/data/raw" #<2>
-fs.ls(f"s3://{MY_BUCKET}/{CHEMIN}")
-```
-1. Changer avec le bucket
-2. Changer en fonction du chemin voulu
-
-
-## Avec `mc`
-
-Dans un terminal, copier-coller ligne à ligne ce code, le modifier et exécuter:
-
-
-```{.python}
-import s3fs
-
+```{.python filename="terminal"}
 MY_BUCKET="mon_nom_utilisateur_sspcloud" #<1>
 CHEMIN = "ensae-reproductibilite/data/raw" #<2>
 mc ls s3/${MY_BUCKET}/${CHEMIN}
@@ -67,25 +31,34 @@ mc ls s3/${MY_BUCKET}/${CHEMIN}
 1. Changer avec le bucket
 2. Changer en fonction du chemin voulu
 
+En utilisant l'explorateur de fichiers S3 du SSPCloud ([datalab.sspcloud.fr/file-explorer](https://datalab.sspcloud.fr/file-explorer)), faites une deuxième vérification que vos données sont bien sauvegardées sur `S3`. 
 
-:::
+Vous pouvez ensuite supprimer le CSV de données présent dans votre dossier local, il ne nous sera plus utile. 
 
 ::::
 
 
-On va maintenant lire directement une donnée stockée sur `S3`. Pour illustrer le fait que cela change peu notre code d'être sur un système _cloud_ avec les librairies adaptées, on va lire directement un fichier `CSV` stocké sur le `SSPCloud`, sans passer par un fichier en local[^fss3].
 
-[^fss3]: Alors oui, c'est vrai, `s3` se distingue d'un système de fichiers classiques comme on peut le lire dans certains _posts_ énervés sur la question (par exemple sur [Reddit](https://www.reddit.com/r/aws/comments/dplfoa/why_is_s3fs_such_a_bad_idea/?tl=fr)). Mais du point de vue de l'utilisateur `Python` plutôt que de l'architecte _cloud_, on va avoir assez peu de différence avec un système de fichier local. C'est pour le mieux, cela réduit la difficulté à rentrer dans cette technologie.
+
+On va maintenant lire directement une donnée stockée sur `S3` avec `Python`. Pour illustrer le fait qu'être sur un système _cloud_ avec les librairies adaptées change peu notre code, on va lire directement un fichier `CSV` stocké sur le `SSPCloud`, sans passer par un fichier en local[^fss3].
+
+[^fss3]: Alors oui, c'est vrai, `S3` se distingue d'un système de fichiers classiques comme on peut le lire dans certains _posts_ énervés sur la question (par exemple sur [Reddit](https://www.reddit.com/r/aws/comments/dplfoa/why_is_s3fs_such_a_bad_idea/?tl=fr)). Mais du point de vue de l'utilisateur `Python` plutôt que de l'architecte _cloud_, on va avoir assez peu de différence avec un système de fichier local. C'est pour le mieux, cela réduit la difficulté à rentrer dans cette technologie.
+
+Pour illustrer la cohérence avec un système de fichier local, voici trois solutions pour lire le fichier que vous venez de mettre sur `S3` (s'appuyant sur `s3fs`, `Arrow` ou `DuckDB`). Attention, il faut avoir des jetons de connexion à `S3` à jour. Si vous avez cette erreur
+
+> A client error (InvalidAccessKeyId) occurred when calling the ListBuckets operation: The AWS Access Key Id you provided does not exist in our records.
+
+c'est que vos identifiants de connexion ne sont plus à jour (pour des raisons de sécurité, ils sont régulièrement renouvelés). Dans ce cas, consulter @imp-no-sspcloud.
+
+
 
 :::: {.application}
 
 ## Application 8b: importer une donnée depuis un système de stockage `S3`
 
-Pour illustrer la cohérence avec un système de fichier local, voici trois solutions pour lire le fichier que vous venez de mettre sur `S3`. Attention, il faut avoir des jetons de connexion à `S3` à jour. Si vous avez cette erreur
+Cet exercice illustre trois manières de lire des données sur `S3` au format `CSV`. Ce choix est arbitraire car il existe de nombreux frameworks concurrents ou complémentaires à `Pandas`, `Arrow` ou `DuckDB` qui permettent de lire des données depuis `S3`.
 
-> A client error (InvalidAccessKeyId) occurred when calling the ListBuckets operation: The AWS Access Key Id you provided does not exist in our records.
-
-c'est que vos identifiants de connexion ne sont plus à jour (pour des raisons de sécurité, ils sont régulièrement renouvelés). Dans ce cas, recréez un service `VSCode` avec le bouton proposé plus haut.
+Pour le moment on va garder comme _framework_ de prédilection `Pandas` mais la bascule vers `Parquet` nous fera privilégier `DuckDB` dans les prochaines applications.
 
 Dans un _notebook_, copier-coller et mettre à jour ces deux variables qui seront utilisées dans différents exemples:
 
@@ -95,6 +68,8 @@ CHEMIN_FICHIER = "ensae-reproductibilite/data/raw/data.csv" #<2>
 ```
 1. Changer avec le bucket
 2. Changer en fonction du chemin voulu
+
+Maintenant lire la donnée depuis S3 avec ce code:
 
 ::: {.panel-tabset}
 
@@ -134,21 +109,6 @@ import duckdb
 
 con = duckdb.connect(database=":memory:")
 
-con.execute(
-    f"""
-CREATE SECRET secret (
-    TYPE S3,
-    KEY_ID '{os.environ["AWS_ACCESS_KEY_ID"]}',
-    SECRET '{os.environ["AWS_SECRET_ACCESS_KEY"]}',
-    ENDPOINT 'minio.lab.sspcloud.fr',
-    SESSION_TOKEN '{os.environ["AWS_SESSION_TOKEN"]}',
-    REGION 'us-east-1',
-    URL_STYLE 'path',
-    SCOPE 's3://{MY_BUCKET}/'
-);
-"""
-)
-
 query_definition = f"SELECT * FROM read_csv('s3://{MY_BUCKET}/{CHEMIN_FICHIER}')"
 df = con.sql(query_definition)
 
@@ -157,29 +117,49 @@ df
 
 :::
 
-Pour illustrer le fonctionnement encore plus simple de S3 avec les fichiers `Parquet`, on propose de copier un `Parquet` mis à disposition dans un _bucket_ collectiv vers votre _bucket_ personnel:
+::::
+
+Pour illustrer le fonctionnement simple de S3 avec les fichiers `Parquet`, on propose de faire la même chose. Ici il n'est pas pertinent de mesurer le gain de temps car le fichier est très léger en CSV et s'importe ainsi instantanément. Pour faire des exercices plus pertinents sur ce sujet, afin de découvrir certaines bonnes pratiques, regarder les exercices supplémentaires dans [le chapitre dédié à `Parquet`](/chapters/big-data.qmd)).
+
+
+:::: {.application}
+
+## Application 8c: importer une donnée depuis un système de stockage `S3`
+
+D'abord, on va convertir notre fichier au format Parquet avec ce code (à faire tourner qu'une fois donc à ne pas mettre dans `main.py` mais dans un _notebook_ ou un script jetable)
 
 ```{.python}
-BUCKET_PERSONNEL="nom_utilisateur_sspcloud" #<1>
+import os
+import duckdb
 
-curl -o rp.parquet "https://minio.lab.sspcloud.fr/projet-formation/bonnes-pratiques/data/REGION=11/part-0.parquet" #<2>
+MY_BUCKET = "mon_nom_utilisateur_sspcloud" #<1>
+CHEMIN_FICHIER = "ensae-reproductibilite/data/raw/data.csv" #<2>
 
-mc cp rp.parquet s3/${BUCKET_PERSONNEL}/ensae-reproductibilite/data/example/rp.parquet
+con = duckdb.connect(database=":memory:")
 
-rm rp.parquet
+query_definition = f"SELECT * FROM read_csv('s3://{MY_BUCKET}/{CHEMIN_FICHIER}')"
+con.sql(
+    f"""
+        COPY (
+            SELECT * 
+            FROM read_csv_auto('s3://{MY_BUCKET}/{CHEMIN_FICHIER}')
+        )
+        TO 's3://{MY_BUCKET}/{CHEMIN_FICHIER.replace("csv", "parquet")}'
+        (FORMAT PARQUET);
+    """
+)
 ```
-1. Remplacer par le nom de votre _bucket_.
-2. Télécharger le fichier `Parquet` mis à dispositoin
-3. Copier dans le _bucket_ voulu
-4. Effacer le fichier copié temporairement en local
+1. Changer avec le bucket
+2. Changer en fonction du chemin voulu
 
-Pour lire ceux-ci, tester les exemples de code suivants:
 
 ```{.python}
 MY_BUCKET = "mon_nom_utilisateur_sspcloud" #<1>
-CHEMIN_FICHIER = "ensae-reproductibilite/data/example/rp.parquet"
+CHEMIN_PARQUET = "ensae-reproductibilite/data/raw/data.parquet" #<2>
 ```
 1. Remplacer ici par la valeur appropriée
+2. Changer en fonction du chemin voulu
+
 
 ::: {.panel-tabset}
 
@@ -189,11 +169,11 @@ CHEMIN_FICHIER = "ensae-reproductibilite/data/example/rp.parquet"
 import s3fs
 import pandas as pd
 
+chemin
+
 fs = s3fs.S3FileSystem(client_kwargs={"endpoint_url": "https://minio.lab.sspcloud.fr"})
 
-df = pd.read_parquet(f"s3://{MY_BUCKET}/{CHEMIN_FICHIER}", filesystem=fs)
-
-df
+df = pd.read_parquet(f"s3://{MY_BUCKET}/{CHEMIN_PARQUET}", filesystem=fs)
 ```
 
 ## Avec `Pyarrow` et `s3fs`
@@ -204,7 +184,7 @@ import pyarrow.parquet as pq
 
 s3 = pa.fs.S3FileSystem(endpoint_override ="https://minio.lab.sspcloud.fr")
 
-df = pq.read_table(f"{MY_BUCKET}/{CHEMIN_FICHIER}", filesystem=s3)
+df = pq.read_table(f"{MY_BUCKET}/{CHEMIN_PARQUET}", filesystem=s3)
 
 df
 ```
@@ -217,22 +197,7 @@ import duckdb
 
 con = duckdb.connect(database=":memory:")
 
-con.execute(
-    f"""
-CREATE SECRET secret (
-    TYPE S3,
-    KEY_ID '{os.environ["AWS_ACCESS_KEY_ID"]}',
-    SECRET '{os.environ["AWS_SECRET_ACCESS_KEY"]}',
-    ENDPOINT 'minio.lab.sspcloud.fr',
-    SESSION_TOKEN '{os.environ["AWS_SESSION_TOKEN"]}',
-    REGION 'us-east-1',
-    URL_STYLE 'path',
-    SCOPE 's3://{MY_BUCKET}/'
-);
-"""
-)
-
-query_definition = f"SELECT * FROM read_parquet('s3://{MY_BUCKET}/{CHEMIN_FICHIER}')"
+query_definition = f"SELECT * FROM read_parquet('s3://{MY_BUCKET}/{CHEMIN_PARQUET}')"
 df = con.sql(query_definition)
 
 df
@@ -240,40 +205,24 @@ df
 
 :::
 
-Pour aller plus loin sur le format `Parquet`, notamment découvrir comment importer des données partitionnées, vous pouvez traduire en `Python` les exemples issus de la [formation aux bonnes pratiques avec `R`](https://inseefrlab.github.io/formation-bonnes-pratiques-git-R/slides/complete.html#/application-3-2) de l'Insee.
-
 ::::
 
+::: {.callout-tip collapse="true"}
+## Exercices supplémentaires sur le format `Parquet`
 
+Nous n'avons pas explicité pourquoi `Parquet` est un choix pertinent pour la plupart des chaînes _data_. Ici la donnée est de taille réduite, cela ne nous pénalisera pas beaucoup de faire du `CSV` et du `Pandas` même si nous recommandons plutôt de faire du `Parquet` et de pousser le plus loin possible `DuckDB` avant de revenir à `Pandas`. 
 
-::: {.application}
-## Application 8c: privilégier le format `Parquet` dans notre chaîne
-
-Dans `main.py`, remplacer le format csv initialement prévu par un format parquet:
-
-```{.python file="main.py"}
-data_train_path = os.environ.get("train_path", "data/derived/train.parquet")
-data_test_path = os.environ.get("test_path", "data/derived/test.parquet")
-```
-
-Et modifier l'écriture des données pour utiliser `to_parquet` plutôt que `to_csv` pour écrire les fichiers intermédiaires:
-
-```{.python filename="main.py"}
-pd.concat([X_train, y_train], axis = 1).to_parquet(data_train_path)
-pd.concat([X_test, y_test], axis = 1).to_parquet(data_test_path)
-```
-
+Pour découvrir, en pratique, les raisons de ces choix techniques, vous pouvez aller voir les exercices supplémentaires à la fin du [chapitre sur les données](/chapters/big-data.qmd)).
 
 :::
 
 
+
+
 ::: {.application}
+## Application 8d: adapter notre chaîne pour lire des données `Parquet` avec `DuckDB`
 
-## Application 8d: partage de données sur le système de stockage `S3`
-
-Par défaut, le contenu de votre _bucket_ est privé, seul vous y avez accès. Pour pouvoir lire votre donnée, vos
-applications externes devront utiliser des jetons vous identifiant. Ici, comme nous utilisons une donnée publique,
-vous pouvez rendre accessible celle-ci à tous en lecture. Dans le jargon S3, cela signifie donner un accès anonyme à votre donnée.
+Par défaut, le contenu de votre _bucket_ est privé, seul vous y avez accès. Pour pouvoir lire votre donnée, vos applications externes devront utiliser des jetons vous identifiant. Ici, comme nous utilisons une donnée publique, vous pouvez rendre accessible celle-ci à tous en lecture. Dans le jargon S3, cela signifie donner un accès anonyme à votre donnée.
 
 Le modèle de commande à utiliser dans le terminal est le suivant:
 
@@ -285,18 +234,32 @@ mc anonymous set download s3/${BUCKET_PERSONNEL}/ensae-reproductibilite/data/raw
 1. Remplacer par le nom de votre _bucket_.
 
 
-
 Les URL de téléchargement seront de la forme
-`https://minio.lab.sspcloud.fr/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/data.csv`
+`https://minio.lab.sspcloud.fr/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/<filename>.<extension>`
 
+On va adapter progressivement notre chaîne à l'utilisation du format Parquet.
 
-- Remplacer la définition de  `data_path` pour utiliser, par défaut, directement l'URL dans l'import. Modifier, si cela est pertinent, aussi votre fichier `.env`.
+D'abord, il faut faire évoluer nos chemins:
 
 ```{.python file="main.py"}
 URL_RAW = "" #<1>
 data_path = os.environ.get("data_path", URL_RAW)
 ```
-1. Modifier avec `URL_RAW` un lien de la forme `"https://minio.lab.sspcloud.fr/${BUCKET_PERSONNEL}/ensae-reproductibilite/data/raw/data.csv"` (ne laissez pas `${BUCKET_PERSONNEL}`, remplacez par la vraie valeur!).
+1. Modifier avec `URL_RAW` un lien de la forme `"https://minio.lab.sspcloud.fr/${BUCKET_PERSONNEL}/ensae-reproductibilite/data/raw/data.parquet"` (ne laissez pas `${BUCKET_PERSONNEL}`, remplacez par la vraie valeur!).
+
+Maintenant, il faut lire les données `Parquet` avec DuckDB. Modifier le code d'import des données pour utiliser DuckDB plutôt que Pandas. Vous pouvez, après avoir importé les données, convertir à nouveau en _DataFrame_ Pandas avec la méthode `to_df`. 
+
+Ne pas oublier de mettre à jour 1/ le `.gitignore` 2/ `requirements.txt` pour être en mesure de réinstaller les packages si nécessaire.
+:::
+
+
+::: {.application}
+
+## Application 8d: partage de données sur le système de stockage `S3`
+
+
+
+- Remplacer la définition de  `data_path` pour utiliser, par défaut, directement l'URL dans l'import. Modifier, si cela est pertinent, aussi votre fichier `.env`.
 
 
 - Ajouter le dossier `data/` au `.gitignore` ainsi que les fichiers `*.parquet`
