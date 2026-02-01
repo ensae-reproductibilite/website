@@ -501,7 +501,8 @@ de programmation orientée objet ou une bonne discussion avec `ChatGPT`.
 {{< include "./applications/_appli9.qmd" >}}
 
 
-::: {.callout-note}
+::: {.callout-note collapse="false"}
+## Le taux de couverture
 
 Lorsqu'on effectue des tests unitaires, on cherche généralement
 à tester le plus de lignes possibles de son code. On parle de
@@ -512,22 +513,20 @@ Cela peut s'effectuer de la manière suivante avec le package
 [`coverage`](https://coverage.readthedocs.io/en/7.2.2/):
 
 ```{.bash filename="terminal"}
-coverage run -m unittest tests/test_create_variable_title.py
+coverage run -m unittest tests/test_pipeline.py
 coverage report -m
 ```
 
 ```{.python}
-Name                                  Stmts   Miss  Cover   Missing
--------------------------------------------------------------------
-src/features/build_features.py           34     21    38%   35-36, 48-58, 71-74, 85-89, 99-101, 111-113
-tests/test_create_variable_title.py      21      1    95%   54
--------------------------------------------------------------------
-TOTAL                                    55     22    60%
+Name                             Stmts   Miss  Cover   Missing
+--------------------------------------------------------------
+src/pipeline/build_pipeline.py      11      0   100%
+tests/test_pipeline.py              46      1    98%   75
+--------------------------------------------------------------
+TOTAL                               57      1    98%
 ```
 
-Le taux de couverture est souvent mis en avant par les gros
-projets comme indicateur de leur qualité. Il existe d'ailleurs
-des badges `Github` dédiés.
+Le taux de couverture est souvent mis en avant par les gros projets comme indicateur de leur qualité. Il existe d'ailleurs des badges `Github` dédiés.
 :::
 
 
@@ -535,40 +534,34 @@ des badges `Github` dédiés.
 
 ## Étape 2 : transformer son projet en package (optionnel)
 
-Notre projet est modulaire, ce qui le rend assez simple à transformer
-en _package_, en s'inspirant de la structure du `cookiecutter` adapté, issu
-de [cet ouvrage](https://py-pkgs.org/03-how-to-package-a-python#package-structure).
+Notre projet est modulaire, ce qui le rend assez simple à transformer en _package_, en s'inspirant de la structure du `cookiecutter` adapté, issu
+En fait, il ne nous manque qu'un fichier essentiel, le principal distinguant un projet classique d'un package : `pyproject.toml`.
+de [cet ouvrage](https://py-pkgs.org/03-how-to-package-a-python#package-structure). 
 
-On va créer un _package_ nommé `titanicml` qui encapsule
-tout notre code et qui sera appelé
-par notre script `main.py`. La structure attendue
+Ce fichier permet de contrôler de manière formelle l'interaction entre nos scripts et le monde extérieur (l'isolation plus ou moins forte entre notre _package_ et le reste de l'écosystème `Python`) tout en donnant des indications à `Python` sur la manière de construire et installer notre _package_ fait maison.
+
+On va créer un _package_ nommé `titanicml` qui encapsule tout notre code et qui sera appelé par notre script principal. La structure attendue
 est la suivante:
 
 <details>
 <summary>Structure visée</summary>
 
 ```
-ensae-reproductibilite-application
-├── docs                                    ┐
-│   ├── main.py                             │
+application
+├── README.md                               ┐
+├── docs                                    │
 │   └── notebooks                           │ Package documentation and examples
 │       └── titanic.ipynb                   │
-├── configuration                           ┐ Configuration (pas à partager avec Git)
-│   └── config.yaml                         ┘
-├── README.md
+│       └── main.py                         ┘
 ├── pyproject.toml                          ┐
-├── requirements.txt                        │
-├── titanicml                               │
+├── src/titanicml                           │
 │   ├── __init__.py                         │ Package source code, metadata
-│   ├── data                                │ and build instructions
-│   │   ├── import_data.py                  │
-│   │   └── test_create_variable_title.py   │
-│   ├── features                            │
-│   │   └── build_features.py               │
+│   ├── pipeline                            │ and build instructions
+│   │   └── build_pipeline.py               │
 │   └── models                              │
 │       └── train_evaluate.py               ┘
 └── tests                                   ┐
-    └── test_create_variable_title.py       ┘ Package tests
+    └── test_pipeline.py                    ┘ Package tests
 ```
 </details>
 
@@ -576,72 +569,22 @@ ensae-reproductibilite-application
 <summary>Rappel: structure actuelle</summary>
 
 ```
-ensae-reproductibilite-application
+application
 ├── notebooks
 │   └── titanic.ipynb
-├── configuration
-│   └── config.yaml
 ├── main.py
 ├── README.md
 ├── requirements.txt
 └── src
-    ├── data
-    │   ├── import_data.py
-    │   └── test_create_variable_title.py
-    ├── features
-    │   └── build_features.py
+    ├── pipeline
+    │   └── build_pipeline.py
     └── models
         └── train_evaluate.py
 ```
 </details>
 
-Il existe plusieurs
-_frameworks_ pour
-construire un _package_. Nous
-allons privilégier [`Poetry`](https://python-poetry.org/)
-à [`Setuptools`](https://pypi.org/project/setuptools/).
+Il existe plusieurs _frameworks_ pour construire un _package_. Nous allons privilégier [`uv`](https://docs.astral.sh/uv/), le nouveau venu dans l'écosystème à [`Poetry`](https://python-poetry.org/) ou [`Setuptools`](https://pypi.org/project/setuptools/).
 
-
-::: {.callout-note}
-
-Pour créer la structure minimale d'un _package_, le plus simple est
-d'utiliser le `cookiecutter` adapté,
-issu de [cet ouvrage](https://py-pkgs.org/03-how-to-package-a-python#package-structure).
-
-Comme on a déjà une structure très modulaire, on va plutôt recréer cette
-structure dans notre projet déjà existant. En fait, il ne manque qu'un fichier essentiel,
-le principal distinguant un projet classique d'un package : `pyproject.toml`.
-
-```{.bash filename="terminal"}
-cookiecutter https://github.com/py-pkgs/py-pkgs-cookiecutter.git
-```
-
-<details>
-<summary>Dérouler pour voir les choix possibles</summary>
-```{.python}
-author_name [Monty Python]: Daffy Duck
-package_name [mypkg]: titanicml
-package_short_description []: Impressive Titanic survival analysis
-package_version [0.1.0]:
-python_version [3.9]:
-Select open_source_license:
-1 - MIT
-2 - Apache License 2.0
-3 - GNU General Public License v3.0
-4 - Creative Commons Attribution 4.0
-5 - BSD 3-Clause
-6 - Proprietary
-7 - None
-Choose from 1, 2, 3, 4, 5, 6 [1]:
-Select include_github_actions:
-1 - no
-2 - ci
-3 - ci+cd
-Choose from 1, 2, 3 [1]:
-```
-</details>
-
-:::
 
 {{< include "./applications/_appli10.qmd" >}}
 

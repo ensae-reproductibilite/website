@@ -2,59 +2,54 @@
 
 ## Application 10: packagisation _(optionnel)_
 
-- Renommer le dossier `titanicml` pour respecter la nouvelle
-arborescence ;
-- Créer un fichier `pyproject.toml` sur cette base ;
+- Depuis la ligne de commande, en se placant dans le dossier racine `~/work`, créer le squelette de notre _package_ avec la commande:
 
-```{.python}
-#| code-summary: "pyproject.toml"
-#| filename: "pyproject.toml"
-[tool.poetry]
-name = "titanicml"
-version = "0.0.1"
-description = "Awesome Machine Learning project"
-authors = ["Daffy Duck <daffy.duck@fauxmail.fr>", "Mickey Mouse"]
-license = "MIT"
-readme = "README.md"
+    ```bash
+    uv init --lib titanicml
+    ``` 
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+- Copier les sous-dossiers de notre `src/` actuel dans le dossier `src/` crée dans le package titanicml
 
-[tool.pytest.ini_options]
-log_cli = true
-log_cli_level = "WARNING"
-log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s (%(filename)s:%(lineno)s)"
-log_cli_date_format = "%Y-%m-%d %H:%M:%S"
-```
+- Ouvrir le fichier `pyproject.toml` présent dans `titanicml/` et observer la liste des dépendances vide. La gestion des dépendances est un peu plus formelle dans un _package_: c'est ici que la liste des dépendances indispensables à notre projet plutôt que dans un `requirements.txt`. 
+- Bien que ceci sera expliqué plus tard, vous pouvez ajouter des dépendances en tapant, en ligne de commande:
 
-- Créer le dossier `docs` et mettre les fichiers indiqués dedans
-- Dans `titanicml/`, créer un fichier `__init__.py`[^init]
+    ```bash
+    uv add pandas PyYAML scikit-learn python-dotenv duckdb
+    ```
 
-```{.python}
-#| code-summary: "__init__.py"
-#| filename: "__init__.py"
-from .data.import_data import (
-    split_and_count
-)
-from .pipeline.build_pipeline import (
-    split_train_test,
-    create_pipeline
-)
-from .models.train_evaluate import (
-    evaluate_model
-)
-__all__ = [
-    "split_and_count",
-    "split_train_test",
-    "create_pipeline",
-    "evaluate_model"
-]
-```
+Cela devrait mettre à jour le fichier `pyproject.toml` pour qu'il ressemble à ceci:
 
-- Installer le package en local avec `pip install -e .`
-- Modifier le contenu de `docs/main.py` pour importer les fonctions de notre _package_ `titanicml` et tester en
-ligne de commande notre fichier `main.py`
+    ```{.python filename="pyproject.toml"}
+    [project]
+    name = "titanicml"
+    version = "0.1.0"
+    description = "Add your description here"
+    readme = "README.md"
+    authors = [
+        { name = "daffyduck", email = "daffy.duck@ensae.fr" }
+    ]
+    requires-python = ">=3.13"
+    dependencies = [
+        "duckdb>=1.4.4",
+        "pandas>=3.0.0",
+        "python-dotenv>=1.2.1",
+        "pyyaml>=6.0.3",
+        "scikit-learn>=1.8.0",
+    ]
+
+    [build-system]
+    requires = ["uv_build>=0.9.14,<0.10.0"]
+    build-backend = "uv_build"
+    ```
+
+- Déplacer le dossier `tests/` dans notre package. 
+- Compiler le package avec la commande `uv build`. Cela a créé un _wheel_ (une version compilée) de votre _package_ que nous pouvons installer avec
+
+    ```bash
+    pip install dist/titanicml-0.1.0-py3-none-any.whl
+    ``` 
+
+- Modifier le contenu de `docs/main.py` pour importer les fonctions de notre _package_ `titanicml` et tester en ligne de commande ce fichier
 :::
 
 [^init]: Le fichier `__init__.py` indique à `Python` que le dossier
