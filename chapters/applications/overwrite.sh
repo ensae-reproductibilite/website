@@ -23,9 +23,13 @@ FORK_REMOTE="https://github.com/ensae-reproductibilite/application.git"
 
 # Get the current remote URL
 CURRENT_REMOTE=$(git remote get-url origin)
+CURRENT_BRANCH=$(git symbolic-ref --short HEAD)
 
 git reset --hard
-git checkout "$MAIN_BRANCH" --force
+if [ "$CURRENT_BRANCH" != "$MAIN_BRANCH" ]; then
+  git checkout "$MAIN_BRANCH" --force
+fi
+
 
 # Check if the origin is not the fork repo
 if [ "$CURRENT_REMOTE" != "$FORK_REMOTE" ]; then
@@ -60,9 +64,10 @@ if git remote get-url fork >/dev/null 2>&1; then
   echo -e "${YELLOW}Removed temporary 'fork' remote.${NC}"
 fi
 
-
 git reset --hard
-git checkout "$MAIN_BRANCH"
+if [ "$CURRENT_BRANCH" != "$MAIN_BRANCH" ]; then
+  git checkout "$MAIN_BRANCH" --force
+fi
 
 # Overwrite main with the tag
 echo -e "${YELLOW}Resetting '$MAIN_BRANCH' to '$TAG'...${NC}"
