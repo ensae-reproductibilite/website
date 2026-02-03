@@ -25,10 +25,6 @@ FORK_REMOTE="https://github.com/ensae-reproductibilite/application.git"
 CURRENT_REMOTE=$(git remote get-url origin)
 CURRENT_BRANCH=$(git symbolic-ref --short HEAD)
 
-git reset --hard
-if [ "$CURRENT_BRANCH" != "$MAIN_BRANCH" ]; then
-  git checkout "$MAIN_BRANCH" --force
-fi
 
 
 # Check if the origin is not the fork repo
