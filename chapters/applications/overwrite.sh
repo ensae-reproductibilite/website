@@ -69,7 +69,7 @@ fi
 echo -e "${YELLOW}Creating backup branch '$BACKUP_BRANCH'...${NC}"
 
 git reset --hard
-git checkout "$MAIN_BRANCH"
+git checkout "$MAIN_BRANCH" --force
 git checkout -b "$BACKUP_BRANCH"
 echo -e "${GREEN}Backup branch '$BACKUP_BRANCH' created.${NC}"
 
