@@ -24,6 +24,9 @@ FORK_REMOTE="https://github.com/ensae-reproductibilite/application.git"
 # Get the current remote URL
 CURRENT_REMOTE=$(git remote get-url origin)
 
+git reset --hard
+git checkout "$MAIN_BRANCH" --force
+
 # Check if the origin is not the fork repo
 if [ "$CURRENT_REMOTE" != "$FORK_REMOTE" ]; then
   echo -e "${YELLOW}Adding 'fork' remote to fetch latest tags...${NC}"
@@ -59,7 +62,7 @@ fi
 
 
 git reset --hard
-git checkout "$MAIN_BRANCH" --force
+git checkout "$MAIN_BRANCH"
 
 # Overwrite main with the tag
 echo -e "${YELLOW}Resetting '$MAIN_BRANCH' to '$TAG'...${NC}"
