@@ -17,30 +17,17 @@ un script en utilisant des variables définies dans un fichier YAML.
 
 1. Installer le package `python-dotenv` que nous allons utiliser pour charger notre jeton d'API à partir d'une variable d'environnement.
 2. A partir de l'exemple de la [documentation](https://pypi.org/project/python-dotenv/), utiliser la fonction `load_dotenv` pour charger dans `Python` nos variables d'environnement à partir d'un fichier (vous pouvez le créer mais ne pas le remplir encore avec les valeurs voulues, ce sera fait ensuite)
-3. Créer la variable et vérifier la sortie de `Python` en faisant tourner `titanic.py` en ligne de commande
+3. Créer la variable comme proposé ci-dessous et vérifier la sortie de `Python` en faisant tourner `titanic.py` en ligne de commande ce code
 
 
 ```{.python filename="titanic.py"}
-jeton_api = os.environ.get("JETON_API", "")
-
-if jeton_api.startswith("$"):
-    print("API token has been configured properly")
-else:
-    print("API token has not been configured")
+jeton_api = os.environ["JETON_API"]
 ```
 
-4. Maintenant introduire la valeur voulue pour le jeton d'API dans le fichier d'environnement lu par `dotenv`
-5. S'il n'existe pas déjà, créer un fichier `.gitignore` (cf. [Chapitre `Git`](/chapters/git.qmd)). Ajouter dans ce fichier `.env` car il ne faut pas committer ce fichier. Au passage ajouter `__pycache__/` au `.gitignore`[^pycache], cela
-évitera d'avoir à le faire ultérieurement ;
+4. Cela devrait vous renvoyer une erreur, comprenez-vous pourquoi ? Maintenant introduire la valeur voulue pour le jeton d'API dans le fichier d'environnement lu par `dotenv`. 
+5. S'il n'existe pas déjà, créer un fichier `.gitignore` (cf. [Chapitre `Git`](/chapters/git.qmd)). Ajouter dans ce fichier `.env` car il ne faut pas committer ce fichier. Au passage ajouter `__pycache__/` au `.gitignore`[^pycache], cela évitera d'avoir à le faire ultérieurement ;
 1. Créer un fichier `README.md` où vous indiquez qu'il faut créer un fichier `.env` pour
 pouvoir utiliser l'API.
-
-[^fileexist]: Ici, le jeton d'API n'est pas indispensable pour que le code
-    fonctionne. Afin d'éviter une erreur non nécessaire
-    lorsqu'on automatisera le processus, on peut
-    créer une condition qui vérifie la présence ou non de ce fichier.
-    Le script reste donc reproductible même pour un utilisateur n'ayant pas le fichier
-    `secrets.yaml`.
 
 [^pycache]: Il est normal d'avoir des dossiers `__pycache__` qui traînent en local : ils se créent automatiquement à l'exécution d'un script en `Python`. Néanmoins, il ne faut pas associer ces fichiers à `Git`, voilà pourquoi on les ajoute au `.gitignore`.
 

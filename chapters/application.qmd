@@ -30,7 +30,7 @@ On a un _notebook_ un peu monolithique, qui réalise les étapes classiques d'un
 **L'objectif est d'améliorer le projet de manière incrémentale jusqu'à pouvoir le mettre en production, en le valorisant sous une forme adaptée et en adoptant une méthode de travail fluidifiant les évolutions futures.**
 
 En améliorant et enrichissant progressivement notre projet, nous aboutirons sur le cercle infini du MLOps (@fig-mlops-circle)
-permettant la coexistence de versions en production et en développement 
+permettant la coexistence de versions en production et en développement.
 
 La @fig-start montre que notre point de départ initial, à savoir un _notebook_, mélange tout. Ceci rend très complexe la mise à jour de notre modèle ou l'exploitation de notre modèle sur de nouvelles données, ce qui est pourtant la raison d'être du _machine learning_ qui est pensé pour l'extrapolation. Si on vous demande de valoriser votre modèle sur de nouvelles données, vous risquez de devoir refaire tourner tout votre _notebook_, avec le risque de ne pas retrouver les mêmes résultats que dans la version précédente.
 
@@ -75,8 +75,6 @@ Si vous faites évoluer votre projet de manière expérimentale mais désirez to
 
 {{< checkpoint appli9 "Checkpoint d'exemple">}}
 
-Celui-ci sauvegarde votre avancée dans un tag nommé `dev_before_appli9` (au cas où vous voudriez revenir sur votre version ultérieurement) puis force votre branche à adopter l'état du tag `appli9`.
-
 
 
 # Partie 0 : initialisation du projet
@@ -89,40 +87,33 @@ Nous allons prendre comme point de départ un projet livré exclusivement avec u
 
 Cette première partie vise à **rendre le projet conforme aux bonnes pratiques** présentées dans le cours.
 
-Elle fait intervenir les notions suivantes :
+::: {.callout-tip}
+## Notions à acquérir dans cette partie
+
+Si vous suivez ces premières applications, vous devriez acquérir les notions suivantes :
 
 - Utilisation du **terminal** (voir [Linux 101](/chapters/linux101.qmd)) ;
 - **Qualité du code** (voir [Qualité du code](/chapters/code-quality.qmd)) ;
 - **Architecture de projets** (voir [Architecture des projets](/chapters/projects-architecture.html)) ;
 - **Contrôle de version** avec `Git` (voir [Rappels `Git`](/chapters/git.qmd)) ;
 - **Travail collaboratif** avec `Git` et `GitHub` (voir [Rappels `Git`](/chapters/git.qmd)).
-
+:::
 
 Le plan de la partie est le suivant :
 
 1. S'assurer que le script fonctionne ;
 2. Nettoyer le code des scories formelles avec un _linter_ et un _formatter_ ;
-3. Paramétrisation du script ;
-4. Utilisation de fonctions.
+3. Paramétrer le script ;
+4. Utiliser des fonctions.
 
 
 ## Étape 1 : s'assurer que le script s'exécute correctement
 
-On va partir du fichier `notebook.py` qui reprend le contenu
-du _notebook_[^jupytext] mais dans un script classique.
-Le travail de nettoyage en sera facilité.
+On va partir du fichier `notebook.py` qui reprend le contenu du _notebook_[^jupytext] mais dans un script classique. Le travail de nettoyage en sera facilité.
 
-[^jupytext]: L'export dans un script `.py` a été fait
-        directement depuis `VSCode`. Comme
-        cela n'est pas vraiment l'objet du cours, nous passons cette étape et fournissons
-        directement le script expurgé du texte intermédiaire. Mais n'oubliez
-        pas que cette démarche, fréquente quand on a démarré sur un _notebook_ et
-        qu'on désire consolider en faisant la transition vers des
-        scripts, nécessite d'être attentif pour ne pas risquer de faire une erreur.
+[^jupytext]: L'export dans un script `.py` a été fait directement depuis `VSCode`. Comme cela n'est pas vraiment l'objet du cours, nous passons cette étape et fournissons directement le script expurgé du texte intermédiaire. Mais n'oubliez pas que cette démarche, fréquente quand on a démarré sur un _notebook_ et qu'on désire consolider en faisant la transition vers des scripts, nécessite d'être attentif pour ne pas risquer de faire une erreur.
 
-La première étape est simple, mais souvent oubliée : **vérifier que le code fonctionne correctement**.
-Pour cela, nous recommandons de faire un aller-retour entre le script ouvert dans `VSCode`
-et un terminal pour le lancer.
+La première étape est simple, mais souvent oubliée : **vérifier que le code fonctionne correctement**. Pour cela, nous recommandons de faire un aller-retour entre le script ouvert dans `VSCode` et un terminal pour le lancer.
 
 
 {{< include "./applications/_appli1.qmd" >}}
@@ -131,32 +122,20 @@ et un terminal pour le lancer.
 ## Étape 2: utiliser un _linter_ puis un _formatter_
 
 On va maintenant améliorer la qualité de notre code en appliquant les standards communautaires.
-Pour cela, on va utiliser le *linter* classique [`PyLint`](https://pylint.readthedocs.io/en/latest/)
-et le _formatter_ [`Black`](https://github.com/psf/black).
-Si vous désirez un outil deux en un, il est possible d'utiliser [`Ruff`](https://github.com/astral-sh/ruff-vscode)
-en complément ou substitut.
+Pour cela, on va principalement utiliser [`Ruff`](https://github.com/astral-sh/ruff-vscode) qui est à la fois un _linter_ et un _formatter_[^black].  On va aussi utiliser le *linter* classique [`PyLint`](https://pylint.readthedocs.io/en/latest/) qui présente une fonctionnalité assez pédagogique de notation d'un script à l'aune des standards communautaires évoqués dans la partie [Qualité du code](/chapters/code-quality.html).
 
 
-Ce nettoyage automatique du code permettra, au passage, de restructurer notre
-script de manière plus naturelle.
+Ce nettoyage automatique du code permettra, au passage, de restructurer notre script de manière plus naturelle.
 
+[^black]: Pendant longtemps, [`Black`](https://black.readthedocs.io/en/stable/) était le _formatter_ de référence en `Python` et on retrouve de nombreuses ressources sur internet qui l'utilisent. [`Ruff`](https://github.com/astral-sh/ruff-vscode) est une version évoluée, plus rapide et plus complet, qui est très rapidement devenu un outil standard des utilisateurs de `Python`. 
 
 ::: {.callout-important}
-[`PyLint`](https://pylint.readthedocs.io/en/latest/), [`Black`](https://black.readthedocs.io/en/stable/) et [`Ruff`](https://docs.astral.sh/ruff/)
-sont des _packages_ `Python` qui
+[`PyLint`](https://pylint.readthedocs.io/en/latest/) et [`Ruff`](https://docs.astral.sh/ruff/) sont des _packages_ `Python` qui
 s'utilisent principalement en ligne de commande.
 
-Si vous avez une erreur qui suggère
-que votre terminal ne connait pas [`PyLint`](https://pylint.readthedocs.io/en/latest/), [`Black`](https://black.readthedocs.io/en/stable/),
-ou [`Ruff`](https://docs.astral.sh/ruff/), n'oubliez pas d'exécuter la commande `pip install pylint`, `pip install black` ou `pip install ruff`.
+Si vous avez une erreur qui suggère que votre terminal ne connait pas [`PyLint`](https://pylint.readthedocs.io/en/latest/) ou [`Ruff`](https://docs.astral.sh/ruff/), n'oubliez pas d'exécuter la commande `pip install pylint`, ou `pip install ruff`.
 :::
 
-
-Le _linter_ [`PyLint`](https://pylint.readthedocs.io/en/latest/) renvoie alors une série d'irrégularités,
-en précisant à chaque fois la ligne de l'erreur et le message d'erreur associé (ex : mauvaise identation).
-Il renvoie finalement une note sur 10,
-qui estime la qualité du code à l'aune des standards communautaires évoqués
-dans la partie [Qualité du code](/chapters/code-quality.html).
 
 {{< include "./applications/_appli2.qmd" >}}
 
