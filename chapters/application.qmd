@@ -272,10 +272,7 @@ encapsule des éléments issus d'autres scripts `Python`.
 
 ## Étape 2 : adopter une architecture standardisée de projet
 
-On dispose maintenant d'une application `Python` fonctionnelle.
-Néanmoins, le projet est certes plus fiable mais sa structuration
-laisse à désirer et il serait difficile de rentrer à nouveau
-dans le projet dans quelques temps.
+On dispose maintenant d'une application `Python` fonctionnelle. Néanmoins, le projet est certes plus fiable mais sa structuration laisse à désirer et s'il continuait à être organisé de la même manière à mesure qu'il devenait plus ambitieux il deviendrait de plus en plus difficile de rentrer à nouveau dans celui-ci après une pause de quelques jours.
 
 <details>
 <summary>Etat actuel du projet 🙈</summary>
@@ -284,11 +281,8 @@ dans le projet dans quelques temps.
 ├── .gitignore
 ├── .env
 ├── data.csv
-├── train.csv
-├── test.csv
 ├── README.md
-├── build_pipeline.py
-├── train_evaluate.py
+├── check.py
 ├── titanic.ipynb
 └── main.py
 ```
@@ -296,19 +290,11 @@ dans le projet dans quelques temps.
 
 </details>
 
-Comme cela est expliqué dans la
-partie [Structure des projets](/chapters/projects-architecture.html),
-on va adopter une structure certes arbitraire mais qui va
+Comme cela est expliqué dans la partie [Structure des projets](/chapters/projects-architecture.html), on va adopter une structure certes arbitraire mais qui va
 faciliter l'autodocumentation de notre projet. De plus, une telle structure va faciliter des évolutions optionnelles
-comme la _packagisation_ du projet. Passer d'une structure modulaire
-bien faite à un _package_ est quasi-immédiat en `Python`.
+comme la _packagisation_ du projet. Passer d'une structure modulaire bien faite à un _package_ est quasi-immédiat en `Python`.
 
-On va donc modifier l'architecture de notre projet pour la rendre plus standardisée.
-Pour cela, on va s'inspirer des structures
-[`cookiecutter`](https://cookiecutter.readthedocs.io/en/stable/)
-qui génèrent des _templates_ de projet. En l'occurrence
-notre source d'inspiration sera le [_template datascience_](https://drivendata.github.io/cookiecutter-data-science/)
-issu d'un effort communautaire.
+On va donc modifier l'architecture de notre projet pour la rendre plus standardisée. Pour cela, on va s'inspirer des structures [`cookiecutter`](https://cookiecutter.readthedocs.io/en/stable/) qui génèrent des _templates_ de projet. En l'occurrence notre source d'inspiration sera le [_template datascience_](https://drivendata.github.io/cookiecutter-data-science/) issu d'un effort communautaire pour déterminer la localisation adéquate des éléments communs à tout projet de science de données.
 
 ::: {.callout-note}
 L'idée de [`cookiecutter`](https://cookiecutter.readthedocs.io/en/stable/) est de proposer des _templates_ que l'on utilise pour __initialiser__ un projet, afin de bâtir à l'avance une structure évolutive. La syntaxe à utiliser dans ce cas est la suivante :
@@ -321,8 +307,7 @@ cookiecutter https://github.com/drivendata/cookiecutter-data-science
 Ici, on a déjà un projet, on va donc faire les choses dans l'autre sens : on va s'inspirer de la structure proposée afin de réorganiser celle de notre projet selon les standards communautaires.
 :::
 
-En s'inspirant du _cookiecutter data science_
-on va adopter la structure suivante:
+En s'inspirant du _cookiecutter data science_ on va adopter la structure suivante:
 
 <details>
 <summary>
@@ -332,21 +317,17 @@ Structure recommandée
 ```
 application
 ├── main.py
+├── .gitignore
 ├── .env
 ├── README.md
 ├── data
 │   ├── raw
-│   │   └── data.csv
-│   └── derived
-│       ├── test.csv
-│       └── train.csv
+│   │   └── titanic.csv
 ├── notebooks
 │   └── titanic.ipynb
 └── src
-    ├── pipeline
-    │   └── build_pipeline.py
-    └── models
-        └── train_evaluate.py
+    └── validation
+        └── check.py
 ```
 
 </details>
@@ -378,13 +359,7 @@ Ici on ne va pas fixer les versions, on raffinera ce fichier ultérieurement.
 
 Quand votre projet passera en production, vous aurez un accès limité à celui-ci. Il est donc important de faire remonter, par le biais du _logging_ des informations critiques sur votre projet qui vous permettront de savoir où il en est (si vous avez accès à la console où il tourne) ou là où il s'est arrêté.
 
-L'utilisation de `print` montre rapidement ses limites pour cela. Les informations enregistrées ne persistent pas après la session et sont quelques peu rudimentaires.
-
-Pour faire du _logging_, la librairie consacrée depuis longtemps en `Python` est... [`logging`](https://docs.python.org/3/library/logging.html). Il existe aussi une librairie nommée [`loguru`](https://github.com/Delgan/loguru) qui est un peu plus simple à configurer (l'instanciation du _logger_ est plus aisée) et plus agréable grâce à ses messages en couleurs qui permettent de visuellement trier les informations.
-
-![](https://raw.githubusercontent.com/Delgan/loguru/master/docs/_static/img/demo.gif)
-
-L'exercice suivant peut être fait avec les deux librairies, cela ne change pas grand chose. Les prochaines applications repartiront de la version utilisant la librairie standard `logging`.
+L'utilisation de `print` montre rapidement ses limites pour cela. Les informations enregistrées ne persistent pas après la session et sont quelques peu rudimentaires. Pour faire du _logging_, la librairie consacrée depuis longtemps en `Python` est... [`logging`](https://docs.python.org/3/library/logging.html). Elle permettra d'horodater nos messages, d'avoir différents types de messages et d'enregistrer ceux-ci dans un fichier dédié. 
 
 
 {{< include "./applications/_appli7b.qmd" >}}
