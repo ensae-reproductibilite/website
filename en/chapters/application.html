@@ -1393,7 +1393,7 @@ rm -f update.sh</code></pre>
 </section>
 <section id="étape-2-adopter-une-architecture-standardisée-de-projet" class="level2">
 <h2 class="anchored" data-anchor-id="étape-2-adopter-une-architecture-standardisée-de-projet">Étape 2 : adopter une architecture standardisée de projet</h2>
-<p>On dispose maintenant d’une application <code>Python</code> fonctionnelle. Néanmoins, le projet est certes plus fiable mais sa structuration laisse à désirer et il serait difficile de rentrer à nouveau dans le projet dans quelques temps.</p>
+<p>On dispose maintenant d’une application <code>Python</code> fonctionnelle. Néanmoins, le projet est certes plus fiable mais sa structuration laisse à désirer et s’il continuait à être organisé de la même manière à mesure qu’il devenait plus ambitieux il deviendrait de plus en plus difficile de rentrer à nouveau dans celui-ci après une pause de quelques jours.</p>
 <details>
 <summary>
 Etat actuel du projet 🙈
@@ -1401,16 +1401,13 @@ Etat actuel du projet 🙈
 <pre data-code-line-numbers=""><code>├── .gitignore
 ├── .env
 ├── data.csv
-├── train.csv
-├── test.csv
 ├── README.md
-├── build_pipeline.py
-├── train_evaluate.py
+├── check.py
 ├── titanic.ipynb
 └── main.py</code></pre>
 </details>
 <p>Comme cela est expliqué dans la partie <a href="../chapters/projects-architecture.html">Structure des projets</a>, on va adopter une structure certes arbitraire mais qui va faciliter l’autodocumentation de notre projet. De plus, une telle structure va faciliter des évolutions optionnelles comme la <em>packagisation</em> du projet. Passer d’une structure modulaire bien faite à un <em>package</em> est quasi-immédiat en <code>Python</code>.</p>
-<p>On va donc modifier l’architecture de notre projet pour la rendre plus standardisée. Pour cela, on va s’inspirer des structures <a href="https://cookiecutter.readthedocs.io/en/stable/"><code>cookiecutter</code></a> qui génèrent des <em>templates</em> de projet. En l’occurrence notre source d’inspiration sera le <a href="https://drivendata.github.io/cookiecutter-data-science/"><em>template datascience</em></a> issu d’un effort communautaire.</p>
+<p>On va donc modifier l’architecture de notre projet pour la rendre plus standardisée. Pour cela, on va s’inspirer des structures <a href="https://cookiecutter.readthedocs.io/en/stable/"><code>cookiecutter</code></a> qui génèrent des <em>templates</em> de projet. En l’occurrence notre source d’inspiration sera le <a href="https://drivendata.github.io/cookiecutter-data-science/"><em>template datascience</em></a> issu d’un effort communautaire pour déterminer la localisation adéquate des éléments communs à tout projet de science de données.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1439,21 +1436,17 @@ Structure recommandée
 </summary>
 <pre data-code-line-numbers=""><code>application
 ├── main.py
+├── .gitignore
 ├── .env
 ├── README.md
 ├── data
 │   ├── raw
-│   │   └── data.csv
-│   └── derived
-│       ├── test.csv
-│       └── train.csv
+│   │   └── titanic.csv
 ├── notebooks
 │   └── titanic.ipynb
 └── src
-    ├── pipeline
-    │   └── build_pipeline.py
-    └── models
-        └── train_evaluate.py</code></pre>
+    └── validation
+        └── check.py</code></pre>
 </details>
 <div class="callout callout-style-default callout-application callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -1467,7 +1460,7 @@ Structure recommandée
 <div class="callout-body-container callout-body">
 <ul>
 <li><em>(optionnel)</em> Analyser et comprendre la <a href="https://drivendata.github.io/cookiecutter-data-science/#directory-structure">structure de projet</a> proposée par le template ;</li>
-<li>Modifier l’arborescence du projet selon le modèle ;</li>
+<li>Modifier l’arborescence du projet selon le modèle ci-dessus ;</li>
 <li>Mettre à jour l’import des dépendances, le fichier de configuration et <code>main.py</code> avec les nouveaux chemins ;</li>
 </ul>
 </div>
@@ -1541,10 +1534,7 @@ rm -f update.sh</code></pre>
 <section id="tracer-notre-chaîne" class="level3">
 <h3 class="anchored" data-anchor-id="tracer-notre-chaîne">Tracer notre chaîne</h3>
 <p>Quand votre projet passera en production, vous aurez un accès limité à celui-ci. Il est donc important de faire remonter, par le biais du <em>logging</em> des informations critiques sur votre projet qui vous permettront de savoir où il en est (si vous avez accès à la console où il tourne) ou là où il s’est arrêté.</p>
-<p>L’utilisation de <code>print</code> montre rapidement ses limites pour cela. Les informations enregistrées ne persistent pas après la session et sont quelques peu rudimentaires.</p>
-<p>Pour faire du <em>logging</em>, la librairie consacrée depuis longtemps en <code>Python</code> est… <a href="https://docs.python.org/3/library/logging.html"><code>logging</code></a>. Il existe aussi une librairie nommée <a href="https://github.com/Delgan/loguru"><code>loguru</code></a> qui est un peu plus simple à configurer (l’instanciation du <em>logger</em> est plus aisée) et plus agréable grâce à ses messages en couleurs qui permettent de visuellement trier les informations.</p>
-<p><img src="https://raw.githubusercontent.com/Delgan/loguru/master/docs/_static/img/demo.gif" class="img-fluid"></p>
-<p>L’exercice suivant peut être fait avec les deux librairies, cela ne change pas grand chose. Les prochaines applications repartiront de la version utilisant la librairie standard <code>logging</code>.</p>
+<p>L’utilisation de <code>print</code> montre rapidement ses limites pour cela. Les informations enregistrées ne persistent pas après la session et sont quelques peu rudimentaires. Pour faire du <em>logging</em>, la librairie consacrée depuis longtemps en <code>Python</code> est… <a href="https://docs.python.org/3/library/logging.html"><code>logging</code></a>. Elle permettra d’horodater nos messages, d’avoir différents types de messages et d’enregistrer ceux-ci dans un fichier dédié.</p>
 <div class="callout callout-style-default callout-application callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1555,27 +1545,11 @@ rm -f update.sh</code></pre>
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<div class="tabset-margin-container"></div><div class="panel-tabset" data-group="logging">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Version utilisant <code>logging</code></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Version utilisant <code>loguru</code></a></li></ul>
-<div class="tab-content" data-group="logging">
-<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <ol type="1">
 <li>Aller sur la documentation de la librairie <a href="https://docs.python.org/3/howto/logging.html">ici</a> et sur <a href="https://realpython.com/python-logging/">ce tutoriel</a> pour trouver des sources d’inspiration sur la configuration et l’utilisation de <code>logging</code>.</li>
 <li>Pour afficher les messages dans la console et dans un fichier de log, s’inspirer de <a href="https://stackoverflow.com/a/46098711/9197726">cette réponse</a> sur <em>stack overflow</em>.</li>
-<li>Tester en ligne de commande votre code et observer le fichier de <em>log</em></li>
+<li>Tester en ligne de commande votre code et observer le fichier de <em>log</em>. Ajouter celui-ci au <code>.gitignore</code>.</li>
 </ol>
-</div>
-<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
-<ol type="1">
-<li>Installer <code>loguru</code> et l’ajouter au <code>requirements.txt</code></li>
-<li>En s’aidant du <code>README</code> du projet sur <a href="https://github.com/Delgan/loguru"><code>Github</code></a>, remplacer nos <code>print</code> par différents types de messages (info, success, etc.).</li>
-<li>Tester l’exécution du script en ligne de commande et observer vos sorties</li>
-<li>Mettre à jour le logger pour enregistrer dans un fichier de <em>log</em>. Ajouter celui-ci au <code>.gitignore</code> puis tester en ligne de commande votre script. Ouvrir le fichier en question, refaites tourner le script et regardez son évolutoin.</li>
-<li>Il est possible avec <code>loguru</code> de capturer les erreurs des fonctions grâce au système de cache décrit <a href="https://github.com/Delgan/loguru?tab=readme-ov-file#exceptions-catching-within-threads-or-main">ici</a>. Introduire une erreur dans une des fonctions (par exemple dans <code>create_pipeline</code>) avec un code du type <code>raise ValueError("Problème ici")</code></li>
-</ol>
-</div>
-</div>
-</div>
 </div>
 </div>
   <div class="callout callout-style-default callout-caution callout-titled">
@@ -1808,9 +1782,9 @@ en modifiant la variable <code>BUCKET_PERSONNEL</code>, l’emplacement de votre
 </dl>
 <p>Maintenant lire la donnée depuis S3 avec ce code:</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">Avec <code>Pandas</code> et <code>s3fs</code></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Avec <code>Pyarrow</code> et <code>s3fs</code></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false" href="">Avec <code>DuckDB</code></a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Avec <code>Pandas</code> et <code>s3fs</code></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">Avec <code>Pyarrow</code> et <code>s3fs</code></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">Avec <code>DuckDB</code></a></li></ul>
 <div class="tab-content">
-<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> s3fs</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1821,7 +1795,7 @@ en modifiant la variable <code>BUCKET_PERSONNEL</code>, l’emplacement de votre
 <span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> s3fs</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pyarrow <span class="im">import</span> csv</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1832,7 +1806,7 @@ en modifiant la variable <code>BUCKET_PERSONNEL</code>, l’emplacement de votre
 <span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
+<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1901,9 +1875,9 @@ en modifiant la variable <code>BUCKET_PERSONNEL</code>, l’emplacement de votre
 </dd>
 </dl>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">Avec <code>Pandas</code> et <code>s3fs</code></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Avec <code>Pyarrow</code> et <code>s3fs</code></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-3" role="tab" aria-controls="tabset-3-3" aria-selected="false" href="">Avec <code>DuckDB</code></a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">Avec <code>Pandas</code> et <code>s3fs</code></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">Avec <code>Pyarrow</code> et <code>s3fs</code></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false" href="">Avec <code>DuckDB</code></a></li></ul>
 <div class="tab-content">
-<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> s3fs</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1913,7 +1887,7 @@ en modifiant la variable <code>BUCKET_PERSONNEL</code>, l’emplacement de votre
 <span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_parquet(<span class="ss">f"s3://</span><span class="sc">{</span>MY_BUCKET<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>CHEMIN_PARQUET<span class="sc">}</span><span class="ss">"</span>, filesystem<span class="op">=</span>fs)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow <span class="im">as</span> pa</span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.parquet <span class="im">as</span> pq</span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1923,7 +1897,7 @@ en modifiant la variable <code>BUCKET_PERSONNEL</code>, l’emplacement de votre
 <span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<div id="tabset-3-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-3-tab">
+<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -2427,9 +2401,9 @@ rm -f update.sh</code></pre>
 </ul>
 <p>Le prochain exercice vise à mettre ceci en oeuvre. Comme expliqué dans le <a href="../chapters/portability.html">chapitre portabilité</a>, le choix du gestionnaire d’environnement est laissé libre. Il est recommandé de privilégier <code>venv</code> si vous découvrez la problématique de la portabilité.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">Environnement virtuel <code>venv</code></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Environnement <code>conda</code></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-3" role="tab" aria-controls="tabset-4-3" aria-selected="false" href="">Environnement virtuel via <code>uv</code></a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true" href="">Environnement virtuel <code>venv</code></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false" href="">Environnement <code>conda</code></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-3" role="tab" aria-controls="tabset-3-3" aria-selected="false" href="">Environnement virtuel via <code>uv</code></a></li></ul>
 <div class="tab-content" data-group="language">
-<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
 <p>L’approche la plus légère est l’environnement virtuel. Nous avons en fait implicitement déjà commencé à aller vers cette direction en créant un fichier <code>requirements.txt</code>.</p>
 <div class="callout callout-style-default callout-application callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -2518,7 +2492,7 @@ rm -f update.sh</code></pre>
   </div>
   
 </div>
-<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
 <p>Les environnements <code>conda</code> sont plus lourds à mettre en oeuvre que les environnements virtuels mais peuvent permettre un contrôle plus formel des dépendances.</p>
 <div class="callout callout-style-default callout-application callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -2593,7 +2567,7 @@ rm -f update.sh</code></pre>
   </div>
   
 </div>
-<div id="tabset-4-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-3-tab">
+<div id="tabset-3-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-3-tab">
 <p><code>uv</code> est le <em>new kid in the game</em> pour gérer les environnements virtuels avec <code>Python</code>.</p>
 <div class="callout callout-style-default callout-application callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -2693,9 +2667,9 @@ rm -f update.sh</code></pre>
 <li>Nous transformerons celui-ci en <code>Dockerfile</code> dans un deuxième temps. C’est l’objet de l’étape suivante.</li>
 </ul>
 <div class="tabset-margin-container"></div><div class="panel-tabset" data-group="language">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true" href="">Environnement virtuel <code>venv</code></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false" href="">Environnement <code>conda</code></a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true" href="">Environnement virtuel <code>venv</code></a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false" href="">Environnement <code>conda</code></a></li></ul>
 <div class="tab-content" data-group="language">
-<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
 <div class="callout callout-style-default callout-application callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -2808,7 +2782,7 @@ rm -f update.sh</code></pre>
   </div>
   
 </div>
-<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
 <div class="callout callout-style-default callout-application callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
