@@ -1958,16 +1958,20 @@ en modifiant la variable <code>BUCKET_PERSONNEL</code>, l’emplacement de votre
 <p>Les URL de téléchargement seront de la forme <code>https://minio.lab.sspcloud.fr/&lt;BUCKET_PERSONNEL&gt;/ensae-reproductibilite/data/raw/&lt;filename&gt;.&lt;extension&gt;</code></p>
 <p>On va adapter progressivement notre chaîne à l’utilisation du format Parquet.</p>
 <p>D’abord, il faut faire évoluer nos chemins:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-43" data-file="main.py" data-code-line-numbers=""><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><a class="code-annotation-anchor" data-target-cell="annotated-cell-43" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-43-1" class="code-annotation-target"><a href="#annotated-cell-43-1" aria-hidden="true" tabindex="-1"></a>URL_RAW <span class="op">=</span> <span class="st">""</span></span>
-<span id="annotated-cell-43-2"><a href="#annotated-cell-43-2" aria-hidden="true" tabindex="-1"></a>data_path <span class="op">=</span> os.environ.get(<span class="st">"data_path"</span>, URL_RAW)</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-43" data-file="main.py" data-code-line-numbers=""><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><a class="code-annotation-anchor" data-target-cell="annotated-cell-43" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-43-1" class="code-annotation-target"><a href="#annotated-cell-43-1" aria-hidden="true" tabindex="-1"></a>URL_RAW <span class="op">=</span> <span class="st">""</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <dl class="code-annotation-container-grid">
 <dt data-target-cell="annotated-cell-43" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-cell="annotated-cell-43" data-code-lines="1" data-code-annotation="1">Modifier avec <code>URL_RAW</code> un lien de la forme <code>"https://minio.lab.sspcloud.fr/${BUCKET_PERSONNEL}/ensae-reproductibilite/data/raw/data.parquet"</code> (ne laissez pas <code>${BUCKET_PERSONNEL}</code>, remplacez par la vraie valeur!).</span>
+<span data-code-cell="annotated-cell-43" data-code-lines="1" data-code-annotation="1">Modifier <code>URL_RAW</code> avec un lien de la forme <code>"https://minio.lab.sspcloud.fr/${BUCKET_PERSONNEL}/ensae-reproductibilite/data/raw/data.parquet"</code> (ne laissez pas <code>${BUCKET_PERSONNEL}</code>, remplacez par la vraie valeur!).</span>
 </dd>
 </dl>
-<p>Maintenant, il faut lire les données <code>Parquet</code> avec DuckDB. Modifier le code d’import des données pour utiliser DuckDB plutôt que Pandas. Vous pouvez, après avoir importé les données, convertir à nouveau en <em>DataFrame</em> Pandas avec la méthode <code>to_df</code>.</p>
-<p>Ne pas oublier de mettre à jour 1/ le <code>.gitignore</code> 2/ <code>requirements.txt</code> pour être en mesure de réinstaller les packages si nécessaire.</p>
+<p>Maintenant, il faut lire les données <code>Parquet</code> avec DuckDB. Modifier le code d’import des données pour utiliser DuckDB plutôt que Pandas pour la lecture.</p>
+<p>Il va falloir modifier quelque peu la suite du code pour s’adapter au nouveau moteur d’exécution de nos traitements de données. Essayez d’utiliser le plus tard possible <code>Pandas</code> dans la chaîne (via <code>.to_df()</code>): normalement vous ne pourrez plus éviter <code>Pandas</code> à partir du moment où vous passerez au <em>pipeline</em> de <em>machine learning</em> (Scikit ne supporte pas les <em>dataframes</em> <code>DuckDB</code>). Mais, si vous avez utilisé les <em>checkpoints</em> ou gardé la logique initiale d’utilisation de <code>DuckDB</code> sur le <em>dataframe</em> <code>Pandas</code>, les évolutions à faire du script sont minimes.</p>
+<p>Enfin, nettoyer notre dossier de données en local maintenant que le CSV n’est plus nécessaire.</p>
+<ul>
+<li>Ajouter le dossier <code>data/</code> au <code>.gitignore</code> ainsi que les fichiers <code>*.parquet</code></li>
+<li>Supprimer le dossier <code>data</code> de votre projet et faites <code>git rm --cached -r data</code></li>
+</ul>
 </div>
 </div>
 <div class="callout callout-style-default callout-application callout-titled">
@@ -1982,8 +1986,6 @@ en modifiant la variable <code>BUCKET_PERSONNEL</code>, l’emplacement de votre
 <div class="callout-body-container callout-body">
 <ul>
 <li><p>Remplacer la définition de <code>data_path</code> pour utiliser, par défaut, directement l’URL dans l’import. Modifier, si cela est pertinent, aussi votre fichier <code>.env</code>.</p></li>
-<li><p>Ajouter le dossier <code>data/</code> au <code>.gitignore</code> ainsi que les fichiers <code>*.parquet</code></p></li>
-<li><p>Supprimer le dossier <code>data</code> de votre projet et faites <code>git rm --cached -r data</code></p></li>
 <li><p>Vérifier le bon fonctionnement de votre application.</p></li>
 </ul>
 </div>
