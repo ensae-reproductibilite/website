@@ -1247,12 +1247,13 @@ pipe[-1].score(preprocessed_data, new_y)
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Cette application peut être chronophage, vous pouvez aller plus ou moins loin dans la fonctionalisation de votre script en fonction du temps dont vous disposez.</p>
+<p><em>Cette application peut être chronophage, vous pouvez aller plus ou moins loin dans la fonctionalisation de votre script en fonction du temps dont vous disposez.</em></p>
+<p>Cette application vise à transformer nos tests de validation de données en fonctions génériques. Nous allons adopter la convention arbitraire de nommer nos vérifications <code>check_*</code>.</p>
 <ul>
-<li>Créer une fonction qui intègre les différentes étapes du <em>pipeline</em> (preprocessing et définition du modèle). Cette fonction prend en paramètre le nombre d’arbres (argument obligatoire) et des arguments optionnels supplémentaires (les colonnes sur lesquelles s’appliquent les différentes étapes du <em>pipeline</em>, <code>max_depth</code> et <code>max_features</code>).</li>
-<li>Créer une fonction d’évaluation renvoyant le score obtenu et la matrice de confusion, à l’issue d’une estimation (mais cette estimation est faite en amont de la fonction, pas au sein de celle-ci)</li>
-<li>Déplacer toutes les fonctions ensemble, en début de script. Si besoin, ajouter des paramètres à votre fichier d’environnement pour créer de nouvelles variables comme les chemins des données.</li>
-<li>En profiter pour supprimer le code zombie qu’on a gardé jusqu’à présent mais qui ne correspond pas vraiment à des opérations utiles à notre chaine de production</li>
+<li>Pour comprendre la manière dont une fonction peut être un outil d’<strong>autodocumentation</strong>, créer une fonction <code>check_name_formatting</code> qui vérifie que le colonne <em>“Name”</em> est bien séparable en deux éléments par une virgule. Faire en sorte que cette fonction soit pure<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a>. Utiliser le <em>type hinting</em> des arguments pour renforcer l’autodocumentation de la chaîne<a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a>.</li>
+<li>Pour comprendre la manière dont une fonction répond au problème du <strong><em>don’t repeat yourself</em></strong>, créer une fonction <code>check_missing_values</code> pour recenser les valeurs manquantes pour une colonne donnée.</li>
+<li>Faire la même chose avec une fonction <code>check_data_leakage</code></li>
+<li>Appliquer <code>check_missing_values</code> à l’ensemble des variables du dataset<a href="#fn10" class="footnote-ref" id="fnref10" role="doc-noteref"><sup>10</sup></a></li>
 </ul>
 </div>
 </div>
@@ -1331,14 +1332,10 @@ rm -f update.sh</code></pre>
 </div>
 <div class="callout-body-container callout-body">
 <ul>
-<li>Déplacer les fonctions dans une série de fichiers dédiés:
-<ul>
-<li><code>build_pipeline.py</code>: script avec la définition du <em>pipeline</em></li>
-<li><code>train_evaluate.py</code>: script avec les fonctions d’évaluation du projet</li>
-</ul></li>
+<li>Déplacer les fonctions dans un script dédié nommé <code>check.py</code>. Ici un seul script suffit car nos fonctions partagent une thématique commune.</li>
 <li>Spécifier les dépendances (i.e.&nbsp;les packages à importer) dans les modules pour que ceux-ci puissent s’exécuter indépendamment ;</li>
 <li>Renommer <code>titanic.py</code> en <code>main.py</code> pour suivre la convention de nommage des projets <code>Python</code> ;</li>
-<li>Importer les fonctions nécessaires à partir des modules.</li>
+<li>Importer les fonctions nécessaires à partir du module.</li>
 <li>Vérifier que tout fonctionne bien en exécutant le <em>script</em> <code>main</code> à partir de la ligne de commande :</li>
 </ul>
 <div class="code-with-filename">
@@ -1778,7 +1775,7 @@ en modifiant la variable <code>BUCKET_PERSONNEL</code>, l’emplacement de votre
 <p>Vous pouvez ensuite supprimer le CSV de données présent dans votre dossier local, il ne nous sera plus utile.</p>
 </div>
 </div>
-<p>On va maintenant lire directement une donnée stockée sur <code>S3</code> avec <code>Python</code>. Pour illustrer le fait qu’être sur un système <em>cloud</em> avec les librairies adaptées change peu notre code, on va lire directement un fichier <code>CSV</code> stocké sur le <code>SSPCloud</code>, sans passer par un fichier en local<a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a>.</p>
+<p>On va maintenant lire directement une donnée stockée sur <code>S3</code> avec <code>Python</code>. Pour illustrer le fait qu’être sur un système <em>cloud</em> avec les librairies adaptées change peu notre code, on va lire directement un fichier <code>CSV</code> stocké sur le <code>SSPCloud</code>, sans passer par un fichier en local<a href="#fn11" class="footnote-ref" id="fnref11" role="doc-noteref"><sup>11</sup></a>.</p>
 <p>Pour illustrer la cohérence avec un système de fichier local, voici trois solutions pour lire le fichier que vous venez de mettre sur <code>S3</code> (s’appuyant sur <code>s3fs</code>, <code>Arrow</code> ou <code>DuckDB</code>). Attention, il faut avoir des jetons de connexion à <code>S3</code> à jour. Si vous avez cette erreur</p>
 <blockquote class="blockquote">
 <p>A client error (InvalidAccessKeyId) occurred when calling the ListBuckets operation: The AWS Access Key Id you provided does not exist in our records.</p>
@@ -2017,7 +2014,7 @@ en modifiant la variable <code>BUCKET_PERSONNEL</code>, l’emplacement de votre
 </ul>
 </div>
 </div>
-<p>Maintenant qu’on a arrangé la structure de notre projet, c’est l’occasion de supprimer le code qui n’est plus nécessaire au bon fonctionnement de notre projet (cela réduit la charge de maintenance<a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a>).</p>
+<p>Maintenant qu’on a arrangé la structure de notre projet, c’est l’occasion de supprimer le code qui n’est plus nécessaire au bon fonctionnement de notre projet (cela réduit la charge de maintenance<a href="#fn12" class="footnote-ref" id="fnref12" role="doc-noteref"><sup>12</sup></a>).</p>
 <p>Pour vous aider, vous pouvez utiliser <a href="https://pypi.org/project/vulture/"><code>vulture</code></a> de manière itérative pour vous assister dans le nettoyage de votre code.</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -2446,11 +2443,11 @@ rm -f update.sh</code></pre>
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li>Exécuter <code>pip freeze</code> en ligne de commande et observer la (très) longue liste de package</li>
-<li>Créer l’environnement virtuel <code>titanic</code> en s’inspirant de <a href="https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/">la documentation officielle</a><a href="#fn10" class="footnote-ref" id="fnref10" role="doc-noteref"><sup>10</sup></a> ou du <a href="../chapters/portability.html">chapitre dédié</a></li>
+<li>Créer l’environnement virtuel <code>titanic</code> en s’inspirant de <a href="https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/">la documentation officielle</a><a href="#fn13" class="footnote-ref" id="fnref13" role="doc-noteref"><sup>13</sup></a> ou du <a href="../chapters/portability.html">chapitre dédié</a></li>
 <li>Utiliser <code>ls</code> pour observer et comprendre le contenu du dossier <code>titanic/bin</code> installé</li>
 <li>Le SSPCloud, par défaut, fonctionne sur un environnement <code>conda</code>. Le désactiver en faisant <code>conda deactivate</code>.</li>
 <li>Activer l’environnement et vérifier l’installation de <code>Python</code> maintenant utilisée par votre machine <!---source titanic/bin/activate && which python----></li>
-<li>Vérifier directement depuis la ligne de commande que <code>Python</code> exécute bien une commande<a href="#fn11" class="footnote-ref" id="fnref11" role="doc-noteref"><sup>11</sup></a> avec:</li>
+<li>Vérifier directement depuis la ligne de commande que <code>Python</code> exécute bien une commande<a href="#fn14" class="footnote-ref" id="fnref14" role="doc-noteref"><sup>14</sup></a> avec:</li>
 </ol>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -2537,7 +2534,7 @@ rm -f update.sh</code></pre>
 <li>Exécuter <code>conda env export</code> en ligne de commande et observer la (très) longue liste de package</li>
 <li>Créer un environnement <code>titanic</code> avec <a href="https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-with-commands"><code>conda create</code></a></li>
 <li>Activer l’environnement et vérifier l’installation de <code>Python</code> maintenant utilisée par votre machine <!---conda activate titanic && which python----></li>
-<li>Vérifier directement depuis la ligne de commande que <code>Python</code> exécute bien une commande<a href="#fn12" class="footnote-ref" id="fnref12" role="doc-noteref"><sup>12</sup></a> avec:</li>
+<li>Vérifier directement depuis la ligne de commande que <code>Python</code> exécute bien une commande<a href="#fn15" class="footnote-ref" id="fnref15" role="doc-noteref"><sup>15</sup></a> avec:</li>
 </ol>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -2548,7 +2545,7 @@ rm -f update.sh</code></pre>
 <ol start="6" type="1">
 <li>Faire la même chose mais avec <code>import pandas as pd</code></li>
 <li>Installer les <em>packages</em> qu’on avait listé dans le <code>requirements.txt</code> précédemment. Ne pas faire un <code>pip install -r requirements.txt</code> afin de privilégier <code>conda install</code></li>
-<li>Exécuter à nouveau <code>conda env export</code> et comprendre la différence avec la situation précédente<a href="#fn13" class="footnote-ref" id="fnref13" role="doc-noteref"><sup>13</sup></a>.</li>
+<li>Exécuter à nouveau <code>conda env export</code> et comprendre la différence avec la situation précédente<a href="#fn16" class="footnote-ref" id="fnref16" role="doc-noteref"><sup>16</sup></a>.</li>
 <li>Vérifier que le script <code>main.py</code> fonctionne bien. Sinon installer les <em>packages</em> manquants et reprndre de manière itérative à partir de la question 7.</li>
 <li>Quand <code>main.py</code> fonctionne, faire <code>conda env export &gt; environment.yml</code> pour figer l’environnement de travail.</li>
 </ol>
@@ -2614,7 +2611,7 @@ rm -f update.sh</code></pre>
 <li>Créer un environnement virtuel <code>titanic</code> par le biais d’<code>uv</code> (<a href="https://docs.astral.sh/uv/pip/environments/#creating-a-virtual-environment">documentation</a>) sous le nom <code>titanic</code></li>
 <li>Utiliser <code>ls</code> pour observer et comprendre le contenu du dossier <code>titanic/bin</code> installé</li>
 <li>Activer l’environnement et vérifier l’installation de <code>Python</code> maintenant utilisée par votre machine <!---source titanic/bin/activate && which python----></li>
-<li>Vérifier directement depuis la ligne de commande que <code>Python</code> exécute bien une commande<a href="#fn14" class="footnote-ref" id="fnref14" role="doc-noteref"><sup>14</sup></a> avec:</li>
+<li>Vérifier directement depuis la ligne de commande que <code>Python</code> exécute bien une commande<a href="#fn17" class="footnote-ref" id="fnref17" role="doc-noteref"><sup>17</sup></a> avec:</li>
 </ol>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -3261,11 +3258,11 @@ rm -f update.sh</code></pre>
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>A partir de l’exemple présent dans la <a href="https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python#using-a-specific-python-version">documentation officielle</a> de <code>Github</code> <i class="fa-brands fa-github" aria-label="github"></i>, on a déjà une base de départ qui peut être modifiée. Les questions suivantes permettront d’automatiser les tests et le diagnostic qualité de notre code<a href="#fn15" class="footnote-ref" id="fnref15" role="doc-noteref"><sup>15</sup></a></p>
+<p>A partir de l’exemple présent dans la <a href="https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python#using-a-specific-python-version">documentation officielle</a> de <code>Github</code> <i class="fa-brands fa-github" aria-label="github"></i>, on a déjà une base de départ qui peut être modifiée. Les questions suivantes permettront d’automatiser les tests et le diagnostic qualité de notre code<a href="#fn18" class="footnote-ref" id="fnref18" role="doc-noteref"><sup>18</sup></a></p>
 <ol type="1">
 <li>Créer un fichier <code>.github/workflows/test.yaml</code> avec le contenu de l’exemple de la documentation</li>
 <li>Avec l’aide de la documentation, introduire une étape d’installation des dépendances. Utiliser le fichier <code>requirements.txt</code> pour installer les dépendances.</li>
-<li>Utiliser <code>pylint</code> pour vérifier la qualité du code. Ajouter l’argument <code>--fail-under=6</code> pour renvoyer une erreur en cas de note trop basse<a href="#fn16" class="footnote-ref" id="fnref16" role="doc-noteref"><sup>16</sup></a></li>
+<li>Utiliser <code>pylint</code> pour vérifier la qualité du code. Ajouter l’argument <code>--fail-under=6</code> pour renvoyer une erreur en cas de note trop basse<a href="#fn19" class="footnote-ref" id="fnref19" role="doc-noteref"><sup>19</sup></a></li>
 <li>Utiliser une étape appelant notre application en ligne de commande (<code>python main.py</code>) pour tester que la matrice de confusion s’affiche bien.</li>
 <li>Créer un secret stockant une valeur du <code>JETON_API</code>. Ne le faites pas commencer par un <em>“$”</em> comme ça vous pourrez regarder la log ultérieurement</li>
 <li>Aller voir votre test automatisé dans l’onglet <code>Actions</code> de votre dépôt sur <code>Github</code></li>
@@ -4702,7 +4699,7 @@ rm -f update.sh</code></pre>
 </div>
 <div class="callout-body-container callout-body">
 <ol type="1">
-<li><p>Lancer <code>MLFlow</code> depuis l’onflet <a href="https://datalab.sspcloud.fr/catalog/automation">Mes services</a> du SSPCloud. Attendre que le service soit bien lancé. Cela créera un service dont l’URL est de la forme <code>https://user-{username}.user.lab.sspcloud.fr</code>. Ce service <code>MLFlow</code> communiquera avec les <code>VSCode</code> que vous ouvrirez ultérieurement à partir de cet URL ainsi qu’avec le système de stockage <code>S3</code><a href="#fn17" class="footnote-ref" id="fnref17" role="doc-noteref"><sup>17</sup></a>.</p></li>
+<li><p>Lancer <code>MLFlow</code> depuis l’onflet <a href="https://datalab.sspcloud.fr/catalog/automation">Mes services</a> du SSPCloud. Attendre que le service soit bien lancé. Cela créera un service dont l’URL est de la forme <code>https://user-{username}.user.lab.sspcloud.fr</code>. Ce service <code>MLFlow</code> communiquera avec les <code>VSCode</code> que vous ouvrirez ultérieurement à partir de cet URL ainsi qu’avec le système de stockage <code>S3</code><a href="#fn20" class="footnote-ref" id="fnref20" role="doc-noteref"><sup>20</sup></a>.</p></li>
 <li><p>Regarder la page <code>Experiments</code>. Elle ne contient que <code>Default</code> à ce stade, c’est normal.</p></li>
 </ol>
 <ol start="2" type="1">
@@ -5086,9 +5083,9 @@ rm -f update.sh</code></pre>
 <section id="industrialiser-les-entraînements-de-nos-modèles" class="level2">
 <h2 class="anchored" data-anchor-id="industrialiser-les-entraînements-de-nos-modèles">Industrialiser les entraînements de nos modèles</h2>
 <p>Pour industrialiser nos entraînements, nous allons créer des processus parallèles indépendants pour chaque combinaison de nos hyperparamètres.</p>
-<p>Ce travail nous amène de l’approche <em>pipeline</em> à mi chemin entre <em>data science</em> et <em>data engineering</em>. Il existe plusieurs outils pour faire ceci, généralement issus de la sphère du <em>data engineering</em>. L’outil le plus complet sur le <code>SSPCloud</code>, bien intégré à l’écosystème <code>Kubernetes</code>, est <a href="https://argoproj.github.io/workflows/"><code>Argo Workflows</code></a><a href="#fn18" class="footnote-ref" id="fnref18" role="doc-noteref"><sup>18</sup></a>.</p>
+<p>Ce travail nous amène de l’approche <em>pipeline</em> à mi chemin entre <em>data science</em> et <em>data engineering</em>. Il existe plusieurs outils pour faire ceci, généralement issus de la sphère du <em>data engineering</em>. L’outil le plus complet sur le <code>SSPCloud</code>, bien intégré à l’écosystème <code>Kubernetes</code>, est <a href="https://argoproj.github.io/workflows/"><code>Argo Workflows</code></a><a href="#fn21" class="footnote-ref" id="fnref21" role="doc-noteref"><sup>21</sup></a>.</p>
 <p>Chaque combinaison d’hyperparamètres sera un processus isolé à l’issue duquel sera loggué le résultat dans <code>MLFlow</code>. Ces entraînements auront lieu en parallèle.</p>
-<p>Nous allons construire, dans les deux prochaines applications, un <em>pipeline</em> simple prenant cette forme<a href="#fn19" class="footnote-ref" id="fnref19" role="doc-noteref"><sup>19</sup></a>:</p>
+<p>Nous allons construire, dans les deux prochaines applications, un <em>pipeline</em> simple prenant cette forme<a href="#fn22" class="footnote-ref" id="fnref22" role="doc-noteref"><sup>22</sup></a>:</p>
 <div id="fig-pipeline" class="quarto-layout-panel">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -5368,26 +5365,29 @@ Modèle d’action <code>Github</code>
 <li id="fn5"><p>Pendant longtemps, <a href="https://black.readthedocs.io/en/stable/"><code>Black</code></a> était le <em>formatter</em> de référence en <code>Python</code> et on retrouve de nombreuses ressources sur internet qui l’utilisent. <a href="https://github.com/astral-sh/ruff-vscode"><code>Ruff</code></a> est une version évoluée, plus rapide et plus complet, qui est très rapidement devenu un outil standard des utilisateurs de <code>Python</code>.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn6"><p>Il est normal d’avoir des dossiers <code>__pycache__</code> qui traînent en local : ils se créent automatiquement à l’exécution d’un script en <code>Python</code>. Néanmoins, il ne faut pas associer ces fichiers à <code>Git</code>, voilà pourquoi on les ajoute au <code>.gitignore</code>.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn7"><p>Nous proposons ici d’adopter le principe de la <strong>programmation fonctionnelle</strong>. Pour encore fiabiliser un processus, il serait possible d’adopter le paradigme de la <strong>programmation orientée objet (POO)</strong>. Celle-ci est plus rebutante et demande plus de temps au développeur. L’arbitrage coût-avantage est négatif pour notre exemple, nous proposons donc de nous en passer. Néanmoins, pour une mise en production réelle d’un modèle, il peut être utle de l’adopter car certains <em>frameworks</em>, à commencer par les <em>pipelines</em> <code>scikit</code>, exigeront certaines classes et méthodes si vous désirez brancher des objets <em>ad hoc</em> à ceux-ci.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn8"><p>Alors oui, c’est vrai, <code>S3</code> se distingue d’un système de fichiers classiques comme on peut le lire dans certains <em>posts</em> énervés sur la question (par exemple sur <a href="https://www.reddit.com/r/aws/comments/dplfoa/why_is_s3fs_such_a_bad_idea/?tl=fr">Reddit</a>). Mais du point de vue de l’utilisateur <code>Python</code> plutôt que de l’architecte <em>cloud</em>, on va avoir assez peu de différence avec un système de fichier local. C’est pour le mieux, cela réduit la difficulté à rentrer dans cette technologie.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn9"><p>Lorsqu’on développe du code qui finalement ne s’avère plus nécessaire, on a souvent un cas de conscience à le supprimer et on préfère le mettre de côté. Au final, ce syndrôme de Diogène est mauvais pour la pérennité du projet : on se retrouve à devoir maintenir une base de code qui n’est, en pratique, pas utilisée. Ce n’est pas un problème de supprimer un code ; si finalement celui-ci s’avère utile, on peut le retrouver grâce à l’historique <code>Git</code> et les outils de recherche sur <code>Github</code>. Le <em>package</em> <code>vulture</code> est très pratique pour diagnostiquer les morceaux de code inutiles dans un projet.<a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn10"><p>Si vous désirez aussi contrôler la version de <code>Python</code>, ce qui peut être important dans une perspective de portabilité, vous pouvez ajouter une option, par exemple <code>-p python3.10</code>. Néanmoins nous n’allons pas nous embarasser de cette nuance pour la suite car nous pourrons contrôler la version de <code>Python</code> plus finement par le biais de <code>Docker</code>.<a href="#fnref10" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn11"><p>L’option <code>-c</code> passée après la commande <code>python</code> permet d’indiquer à <code>Python</code> que la commande ne se trouve pas dans un fichier mais sera dans le texte qu’on va directement lui fournir.<a href="#fnref11" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn12"><p>L’option <code>-c</code> passée après la commande <code>python</code> permet d’indiquer à <code>Python</code> que la commande ne se trouve pas dans un fichier mais sera dans le texte qu’on va directement lui fournir.<a href="#fnref12" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn13"><p>Pour comparer les deux listes, vous pouvez utiliser la fonctionnalité de <em>split</em> du terminal sur <code>VSCode</code> pour comparer les outputs de <code>conda env export</code> en les mettant en face à face.<a href="#fnref13" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p>Une fonction pure est une fonction qui n’attend pas de variables autres que ceux définis dans ses arguments.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn9"><p><code>Python</code> n’étant pas un langage fortement typé, le <em>type hinting</em> n’est pas coercitif. Il n’y aura pas d’erreur si on fournit un argument différent de celui indiqué dans la définition de la fonction. Il existe des <em>frameworks</em>, notamment <a href="https://docs.pydantic.dev/latest/"><code>Pydantic</code></a>, qui visent à sécuriser le code en production en assurant l’homogénéité des types entre les définitions et les usages d’une variable. Nous n’allons pas utiliser ce <em>framework</em> explicitement, cela nécessiterait d’aller plus loin dans le domaine de la programmation orientée objet. Néanmoins, quand nous utiliserons <code>FastAPI</code>, nous l’utiliserons indirectement.<a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn10"><p>A ce stade, il est tout à fait possible d’utiliser <code>.columns</code> pour lister les colonnes. Mais comme nous allons ultérieurement privilégier <code>DuckDB</code> (application 8) il est possible dès maintenant de récupérer la liste des noms de colonnes avec <code>DuckDB</code><a href="#fnref10" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn11"><p>Alors oui, c’est vrai, <code>S3</code> se distingue d’un système de fichiers classiques comme on peut le lire dans certains <em>posts</em> énervés sur la question (par exemple sur <a href="https://www.reddit.com/r/aws/comments/dplfoa/why_is_s3fs_such_a_bad_idea/?tl=fr">Reddit</a>). Mais du point de vue de l’utilisateur <code>Python</code> plutôt que de l’architecte <em>cloud</em>, on va avoir assez peu de différence avec un système de fichier local. C’est pour le mieux, cela réduit la difficulté à rentrer dans cette technologie.<a href="#fnref11" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn12"><p>Lorsqu’on développe du code qui finalement ne s’avère plus nécessaire, on a souvent un cas de conscience à le supprimer et on préfère le mettre de côté. Au final, ce syndrôme de Diogène est mauvais pour la pérennité du projet : on se retrouve à devoir maintenir une base de code qui n’est, en pratique, pas utilisée. Ce n’est pas un problème de supprimer un code ; si finalement celui-ci s’avère utile, on peut le retrouver grâce à l’historique <code>Git</code> et les outils de recherche sur <code>Github</code>. Le <em>package</em> <code>vulture</code> est très pratique pour diagnostiquer les morceaux de code inutiles dans un projet.<a href="#fnref12" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn13"><p>Si vous désirez aussi contrôler la version de <code>Python</code>, ce qui peut être important dans une perspective de portabilité, vous pouvez ajouter une option, par exemple <code>-p python3.10</code>. Néanmoins nous n’allons pas nous embarasser de cette nuance pour la suite car nous pourrons contrôler la version de <code>Python</code> plus finement par le biais de <code>Docker</code>.<a href="#fnref13" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn14"><p>L’option <code>-c</code> passée après la commande <code>python</code> permet d’indiquer à <code>Python</code> que la commande ne se trouve pas dans un fichier mais sera dans le texte qu’on va directement lui fournir.<a href="#fnref14" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn15"><p>Il est tout à fait normal de ne pas parvenir à créer une action fonctionnelle du premier coup. N’hésitez pas à <em>pusher</em> votre code après chaque question pour vérifier que vous parvenez bien à réaliser chaque étape. Sinon vous risquez de devoir corriger bout par bout un fichier plus conséquent.<a href="#fnref15" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn16"><p>Il existe une approche alternative pour faire des tests réguliers: les <em>hooks</em> <code>Git</code>. Il s’agit de règles qui doivent être satisfaites pour que le fichier puisse être committé. Cela assure que chaque <code>commit</code> remplisse des critères de qualité afin d’éviter le problème de la procrastination.</p>
-<p>La <a href="https://pylint.pycqa.org/en/latest/user_guide/pre-commit-integration.html">documentation de pylint</a> offre des explications supplémentaires. Ici, nous allons adopter une approche moins ambitieuse en demandant à notre action de faire ce travail d’évaluation de la qualité de notre code<a href="#fnref16" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn17"><p>Par conséquent, <code>MLFLow</code> bénéficie de l’injection automatique des <em>tokens</em> pour pouvoir lire/écrire sur S3. Ces jetons ont la même durée avant expiration que ceux de vos services interactifs <code>VSCode</code>. Il faut donc, par défaut, supprimer et rouvrir un service <code>MLFLow</code> régulièrement. La manière d’éviter cela est de créer des <em>service account</em> sur <a href="https://minio-console.lab.sspcloud.fr/login">https://minio-console.lab.sspcloud.fr/</a> et de les renseigner sur <a href="https://datalab.sspcloud.fr/project-settings/s3-configs">la page</a>.<a href="#fnref17" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn18"><p>Il existe d’autres outils d’ordonnancement de <em>pipelines</em> très utilisés dans l’industrie, notamment <a href="https://airflow.apache.org/"><code>Airflow</code></a>.</p>
+<li id="fn15"><p>L’option <code>-c</code> passée après la commande <code>python</code> permet d’indiquer à <code>Python</code> que la commande ne se trouve pas dans un fichier mais sera dans le texte qu’on va directement lui fournir.<a href="#fnref15" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn16"><p>Pour comparer les deux listes, vous pouvez utiliser la fonctionnalité de <em>split</em> du terminal sur <code>VSCode</code> pour comparer les outputs de <code>conda env export</code> en les mettant en face à face.<a href="#fnref16" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn17"><p>L’option <code>-c</code> passée après la commande <code>python</code> permet d’indiquer à <code>Python</code> que la commande ne se trouve pas dans un fichier mais sera dans le texte qu’on va directement lui fournir.<a href="#fnref17" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn18"><p>Il est tout à fait normal de ne pas parvenir à créer une action fonctionnelle du premier coup. N’hésitez pas à <em>pusher</em> votre code après chaque question pour vérifier que vous parvenez bien à réaliser chaque étape. Sinon vous risquez de devoir corriger bout par bout un fichier plus conséquent.<a href="#fnref18" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn19"><p>Il existe une approche alternative pour faire des tests réguliers: les <em>hooks</em> <code>Git</code>. Il s’agit de règles qui doivent être satisfaites pour que le fichier puisse être committé. Cela assure que chaque <code>commit</code> remplisse des critères de qualité afin d’éviter le problème de la procrastination.</p>
+<p>La <a href="https://pylint.pycqa.org/en/latest/user_guide/pre-commit-integration.html">documentation de pylint</a> offre des explications supplémentaires. Ici, nous allons adopter une approche moins ambitieuse en demandant à notre action de faire ce travail d’évaluation de la qualité de notre code<a href="#fnref19" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn20"><p>Par conséquent, <code>MLFLow</code> bénéficie de l’injection automatique des <em>tokens</em> pour pouvoir lire/écrire sur S3. Ces jetons ont la même durée avant expiration que ceux de vos services interactifs <code>VSCode</code>. Il faut donc, par défaut, supprimer et rouvrir un service <code>MLFLow</code> régulièrement. La manière d’éviter cela est de créer des <em>service account</em> sur <a href="https://minio-console.lab.sspcloud.fr/login">https://minio-console.lab.sspcloud.fr/</a> et de les renseigner sur <a href="https://datalab.sspcloud.fr/project-settings/s3-configs">la page</a>.<a href="#fnref20" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn21"><p>Il existe d’autres outils d’ordonnancement de <em>pipelines</em> très utilisés dans l’industrie, notamment <a href="https://airflow.apache.org/"><code>Airflow</code></a>.</p>
 <p>Ce dernier est plus utilisé, en pratique, qu’<code>Argo Workflow</code> mais, même s’il est disponible sur le <code>SSPCloud</code> aussi, est moins pensé autour de <code>Kubernetes</code> que l’est <code>Argo</code>.</p>
 <p>Pour mieux comprendre la différence entre <code>Argo</code> et <code>Airflow</code>, la philosphie différente de ces deux outils et leurs avantages comparatifs, cette courte vidéo est intéressante:</p>
 <div class="quarto-video ratio ratio-16x9"><iframe data-external="1" src="https://www.youtube.com/embed/w98X_0LwKWw" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe></div>
-<a href="#fnref18" class="footnote-back" role="doc-backlink">↩︎</a></li>
-<li id="fn19"><p>Il serait bien sûr possible d’aller beaucoup plus loin dans la définition du <em>pipeline</em>.</p>
+<a href="#fnref21" class="footnote-back" role="doc-backlink">↩︎</a></li>
+<li id="fn22"><p>Il serait bien sûr possible d’aller beaucoup plus loin dans la définition du <em>pipeline</em>.</p>
 <p>Par exemple, il est possible, si le <em>framework</em> utilisé pour la modélisation n’intègre pas la notion de <em>pipeline</em> au niveau de <code>Python</code> de faire ceci au niveau d’<code>Argo</code>. Cela donnerait un <em>pipeline</em> prenant cette forme:</p>
 <p><img src="https://inseefrlab.github.io/formation-mlops/slides/img/pokemon_workflow.png" class="img-fluid"></p>
-<p>Néanmoins, ici, nous utilisons <code>Scikit</code> qui permet d’intégrer le <em>preprocessing</em> comme une étape de modélisation. Nous n’avons donc pas d’intérêt à définir ceci comme une tâche autonome, raison pour laquelle notre <em>pipeline</em> apparaît plus simple.<a href="#fnref19" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<p>Néanmoins, ici, nous utilisons <code>Scikit</code> qui permet d’intégrer le <em>preprocessing</em> comme une étape de modélisation. Nous n’avons donc pas d’intérêt à définir ceci comme une tâche autonome, raison pour laquelle notre <em>pipeline</em> apparaît plus simple.<a href="#fnref22" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
