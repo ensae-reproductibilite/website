@@ -243,13 +243,18 @@ D'abord, il faut faire évoluer nos chemins:
 
 ```{.python file="main.py"}
 URL_RAW = "" #<1>
-data_path = os.environ.get("data_path", URL_RAW)
 ```
-1. Modifier avec `URL_RAW` un lien de la forme `"https://minio.lab.sspcloud.fr/${BUCKET_PERSONNEL}/ensae-reproductibilite/data/raw/data.parquet"` (ne laissez pas `${BUCKET_PERSONNEL}`, remplacez par la vraie valeur!).
+1. Modifier `URL_RAW` avec un lien de la forme `"https://minio.lab.sspcloud.fr/${BUCKET_PERSONNEL}/ensae-reproductibilite/data/raw/data.parquet"` (ne laissez pas `${BUCKET_PERSONNEL}`, remplacez par la vraie valeur!).
 
-Maintenant, il faut lire les données `Parquet` avec DuckDB. Modifier le code d'import des données pour utiliser DuckDB plutôt que Pandas. Vous pouvez, après avoir importé les données, convertir à nouveau en _DataFrame_ Pandas avec la méthode `to_df`. 
+Maintenant, il faut lire les données `Parquet` avec DuckDB. Modifier le code d'import des données pour utiliser DuckDB plutôt que Pandas pour la lecture. 
 
-Ne pas oublier de mettre à jour 1/ le `.gitignore` 2/ `requirements.txt` pour être en mesure de réinstaller les packages si nécessaire.
+Il va falloir modifier quelque peu la suite du code pour s'adapter au nouveau moteur d'exécution de nos traitements de données. Essayez d'utiliser le plus tard possible `Pandas` dans la chaîne (via `.to_df()`): normalement vous ne pourrez plus éviter `Pandas` à partir du moment où vous passerez au _pipeline_ de _machine learning_ (Scikit ne supporte pas les _dataframes_ `DuckDB`). Mais, si vous avez utilisé les _checkpoints_ ou gardé la logique initiale d'utilisation de `DuckDB` sur le *dataframe* `Pandas`, les évolutions à faire du script sont minimes.  
+
+Enfin, nettoyer notre dossier de données en local maintenant que le CSV n'est plus nécessaire. 
+
+- Ajouter le dossier `data/` au `.gitignore` ainsi que les fichiers `*.parquet`
+- Supprimer le dossier `data` de votre projet et faites `git rm --cached -r data`
+
 :::
 
 
@@ -262,8 +267,6 @@ Ne pas oublier de mettre à jour 1/ le `.gitignore` 2/ `requirements.txt` pour �
 - Remplacer la définition de  `data_path` pour utiliser, par défaut, directement l'URL dans l'import. Modifier, si cela est pertinent, aussi votre fichier `.env`.
 
 
-- Ajouter le dossier `data/` au `.gitignore` ainsi que les fichiers `*.parquet`
-- Supprimer le dossier `data` de votre projet et faites `git rm --cached -r data`
 
 - Vérifier le bon fonctionnement de votre application.
 
