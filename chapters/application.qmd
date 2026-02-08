@@ -448,9 +448,7 @@ Même si la notion de tests unitaires
 prend plus de sens dans un _package_, nous pouvons proposer
 dans le projet des exemples d'utilisation de la fonction, ceci peut être pédagogique.
 
-Nous allons utiliser [`unittest`](https://docs.python.org/3/library/unittest.html)
-pour effectuer des tests unitaires. Cette approche nécessite quelques notions
-de programmation orientée objet ou une bonne discussion avec `ChatGPT`.
+Nous allons utiliser [`unittest`](https://docs.python.org/3/library/unittest.html) pour effectuer des tests unitaires. Cette approche nécessite quelques notions de programmation orientée objet ou une bonne discussion avec `ChatGPT`.
 
 {{< include "./applications/_appli9.qmd" >}}
 
@@ -467,17 +465,17 @@ Cela peut s'effectuer de la manière suivante avec le package
 [`coverage`](https://coverage.readthedocs.io/en/7.2.2/):
 
 ```{.bash filename="terminal"}
-coverage run -m unittest tests/test_pipeline.py
+coverage run -m unittest tests/test_check.py
 coverage report -m
 ```
 
 ```{.python}
-Name                             Stmts   Miss  Cover   Missing
---------------------------------------------------------------
-src/pipeline/build_pipeline.py      11      0   100%
-tests/test_pipeline.py              46      1    98%   75
---------------------------------------------------------------
-TOTAL                               57      1    98%
+Name                      Stmts   Miss  Cover   Missing
+-------------------------------------------------------
+src/validation/check.py      19     10    47%   14-25, 35-41
+tests/test_check.py          18      1    94%   41
+-------------------------------------------------------
+TOTAL                        37     11    70%
 ```
 
 Le taux de couverture est souvent mis en avant par les gros projets comme indicateur de leur qualité. Il existe d'ailleurs des badges `Github` dédiés.
@@ -485,17 +483,14 @@ Le taux de couverture est souvent mis en avant par les gros projets comme indica
 
 
 
-
 ## Étape 2 : transformer son projet en package (optionnel)
 
-Notre projet est modulaire, ce qui le rend assez simple à transformer en _package_, en s'inspirant de la structure du `cookiecutter` adapté, issu
-En fait, il ne nous manque qu'un fichier essentiel, le principal distinguant un projet classique d'un package : `pyproject.toml`.
+Notre projet est modulaire, ce qui le rend assez simple à transformer en _package_ en s'inspirant de la structure du `cookiecutter` adapté. En fait, il ne nous manque qu'un fichier essentiel, le principal distinguant un projet classique d'un package : `pyproject.toml`.
 de [cet ouvrage](https://py-pkgs.org/03-how-to-package-a-python#package-structure). 
 
 Ce fichier permet de contrôler de manière formelle l'interaction entre nos scripts et le monde extérieur (l'isolation plus ou moins forte entre notre _package_ et le reste de l'écosystème `Python`) tout en donnant des indications à `Python` sur la manière de construire et installer notre _package_ fait maison.
 
-On va créer un _package_ nommé `titanicml` qui encapsule tout notre code et qui sera appelé par notre script principal. La structure attendue
-est la suivante:
+On va créer un _package_ nommé `titanicml` qui encapsule tout notre code et qui sera appelé par notre script principal. La structure attendue est la suivante:
 
 <details>
 <summary>Structure visée</summary>
@@ -508,14 +503,12 @@ application
 │       └── titanic.ipynb                   │
 │       └── main.py                         ┘
 ├── pyproject.toml                          ┐
-├── src/titanicml                           │
-│   ├── __init__.py                         │ Package source code, metadata
-│   ├── pipeline                            │ and build instructions
-│   │   └── build_pipeline.py               │
-│   └── models                              │
-│       └── train_evaluate.py               ┘
+├── src/titanicml                           │ Package source code, metadata
+|   ├── __init__.py
+│   └── validation                          │ and build instructions
+│       └── check.py                        ┘
 └── tests                                   ┐
-    └── test_pipeline.py                    ┘ Package tests
+    └── test_check.py                       ┘ Package tests
 ```
 </details>
 
@@ -530,10 +523,8 @@ application
 ├── README.md
 ├── requirements.txt
 └── src
-    ├── pipeline
-    │   └── build_pipeline.py
-    └── models
-        └── train_evaluate.py
+    └── validation
+        └── check.py
 ```
 </details>
 
@@ -546,8 +537,7 @@ Il existe plusieurs _frameworks_ pour construire un _package_. Nous allons privi
 
 {{< checkpoint appli8 "Reprendre à partir d'ici" "true" "pre-appli10" >}}
 
-Dans la partie précédente,
-on a appliqué de manière incrémentale de nombreuses bonnes pratiques vues
+Dans la partie précédente, on a appliqué de manière incrémentale de nombreuses bonnes pratiques vues
 dans les chapitres [Qualité du code](/chapters/code-quality.html)
 et [Structure des projets](/chapters/projects-architecture.html)
 tout au long du cours.
@@ -613,31 +603,21 @@ la problématique de la portabilité.
 
 ::: {.panel-tabset group="language"}
 
-## Environnement virtuel `venv`
-
-L'approche la plus légère est l'environnement virtuel.
-Nous avons en fait implicitement déjà commencé à aller vers
-cette direction
-en créant un fichier `requirements.txt`.
-
-{{< include "./applications/_appli11a.qmd" >}}
-
-
-## Environnement `conda`
-
-Les environnements `conda` sont plus lourds à mettre en oeuvre que les
-environnements virtuels mais peuvent permettre un contrôle
-plus formel des dépendances.
-
-{{< include "./applications/_appli11b.qmd" >}}
-
+## Avec `uv`
 
 ## Environnement virtuel via `uv`
 
-`uv` est le _new kid in the game_ pour gérer les environnements virtuels avec `Python`.
+En à peine un an `uv` s'est imposé comme la solution la plus populaire pour créer et gérer des environnements virtuels et gérer les dépendances `Python`.
 
-{{< include "./applications/_appli11c.qmd" >}}
+{{< include "./applications/_appli11.qmd" >}}
 
+
+## Avec `venv`
+
+`venv` est l'approche historique pour gérer des environnements virtuels. Nous avons en fait implicitement déjà commencé à aller vers
+cette direction en créant un fichier `requirements.txt`.
+
+{{< include "./applications/_appli11_venv.qmd" >}}
 
 :::
 

@@ -176,19 +176,6 @@ fs = s3fs.S3FileSystem(client_kwargs={"endpoint_url": "https://minio.lab.sspclou
 df = pd.read_parquet(f"s3://{MY_BUCKET}/{CHEMIN_PARQUET}", filesystem=fs)
 ```
 
-## Avec `Pyarrow` et `s3fs`
-
-```{.python}
-import pyarrow as pa
-import pyarrow.parquet as pq
-
-s3 = pa.fs.S3FileSystem(endpoint_override ="https://minio.lab.sspcloud.fr")
-
-df = pq.read_table(f"{MY_BUCKET}/{CHEMIN_PARQUET}", filesystem=s3)
-
-df
-```
-
 ## Avec `DuckDB`
 
 ```{.python}
@@ -204,6 +191,19 @@ df
 ```
 
 :::
+
+## Avec `Pyarrow` et `s3fs`
+
+```{.python}
+import pyarrow as pa
+import pyarrow.parquet as pq
+
+s3 = pa.fs.S3FileSystem(endpoint_override ="https://minio.lab.sspcloud.fr")
+
+df = pq.read_table(f"{MY_BUCKET}/{CHEMIN_PARQUET}", filesystem=s3)
+
+df
+```
 
 ::::
 
@@ -248,7 +248,7 @@ URL_RAW = "" #<1>
 
 Maintenant, il faut lire les données `Parquet` avec DuckDB. Modifier le code d'import des données pour utiliser DuckDB plutôt que Pandas pour la lecture. 
 
-Il va falloir modifier quelque peu la suite du code pour s'adapter au nouveau moteur d'exécution de nos traitements de données. Essayez d'utiliser le plus tard possible `Pandas` dans la chaîne (via `.to_df()`): normalement vous ne pourrez plus éviter `Pandas` à partir du moment où vous passerez au _pipeline_ de _machine learning_ (Scikit ne supporte pas les _dataframes_ `DuckDB`). Mais, si vous avez utilisé les _checkpoints_ ou gardé la logique initiale d'utilisation de `DuckDB` sur le *dataframe* `Pandas`, les évolutions à faire du script sont minimes.  
+Il va falloir modifier quelque peu la suite du code pour s'adapter au nouveau moteur d'exécution de nos traitements de données. Essayez d'utiliser le plus tard possible `Pandas` dans la chaîne (via `.to_df()`): normalement vous ne pourrez plus éviter `Pandas` à partir du moment où vous passerez au _pipeline_ de _machine learning_ (`Scikit` ne supporte pas les _dataframes_ `DuckDB`). Mais, si vous avez utilisé les _checkpoints_ ou gardé la logique initiale d'utilisation de `DuckDB` sur le *dataframe* `Pandas`, les évolutions à faire du script sont minimes.  
 
 Enfin, nettoyer notre dossier de données en local maintenant que le CSV n'est plus nécessaire. 
 
@@ -257,21 +257,6 @@ Enfin, nettoyer notre dossier de données en local maintenant que le CSV n'est p
 
 :::
 
-
-::: {.application}
-
-## Application 8d: partage de données sur le système de stockage `S3`
-
-
-
-- Remplacer la définition de  `data_path` pour utiliser, par défaut, directement l'URL dans l'import. Modifier, si cela est pertinent, aussi votre fichier `.env`.
-
-
-
-- Vérifier le bon fonctionnement de votre application.
-
-
-:::
 
 Maintenant qu'on a arrangé la structure de notre projet, c'est l'occasion
 de supprimer le code qui n'est plus nécessaire au bon fonctionnement de notre
@@ -296,8 +281,8 @@ vulture .
 ```
 
 ```{.python}
-src/data/import_data.py:3: unused function 'split_and_count' (60% confidence)
-src/pipeline/build_pipeline.py:12: unused function 'split_train_test' (60% confidence)
+main.py:53: unused variable 'jeton_api' (60% confidence)
+main.py:147: unused variable 'rdmf_score_tr' (60% confidence)
 ```
 
 </details>
