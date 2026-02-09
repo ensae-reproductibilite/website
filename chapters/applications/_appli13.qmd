@@ -8,15 +8,7 @@ exemple _[Play with Docker](https://labs.play-with-docker.com)_
 #### Création du `Dockerfile`
 
 - Dans le terminal `Linux`, cloner votre dépôt `Github`
-- Repartir de la dernière version à disposition. Par exemple, si vous avez privilégié
-l'environnement virtuel `venv`, ce sera:
-
-```{.bash filename="terminal"}
-git stash #<1>
-git checkout appli12a
-```
-1. Pour annuler les modifications depuis le dernier _commit_
-
+- Repartir du dernier _checkpoint_ mis à disposition (ou de votre dernière version si vous la préférez). 
 
 - Créer via la ligne de commande un fichier texte vierge nommé `Dockerfile` (la majuscule au début du mot est importante)
 
@@ -35,13 +27,17 @@ FROM ubuntu:22.04
 
 # Install Python
 RUN apt-get -y update && \
-    apt-get install -y python3-pip
+    apt-get install -y python3-pip curl
+
+# Install uv
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.local/bin/:$PATH"
 
 # Install project dependencies
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+COPY pyproject.toml .
+RUN uv sync
 
-CMD ["python3", "main.py"]
+CMD ["uv", "run", "main.py"]
 ```
 </details>
 
@@ -60,8 +56,8 @@ docker images
 ```
 
 ```{.python}
-REPOSITORY      TAG       IMAGE ID       CREATED              SIZE
-my-python-app   latest    188957e16594   About a minute ago   879MB
+REPOSITORY      TAG       IMAGE ID       CREATED          SIZE
+my-python-app   latest    e83445c6fb5a   12 seconds ago   978MB
 ```
 
 #### Tester l'image: découverte du cache
@@ -92,23 +88,33 @@ FROM ubuntu:22.04
 
 # Install Python
 RUN apt-get -y update && \
-    apt-get install -y python3-pip
+    apt-get install -y python3-pip curl
+
+# Install uv
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.local/bin/:$PATH"
 
 # Install project dependencies
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+COPY pyproject.toml .
+RUN uv sync
 
 COPY main.py .
 COPY src ./src
-CMD ["python3", "main.py"]
+CMD ["uv", "run", "main.py"]
 ```
 
 </details>
 
 - Refaire tourner l'étape de `build`
 
-- Refaire tourner l'étape de `run`. A ce stade, la matrice de confusion doit fonctionner 🎉.
-Vous avez créé votre première application reproductible !
+- Refaire tourner l'étape de `run`. Il vous manque la variable d'environnement `JETON_API` qui n'a pas été insérée dans le conteneur pour ne pas prendre le risque de la révéler. Il va falloir l'introduire au moment du _run_ avec la commande suivante: 
+
+```{.python}
+docker run -e JETON_API='' -it my-python-app
+```
+
+- A ce stade, l'application doit tourner de A à Z 🎉.
+Félicitations, vous avez créé votre première application reproductible !
 
 :::
 
