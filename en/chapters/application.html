@@ -290,7 +290,7 @@ div.callout-application.callout-style-default .callout-icon::before, div.callout
   </ul></li>
   <li><a href="#partie3" id="toc-partie3" class="nav-link" data-scroll-target="#partie3">Partie 3 : construction d’un projet portable et reproductible</a>
   <ul class="collapse">
-  <li><a href="#anaconda" id="toc-anaconda" class="nav-link" data-scroll-target="#anaconda">Étape 1 : un environnement pour rendre le projet portable</a></li>
+  <li><a href="#venv" id="toc-venv" class="nav-link" data-scroll-target="#venv">Étape 1 : un environnement pour rendre le projet portable</a></li>
   <li><a href="#shell" id="toc-shell" class="nav-link" data-scroll-target="#shell">Étape 2: construire l’environnement de notre application via un script <code>shell</code></a></li>
   <li><a href="#docker" id="toc-docker" class="nav-link" data-scroll-target="#docker">Étape 3: conteneuriser l’application avec <code>Docker</code></a></li>
   </ul></li>
@@ -2327,7 +2327,7 @@ Illustration de l’état actuel du projet
 <p>Dans cette troisème partie de notre travail vers la mise en production, nous allons voir comment <strong>normaliser l’environnement d’exécution afin de produire un projet portable</strong>. Autrement dit, nous n’allons plus nous contenter de modularité mais allons rechercher la portabilité. On sera alors tout proche de pouvoir mettre le projet en production.</p>
 <p>On progressera dans l’échelle de la reproductibilité de la manière suivante:</p>
 <ol type="1">
-<li><a href="#anaconda"><strong>Environnements virtuels</strong></a> ;</li>
+<li><a href="#venv"><strong>Environnements virtuels</strong></a> ;</li>
 <li>Créer un <a href="#shell">script shell</a> qui permet, depuis un environnement minimal, de construire l’application de A à Z ;</li>
 <li><a href="#docker"><strong>Images et conteneurs <code>Docker</code></strong></a>.</li>
 </ol>
@@ -2376,8 +2376,8 @@ rm -f update.sh</code></pre>
     </div>
   </div>
   
-<section id="anaconda" class="level2">
-<h2 class="anchored" data-anchor-id="anaconda">Étape 1 : un environnement pour rendre le projet portable</h2>
+<section id="venv" class="level2">
+<h2 class="anchored" data-anchor-id="venv">Étape 1 : un environnement pour rendre le projet portable</h2>
 <p>Pour qu’un projet soit portable, il doit remplir deux conditions:</p>
 <ul>
 <li>Ne pas nécessiter de dépendance qui ne soient pas renseignées quelque part ;</li>
@@ -3005,11 +3005,14 @@ rm -f update.sh</code></pre>
 <p>A partir de l’exemple présent dans la <a href="https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python#using-a-specific-python-version">documentation officielle</a> de <code>Github</code> <i class="fa-brands fa-github" aria-label="github"></i>, on a déjà une base de départ qui peut être modifiée. Les questions suivantes permettront d’automatiser les tests et le diagnostic qualité de notre code<a href="#fn16" class="footnote-ref" id="fnref16" role="doc-noteref"><sup>16</sup></a></p>
 <ol type="1">
 <li>Créer un fichier <code>.github/workflows/test.yaml</code> avec le contenu de l’exemple de la documentation</li>
-<li>Avec l’aide de la documentation, introduire une étape d’installation des dépendances. Utiliser le fichier <code>requirements.txt</code> pour installer les dépendances.</li>
-<li>Utiliser <code>pylint</code> pour vérifier la qualité du code. Ajouter l’argument <code>--fail-under=6</code> pour renvoyer une erreur en cas de note trop basse<a href="#fn17" class="footnote-ref" id="fnref17" role="doc-noteref"><sup>17</sup></a></li>
+<li>Avec l’aide de la documentation, introduire une étape d’installation des dépendances. Vous inspirer des scripts précédents, ou de l’action <code>Github</code> développée par Astral, la <em>startup</em> derrière <code>uv</code>, pour cela.</li>
+<li>Créer une étape utilisant <code>pylint</code> pour évaluer la qualité formelle du code. Ajouter l’argument <code>--fail-under=5</code> pour renvoyer une erreur en cas de note trop basse<a href="#fn17" class="footnote-ref" id="fnref17" role="doc-noteref"><sup>17</sup></a></li>
+<li>Committer ce fichier et corriger de manière itérative s’il y a une erreur en allant voir votre test automatisé dans l’onglet <code>Actions</code> de votre dépôt sur <code>Github</code>.</li>
+</ol>
+<p>Passons maintenant à la mise en production de notre code principal.</p>
+<ol type="1">
 <li>Utiliser une étape appelant notre application en ligne de commande (<code>python main.py</code>) pour tester que la matrice de confusion s’affiche bien.</li>
-<li>Créer un secret stockant une valeur du <code>JETON_API</code>. Ne le faites pas commencer par un <em>“$”</em> comme ça vous pourrez regarder la log ultérieurement</li>
-<li>Aller voir votre test automatisé dans l’onglet <code>Actions</code> de votre dépôt sur <code>Github</code></li>
+<li>En toute vraisemblance vous avez une erreur à ce niveau. Créer un secret stockant une valeur du <code>JETON_API</code>.</li>
 <li><em>(optionnel)</em>: Créer un <em>artefact</em> à partir du fichier de <em>log</em> que vous créez dans <code>main.py</code></li>
 </ol>
 </div>
