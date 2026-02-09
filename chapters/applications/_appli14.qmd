@@ -14,15 +14,16 @@ que vous parvenez bien à réaliser chaque étape. Sinon vous risquez de devoir 
 bout par bout un fichier plus conséquent.
 
 1. Créer un fichier `.github/workflows/test.yaml` avec le contenu de l'exemple de la documentation
-3. Avec l'aide de la documentation, introduire une étape d'installation des dépendances.
-Utiliser le fichier `requirements.txt` pour installer les dépendances.
-4. Utiliser `pylint` pour vérifier la qualité du code. Ajouter l'argument `--fail-under=6` pour
+3. Avec l'aide de la documentation, introduire une étape d'installation des dépendances. Vous inspirer des scripts précédents, ou de l'action `Github` développée par Astral, la _startup_ derrière `uv`, pour cela. 
+4. Créer une étape utilisant `pylint` pour évaluer la qualité formelle du code. Ajouter l'argument `--fail-under=5` pour
 renvoyer une erreur en cas de note trop basse[^hook]
-5. Utiliser une étape appelant notre application en ligne de commande (`python main.py`)
-pour tester que la matrice de confusion s'affiche bien.
-6. Créer un secret stockant une valeur du `JETON_API`. Ne le faites pas commencer par un _"$"_ comme ça vous pourrez regarder la log ultérieurement
-7. Aller voir votre test automatisé dans l'onglet `Actions` de votre dépôt sur `Github`
-8. _(optionnel)_: Créer un _artefact_ à partir du fichier de _log_ que vous créez dans `main.py`
+5. Committer ce fichier et corriger de manière itérative s'il y a une erreur en allant voir votre test automatisé dans l'onglet `Actions` de votre dépôt sur `Github`.
+
+Passons maintenant à la mise en production de notre code principal.
+
+1. Utiliser une étape appelant notre application en ligne de commande (`python main.py`) pour tester que la matrice de confusion s'affiche bien.
+2. En toute vraisemblance vous avez une erreur à ce niveau. Créer un secret stockant une valeur du `JETON_API`. 
+3. _(optionnel)_: Créer un _artefact_ à partir du fichier de _log_ que vous créez dans `main.py`
 
 [^hook]: Il existe une approche alternative pour faire des tests
     réguliers: les _hooks_ `Git`.
