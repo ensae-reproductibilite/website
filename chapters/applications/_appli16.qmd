@@ -1,24 +1,24 @@
 ::: {.application}
 
-## Application 16: Mise à disposition sous forme d'API locale
+## Application 16a: Dissocier entraînement et évaluation
 
-- Installer `fastAPI` et `uvicorn` puis les ajouter au `requirements.txt`
-- Renommer le fichier `main.py` en `train.py`.
-- Dans ce script, ajouter une sauvegarde du modèle après l'avoir entraîné, sous le format [`joblib`](https://scikit-learn.org/stable/model_persistence.html#python-specific-serialization).
-- Faire tourner
+[^skops]: [`skops`](https://skops.readthedocs.io/en/stable/index.html) est une nouvelle librairie développée par _Probabl_, la startup derrière `Scikit`. Elle vise à sécuriser la réutilisation de modèles de _machine learning_ afin d'éviter que du code malicieux soit exécuté lors de l'ouverture d'un modèle entraîné par quelqu'un d'autre. Elle est progressivement amenée à se substituer à `joblib`, la librairie qui permettait jusqu'à présent d'enregistrer sous forme persistente et réutiliser un modèle de machine learning.  
 
-```{.bash filename="terminal"}
-python train.py
-```
+- Installer `fastAPI`, `uvicorn` et `skops`[^skops]. N'oubliez pas que nous n'utilisons plus `pip install` pour cela.  
+- Renommer le fichier `main.py` en `train.py`. 
+- Dans ce script, ajouter une sauvegarde du modèle après l'avoir entraîné, en suivant la [documentation de Scikit](https://scikit-learn.org/stable/model_persistence.html#skops-io).
+- Faire tourner `train.py` pour enregistrer en local votre modèle de production. Optionnel: tester la lecture du modèle depuis un _notebook_ et une inférence sur un exemple inventé. 
 
-pour enregistrer en local votre modèle de production.
+- Ajouter `model.skops` au `.gitignore` car `Git` n'est pas fait pour ce type de fichiers.
 
 - Modifier les appels à `main.py` dans votre `Dockerfile` et vos actions `Github` sous peine d'essuyer des échecs lors de vos actions `Github` après le prochain _push_.
 
-- Ajouter `model.joblib` au `.gitignore` car `Git` n'est pas fait pour ce type de fichiers.
+Nous allons maintenant passer au développement de l'API. Comme découvrir `FastAPI` n'est pas l'objet de cet enseignement, nous donnons directement le modèle pour créer l'API. Si vous désirez tester de vous-mêmes, vous pouvez créer votre fichier sans vous référer à l'exemple.
+:::
 
-Nous allons maintenant passer au développement de l'API. Comme découvrir `FastAPI` n'est pas l'objet de cet enseignement, nous donnons directement le modèle pour créer l'API. Si vous
-désirez tester de vous-mêmes, vous pouvez créer votre fichier sans vous référer à l'exemple.
+
+::: {.application}
+## Application 16b: Utiliser une API pour l'inférence
 
 - Créer le fichier `app/api.py` permettant d'initialiser l'API:
 
