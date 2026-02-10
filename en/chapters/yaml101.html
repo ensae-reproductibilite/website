@@ -501,12 +501,12 @@ Note&nbsp;1: YAML n’est pas le premier langage déclaratif que vous avez appri
 <h2 class="anchored" data-anchor-id="utilisation-programmatique">Utilisation programmatique</h2>
 <p>Comme on l’a vu, le langage <code>YAML</code> est pensé avant tout pour être écrit et lus par des humains. Cela dit, on peut vouloir parfois générer par exemple de nombreux fichiers <code>YAML</code> à partir d’un même template, ou bien récupérer de manière automatisée des informations dans un fichier de configuration <code>YAML</code>. De la même manière qu’un fichier <code>JSON</code> par exemple, il est tout à fait possible d’interagir avec un fichier <code>YAML</code> de manière programmatique.</p>
 <p>En <code>Python</code>, le <em>package</em> de référence pour manipuler du <code>YAML</code> est <a href="https://pypi.org/project/PyYAML/">PyYAML</a>. Illustrons quelques commandes de base.</p>
-<div id="aa980001" class="cell" data-execution_count="1">
+<div id="e4786ca8" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Supposons que le fichier de déploiement <code>Kubernetes</code> qu’on a utilisé tout a long de ce tutoriel soit écrit dans un fichier <code>api-deployment.yaml</code>. Commençons par l’importer et récupérer quelques informations.</p>
 <p>La syntaxe pour importer le contenu d’un fichier <code>YAML</code> est semblable à celle pour n’importe quel fichier. On utilise la fonction <code>safe_load</code> du <em>package</em> <code>PyYAML</code>.</p>
-<div id="4d9ac15c" class="cell" data-execution_count="3">
+<div id="ef587550" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"api-deployment.yaml"</span>, <span class="st">"r"</span>) <span class="im">as</span> file_in:</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  manifest <span class="op">=</span> yaml.safe_load(file_in)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -516,7 +516,7 @@ Note&nbsp;1: YAML n’est pas le premier langage déclaratif que vous avez appri
 </div>
 </div>
 <p>Le contenu est chargé en <code>Python</code> sous la forme d’un dictionnaire, qui est la manière naturelle en <code>Python</code> de représenter de l’information hiérarchique. A partir de là, on peut requêter le contenu du fichier <code>YAML</code> à la manière de n’importe quel dictionnaire <code>Python</code>. Récupérons par exemple le nom du modèle déployé.</p>
-<div id="916c8855" class="cell" data-execution_count="4">
+<div id="6e100b49" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  manifest</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  .get(<span class="st">"spec"</span>)</span>
@@ -532,7 +532,7 @@ Note&nbsp;1: YAML n’est pas le premier langage déclaratif que vous avez appri
 </div>
 <p>Le chemin dans le dictionnaire reflète les différents objets qui structurent un fichier <code>YAML</code>. Les clés (“spec”, “containers”) correspondent aux dictionnaires en <code>YAML</code>, et les index numériques (“0” ici) correspondent à la sélection d’un élément par position dans une liste. Ici, on récupère la spécification du premier conteneur — et le seul en l’occurrence, mais le <code>Pod</code> pourrait héberger plusieurs conteneurs — et, pour ce conteneur, on récupère la première variable d’environnement (<code>MODEL</code>) dont on extrait la valeur (le nom du modèle).</p>
 <p>A présent, intéressons-nous au cas où l’on voudrait modifier une information du fichier <code>YAML</code> et exporter un manifeste actualisé. On va changer la valeur de la variable d’environnement <code>DEBUG</code> de <code>true</code> à <code>false</code>. En pratique, on fait la modification sur le dictionnaire en <code>Python</code>, puis on exporte le dictionnaire au format <code>YAML</code>.</p>
-<div id="75127c3e" class="cell" data-execution_count="5">
+<div id="bb68cdb1" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Vérification du contenu actuel</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(manifest[<span class="st">"spec"</span>][<span class="st">"containers"</span>][<span class="dv">0</span>][<span class="st">"env"</span>][<span class="dv">1</span>])</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -545,7 +545,7 @@ Note&nbsp;1: YAML n’est pas le premier langage déclaratif que vous avez appri
 </div>
 </div>
 <p>L’opération a fonctionné sur l’objet en mémoire dans <code>Python</code>. On exporte finalement le dictionnaire au format <code>YAML</code>.</p>
-<div id="53711038" class="cell" data-execution_count="6">
+<div id="ef4d7931" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">'api-deployment-modifie.yaml'</span>, <span class="st">'w'</span>) <span class="im">as</span> file_out:</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    yaml.dump(manifest, file_out)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
