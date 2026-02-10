@@ -163,19 +163,6 @@ CHEMIN_PARQUET = "ensae-reproductibilite/data/raw/data.parquet" #<2>
 
 ::: {.panel-tabset}
 
-## Avec `Pandas` et `s3fs`
-
-```{.python}
-import s3fs
-import pandas as pd
-
-chemin
-
-fs = s3fs.S3FileSystem(client_kwargs={"endpoint_url": "https://minio.lab.sspcloud.fr"})
-
-df = pd.read_parquet(f"s3://{MY_BUCKET}/{CHEMIN_PARQUET}", filesystem=fs)
-```
-
 ## Avec `DuckDB`
 
 ```{.python}
@@ -189,6 +176,21 @@ df = con.sql(query_definition)
 
 df
 ```
+
+
+## Avec `Pandas` et `s3fs`
+
+```{.python}
+import s3fs
+import pandas as pd
+
+chemin
+
+fs = s3fs.S3FileSystem(client_kwargs={"endpoint_url": "https://minio.lab.sspcloud.fr"})
+
+df = pd.read_parquet(f"s3://{MY_BUCKET}/{CHEMIN_PARQUET}", filesystem=fs)
+```
+
 
 :::
 
