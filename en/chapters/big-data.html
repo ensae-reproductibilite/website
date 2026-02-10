@@ -527,7 +527,7 @@ Figure&nbsp;11: Example performance comparison of the <code>Parquet</code> forma
 <h1>Applications</h1>
 <p>Throughout this application, we will explore how to use the <code>Parquet</code> format as efficiently as possible. To compare different formats and usage methods, we will <strong>compare execution time and memory usage for a standard query</strong>. Let’s start with a small dataset example to compare the <code>CSV</code> and <code>Parquet</code> formats.</p>
 <p>To do this, we need to retrieve some data in <code>Parquet</code> format. We suggest using detailed and anonymized population census data from France: about 20 million rows and 80 columns. The code to retrieve the data is given below</p>
-<div id="52e59002" class="cell" data-execution_count="2">
+<div id="d3745fba" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="annotated-cell-1" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-1-1"><a href="#annotated-cell-1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.parquet <span class="im">as</span> pq</span>
@@ -597,7 +597,7 @@ Figure&nbsp;11: Example performance comparison of the <code>Parquet</code> forma
 <ul>
 <li><p>Create a notebook <code>benchmark_parquet.ipynb</code> to perform various performance comparisons for the application.</p></li>
 <li><p>Let’s create our decorator, responsible for benchmarking the <code>Python</code> code:</p>
-<div id="662f2933" class="cell" data-execution_count="7">
+<div id="f2d4272f" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Dérouler pour retrouver le code du décorateur permettant de mesurer la performance</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
@@ -637,7 +637,7 @@ Figure&nbsp;11: Example performance comparison of the <code>Parquet</code> forma
 </details>
 </div></li>
 <li><p>The following query calculates the data needed to build a population pyramid for a given department, using the census <code>CSV</code> file. Test it in your notebook:</p>
-<div id="2d0fb8e4" class="cell" data-execution_count="8">
+<div id="a49b1e08" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Dérouler pour récupérer le code de lecture du CSV</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -653,7 +653,7 @@ Figure&nbsp;11: Example performance comparison of the <code>Parquet</code> forma
 </details>
 </div></li>
 <li><p>Repeat this code to encapsulate these operations in a <code>process_csv_appli1</code> function:</p>
-<div id="def4300d" class="cell" data-execution_count="9">
+<div id="2b11320c" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Dérouler pour récupérer le code pour mesurer les performances de la lecture en CSV</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply the decorator to functions</span></span>
@@ -672,7 +672,7 @@ Figure&nbsp;11: Example performance comparison of the <code>Parquet</code> forma
 <li><p>Following the same model, build a <code>process_parquet_appli1</code> function based this time on the file <code>data/RPindividus_24.parquet</code> loaded with Pandas’ <a href="https://pandas.pydata.org/docs/reference/api/pandas.read_parquet.html">read_parquet</a> function.</p></li>
 <li><p>Compare the performance (execution time and memory allocation) of these two methods using the function.</p></li>
 </ul>
-<div id="69094992" class="cell" data-execution_count="10">
+<div id="2e2c0dee" class="cell" data-execution_count="10">
 <details class="code-fold">
 <summary>Code complet de l’application</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
@@ -760,7 +760,7 @@ Figure&nbsp;11: Example performance comparison of the <code>Parquet</code> forma
 <li>Open the file <code>data/RPindividus_24.parquet</code> with <a href="https://arrow.apache.org/docs/python/dataset.html">pyarrow.dataset</a>. Check the class of the resulting object.</li>
 <li>Try the code below to read a data sample:</li>
 </ul>
-<div id="1030ed36" class="cell" data-execution_count="13">
+<div id="d569e9d9" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>(</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    dataset.scanner()</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    .head(<span class="dv">5</span>)</span>
@@ -772,7 +772,7 @@ Figure&nbsp;11: Example performance comparison of the <code>Parquet</code> forma
 <li>Build a function <code>summarize_parquet_arrow</code> (or <code>summarize_parquet_duckdb</code>) which now imports the data using the <a href="https://arrow.apache.org/docs/python/dataset.html"><code>pyarrow.dataset</code></a> function (or with <code>DuckDB</code>) and performs the desired aggregation.</li>
 <li>Compare the performance (execution time and memory allocation) of the three methods (<code>Parquet</code> read and processed with <code>Pandas</code>, <code>Arrow</code>, and <code>DuckDB</code>) using our function.</li>
 </ul>
-<div id="2c144893" class="cell" data-execution_count="14">
+<div id="11c87534" class="cell" data-execution_count="14">
 <details class="code-fold">
 <summary>Code complet de l’application</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
@@ -839,7 +839,7 @@ Figure&nbsp;11: Example performance comparison of the <code>Parquet</code> forma
 <li>With <code>DuckDB</code>, modify the query with <code>WHERE DEPT IN ('18', '28', '36')</code></li>
 <li>With <code>Arrow</code>, modify the <code>to_table</code> step as follows: <code>dataset.to_table(filter=pc.field("DEPT").isin(['18', '28', '36']))</code></li>
 </ul>
-<div id="f16dc6dc" class="cell" data-execution_count="18">
+<div id="9605bc21" class="cell" data-execution_count="18">
 <details class="code-fold">
 <summary>Correction de cet exercice</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.dataset <span class="im">as</span> ds</span>
@@ -904,7 +904,7 @@ Figure&nbsp;11: Example performance comparison of the <code>Parquet</code> forma
 <li><p>Examine the file tree structure of the exported table to see how the partitioning was applied.</p></li>
 <li><p>Modify the import, filtering, and aggregation functions using <code>Arrow</code> or <code>DuckDB</code> to now use the partitioned <code>Parquet</code> file. Compare this to using the non-partitioned file.</p></li>
 </ol>
-<div id="b9488c8f" class="cell" data-execution_count="19">
+<div id="fff11f65" class="cell" data-execution_count="19">
 <details class="code-fold">
 <summary>Answer to question 2 (writing the partitioned Parquet)</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.parquet <span class="im">as</span> pq</span>
@@ -919,7 +919,7 @@ Figure&nbsp;11: Example performance comparison of the <code>Parquet</code> forma
 <span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="568b6c7f" class="cell" data-execution_count="20">
+<div id="1259a008" class="cell" data-execution_count="20">
 <details class="code-fold">
 <summary>Correction de la question 4 (lecture du Parquet partitionné)</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyarrow.dataset <span class="im">as</span> ds</span>
