@@ -3453,7 +3453,7 @@ rm -f update.sh</code></pre>
 </ul>
 <details>
 <summary>
-Fichier <code>run.sh</code>
+Fichier <code>app/run.sh</code>
 </summary>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -3466,10 +3466,10 @@ Fichier <code>run.sh</code>
 </div>
 </details>
 <ul>
-<li><p>Donner au script <code>api/run.sh</code> des permissions d’exécution : <code>chmod +x api/run.sh</code></p></li>
-<li><p>Ajouter <code>COPY app ./app</code> pour avoir les fichiers nécessaires au lancement dans l’API dans l’image</p></li>
+<li><p>Donner au script <code>app/run.sh</code> des permissions d’exécution : <code>chmod +x app/run.sh</code></p></li>
+<li><p>Ajouter <code>COPY app ./app</code> au Dockerfile pour avoir les fichiers nécessaires au lancement dans l’API dans l’image</p></li>
 <li><p>Modifier <code>COPY train.py .</code> pour tenir compte du nouveau nom du fichier</p></li>
-<li><p>Changer l’instruction <code>CMD</code> du <code>Dockerfile</code> pour exécuter le script <code>api/run.sh</code> au lancement du conteneur (<code>CMD ["bash", "-c", "./app/run.sh"]</code>)</p></li>
+<li><p>Changer l’instruction <code>CMD</code> du <code>Dockerfile</code> pour exécuter le script <code>app/run.sh</code> au lancement du conteneur (<code>CMD ["bash", "-c", "./app/run.sh"]</code>)</p></li>
 <li><p><em>Commit</em> et <em>push</em> les changements</p></li>
 <li><p>Une fois le CI terminé, vérifier que le nouveau <em>tag</em> <code>latest</code> a été <em>pushé</em> sur le DockerHub. Récupérer la nouvelle image dans votre environnement de test de <code>Docker</code> et vérifier que l’API se déploie correctement.</p></li>
 </ul>
@@ -3482,11 +3482,13 @@ Tester l’image sur le SSP Cloud
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb59" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> run <span class="at">-it</span> api-ml <span class="at">--image</span><span class="op">=</span>votre_compte_docker_hub/application:latest</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb59" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> run <span class="at">-it</span> api-ml <span class="at">--env</span> JETON_API=<span class="st">''</span> <span class="at">--image</span><span class="op">=</span>votre_compte_docker_hub/application:latest</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> logs api-ml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </details>
 <ul>
-<li>Si tout se passe correctement, vous devriez observer dans la console un <em>output</em> similaire au déploiement en local de la partie précédente. Cette fois, l’application est déployée à l’adresse <code>http://0.0.0.0:8000</code>. On ne peut néanmoins pas directement l’exploiter à ce stade : si le conteneur de l’API est déployé, il manque un ensemble de ressources Kubernetes qui permettent de déployer proprement l’API à tout utilisateur. C’est l’objet de l’application suivante !</li>
+<li><p>Si tout se passe correctement, vous devriez observer dans la console un <em>output</em> similaire au déploiement en local de la partie précédente. Cette fois, l’application est déployée à l’adresse <code>http://0.0.0.0:8000</code>. On ne peut néanmoins pas directement l’exploiter à ce stade : si le conteneur de l’API est déployé, il manque un ensemble de ressources Kubernetes qui permettent de déployer proprement l’API à tout utilisateur. C’est l’objet de l’application suivante !</p></li>
+<li><p>Si vous avez testé <code>kubectl get pods</code>, faire <code>kubectl delete pod api-ml</code> pour nettoyer le serveur.</p></li>
 </ul>
 </div>
 </div>
