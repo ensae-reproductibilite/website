@@ -10,8 +10,7 @@ Cette partie nécessite d'avoir à disposition une infrastructure _cloud_.
 <details>
 <summary>Fichier `deployment/deployment.yaml`</summary>
 
-```{.python}
-#| filename: "deployment/deployment.yaml"
+```{.python filename="deployment/deployment.yaml"}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -30,9 +29,10 @@ spec:
     spec:
       containers:
       - name: titanic
-        image: votre_compte_docker_hub/application:latest
+        image: votre_compte_docker_hub/application:latest #<1>
         ports:
         - containerPort: 8000
+1. Remplacer ici par votre compte Docker
 ```
 
 </details>
@@ -62,8 +62,7 @@ spec:
 <details>
 <summary>Fichier `deployment/ingress.yaml`</summary>
 
-```{.python}
-#| filename: "deployment/ingress.yaml"
+```{.python filename="deployment/ingress.yaml"}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -72,9 +71,9 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - votre_nom_d_application.lab.sspcloud.fr
+    - votre_nom_d_application.lab.sspcloud.fr #<1>
   rules:
-  - host: votre_nom_d_application.lab.sspcloud.fr
+  - host: votre_nom_d_application.lab.sspcloud.fr #<2>
     http:
       paths:
       - path: /
@@ -91,11 +90,51 @@ spec:
 
 - Appliquer ces fichiers de configuration sur le cluster : `kubectl apply -f deployment/`
 
-- Vérifier le bon déploiement de l'application (c'est à dire du `Pod` qui encapsule le conteneur) à l'aide de la commande `kubectl get pods`
+- Vérifier le bon déploiement de l'application (c'est à dire du `Pod` qui encapsule le conteneur) à l'aide de la commande `kubectl get pods`. Regarder les _logs_ avec `kubectl logs -l app=titanic -f --tail=200`. Comprenez vous la source de l'erreur ?
 
-- Si tout a correctement fonctionné, vous devriez pouvoir accéder depuis votre navigateur à l'API à l'URL spécifiée dans le fichier `deployment/ingress.yaml`. Par exemple `https://api-titanic-test.lab.sspcloud.fr/` si vous avez mis celui-ci plus tôt
+- Créer un secret pour votre jeton d'API. Il y a plusieurs manières de faire. En l'occurrence, vous pouvez utiliser cette commande
 
-- Explorer le *swagger* de votre API à l'adresse `https://api-titanic-test.lab.sspcloud.fr/docs`. Il s'agit d'une page de documentation standard à la plupart des APIs, bien utiles pour tester des requêtes de manière interactive.
+```{.bash filename="terminal"}
+kubectl create secret generic api-jeton --from-literal=JETON_API='mon_super_jeton'
+```
+
+- Mettre à jour votre _deployment_ pour indiquer à Kubernetes (le seul avec vous à connaître la valeur derrière le jeton):
+
+```{.python}
+#| filename: "deployment/deployment.yaml"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: titanic-deployment
+  labels:
+    app: titanic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: titanic
+  template:
+    metadata:
+      labels:
+        app: titanic
+    spec:
+      containers:
+      - name: titanic
+        image: votre_compte_docker_hub/application:latest #<1>
+        ports:
+        - containerPort: 8000
+        env:
+        - name: JETON_API
+          valueFrom:
+            secretKeyRef:
+              name: api-jeton
+              key: JETON_API
+```
+1. Remplacer ici par votre compte Docker
+
+- Si tout a correctement fonctionné, vous devriez pouvoir accéder depuis votre navigateur à l'API à l'URL spécifiée dans le fichier `deployment/ingress.yaml`. Par exemple `https://api-titanic-test.lab.sspcloud.fr/` si vous avez mis celui-ci plus tôt.
+
+- Explorer le *swagger* de votre API à l'adresse `https://api-titanic-test.lab.sspcloud.fr/docs`. Il s'agit d'une page de documentation standard à la plupart des APIs, bien utiles pour tester des requêtes de manière interactive. Regarder les _logs_ avant/après avoir testé les exemples interactifs d'utilisation. 
 
 :::
 
