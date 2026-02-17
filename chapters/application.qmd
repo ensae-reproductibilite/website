@@ -623,11 +623,11 @@ cette direction en créant un fichier `requirements.txt`.
 
 ## Étape 2: construire l'environnement de notre application via un script `shell` {#shell}
 
-Les environnements virtuels permettent de mieux spécifier les dépendances de notre projet, mais ne permettent pas de garantir une portabilité optimale. Pour cela, il faut recourir à la technologie des conteneurs. L'idée est de construire une machine, en partant d'une base quasi-vierge, qui permette de construire étape par étape l'environnement nécessaire au bon fonctionnement de notre projet. C'est le principe des conteneurs `Docker` {{< fa brands docker >}}.
+Les environnements virtuels permettent de mieux spécifier les dépendances de notre projet, mais ne permettent pas de garantir une portabilité optimale. Pour cela, il faut recourir à la technologie des conteneurs. L'idée est de construire une machine, en partant d'une base quasi-vierge, qui permette de reproduire étape par étape l'environnement nécessaire au bon fonctionnement de notre projet. C'est le principe des conteneurs `Docker` {{< fa brands docker >}}.
 
 Leur méthode de construction étant un peu difficile à prendre en main au début, nous allons passer par une étape intermédiaire afin de bien comprendre le processus de production.
 
-- Nous allons d'abord créer un script `shell`, c'est à dire une suite de commandes `Linux` permettant de construire l'environnement à partir d'une machine vierge ;
+- Nous allons d'abord créer un script `shell`, c'est-à-dire une suite de commandes `Linux` permettant de construire l'environnement à partir d'une machine vierge ;
 - Nous transformerons celui-ci en `Dockerfile` dans un deuxième temps. C'est l'objet de l'étape suivante.
 
 {{< include "./applications/_appli12.qmd" >}}
@@ -1045,6 +1045,7 @@ En premier lieu, pour suivre la vie d'un modèle en production (enjeu de l'[obse
 En second lieu, on a encore une chaîne de production où peu de profils non _tech_ peuvent s'insérer. On pourrait vouloir la rendre plus accessible: soit en améliorant notre _output_ site web, soit en mettant en oeuvre des _dashboards_ plus orientés _BI_, pensés pour des profils moins techniques mais ayant une place dans la chaîne de valeur _data_ comme les _data analysts_. Pour cela, il existe des outils sur le `SSPCloud` comme [`Apache Superset`](https://superset.apache.org/).
 
 Gardons aussi à l'esprit que notre chaine dépend de données tabulaires simples avec un objectif assez modeste: mettre à disposition un modèle de classification dans un cadre supervisé. Si on avait un _use case_ différent ou des données plus complexes - par exemple des remontées de données en temps réel ou encore des données textuelles - nous adopterions probablement un _pipeline_ ou des briques technologiques différents à certaines étapes. Néanmoins, la philosophie serait probablement la même : avoir une chaine modulaire, avec les outils technologiques les plus efficaces à chaque maillon, et `Python` et `Kubernetes` pour, dans les ténèbres, les lier.
+
 
 
 
