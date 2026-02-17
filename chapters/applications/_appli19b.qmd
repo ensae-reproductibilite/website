@@ -39,7 +39,7 @@ Fichier `.github/workflows/prod.yml`
           id: meta
           uses: docker/metadata-action@v5
           with:
-            images: linogaliana/application #<1>
+            images: username_github/application #<1>
 
         -
           name: Login to Docker Hub
@@ -76,7 +76,7 @@ Par exemple, mettre en gras un titre.
 - _Tagger_ le commit effectué précédemment et *push* le nouveau tag :
 
   ```{.python filename="terminal"}
-  git tag v0.0.1
+  git tag -a v0.0.1 -m "Version minimale de l'API avec FastAPI et uv"
   git push --tags
   ```
 
@@ -94,6 +94,7 @@ Fichier `deployment/deployment.yaml`
 </summary>
 
   ```{.python file="deployment/deployment.yaml" filename="deployment/deployment.yaml" source-line-numbers="19"}
+  #| filename: "deployment/deployment.yaml"
   apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -112,9 +113,15 @@ Fichier `deployment/deployment.yaml`
       spec:
         containers:
         - name: titanic
-          image: linogaliana/application:v0.0.1 #<1>
+          image: username_dockerhub/application:v0.0.1
           ports:
           - containerPort: 8000
+          env:
+          - name: JETON_API
+            valueFrom:
+              secretKeyRef:
+                name: api-jeton
+                key: JETON_API
   ```
   1. Remplacer ici par le dépôt applicatif adéquat
 
