@@ -2314,16 +2314,16 @@ rm -f update.sh</code></pre>
   </div>
   
 <p>Dans la partie précédente, on a appliqué de manière incrémentale de nombreuses bonnes pratiques vues dans les chapitres <a href="../chapters/code-quality.html">Qualité du code</a> et <a href="../chapters/projects-architecture.html">Structure des projets</a> tout au long du cours.</p>
-<p>Ce faisant, on s’est déjà considérablement rapprochés d’une possible mise en production : le code est lisible, la structure du projet est normalisée et évolutive, et le code est proprement versionné sur un dépôt <code>GitHub</code> <i class="fa-brands fa-github" aria-label="github"></i>.</p>
+<p>Ce faisant, on s’est déjà considérablement rapproché d’une possible mise en production : le code est lisible, la structure du projet est normalisée et évolutive, et le code est proprement versionné sur un dépôt <code>GitHub</code> <i class="fa-brands fa-github" aria-label="github"></i>.</p>
 <details>
 <summary>
 Illustration de l’état actuel du projet
 </summary>
 <p><img src="../chapters/applications/figures/_pipeline_avant_partie3.png" class="img-fluid"></p>
 </details>
-<p>A présent, nous avons une version du projet qui est largement partageable.</p>
+<p>À présent, nous avons une version du projet qui est largement partageable.</p>
 <p>Du moins en théorie, car la pratique est souvent plus compliquée : il y a fort à parier que si vous essayez d’exécuter votre projet sur un autre environnement (typiquement, votre ordinateur personnel), les choses ne se passent pas du tout comme attendu. Cela signifie qu’<strong>en l’état, le projet n’est pas portable : il n’est pas possible, sans modifications coûteuses, de l’exécuter dans un environnement différent de celui dans lequel il a été développé</strong>.</p>
-<p>Dans cette troisème partie de notre travail vers la mise en production, nous allons voir comment <strong>normaliser l’environnement d’exécution afin de produire un projet portable</strong>. Autrement dit, nous n’allons plus nous contenter de modularité mais allons rechercher la portabilité. On sera alors tout proche de pouvoir mettre le projet en production.</p>
+<p>Dans cette troisième partie de notre travail vers la mise en production, nous allons voir comment <strong>normaliser l’environnement d’exécution afin de produire un projet portable</strong>. Autrement dit, nous n’allons plus nous contenter de modularité mais allons rechercher la portabilité. On sera alors tout proche de pouvoir mettre le projet en production.</p>
 <p>On progressera dans l’échelle de la reproductibilité de la manière suivante:</p>
 <ol type="1">
 <li><a href="#venv"><strong>Environnements virtuels</strong></a> ;</li>
@@ -2377,9 +2377,9 @@ rm -f update.sh</code></pre>
   
 <section id="venv" class="level2">
 <h2 class="anchored" data-anchor-id="venv">Étape 1 : un environnement pour rendre le projet portable</h2>
-<p>Pour qu’un projet soit portable, il doit remplir deux conditions:</p>
+<p>Pour qu’un projet soit portable, il doit remplir deux conditions :</p>
 <ul>
-<li>Ne pas nécessiter de dépendance qui ne soient pas renseignées quelque part ;</li>
+<li>Ne pas nécessiter de dépendances qui ne soient pas renseignées quelque part ;</li>
 <li>Ne pas proposer des dépendances inutiles, qui ne sont pas utilisées dans le cadre du projet.</li>
 </ul>
 <p>Le prochain exercice vise à mettre ceci en oeuvre. Comme expliqué dans le <a href="../chapters/portability.html">chapitre portabilité</a>, le choix du gestionnaire d’environnement est laissé libre. Il est recommandé de privilégier <code>venv</code> si vous découvrez la problématique de la portabilité.</p>
@@ -2394,7 +2394,7 @@ rm -f update.sh</code></pre>
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Application</span>Application 11: <code>ùv</code> pour gérer son environnement virtuel
+<span class="screen-reader-only">Application</span>Application 11: <code>uv</code> pour gérer son environnement virtuel
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -2476,7 +2476,7 @@ rm -f update.sh</code></pre>
 </div>
 <div class="callout-body-container callout-body">
 <ol type="1">
-<li>Exécuter <code>pip freeze</code> en ligne de commande et observer la (très) longue liste de package</li>
+<li>Exécuter <code>pip freeze</code> en ligne de commande et observer la (très) longue liste de packages</li>
 <li>Créer l’environnement virtuel <code>titanic</code> en s’inspirant de <a href="https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/">la documentation officielle</a><a href="#fn14" class="footnote-ref" id="fnref14" role="doc-noteref"><sup>14</sup></a> ou du <a href="../chapters/portability.html">chapitre dédié</a></li>
 <li>Utiliser <code>ls</code> pour observer et comprendre le contenu du dossier <code>titanic/bin</code> installé</li>
 <li>Activer l’environnement et vérifier l’installation de <code>Python</code> maintenant utilisée par votre machine <!---source titanic/bin/activate && which python----></li>
@@ -2556,10 +2556,10 @@ rm -f update.sh</code></pre>
 </section>
 <section id="shell" class="level2">
 <h2 class="anchored" data-anchor-id="shell">Étape 2: construire l’environnement de notre application via un script <code>shell</code></h2>
-<p>Les environnements virtuels permettent de mieux spécifier les dépendances de notre projet, mais ne permettent pas de garantir une portabilité optimale. Pour cela, il faut recourir à la technologie des conteneurs. L’idée est de construire une machine, en partant d’une base quasi-vierge, qui permette de construire étape par étape l’environnement nécessaire au bon fonctionnement de notre projet. C’est le principe des conteneurs <code>Docker</code> <i class="fa-brands fa-docker" aria-label="docker"></i>.</p>
+<p>Les environnements virtuels permettent de mieux spécifier les dépendances de notre projet, mais ne permettent pas de garantir une portabilité optimale. Pour cela, il faut recourir à la technologie des conteneurs. L’idée est de construire une machine, en partant d’une base quasi-vierge, qui permette de reproduire étape par étape l’environnement nécessaire au bon fonctionnement de notre projet. C’est le principe des conteneurs <code>Docker</code> <i class="fa-brands fa-docker" aria-label="docker"></i>.</p>
 <p>Leur méthode de construction étant un peu difficile à prendre en main au début, nous allons passer par une étape intermédiaire afin de bien comprendre le processus de production.</p>
 <ul>
-<li>Nous allons d’abord créer un script <code>shell</code>, c’est à dire une suite de commandes <code>Linux</code> permettant de construire l’environnement à partir d’une machine vierge ;</li>
+<li>Nous allons d’abord créer un script <code>shell</code>, c’est-à-dire une suite de commandes <code>Linux</code> permettant de construire l’environnement à partir d’une machine vierge ;</li>
 <li>Nous transformerons celui-ci en <code>Dockerfile</code> dans un deuxième temps. C’est l’objet de l’étape suivante.</li>
 </ul>
 <div class="callout callout-style-default callout-application callout-titled">
