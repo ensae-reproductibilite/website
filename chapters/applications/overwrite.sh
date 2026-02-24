@@ -22,6 +22,5 @@ git rev-parse "$TAG" >/dev/null 2>&1 || { echo "Tag $TAG not found"; exit 1; }
 # Reset main safely
 git checkout -B main
 git reset --hard "$TAG"
-git push origin main --force-with-lease
 
 echo "Checkpoint '$TAG' applied."
