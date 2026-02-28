@@ -67,12 +67,26 @@ Voir le script `app/api.py` proposé
 
 ```{.python file="app/api.py"}
 """A simple API to expose our trained RandomForest model for Tutanic survival."""
+
+import logging
 from fastapi import FastAPI
+import pandas as pd
 import mlflow
 
-import pandas as pd
+
+logging.basicConfig(
+    format="{asctime} - {levelname} - {message}",
+    style="{",
+    datefmt="%Y-%m-%d %H:%M",
+    level=logging.DEBUG,
+    handlers=[logging.FileHandler("api.log"), logging.StreamHandler()],
+)
 
 # Preload model -------------------
+
+logging.info(
+    "Getting model from MLFlow"
+)
 
 model_name = "production"
 model_version = "latest"
@@ -124,7 +138,11 @@ async def predict(
         }
     )
 
-    prediction = "Survived 🎉" if int(model.predict(df)) == 1 else "Dead ⚰️"
+    prediction = int(model.predict(df)[0])
+
+    logging.debug(f"Predicting {prediction} for {df.to_dict()}")
+
+    prediction = "Survived 🎉" if prediction == 1 else "Dead ⚰️"
 
     return prediction
 ```
@@ -135,6 +153,7 @@ Les changements principaux de ce code sont:
 
 * on va chercher le modèle de production
 * on met à jour la version de notre API pour signaler à nos clients que celle-ci a évolué
+* on utilise un peu plus le _logging_ pour mieux comprendre ce qu'il se passe
 
 5. On va retirer l'entraînement de la séquence d'opération du `api/run.sh`. En supprimant la ligne relative à l'entraînement du modèle, vous devriez avoir
 
@@ -151,7 +170,18 @@ Mettons en production cette nouvelle version. Cela implique de faire les gestes 
 
 8. Mettre à jour notre manifeste dans le dépôt `GitOps`.
    * En premier lieu, il faut changer la version de référence pour utiliser le tag `v0.0.3`.
-   * De plus, il faut déclarer la variable d'environnement `MLFLOW_TRACKING_URI` qui indique à `Python` l'entrepôt de modèles où aller chercher celui en production. La bonne pratique est de définir ceci hors du code, dans un fichier de configuration donc, ce qui est l'objet de notre manifeste `deployment.yaml`. On peut donc changer de cette manière ce fichier:
+   * De plus, il faut déclarer la variable d'environnement `MLFLOW_TRACKING_URI` qui indique à `Python` l'entrepôt de modèles où aller chercher celui en production. La bonne pratique est de définir ceci hors du code, dans un fichier de configuration donc, ce qui est l'objet de notre manifeste `deployment.yaml`.
+   * Indiquer au _pod_ qui va se lancer comment s'authentifier à `MLFlow` pour récupérer le modèle de production. On ne va pas mettre en brut nos informations d'authentification dans `deployment.yaml` (n'oublions pas les bonnes pratiques!). On va utiliser un secret *Kubernetes* pour cela, comme on a fait pour notre variable d'environnement précédente (le jeton d'API).
+
+Pour créer le secret Kubernetes:
+
+```{.python}
+kubectl create secret generic mlflow-secrets \
+  --from-literal=MLFLOW_TRACKING_USERNAME="$MLFLOW_TRACKING_USERNAME" \
+  --from-literal=MLFLOW_TRACKING_PASSWORD="$MLFLOW_TRACKING_PASSWORD"
+```
+   
+Changer le `deployment.yaml` de votre dépôt `GitOps`
 
 <details>
 <summary>
@@ -162,36 +192,54 @@ Le modèle `deployment.yaml` proposé
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-name: titanic-deployment
-labels:
+  name: titanic-deployment
+  labels:
     app: titanic
 spec:
-replicas: 1
-selector:
+  replicas: 1
+  selector:
     matchLabels:
-    app: titanic
-template:
+      app: titanic
+  template:
     metadata:
-    labels:
+      labels:
         app: titanic
     spec:
-    containers:
-    - name: titanic
-        image: linogaliana/application:v0.0.3 #<1>
-        ports:
-        - containerPort: 8000
-        env:
-        - name: MLFLOW_TRACKING_URI
-            value: https://user-${USERNAME}-mlflow.user.lab.sspcloud.fr #<2>
-        resources:
-        limits:
-            memory: "2Gi"
-            cpu: "1000m"
+      containers:
+        - name: titanic
+          image: compte_docker/application:v0.0.3 #<1>
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          env:
+            - name: JETON_API
+              valueFrom:
+                secretKeyRef:
+                  name: api-jeton
+                  key: JETON_API
+            - name: MLFLOW_TRACKING_URI
+              value: "https://user-${USERNAME}-mlflow.user.lab.sspcloud.fr" #<2>
+            - name: MLFLOW_TRACKING_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mlflow-secrets
+                  key: MLFLOW_TRACKING_USERNAME
+            - name: MLFLOW_TRACKING_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mlflow-secrets
+                  key: MLFLOW_TRACKING_PASSWORD
+          resources:
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
 ```
 1. Le _tag_ de notre code applicatif
 2. La variable d'environnement à adapter en fonction de l'adresse du dépôt demodèles utilisé. Remplacer par votre URL `MLFlow`.
 
 </details>
+
+10. _Committer_ vos dépôts applicatifs puis GitOps. 
 
 11.  Pour s'assurer que l'application fonctionne bien, on peut aller voir les _logs_ de la machine qui fait tourner notre code. Pour ça, faire `kubectl get pods` et, en supposant que votre service soit nommé `titanic` dans vos fichiers YAML de configuration, récupérer le nom commençant par `titanic-deployment-*` et faire `kubectl logs titanic-deployment-*`
 
