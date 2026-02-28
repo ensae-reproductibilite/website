@@ -76,7 +76,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-b66d9f3da4d84aca26cc7cc1c94b0445.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-db8412935377c476a6a34876e811a251.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <link href="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.css" rel="stylesheet">
 <link href="../site_libs/quarto-contrib/fontawesome6-1.2.0/all.min.css" rel="stylesheet">
 <link href="../site_libs/quarto-contrib/fontawesome6-1.2.0/latex-fontsize.css" rel="stylesheet">
@@ -4507,7 +4507,7 @@ rm -f update.sh</code></pre>
 </div>
 <div class="callout-body-container callout-body">
 <ol type="1">
-<li><p>Lancer <code>MLFlow</code> depuis l’onflet <a href="https://datalab.sspcloud.fr/catalog/automation">Mes services</a> du SSPCloud. Attendre que le service soit bien lancé. Cela créera un service dont l’URL est de la forme <code>https://user-{username}.user.lab.sspcloud.fr</code>. Ce service <code>MLFlow</code> communiquera avec les <code>VSCode</code> que vous ouvrirez ultérieurement à partir de cet URL ainsi qu’avec le système de stockage <code>S3</code><a href="#fn19" class="footnote-ref" id="fnref19" role="doc-noteref"><sup>19</sup></a>.</p></li>
+<li><p>Lancer <code>MLFlow</code> depuis l’onglet <a href="https://datalab.sspcloud.fr/catalog/automation">Mes services</a> du SSPCloud. Attendre que le service soit bien lancé. Cela créera un service dont l’URL est de la forme <code>https://user-{username}.user.lab.sspcloud.fr</code>. Ce service <code>MLFlow</code> communiquera avec les <code>VSCode</code> que vous ouvrirez ultérieurement ainsi qu’avec le système de stockage <code>S3</code><a href="#fn19" class="footnote-ref" id="fnref19" role="doc-noteref"><sup>19</sup></a>.</p></li>
 <li><p>Regarder la page <code>Experiments</code>. Elle ne contient que <code>Default</code> à ce stade, c’est normal.</p></li>
 </ol>
 <ol start="2" type="1">
@@ -4515,16 +4515,12 @@ rm -f update.sh</code></pre>
 <li><p>Clôner votre projet, vous situer sur la branche de travail.</p></li>
 <li><p>Dans la section de passage des paramètres de notre ligne de commande, introduire ce morceau de code:</p></li>
 </ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb69" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>parser <span class="op">=</span> argparse.ArgumentParser(description<span class="op">=</span><span class="st">"Paramètres du random forest"</span>)</span>
-<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>parser.add_argument(</span>
-<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"--n_trees"</span>, <span class="bu">type</span><span class="op">=</span><span class="bu">int</span>, default<span class="op">=</span><span class="dv">20</span>, <span class="bu">help</span><span class="op">=</span><span class="st">"Nombre d'arbres"</span></span>
-<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>parser.add_argument(</span>
-<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"--experiment_name"</span>, <span class="bu">type</span><span class="op">=</span><span class="bu">str</span>, default<span class="op">=</span><span class="st">"titanicml"</span>, <span class="bu">help</span><span class="op">=</span><span class="st">"MLFlow experiment name"</span></span>
-<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a>args <span class="op">=</span> parser.parse_args()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb69" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>parser.add_argument(</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"--experiment_name"</span>, <span class="bu">type</span><span class="op">=</span><span class="bu">str</span>, default<span class="op">=</span><span class="st">"titanicml"</span>, <span class="bu">help</span><span class="op">=</span><span class="st">"MLFlow experiment name"</span></span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>args <span class="op">=</span> parser.parse_args()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ol start="3" type="1">
-<li>A la fin du script <code>train.py</code>, ajouter le code suivant</li>
+<li>Au début du script <code>train.py</code>, ajouter le code suivant</li>
 </ol>
 <details>
 <summary>
@@ -4532,64 +4528,36 @@ Code à ajouter
 </summary>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
-<pre><strong>fin de train.py</strong></pre>
+<pre><strong>début de train.py</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb70" data-filename="fin de train.py" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="co"># LOGGING IN MLFLOW -----------------</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb70" data-filename="début de train.py" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="co"># LOGGING IN MLFLOW -----------------</span></span>
 <span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>mlflow_server <span class="op">=</span> os.getenv(<span class="st">"MLFLOW_TRACKING_URI"</span>)</span>
 <span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="ss">f"Saving experiment in </span><span class="sc">{</span>mlflow_server<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a>logging.info(<span class="ss">f"Saving experiment in </span><span class="sc">{</span>mlflow_server<span class="sc">}</span><span class="ss">"</span>)</span>
 <span id="cb70-6"><a href="#cb70-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb70-7"><a href="#cb70-7" aria-hidden="true" tabindex="-1"></a>mlflow.set_tracking_uri(mlflow_server)</span>
-<span id="cb70-8"><a href="#cb70-8" aria-hidden="true" tabindex="-1"></a>mlflow.set_experiment(args.experiment_name)</span>
-<span id="cb70-9"><a href="#cb70-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb70-10"><a href="#cb70-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb70-11"><a href="#cb70-11" aria-hidden="true" tabindex="-1"></a>input_data_mlflow <span class="op">=</span> mlflow.data.from_pandas(</span>
-<span id="cb70-12"><a href="#cb70-12" aria-hidden="true" tabindex="-1"></a>    TrainingData, source<span class="op">=</span>data_path, name<span class="op">=</span><span class="st">"Raw dataset"</span></span>
-<span id="cb70-13"><a href="#cb70-13" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb70-14"><a href="#cb70-14" aria-hidden="true" tabindex="-1"></a>training_data_mlflow <span class="op">=</span> mlflow.data.from_pandas(</span>
-<span id="cb70-15"><a href="#cb70-15" aria-hidden="true" tabindex="-1"></a>    pd.concat([X_train, y_train], axis<span class="op">=</span><span class="dv">1</span>), source<span class="op">=</span>data_path, name<span class="op">=</span><span class="st">"Training data"</span></span>
-<span id="cb70-16"><a href="#cb70-16" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb70-17"><a href="#cb70-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb70-18"><a href="#cb70-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb70-19"><a href="#cb70-19" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> mlflow.start_run():</span>
-<span id="cb70-20"><a href="#cb70-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb70-21"><a href="#cb70-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Log datasets</span></span>
-<span id="cb70-22"><a href="#cb70-22" aria-hidden="true" tabindex="-1"></a>    mlflow.log_input(input_data_mlflow, context<span class="op">=</span><span class="st">"raw"</span>)</span>
-<span id="cb70-23"><a href="#cb70-23" aria-hidden="true" tabindex="-1"></a>    mlflow.log_input(training_data_mlflow, context<span class="op">=</span><span class="st">"raw"</span>)</span>
-<span id="cb70-24"><a href="#cb70-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb70-25"><a href="#cb70-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Log parameters</span></span>
-<span id="cb70-26"><a href="#cb70-26" aria-hidden="true" tabindex="-1"></a>    mlflow.log_param(<span class="st">"n_trees"</span>, n_trees)</span>
-<span id="cb70-27"><a href="#cb70-27" aria-hidden="true" tabindex="-1"></a>    mlflow.log_param(<span class="st">"max_depth"</span>, MAX_DEPTH)</span>
-<span id="cb70-28"><a href="#cb70-28" aria-hidden="true" tabindex="-1"></a>    mlflow.log_param(<span class="st">"max_features"</span>, MAX_FEATURES)</span>
-<span id="cb70-29"><a href="#cb70-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb70-30"><a href="#cb70-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Log best hyperparameters from GridSearchCV</span></span>
-<span id="cb70-31"><a href="#cb70-31" aria-hidden="true" tabindex="-1"></a>    best_params <span class="op">=</span> pipe_cross_validation.best_params_</span>
-<span id="cb70-32"><a href="#cb70-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> param, value <span class="kw">in</span> best_params.items():</span>
-<span id="cb70-33"><a href="#cb70-33" aria-hidden="true" tabindex="-1"></a>        mlflow.log_param(param, value)</span>
-<span id="cb70-34"><a href="#cb70-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb70-35"><a href="#cb70-35" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Log metrics</span></span>
-<span id="cb70-36"><a href="#cb70-36" aria-hidden="true" tabindex="-1"></a>    mlflow.log_metric(<span class="st">"accuracy"</span>, score)</span>
-<span id="cb70-37"><a href="#cb70-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb70-38"><a href="#cb70-38" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Log confusion matrix as an artifact</span></span>
-<span id="cb70-39"><a href="#cb70-39" aria-hidden="true" tabindex="-1"></a>    matrix_path <span class="op">=</span> <span class="st">"confusion_matrix.txt"</span></span>
-<span id="cb70-40"><a href="#cb70-40" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> <span class="bu">open</span>(matrix_path, <span class="st">"w"</span>) <span class="im">as</span> f:</span>
-<span id="cb70-41"><a href="#cb70-41" aria-hidden="true" tabindex="-1"></a>        f.write(<span class="bu">str</span>(matrix))</span>
-<span id="cb70-42"><a href="#cb70-42" aria-hidden="true" tabindex="-1"></a>    mlflow.log_artifact(matrix_path)</span>
-<span id="cb70-43"><a href="#cb70-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb70-44"><a href="#cb70-44" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Log model</span></span>
-<span id="cb70-45"><a href="#cb70-45" aria-hidden="true" tabindex="-1"></a>    mlflow.sklearn.log_model(pipe, <span class="st">"model"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb70-8"><a href="#cb70-8" aria-hidden="true" tabindex="-1"></a>mlflow.set_experiment(args.experiment_name)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </details>
 <ol start="4" type="1">
+<li>Installer les dépendances nécessaires à l’exécution du script en ligne de commande pour test. A l’heure actuelle (février 2026), <code>mlflow</code> ne s’est pas encore adapté au passage à <code>Pandas</code> 3. Il va donc falloir <em>downgrader</em> Pandas pour pouvoir installer une version récente de <code>MLFlow</code>. Pour cela, faire</li>
+</ol>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>terminal</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb71" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> add <span class="st">"pandas&lt;3"</span> <span class="st">"mlflow == 3.10.0"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><em>Ce morceau de code évoluera quand MLFlow supportera Pandas 3.0</em>.</p>
+<ol start="5" type="1">
 <li><p>Ajouter <code>mlruns/*</code> dans <code>.gitignore</code></p></li>
-<li><p>Tester <code>train.py</code> en ligne de commande</p></li>
+<li><p>Modifier le script <code>train.py</code> pour introduire dans le <em>context manager</em> de <code>MLFlow</code> (<code>with mlflow.start_run():</code>) tous les éléments intéressants à <em>logguer</em>. Si vous avez besoin d’inspiration, vous pouvez le script d’exemple. Mais n’hésitez pas à essayer d’en constituer un similaire de manière progressive (en faisant de manière répétée les questions 6 à 8).</p></li>
+<li><p>Tester <code>uv run train.py</code></p></li>
 <li><p>Observer l’évolution de la page <code>Experiments</code>. Cliquer sur un des <em>run</em>. Observer toutes les métadonnées archivées (hyperparamètres, métriques d’évaluation, <code>requirements.txt</code> dont <code>MLFlow</code> a fait l’inférence, etc.)</p></li>
 <li><p>Observer le code proposé par <code>MLFlow</code> pour récupérer le <em>run</em> en question. Tester celui-ci dans un <em>notebook</em> sur le fichier intermédiaire de test au format <code>Parquet</code></p></li>
-<li><p>En ligne de commande, faites tourner pour une autre valeur de <code>n_trees</code>. Retourner à la liste des <em>runs</em> en cliquant à nouveau sur <em>“titanicml”</em> dans les expérimentations</p></li>
-<li><p>Dans l’onglet <code>Table</code>, sélectionner plusieurs expérimentations, cliquer sur <code>Columns</code> et ajouter la statistique d’accuracy. Ajuster la taille des colonnes pour la voir et classer les modèles par score décroissants</p></li>
-<li><p>Cliquer sur <code>Compare</code> après en avoir sélectionné plusieurs. Afficher un <em>scatterplot</em> des performances en fonction du nombre d’estimateurs. Conclure.</p></li>
-<li><p>Ajouter <code>mlflow</code> au <code>requirements.txt</code></p></li>
+<li><p>En ligne de commande, faites tourner pour une autre valeur de <code>n_trees</code>. Retourner à la liste des <em>runs</em> en cliquant à nouveau sur <em>“titanicml”</em> dans les expérimentations.</p></li>
+<li><p>Sélectionner plusieurs expérimentations, cliquer sur <code>Compare</code> et ajouter la statistique d’<em>accuracy</em>. Afficher un <em>scatterplot</em> des performances en fonction du nombre d’estimateurs. Conclure.</p></li>
 </ol>
 </div>
 </div>
@@ -4667,46 +4635,46 @@ rm -f update.sh</code></pre>
 <summary>
 Exemple de code à tester
 </summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb71" data-file="Dans une cellule de notebook" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
-<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>model_name <span class="op">=</span> <span class="st">"production"</span></span>
-<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a>model_version <span class="op">=</span> <span class="st">"latest"</span></span>
-<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb71-7"><a href="#cb71-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the model from the Model Registry</span></span>
-<span id="cb71-8"><a href="#cb71-8" aria-hidden="true" tabindex="-1"></a>model_uri <span class="op">=</span> <span class="ss">f"models:/</span><span class="sc">{</span>model_name<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>model_version<span class="sc">}</span><span class="ss">"</span></span>
-<span id="cb71-9"><a href="#cb71-9" aria-hidden="true" tabindex="-1"></a>logged_model <span class="op">=</span> mlflow.sklearn.load_model(model_uri)</span>
-<span id="cb71-10"><a href="#cb71-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb71-11"><a href="#cb71-11" aria-hidden="true" tabindex="-1"></a><span class="co"># GENERATE PREDICTION DATA ---------------------</span></span>
-<span id="cb71-12"><a href="#cb71-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb71-13"><a href="#cb71-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> create_data(</span>
-<span id="cb71-14"><a href="#cb71-14" aria-hidden="true" tabindex="-1"></a>    sex: <span class="bu">str</span> <span class="op">=</span> <span class="st">"female"</span>,</span>
-<span id="cb71-15"><a href="#cb71-15" aria-hidden="true" tabindex="-1"></a>    age: <span class="bu">float</span> <span class="op">=</span> <span class="fl">29.0</span>,</span>
-<span id="cb71-16"><a href="#cb71-16" aria-hidden="true" tabindex="-1"></a>    fare: <span class="bu">float</span> <span class="op">=</span> <span class="fl">16.5</span>,</span>
-<span id="cb71-17"><a href="#cb71-17" aria-hidden="true" tabindex="-1"></a>    embarked: <span class="bu">str</span> <span class="op">=</span> <span class="st">"S"</span>,</span>
-<span id="cb71-18"><a href="#cb71-18" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
-<span id="cb71-19"><a href="#cb71-19" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb71-20"><a href="#cb71-20" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb71-21"><a href="#cb71-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb71-22"><a href="#cb71-22" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame(</span>
-<span id="cb71-23"><a href="#cb71-23" aria-hidden="true" tabindex="-1"></a>        {</span>
-<span id="cb71-24"><a href="#cb71-24" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Sex"</span>: [sex],</span>
-<span id="cb71-25"><a href="#cb71-25" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Age"</span>: [age],</span>
-<span id="cb71-26"><a href="#cb71-26" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Fare"</span>: [fare],</span>
-<span id="cb71-27"><a href="#cb71-27" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Embarked"</span>: [embarked],</span>
-<span id="cb71-28"><a href="#cb71-28" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb71-29"><a href="#cb71-29" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb71-30"><a href="#cb71-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb71-31"><a href="#cb71-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df</span>
-<span id="cb71-32"><a href="#cb71-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb71-33"><a href="#cb71-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb71-34"><a href="#cb71-34" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> pd.concat(</span>
-<span id="cb71-35"><a href="#cb71-35" aria-hidden="true" tabindex="-1"></a>    [create_data(age<span class="op">=</span><span class="dv">40</span>), create_data(sex<span class="op">=</span><span class="st">"male"</span>)]</span>
-<span id="cb71-36"><a href="#cb71-36" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb71-37"><a href="#cb71-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb71-38"><a href="#cb71-38" aria-hidden="true" tabindex="-1"></a><span class="co"># PREDICTION ---------------------</span></span>
-<span id="cb71-39"><a href="#cb71-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb71-40"><a href="#cb71-40" aria-hidden="true" tabindex="-1"></a>logged_model.predict(pd.DataFrame(data))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb72" data-file="Dans une cellule de notebook" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>model_name <span class="op">=</span> <span class="st">"production"</span></span>
+<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a>model_version <span class="op">=</span> <span class="st">"latest"</span></span>
+<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-7"><a href="#cb72-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the model from the Model Registry</span></span>
+<span id="cb72-8"><a href="#cb72-8" aria-hidden="true" tabindex="-1"></a>model_uri <span class="op">=</span> <span class="ss">f"models:/</span><span class="sc">{</span>model_name<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>model_version<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb72-9"><a href="#cb72-9" aria-hidden="true" tabindex="-1"></a>logged_model <span class="op">=</span> mlflow.sklearn.load_model(model_uri)</span>
+<span id="cb72-10"><a href="#cb72-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-11"><a href="#cb72-11" aria-hidden="true" tabindex="-1"></a><span class="co"># GENERATE PREDICTION DATA ---------------------</span></span>
+<span id="cb72-12"><a href="#cb72-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-13"><a href="#cb72-13" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> create_data(</span>
+<span id="cb72-14"><a href="#cb72-14" aria-hidden="true" tabindex="-1"></a>    sex: <span class="bu">str</span> <span class="op">=</span> <span class="st">"female"</span>,</span>
+<span id="cb72-15"><a href="#cb72-15" aria-hidden="true" tabindex="-1"></a>    age: <span class="bu">float</span> <span class="op">=</span> <span class="fl">29.0</span>,</span>
+<span id="cb72-16"><a href="#cb72-16" aria-hidden="true" tabindex="-1"></a>    fare: <span class="bu">float</span> <span class="op">=</span> <span class="fl">16.5</span>,</span>
+<span id="cb72-17"><a href="#cb72-17" aria-hidden="true" tabindex="-1"></a>    embarked: <span class="bu">str</span> <span class="op">=</span> <span class="st">"S"</span>,</span>
+<span id="cb72-18"><a href="#cb72-18" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
+<span id="cb72-19"><a href="#cb72-19" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb72-20"><a href="#cb72-20" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb72-21"><a href="#cb72-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-22"><a href="#cb72-22" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb72-23"><a href="#cb72-23" aria-hidden="true" tabindex="-1"></a>        {</span>
+<span id="cb72-24"><a href="#cb72-24" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Sex"</span>: [sex],</span>
+<span id="cb72-25"><a href="#cb72-25" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Age"</span>: [age],</span>
+<span id="cb72-26"><a href="#cb72-26" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Fare"</span>: [fare],</span>
+<span id="cb72-27"><a href="#cb72-27" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Embarked"</span>: [embarked],</span>
+<span id="cb72-28"><a href="#cb72-28" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb72-29"><a href="#cb72-29" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb72-30"><a href="#cb72-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-31"><a href="#cb72-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df</span>
+<span id="cb72-32"><a href="#cb72-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-33"><a href="#cb72-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-34"><a href="#cb72-34" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> pd.concat(</span>
+<span id="cb72-35"><a href="#cb72-35" aria-hidden="true" tabindex="-1"></a>    [create_data(age<span class="op">=</span><span class="dv">40</span>), create_data(sex<span class="op">=</span><span class="st">"male"</span>)]</span>
+<span id="cb72-36"><a href="#cb72-36" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb72-37"><a href="#cb72-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-38"><a href="#cb72-38" aria-hidden="true" tabindex="-1"></a><span class="co"># PREDICTION ---------------------</span></span>
+<span id="cb72-39"><a href="#cb72-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb72-40"><a href="#cb72-40" aria-hidden="true" tabindex="-1"></a>logged_model.predict(pd.DataFrame(data))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <ol start="4" type="1">
 <li>On va adapter le code applicatif de notre API pour tenir compte de ce modèle de production.</li>
@@ -4715,78 +4683,97 @@ Exemple de code à tester
 <summary>
 Voir le script <code>app/api.py</code> proposé
 </summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb72" data-file="app/api.py" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""A simple API to expose our trained RandomForest model for Tutanic survival."""</span></span>
-<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastapi <span class="im">import</span> FastAPI</span>
-<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
-<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb72-7"><a href="#cb72-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Preload model -------------------</span></span>
-<span id="cb72-8"><a href="#cb72-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb72-9"><a href="#cb72-9" aria-hidden="true" tabindex="-1"></a>model_name <span class="op">=</span> <span class="st">"production"</span></span>
-<span id="cb72-10"><a href="#cb72-10" aria-hidden="true" tabindex="-1"></a>model_version <span class="op">=</span> <span class="st">"latest"</span></span>
-<span id="cb72-11"><a href="#cb72-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb72-12"><a href="#cb72-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the model from the Model Registry</span></span>
-<span id="cb72-13"><a href="#cb72-13" aria-hidden="true" tabindex="-1"></a>model_uri <span class="op">=</span> <span class="ss">f"models:/</span><span class="sc">{</span>model_name<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>model_version<span class="sc">}</span><span class="ss">"</span></span>
-<span id="cb72-14"><a href="#cb72-14" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> mlflow.sklearn.load_model(model_uri)</span>
-<span id="cb72-15"><a href="#cb72-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb72-16"><a href="#cb72-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Define app -------------------------</span></span>
-<span id="cb72-17"><a href="#cb72-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb72-18"><a href="#cb72-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb72-19"><a href="#cb72-19" aria-hidden="true" tabindex="-1"></a>app <span class="op">=</span> FastAPI(</span>
-<span id="cb72-20"><a href="#cb72-20" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">"Prédiction de survie sur le Titanic"</span>,</span>
-<span id="cb72-21"><a href="#cb72-21" aria-hidden="true" tabindex="-1"></a>    description<span class="op">=</span></span>
-<span id="cb72-22"><a href="#cb72-22" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Application de prédiction de survie sur le Titanic 🚢 &lt;br&gt;Une version par API pour faciliter la réutilisation du modèle 🚀"</span> <span class="op">+\</span></span>
-<span id="cb72-23"><a href="#cb72-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">"&lt;br&gt;&lt;br&gt;&lt;img src=</span><span class="ch">\"</span><span class="st">https://media.vogue.fr/photos/5faac06d39c5194ff9752ec9/1:1/w_2404,h_2404,c_limit/076_CHL_126884.jpg</span><span class="ch">\"</span><span class="st"> width=</span><span class="ch">\"</span><span class="st">200</span><span class="ch">\"</span><span class="st">&gt;"</span></span>
-<span id="cb72-24"><a href="#cb72-24" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb72-25"><a href="#cb72-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb72-26"><a href="#cb72-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb72-27"><a href="#cb72-27" aria-hidden="true" tabindex="-1"></a><span class="at">@app.get</span>(<span class="st">"/"</span>, tags<span class="op">=</span>[<span class="st">"Welcome"</span>])</span>
-<span id="cb72-28"><a href="#cb72-28" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> show_welcome_page():</span>
-<span id="cb72-29"><a href="#cb72-29" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb72-30"><a href="#cb72-30" aria-hidden="true" tabindex="-1"></a><span class="co">    Show welcome page with model name and version.</span></span>
-<span id="cb72-31"><a href="#cb72-31" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb72-32"><a href="#cb72-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb72-33"><a href="#cb72-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
-<span id="cb72-34"><a href="#cb72-34" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Message"</span>: <span class="st">"API de prédiction de survie sur le Titanic"</span>,</span>
-<span id="cb72-35"><a href="#cb72-35" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Model_name"</span>: <span class="st">'Titanic ML'</span>,</span>
-<span id="cb72-36"><a href="#cb72-36" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Model_version"</span>: <span class="st">"0.3"</span>,</span>
-<span id="cb72-37"><a href="#cb72-37" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb72-38"><a href="#cb72-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb72-39"><a href="#cb72-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb72-40"><a href="#cb72-40" aria-hidden="true" tabindex="-1"></a><span class="at">@app.get</span>(<span class="st">"/predict"</span>, tags<span class="op">=</span>[<span class="st">"Predict"</span>])</span>
-<span id="cb72-41"><a href="#cb72-41" aria-hidden="true" tabindex="-1"></a><span class="cf">async</span> <span class="kw">def</span> predict(</span>
-<span id="cb72-42"><a href="#cb72-42" aria-hidden="true" tabindex="-1"></a>    sex: <span class="bu">str</span> <span class="op">=</span> <span class="st">"female"</span>,</span>
-<span id="cb72-43"><a href="#cb72-43" aria-hidden="true" tabindex="-1"></a>    age: <span class="bu">float</span> <span class="op">=</span> <span class="fl">29.0</span>,</span>
-<span id="cb72-44"><a href="#cb72-44" aria-hidden="true" tabindex="-1"></a>    fare: <span class="bu">float</span> <span class="op">=</span> <span class="fl">16.5</span>,</span>
-<span id="cb72-45"><a href="#cb72-45" aria-hidden="true" tabindex="-1"></a>    embarked: <span class="bu">str</span> <span class="op">=</span> <span class="st">"S"</span></span>
-<span id="cb72-46"><a href="#cb72-46" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
-<span id="cb72-47"><a href="#cb72-47" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb72-48"><a href="#cb72-48" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb72-49"><a href="#cb72-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb72-50"><a href="#cb72-50" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame(</span>
-<span id="cb72-51"><a href="#cb72-51" aria-hidden="true" tabindex="-1"></a>        {</span>
-<span id="cb72-52"><a href="#cb72-52" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Sex"</span>: [sex],</span>
-<span id="cb72-53"><a href="#cb72-53" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Age"</span>: [age],</span>
-<span id="cb72-54"><a href="#cb72-54" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Fare"</span>: [fare],</span>
-<span id="cb72-55"><a href="#cb72-55" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Embarked"</span>: [embarked],</span>
-<span id="cb72-56"><a href="#cb72-56" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb72-57"><a href="#cb72-57" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb72-58"><a href="#cb72-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb72-59"><a href="#cb72-59" aria-hidden="true" tabindex="-1"></a>    prediction <span class="op">=</span> <span class="st">"Survived 🎉"</span> <span class="cf">if</span> <span class="bu">int</span>(model.predict(df)) <span class="op">==</span> <span class="dv">1</span> <span class="cf">else</span> <span class="st">"Dead ⚰️"</span></span>
-<span id="cb72-60"><a href="#cb72-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb72-61"><a href="#cb72-61" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> prediction</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb73" data-file="app/api.py" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""A simple API to expose our trained RandomForest model for Tutanic survival."""</span></span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> logging</span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastapi <span class="im">import</span> FastAPI</span>
+<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mlflow</span>
+<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a>logging.basicConfig(</span>
+<span id="cb73-10"><a href="#cb73-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">format</span><span class="op">=</span><span class="st">"</span><span class="sc">{asctime}</span><span class="st"> - </span><span class="sc">{levelname}</span><span class="st"> - </span><span class="sc">{message}</span><span class="st">"</span>,</span>
+<span id="cb73-11"><a href="#cb73-11" aria-hidden="true" tabindex="-1"></a>    style<span class="op">=</span><span class="st">"{"</span>,</span>
+<span id="cb73-12"><a href="#cb73-12" aria-hidden="true" tabindex="-1"></a>    datefmt<span class="op">=</span><span class="st">"%Y-%m-</span><span class="sc">%d</span><span class="st"> %H:%M"</span>,</span>
+<span id="cb73-13"><a href="#cb73-13" aria-hidden="true" tabindex="-1"></a>    level<span class="op">=</span>logging.DEBUG,</span>
+<span id="cb73-14"><a href="#cb73-14" aria-hidden="true" tabindex="-1"></a>    handlers<span class="op">=</span>[logging.FileHandler(<span class="st">"api.log"</span>), logging.StreamHandler()],</span>
+<span id="cb73-15"><a href="#cb73-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb73-16"><a href="#cb73-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-17"><a href="#cb73-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Preload model -------------------</span></span>
+<span id="cb73-18"><a href="#cb73-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-19"><a href="#cb73-19" aria-hidden="true" tabindex="-1"></a>logging.info(</span>
+<span id="cb73-20"><a href="#cb73-20" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Getting model from MLFlow"</span></span>
+<span id="cb73-21"><a href="#cb73-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb73-22"><a href="#cb73-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-23"><a href="#cb73-23" aria-hidden="true" tabindex="-1"></a>model_name <span class="op">=</span> <span class="st">"production"</span></span>
+<span id="cb73-24"><a href="#cb73-24" aria-hidden="true" tabindex="-1"></a>model_version <span class="op">=</span> <span class="st">"latest"</span></span>
+<span id="cb73-25"><a href="#cb73-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-26"><a href="#cb73-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the model from the Model Registry</span></span>
+<span id="cb73-27"><a href="#cb73-27" aria-hidden="true" tabindex="-1"></a>model_uri <span class="op">=</span> <span class="ss">f"models:/</span><span class="sc">{</span>model_name<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>model_version<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb73-28"><a href="#cb73-28" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> mlflow.sklearn.load_model(model_uri)</span>
+<span id="cb73-29"><a href="#cb73-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-30"><a href="#cb73-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Define app -------------------------</span></span>
+<span id="cb73-31"><a href="#cb73-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-32"><a href="#cb73-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-33"><a href="#cb73-33" aria-hidden="true" tabindex="-1"></a>app <span class="op">=</span> FastAPI(</span>
+<span id="cb73-34"><a href="#cb73-34" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">"Prédiction de survie sur le Titanic"</span>,</span>
+<span id="cb73-35"><a href="#cb73-35" aria-hidden="true" tabindex="-1"></a>    description<span class="op">=</span></span>
+<span id="cb73-36"><a href="#cb73-36" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Application de prédiction de survie sur le Titanic 🚢 &lt;br&gt;Une version par API pour faciliter la réutilisation du modèle 🚀"</span> <span class="op">+\</span></span>
+<span id="cb73-37"><a href="#cb73-37" aria-hidden="true" tabindex="-1"></a>        <span class="st">"&lt;br&gt;&lt;br&gt;&lt;img src=</span><span class="ch">\"</span><span class="st">https://media.vogue.fr/photos/5faac06d39c5194ff9752ec9/1:1/w_2404,h_2404,c_limit/076_CHL_126884.jpg</span><span class="ch">\"</span><span class="st"> width=</span><span class="ch">\"</span><span class="st">200</span><span class="ch">\"</span><span class="st">&gt;"</span></span>
+<span id="cb73-38"><a href="#cb73-38" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb73-39"><a href="#cb73-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-40"><a href="#cb73-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-41"><a href="#cb73-41" aria-hidden="true" tabindex="-1"></a><span class="at">@app.get</span>(<span class="st">"/"</span>, tags<span class="op">=</span>[<span class="st">"Welcome"</span>])</span>
+<span id="cb73-42"><a href="#cb73-42" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> show_welcome_page():</span>
+<span id="cb73-43"><a href="#cb73-43" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb73-44"><a href="#cb73-44" aria-hidden="true" tabindex="-1"></a><span class="co">    Show welcome page with model name and version.</span></span>
+<span id="cb73-45"><a href="#cb73-45" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb73-46"><a href="#cb73-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-47"><a href="#cb73-47" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb73-48"><a href="#cb73-48" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Message"</span>: <span class="st">"API de prédiction de survie sur le Titanic"</span>,</span>
+<span id="cb73-49"><a href="#cb73-49" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Model_name"</span>: <span class="st">'Titanic ML'</span>,</span>
+<span id="cb73-50"><a href="#cb73-50" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Model_version"</span>: <span class="st">"0.3"</span>,</span>
+<span id="cb73-51"><a href="#cb73-51" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb73-52"><a href="#cb73-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-53"><a href="#cb73-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-54"><a href="#cb73-54" aria-hidden="true" tabindex="-1"></a><span class="at">@app.get</span>(<span class="st">"/predict"</span>, tags<span class="op">=</span>[<span class="st">"Predict"</span>])</span>
+<span id="cb73-55"><a href="#cb73-55" aria-hidden="true" tabindex="-1"></a><span class="cf">async</span> <span class="kw">def</span> predict(</span>
+<span id="cb73-56"><a href="#cb73-56" aria-hidden="true" tabindex="-1"></a>    sex: <span class="bu">str</span> <span class="op">=</span> <span class="st">"female"</span>,</span>
+<span id="cb73-57"><a href="#cb73-57" aria-hidden="true" tabindex="-1"></a>    age: <span class="bu">float</span> <span class="op">=</span> <span class="fl">29.0</span>,</span>
+<span id="cb73-58"><a href="#cb73-58" aria-hidden="true" tabindex="-1"></a>    fare: <span class="bu">float</span> <span class="op">=</span> <span class="fl">16.5</span>,</span>
+<span id="cb73-59"><a href="#cb73-59" aria-hidden="true" tabindex="-1"></a>    embarked: <span class="bu">str</span> <span class="op">=</span> <span class="st">"S"</span></span>
+<span id="cb73-60"><a href="#cb73-60" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="bu">str</span>:</span>
+<span id="cb73-61"><a href="#cb73-61" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb73-62"><a href="#cb73-62" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb73-63"><a href="#cb73-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-64"><a href="#cb73-64" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb73-65"><a href="#cb73-65" aria-hidden="true" tabindex="-1"></a>        {</span>
+<span id="cb73-66"><a href="#cb73-66" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Sex"</span>: [sex],</span>
+<span id="cb73-67"><a href="#cb73-67" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Age"</span>: [age],</span>
+<span id="cb73-68"><a href="#cb73-68" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Fare"</span>: [fare],</span>
+<span id="cb73-69"><a href="#cb73-69" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Embarked"</span>: [embarked],</span>
+<span id="cb73-70"><a href="#cb73-70" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb73-71"><a href="#cb73-71" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb73-72"><a href="#cb73-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-73"><a href="#cb73-73" aria-hidden="true" tabindex="-1"></a>    prediction <span class="op">=</span> <span class="bu">int</span>(model.predict(df)[<span class="dv">0</span>])</span>
+<span id="cb73-74"><a href="#cb73-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-75"><a href="#cb73-75" aria-hidden="true" tabindex="-1"></a>    logging.debug(<span class="ss">f"Predicting </span><span class="sc">{</span>prediction<span class="sc">}</span><span class="ss"> for </span><span class="sc">{</span>df<span class="sc">.</span>to_dict()<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb73-76"><a href="#cb73-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-77"><a href="#cb73-77" aria-hidden="true" tabindex="-1"></a>    prediction <span class="op">=</span> <span class="st">"Survived 🎉"</span> <span class="cf">if</span> prediction <span class="op">==</span> <span class="dv">1</span> <span class="cf">else</span> <span class="st">"Dead ⚰️"</span></span>
+<span id="cb73-78"><a href="#cb73-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-79"><a href="#cb73-79" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> prediction</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <p>Les changements principaux de ce code sont:</p>
 <ul>
 <li>on va chercher le modèle de production</li>
 <li>on met à jour la version de notre API pour signaler à nos clients que celle-ci a évolué</li>
+<li>on utilise un peu plus le <em>logging</em> pour mieux comprendre ce qu’il se passe</li>
 </ul>
 <ol start="5" type="1">
 <li>On va retirer l’entraînement de la séquence d’opération du <code>api/run.sh</code>. En supprimant la ligne relative à l’entraînement du modèle, vous devriez avoir</li>
 </ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb73" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="co">#/bin/bash</span></span>
-<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>uvicorn app.api:app <span class="op">--</span>host <span class="st">"0.0.0.0"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb74" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="co">#/bin/bash</span></span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>uvicorn app.api:app <span class="op">--</span>host <span class="st">"0.0.0.0"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Mettons en production cette nouvelle version. Cela implique de faire les gestes suivants:</p>
 <ol start="6" type="1">
 <li><p><em>Commit</em> de ce changement dans <code>main</code></p></li>
@@ -4794,54 +4781,77 @@ Voir le script <code>app/api.py</code> proposé
 <li><p>Mettre à jour notre manifeste dans le dépôt <code>GitOps</code>.</p>
 <ul>
 <li>En premier lieu, il faut changer la version de référence pour utiliser le tag <code>v0.0.3</code>.</li>
-<li>De plus, il faut déclarer la variable d’environnement <code>MLFLOW_TRACKING_URI</code> qui indique à <code>Python</code> l’entrepôt de modèles où aller chercher celui en production. La bonne pratique est de définir ceci hors du code, dans un fichier de configuration donc, ce qui est l’objet de notre manifeste <code>deployment.yaml</code>. On peut donc changer de cette manière ce fichier:</li>
+<li>De plus, il faut déclarer la variable d’environnement <code>MLFLOW_TRACKING_URI</code> qui indique à <code>Python</code> l’entrepôt de modèles où aller chercher celui en production. La bonne pratique est de définir ceci hors du code, dans un fichier de configuration donc, ce qui est l’objet de notre manifeste <code>deployment.yaml</code>.</li>
+<li>Indiquer au <em>pod</em> qui va se lancer comment s’authentifier à <code>MLFlow</code> pour récupérer le modèle de production. On ne va pas mettre en brut nos informations d’authentification dans <code>deployment.yaml</code> (n’oublions pas les bonnes pratiques!). On va utiliser un secret <em>Kubernetes</em> pour cela, comme on a fait pour notre variable d’environnement précédente (le jeton d’API).</li>
 </ul></li>
 </ol>
+<p>Pour créer le secret Kubernetes:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb75" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>kubectl create secret generic mlflow<span class="op">-</span>secrets <span class="op">\</span></span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">--</span><span class="im">from</span><span class="op">-</span>literal<span class="op">=</span>MLFLOW_TRACKING_USERNAME<span class="op">=</span><span class="st">"$MLFLOW_TRACKING_USERNAME"</span> <span class="op">\</span></span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">--</span><span class="im">from</span><span class="op">-</span>literal<span class="op">=</span>MLFLOW_TRACKING_PASSWORD<span class="op">=</span><span class="st">"$MLFLOW_TRACKING_PASSWORD"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Changer le <code>deployment.yaml</code> de votre dépôt <code>GitOps</code></p>
 <details>
 <summary>
 Le modèle <code>deployment.yaml</code> proposé
 </summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-126" data-code-line-numbers=""><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-126-1"><a href="#annotated-cell-126-1" aria-hidden="true" tabindex="-1"></a>apiVersion: apps<span class="op">/</span>v1</span>
-<span id="annotated-cell-126-2"><a href="#annotated-cell-126-2" aria-hidden="true" tabindex="-1"></a>kind: Deployment</span>
-<span id="annotated-cell-126-3"><a href="#annotated-cell-126-3" aria-hidden="true" tabindex="-1"></a>metadata:</span>
-<span id="annotated-cell-126-4"><a href="#annotated-cell-126-4" aria-hidden="true" tabindex="-1"></a>name: titanic<span class="op">-</span>deployment</span>
-<span id="annotated-cell-126-5"><a href="#annotated-cell-126-5" aria-hidden="true" tabindex="-1"></a>labels:</span>
-<span id="annotated-cell-126-6"><a href="#annotated-cell-126-6" aria-hidden="true" tabindex="-1"></a>    app: titanic</span>
-<span id="annotated-cell-126-7"><a href="#annotated-cell-126-7" aria-hidden="true" tabindex="-1"></a>spec:</span>
-<span id="annotated-cell-126-8"><a href="#annotated-cell-126-8" aria-hidden="true" tabindex="-1"></a>replicas: <span class="dv">1</span></span>
-<span id="annotated-cell-126-9"><a href="#annotated-cell-126-9" aria-hidden="true" tabindex="-1"></a>selector:</span>
-<span id="annotated-cell-126-10"><a href="#annotated-cell-126-10" aria-hidden="true" tabindex="-1"></a>    matchLabels:</span>
-<span id="annotated-cell-126-11"><a href="#annotated-cell-126-11" aria-hidden="true" tabindex="-1"></a>    app: titanic</span>
-<span id="annotated-cell-126-12"><a href="#annotated-cell-126-12" aria-hidden="true" tabindex="-1"></a>template:</span>
-<span id="annotated-cell-126-13"><a href="#annotated-cell-126-13" aria-hidden="true" tabindex="-1"></a>    metadata:</span>
-<span id="annotated-cell-126-14"><a href="#annotated-cell-126-14" aria-hidden="true" tabindex="-1"></a>    labels:</span>
-<span id="annotated-cell-126-15"><a href="#annotated-cell-126-15" aria-hidden="true" tabindex="-1"></a>        app: titanic</span>
-<span id="annotated-cell-126-16"><a href="#annotated-cell-126-16" aria-hidden="true" tabindex="-1"></a>    spec:</span>
-<span id="annotated-cell-126-17"><a href="#annotated-cell-126-17" aria-hidden="true" tabindex="-1"></a>    containers:</span>
-<span id="annotated-cell-126-18"><a href="#annotated-cell-126-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> name: titanic</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-126" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-126-19" class="code-annotation-target"><a href="#annotated-cell-126-19" aria-hidden="true" tabindex="-1"></a>        image: linogaliana<span class="op">/</span>application:v0<span class="fl">.0.3</span></span>
-<span id="annotated-cell-126-20"><a href="#annotated-cell-126-20" aria-hidden="true" tabindex="-1"></a>        ports:</span>
-<span id="annotated-cell-126-21"><a href="#annotated-cell-126-21" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> containerPort: <span class="dv">8000</span></span>
-<span id="annotated-cell-126-22"><a href="#annotated-cell-126-22" aria-hidden="true" tabindex="-1"></a>        env:</span>
-<span id="annotated-cell-126-23"><a href="#annotated-cell-126-23" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> name: MLFLOW_TRACKING_URI</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-126" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-126-24" class="code-annotation-target"><a href="#annotated-cell-126-24" aria-hidden="true" tabindex="-1"></a>            value: https:<span class="op">//</span>user<span class="op">-</span>${USERNAME}<span class="op">-</span>mlflow.user.lab.sspcloud.fr</span>
-<span id="annotated-cell-126-25"><a href="#annotated-cell-126-25" aria-hidden="true" tabindex="-1"></a>        resources:</span>
-<span id="annotated-cell-126-26"><a href="#annotated-cell-126-26" aria-hidden="true" tabindex="-1"></a>        limits:</span>
-<span id="annotated-cell-126-27"><a href="#annotated-cell-126-27" aria-hidden="true" tabindex="-1"></a>            memory: <span class="st">"2Gi"</span></span>
-<span id="annotated-cell-126-28"><a href="#annotated-cell-126-28" aria-hidden="true" tabindex="-1"></a>            cpu: <span class="st">"1000m"</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-129" data-code-line-numbers=""><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-129-1"><a href="#annotated-cell-129-1" aria-hidden="true" tabindex="-1"></a>apiVersion: apps<span class="op">/</span>v1</span>
+<span id="annotated-cell-129-2"><a href="#annotated-cell-129-2" aria-hidden="true" tabindex="-1"></a>kind: Deployment</span>
+<span id="annotated-cell-129-3"><a href="#annotated-cell-129-3" aria-hidden="true" tabindex="-1"></a>metadata:</span>
+<span id="annotated-cell-129-4"><a href="#annotated-cell-129-4" aria-hidden="true" tabindex="-1"></a>  name: titanic<span class="op">-</span>deployment</span>
+<span id="annotated-cell-129-5"><a href="#annotated-cell-129-5" aria-hidden="true" tabindex="-1"></a>  labels:</span>
+<span id="annotated-cell-129-6"><a href="#annotated-cell-129-6" aria-hidden="true" tabindex="-1"></a>    app: titanic</span>
+<span id="annotated-cell-129-7"><a href="#annotated-cell-129-7" aria-hidden="true" tabindex="-1"></a>spec:</span>
+<span id="annotated-cell-129-8"><a href="#annotated-cell-129-8" aria-hidden="true" tabindex="-1"></a>  replicas: <span class="dv">1</span></span>
+<span id="annotated-cell-129-9"><a href="#annotated-cell-129-9" aria-hidden="true" tabindex="-1"></a>  selector:</span>
+<span id="annotated-cell-129-10"><a href="#annotated-cell-129-10" aria-hidden="true" tabindex="-1"></a>    matchLabels:</span>
+<span id="annotated-cell-129-11"><a href="#annotated-cell-129-11" aria-hidden="true" tabindex="-1"></a>      app: titanic</span>
+<span id="annotated-cell-129-12"><a href="#annotated-cell-129-12" aria-hidden="true" tabindex="-1"></a>  template:</span>
+<span id="annotated-cell-129-13"><a href="#annotated-cell-129-13" aria-hidden="true" tabindex="-1"></a>    metadata:</span>
+<span id="annotated-cell-129-14"><a href="#annotated-cell-129-14" aria-hidden="true" tabindex="-1"></a>      labels:</span>
+<span id="annotated-cell-129-15"><a href="#annotated-cell-129-15" aria-hidden="true" tabindex="-1"></a>        app: titanic</span>
+<span id="annotated-cell-129-16"><a href="#annotated-cell-129-16" aria-hidden="true" tabindex="-1"></a>    spec:</span>
+<span id="annotated-cell-129-17"><a href="#annotated-cell-129-17" aria-hidden="true" tabindex="-1"></a>      containers:</span>
+<span id="annotated-cell-129-18"><a href="#annotated-cell-129-18" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> name: titanic</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-129" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-129-19" class="code-annotation-target"><a href="#annotated-cell-129-19" aria-hidden="true" tabindex="-1"></a>          image: compte_docker<span class="op">/</span>application:v0<span class="fl">.0.3</span></span>
+<span id="annotated-cell-129-20"><a href="#annotated-cell-129-20" aria-hidden="true" tabindex="-1"></a>          imagePullPolicy: Always</span>
+<span id="annotated-cell-129-21"><a href="#annotated-cell-129-21" aria-hidden="true" tabindex="-1"></a>          ports:</span>
+<span id="annotated-cell-129-22"><a href="#annotated-cell-129-22" aria-hidden="true" tabindex="-1"></a>            <span class="op">-</span> containerPort: <span class="dv">8000</span></span>
+<span id="annotated-cell-129-23"><a href="#annotated-cell-129-23" aria-hidden="true" tabindex="-1"></a>          env:</span>
+<span id="annotated-cell-129-24"><a href="#annotated-cell-129-24" aria-hidden="true" tabindex="-1"></a>            <span class="op">-</span> name: JETON_API</span>
+<span id="annotated-cell-129-25"><a href="#annotated-cell-129-25" aria-hidden="true" tabindex="-1"></a>              valueFrom:</span>
+<span id="annotated-cell-129-26"><a href="#annotated-cell-129-26" aria-hidden="true" tabindex="-1"></a>                secretKeyRef:</span>
+<span id="annotated-cell-129-27"><a href="#annotated-cell-129-27" aria-hidden="true" tabindex="-1"></a>                  name: api<span class="op">-</span>jeton</span>
+<span id="annotated-cell-129-28"><a href="#annotated-cell-129-28" aria-hidden="true" tabindex="-1"></a>                  key: JETON_API</span>
+<span id="annotated-cell-129-29"><a href="#annotated-cell-129-29" aria-hidden="true" tabindex="-1"></a>            <span class="op">-</span> name: MLFLOW_TRACKING_URI</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-129" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-129-30" class="code-annotation-target"><a href="#annotated-cell-129-30" aria-hidden="true" tabindex="-1"></a>              value: <span class="st">"https://user-$</span><span class="sc">{USERNAME}</span><span class="st">-mlflow.user.lab.sspcloud.fr"</span></span>
+<span id="annotated-cell-129-31"><a href="#annotated-cell-129-31" aria-hidden="true" tabindex="-1"></a>            <span class="op">-</span> name: MLFLOW_TRACKING_USERNAME</span>
+<span id="annotated-cell-129-32"><a href="#annotated-cell-129-32" aria-hidden="true" tabindex="-1"></a>              valueFrom:</span>
+<span id="annotated-cell-129-33"><a href="#annotated-cell-129-33" aria-hidden="true" tabindex="-1"></a>                secretKeyRef:</span>
+<span id="annotated-cell-129-34"><a href="#annotated-cell-129-34" aria-hidden="true" tabindex="-1"></a>                  name: mlflow<span class="op">-</span>secrets</span>
+<span id="annotated-cell-129-35"><a href="#annotated-cell-129-35" aria-hidden="true" tabindex="-1"></a>                  key: MLFLOW_TRACKING_USERNAME</span>
+<span id="annotated-cell-129-36"><a href="#annotated-cell-129-36" aria-hidden="true" tabindex="-1"></a>            <span class="op">-</span> name: MLFLOW_TRACKING_PASSWORD</span>
+<span id="annotated-cell-129-37"><a href="#annotated-cell-129-37" aria-hidden="true" tabindex="-1"></a>              valueFrom:</span>
+<span id="annotated-cell-129-38"><a href="#annotated-cell-129-38" aria-hidden="true" tabindex="-1"></a>                secretKeyRef:</span>
+<span id="annotated-cell-129-39"><a href="#annotated-cell-129-39" aria-hidden="true" tabindex="-1"></a>                  name: mlflow<span class="op">-</span>secrets</span>
+<span id="annotated-cell-129-40"><a href="#annotated-cell-129-40" aria-hidden="true" tabindex="-1"></a>                  key: MLFLOW_TRACKING_PASSWORD</span>
+<span id="annotated-cell-129-41"><a href="#annotated-cell-129-41" aria-hidden="true" tabindex="-1"></a>          resources:</span>
+<span id="annotated-cell-129-42"><a href="#annotated-cell-129-42" aria-hidden="true" tabindex="-1"></a>            limits:</span>
+<span id="annotated-cell-129-43"><a href="#annotated-cell-129-43" aria-hidden="true" tabindex="-1"></a>              memory: <span class="st">"2Gi"</span></span>
+<span id="annotated-cell-129-44"><a href="#annotated-cell-129-44" aria-hidden="true" tabindex="-1"></a>              cpu: <span class="st">"1000m"</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <dl class="code-annotation-container-grid">
-<dt data-target-cell="annotated-cell-126" data-target-annotation="1">1</dt>
+<dt data-target-cell="annotated-cell-129" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-cell="annotated-cell-126" data-code-lines="19" data-code-annotation="1">Le <em>tag</em> de notre code applicatif</span>
+<span data-code-cell="annotated-cell-129" data-code-lines="19" data-code-annotation="1">Le <em>tag</em> de notre code applicatif</span>
 </dd>
-<dt data-target-cell="annotated-cell-126" data-target-annotation="2">2</dt>
+<dt data-target-cell="annotated-cell-129" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-cell="annotated-cell-126" data-code-lines="24" data-code-annotation="2">La variable d’environnement à adapter en fonction de l’adresse du dépôt demodèles utilisé. Remplacer par votre URL <code>MLFlow</code>.</span>
+<span data-code-cell="annotated-cell-129" data-code-lines="30" data-code-annotation="2">La variable d’environnement à adapter en fonction de l’adresse du dépôt demodèles utilisé. Remplacer par votre URL <code>MLFlow</code>.</span>
 </dd>
 </dl>
 </details>
-<ol start="11" type="1">
-<li>Pour s’assurer que l’application fonctionne bien, on peut aller voir les <em>logs</em> de la machine qui fait tourner notre code. Pour ça, faire <code>kubectl get pods</code> et, en supposant que votre service soit nommé <code>titanic</code> dans vos fichiers YAML de configuration, récupérer le nom commençant par <code>titanic-deployment-*</code> et faire <code>kubectl logs titanic-deployment-*</code></li>
+<ol start="10" type="1">
+<li><p><em>Committer</em> vos dépôts applicatifs puis GitOps.</p></li>
+<li><p>Pour s’assurer que l’application fonctionne bien, on peut aller voir les <em>logs</em> de la machine qui fait tourner notre code. Pour ça, faire <code>kubectl get pods</code> et, en supposant que votre service soit nommé <code>titanic</code> dans vos fichiers YAML de configuration, récupérer le nom commençant par <code>titanic-deployment-*</code> et faire <code>kubectl logs titanic-deployment-*</code></p></li>
 </ol>
 </div>
 </div>
@@ -4944,14 +4954,14 @@ Figure&nbsp;4: <em>Pipeline</em> d’entraînement de nos modèles avec deux out
 <ol type="1">
 <li>Dans <code>train.py</code>, dans la section relative au <em>parsing</em> de nos arguments, ajouter ce bout de code</li>
 </ol>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb74" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>parser.add_argument(</span>
-<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"--max_features"</span>,</span>
-<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">type</span><span class="op">=</span><span class="bu">str</span>, default<span class="op">=</span><span class="st">"sqrt"</span>,</span>
-<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>    choices<span class="op">=</span>[<span class="st">'sqrt'</span>, <span class="st">'log2'</span>],</span>
-<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">help</span><span class="op">=</span><span class="st">"Number of features to consider when looking for the best split"</span></span>
-<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb76" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>parser.add_argument(</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"--max_features"</span>,</span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">type</span><span class="op">=</span><span class="bu">str</span>, default<span class="op">=</span><span class="st">"sqrt"</span>,</span>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>    choices<span class="op">=</span>[<span class="st">'sqrt'</span>, <span class="st">'log2'</span>],</span>
+<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">help</span><span class="op">=</span><span class="st">"Number of features to consider when looking for the best split"</span></span>
+<span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>et remplacer la définition de <code>MAX_FEATURES</code> par l’argument fourni en ligne de commande:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb75" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a>MAX_FEATURES <span class="op">=</span> args.max_features</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb77" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>MAX_FEATURES <span class="op">=</span> args.max_features</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ol start="2" type="1">
 <li><p>Faire un <em>commit</em>, taguer cette version (<code>v0.0.4</code>) et <em>pusher</em> le <em>tag</em></p></li>
 <li><p>Maintenant, dans le dépôt <code>GitOps</code>, créer un fichier <code>argo-workflow/manifest.yaml</code></p></li>
@@ -4960,91 +4970,91 @@ Figure&nbsp;4: <em>Pipeline</em> d’entraînement de nos modèles avec deux out
 <summary>
 Le modèle proposé
 </summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-129" data-code-line-numbers=""><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-129-1"><a href="#annotated-cell-129-1" aria-hidden="true" tabindex="-1"></a>apiVersion: argoproj.io<span class="op">/</span>v1alpha1</span>
-<span id="annotated-cell-129-2"><a href="#annotated-cell-129-2" aria-hidden="true" tabindex="-1"></a>kind: Workflow</span>
-<span id="annotated-cell-129-3"><a href="#annotated-cell-129-3" aria-hidden="true" tabindex="-1"></a>metadata:</span>
-<span id="annotated-cell-129-4"><a href="#annotated-cell-129-4" aria-hidden="true" tabindex="-1"></a>generateName: titanic<span class="op">-</span>training<span class="op">-</span>workflow<span class="op">-</span></span>
-<span id="annotated-cell-129-5"><a href="#annotated-cell-129-5" aria-hidden="true" tabindex="-1"></a>namespace: user<span class="op">-</span>lgaliana</span>
-<span id="annotated-cell-129-6"><a href="#annotated-cell-129-6" aria-hidden="true" tabindex="-1"></a>spec:</span>
-<span id="annotated-cell-129-7"><a href="#annotated-cell-129-7" aria-hidden="true" tabindex="-1"></a>entrypoint: main</span>
-<span id="annotated-cell-129-8"><a href="#annotated-cell-129-8" aria-hidden="true" tabindex="-1"></a>serviceAccountName: workflow</span>
-<span id="annotated-cell-129-9"><a href="#annotated-cell-129-9" aria-hidden="true" tabindex="-1"></a>arguments:</span>
-<span id="annotated-cell-129-10"><a href="#annotated-cell-129-10" aria-hidden="true" tabindex="-1"></a>    parameters:</span>
-<span id="annotated-cell-129-11"><a href="#annotated-cell-129-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># The MLflow tracking server is responsible to log the hyper-parameter and model metrics.</span></span>
-<span id="annotated-cell-129-12"><a href="#annotated-cell-129-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> name: mlflow<span class="op">-</span>tracking<span class="op">-</span>uri</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-129" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-129-13" class="code-annotation-target"><a href="#annotated-cell-129-13" aria-hidden="true" tabindex="-1"></a>        value: https:<span class="op">//</span>user<span class="op">-</span>${USERNAME}<span class="op">-</span>mlflow.user.lab.sspcloud.fr<span class="op">/</span></span>
-<span id="annotated-cell-129-14"><a href="#annotated-cell-129-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> name: mlflow<span class="op">-</span>experiment<span class="op">-</span>name</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-129" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-129-15" class="code-annotation-target"><a href="#annotated-cell-129-15" aria-hidden="true" tabindex="-1"></a>        value: titanicml</span>
-<span id="annotated-cell-129-16"><a href="#annotated-cell-129-16" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> name: model<span class="op">-</span>training<span class="op">-</span>conf<span class="op">-</span><span class="bu">list</span></span>
-<span id="annotated-cell-129-17"><a href="#annotated-cell-129-17" aria-hidden="true" tabindex="-1"></a>        value: <span class="op">|</span></span>
-<span id="annotated-cell-129-18"><a href="#annotated-cell-129-18" aria-hidden="true" tabindex="-1"></a>        [</span>
-<span id="annotated-cell-129-19"><a href="#annotated-cell-129-19" aria-hidden="true" tabindex="-1"></a>            { <span class="st">"n_trees"</span>: <span class="dv">10</span>, <span class="st">"max_features"</span>: <span class="st">"log2"</span> },</span>
-<span id="annotated-cell-129-20"><a href="#annotated-cell-129-20" aria-hidden="true" tabindex="-1"></a>            { <span class="st">"n_trees"</span>: <span class="dv">20</span>, <span class="st">"max_features"</span>: <span class="st">"sqrt"</span> },</span>
-<span id="annotated-cell-129-21"><a href="#annotated-cell-129-21" aria-hidden="true" tabindex="-1"></a>            { <span class="st">"n_trees"</span>: <span class="dv">20</span>, <span class="st">"max_features"</span>: <span class="st">"log2"</span> },</span>
-<span id="annotated-cell-129-22"><a href="#annotated-cell-129-22" aria-hidden="true" tabindex="-1"></a>            { <span class="st">"n_trees"</span>: <span class="dv">50</span>, <span class="st">"max_features"</span>: <span class="st">"sqrt"</span> }</span>
-<span id="annotated-cell-129-23"><a href="#annotated-cell-129-23" aria-hidden="true" tabindex="-1"></a>        ]</span>
-<span id="annotated-cell-129-24"><a href="#annotated-cell-129-24" aria-hidden="true" tabindex="-1"></a>templates:</span>
-<span id="annotated-cell-129-25"><a href="#annotated-cell-129-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Entrypoint DAG template</span></span>
-<span id="annotated-cell-129-26"><a href="#annotated-cell-129-26" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> name: main</span>
-<span id="annotated-cell-129-27"><a href="#annotated-cell-129-27" aria-hidden="true" tabindex="-1"></a>    dag:</span>
-<span id="annotated-cell-129-28"><a href="#annotated-cell-129-28" aria-hidden="true" tabindex="-1"></a>        tasks:</span>
-<span id="annotated-cell-129-29"><a href="#annotated-cell-129-29" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Task 0: Start pipeline</span></span>
-<span id="annotated-cell-129-30"><a href="#annotated-cell-129-30" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> name: start<span class="op">-</span>pipeline</span>
-<span id="annotated-cell-129-31"><a href="#annotated-cell-129-31" aria-hidden="true" tabindex="-1"></a>            template: start<span class="op">-</span>pipeline<span class="op">-</span>wt</span>
-<span id="annotated-cell-129-32"><a href="#annotated-cell-129-32" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Task 1: Train model with given params</span></span>
-<span id="annotated-cell-129-33"><a href="#annotated-cell-129-33" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> name: train<span class="op">-</span>model<span class="op">-</span><span class="cf">with</span><span class="op">-</span>params</span>
-<span id="annotated-cell-129-34"><a href="#annotated-cell-129-34" aria-hidden="true" tabindex="-1"></a>            dependencies: [ start<span class="op">-</span>pipeline ]</span>
-<span id="annotated-cell-129-35"><a href="#annotated-cell-129-35" aria-hidden="true" tabindex="-1"></a>            template: run<span class="op">-</span>model<span class="op">-</span>training<span class="op">-</span>wt</span>
-<span id="annotated-cell-129-36"><a href="#annotated-cell-129-36" aria-hidden="true" tabindex="-1"></a>            arguments:</span>
-<span id="annotated-cell-129-37"><a href="#annotated-cell-129-37" aria-hidden="true" tabindex="-1"></a>            parameters:</span>
-<span id="annotated-cell-129-38"><a href="#annotated-cell-129-38" aria-hidden="true" tabindex="-1"></a>                <span class="op">-</span> name: max_features</span>
-<span id="annotated-cell-129-39"><a href="#annotated-cell-129-39" aria-hidden="true" tabindex="-1"></a>                value: <span class="st">"</span><span class="sc">{{</span><span class="st">item.max_features</span><span class="sc">}}</span><span class="st">"</span></span>
-<span id="annotated-cell-129-40"><a href="#annotated-cell-129-40" aria-hidden="true" tabindex="-1"></a>                <span class="op">-</span> name: n_trees</span>
-<span id="annotated-cell-129-41"><a href="#annotated-cell-129-41" aria-hidden="true" tabindex="-1"></a>                value: <span class="st">"</span><span class="sc">{{</span><span class="st">item.n_trees</span><span class="sc">}}</span><span class="st">"</span></span>
-<span id="annotated-cell-129-42"><a href="#annotated-cell-129-42" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Pass the inputs to the task using "withParam"</span></span>
-<span id="annotated-cell-129-43"><a href="#annotated-cell-129-43" aria-hidden="true" tabindex="-1"></a>            withParam: <span class="st">"</span><span class="sc">{{</span><span class="st">workflow.parameters.model-training-conf-list</span><span class="sc">}}</span><span class="st">"</span></span>
-<span id="annotated-cell-129-44"><a href="#annotated-cell-129-44" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Now task container templates are defined</span></span>
-<span id="annotated-cell-129-45"><a href="#annotated-cell-129-45" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Worker template for task 0 : start-pipeline</span></span>
-<span id="annotated-cell-129-46"><a href="#annotated-cell-129-46" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> name: start<span class="op">-</span>pipeline<span class="op">-</span>wt</span>
-<span id="annotated-cell-129-47"><a href="#annotated-cell-129-47" aria-hidden="true" tabindex="-1"></a>    inputs:</span>
-<span id="annotated-cell-129-48"><a href="#annotated-cell-129-48" aria-hidden="true" tabindex="-1"></a>    container:</span>
-<span id="annotated-cell-129-49"><a href="#annotated-cell-129-49" aria-hidden="true" tabindex="-1"></a>        image: busybox</span>
-<span id="annotated-cell-129-50"><a href="#annotated-cell-129-50" aria-hidden="true" tabindex="-1"></a>        command: [ sh, <span class="op">-</span>c ]</span>
-<span id="annotated-cell-129-51"><a href="#annotated-cell-129-51" aria-hidden="true" tabindex="-1"></a>        args: [ <span class="st">"echo Starting pipeline"</span> ]</span>
-<span id="annotated-cell-129-52"><a href="#annotated-cell-129-52" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Worker template for task-1 : train model with params</span></span>
-<span id="annotated-cell-129-53"><a href="#annotated-cell-129-53" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> name: run<span class="op">-</span>model<span class="op">-</span>training<span class="op">-</span>wt</span>
-<span id="annotated-cell-129-54"><a href="#annotated-cell-129-54" aria-hidden="true" tabindex="-1"></a>    inputs:</span>
-<span id="annotated-cell-129-55"><a href="#annotated-cell-129-55" aria-hidden="true" tabindex="-1"></a>        parameters:</span>
-<span id="annotated-cell-129-56"><a href="#annotated-cell-129-56" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> name: n_trees</span>
-<span id="annotated-cell-129-57"><a href="#annotated-cell-129-57" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> name: max_features</span>
-<span id="annotated-cell-129-58"><a href="#annotated-cell-129-58" aria-hidden="true" tabindex="-1"></a>    container:</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-129" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-129-59" class="code-annotation-target"><a href="#annotated-cell-129-59" aria-hidden="true" tabindex="-1"></a>        image: <span class="op">****/</span>application:v0<span class="fl">.0.4</span></span>
-<span id="annotated-cell-129-60"><a href="#annotated-cell-129-60" aria-hidden="true" tabindex="-1"></a>        imagePullPolicy: Always</span>
-<span id="annotated-cell-129-61"><a href="#annotated-cell-129-61" aria-hidden="true" tabindex="-1"></a>        command: [sh, <span class="op">-</span>c]</span>
-<span id="annotated-cell-129-62"><a href="#annotated-cell-129-62" aria-hidden="true" tabindex="-1"></a>        args: [</span>
-<span id="annotated-cell-129-63"><a href="#annotated-cell-129-63" aria-hidden="true" tabindex="-1"></a>        <span class="st">"python3 train.py --n_trees=</span><span class="sc">{{</span><span class="st">inputs.parameters.n_trees</span><span class="sc">}}</span><span class="st"> --max_features=</span><span class="sc">{{</span><span class="st">inputs.parameters.max_features</span><span class="sc">}}</span><span class="st">"</span></span>
-<span id="annotated-cell-129-64"><a href="#annotated-cell-129-64" aria-hidden="true" tabindex="-1"></a>        ]</span>
-<span id="annotated-cell-129-65"><a href="#annotated-cell-129-65" aria-hidden="true" tabindex="-1"></a>        env:</span>
-<span id="annotated-cell-129-66"><a href="#annotated-cell-129-66" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> name: MLFLOW_TRACKING_URI</span>
-<span id="annotated-cell-129-67"><a href="#annotated-cell-129-67" aria-hidden="true" tabindex="-1"></a>            value: <span class="st">"</span><span class="sc">{{</span><span class="st">workflow.parameters.mlflow-tracking-uri</span><span class="sc">}}</span><span class="st">"</span></span>
-<span id="annotated-cell-129-68"><a href="#annotated-cell-129-68" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> name: MLFLOW_EXPERIMENT_NAME</span>
-<span id="annotated-cell-129-69"><a href="#annotated-cell-129-69" aria-hidden="true" tabindex="-1"></a>            value: <span class="st">"</span><span class="sc">{{</span><span class="st">workflow.parameters.mlflow-experiment-name</span><span class="sc">}}</span><span class="st">"</span></span>
-<span id="annotated-cell-129-70"><a href="#annotated-cell-129-70" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> name: AWS_DEFAULT_REGION</span>
-<span id="annotated-cell-129-71"><a href="#annotated-cell-129-71" aria-hidden="true" tabindex="-1"></a>            value: us<span class="op">-</span>east<span class="op">-</span><span class="dv">1</span></span>
-<span id="annotated-cell-129-72"><a href="#annotated-cell-129-72" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> name: AWS_S3_ENDPOINT</span>
-<span id="annotated-cell-129-73"><a href="#annotated-cell-129-73" aria-hidden="true" tabindex="-1"></a>            value: minio.lab.sspcloud.fr</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-132" data-code-line-numbers=""><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-132-1"><a href="#annotated-cell-132-1" aria-hidden="true" tabindex="-1"></a>apiVersion: argoproj.io<span class="op">/</span>v1alpha1</span>
+<span id="annotated-cell-132-2"><a href="#annotated-cell-132-2" aria-hidden="true" tabindex="-1"></a>kind: Workflow</span>
+<span id="annotated-cell-132-3"><a href="#annotated-cell-132-3" aria-hidden="true" tabindex="-1"></a>metadata:</span>
+<span id="annotated-cell-132-4"><a href="#annotated-cell-132-4" aria-hidden="true" tabindex="-1"></a>generateName: titanic<span class="op">-</span>training<span class="op">-</span>workflow<span class="op">-</span></span>
+<span id="annotated-cell-132-5"><a href="#annotated-cell-132-5" aria-hidden="true" tabindex="-1"></a>namespace: user<span class="op">-</span>lgaliana</span>
+<span id="annotated-cell-132-6"><a href="#annotated-cell-132-6" aria-hidden="true" tabindex="-1"></a>spec:</span>
+<span id="annotated-cell-132-7"><a href="#annotated-cell-132-7" aria-hidden="true" tabindex="-1"></a>entrypoint: main</span>
+<span id="annotated-cell-132-8"><a href="#annotated-cell-132-8" aria-hidden="true" tabindex="-1"></a>serviceAccountName: workflow</span>
+<span id="annotated-cell-132-9"><a href="#annotated-cell-132-9" aria-hidden="true" tabindex="-1"></a>arguments:</span>
+<span id="annotated-cell-132-10"><a href="#annotated-cell-132-10" aria-hidden="true" tabindex="-1"></a>    parameters:</span>
+<span id="annotated-cell-132-11"><a href="#annotated-cell-132-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># The MLflow tracking server is responsible to log the hyper-parameter and model metrics.</span></span>
+<span id="annotated-cell-132-12"><a href="#annotated-cell-132-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> name: mlflow<span class="op">-</span>tracking<span class="op">-</span>uri</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-132" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-132-13" class="code-annotation-target"><a href="#annotated-cell-132-13" aria-hidden="true" tabindex="-1"></a>        value: https:<span class="op">//</span>user<span class="op">-</span>${USERNAME}<span class="op">-</span>mlflow.user.lab.sspcloud.fr<span class="op">/</span></span>
+<span id="annotated-cell-132-14"><a href="#annotated-cell-132-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> name: mlflow<span class="op">-</span>experiment<span class="op">-</span>name</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-132" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-132-15" class="code-annotation-target"><a href="#annotated-cell-132-15" aria-hidden="true" tabindex="-1"></a>        value: titanicml</span>
+<span id="annotated-cell-132-16"><a href="#annotated-cell-132-16" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> name: model<span class="op">-</span>training<span class="op">-</span>conf<span class="op">-</span><span class="bu">list</span></span>
+<span id="annotated-cell-132-17"><a href="#annotated-cell-132-17" aria-hidden="true" tabindex="-1"></a>        value: <span class="op">|</span></span>
+<span id="annotated-cell-132-18"><a href="#annotated-cell-132-18" aria-hidden="true" tabindex="-1"></a>        [</span>
+<span id="annotated-cell-132-19"><a href="#annotated-cell-132-19" aria-hidden="true" tabindex="-1"></a>            { <span class="st">"n_trees"</span>: <span class="dv">10</span>, <span class="st">"max_features"</span>: <span class="st">"log2"</span> },</span>
+<span id="annotated-cell-132-20"><a href="#annotated-cell-132-20" aria-hidden="true" tabindex="-1"></a>            { <span class="st">"n_trees"</span>: <span class="dv">20</span>, <span class="st">"max_features"</span>: <span class="st">"sqrt"</span> },</span>
+<span id="annotated-cell-132-21"><a href="#annotated-cell-132-21" aria-hidden="true" tabindex="-1"></a>            { <span class="st">"n_trees"</span>: <span class="dv">20</span>, <span class="st">"max_features"</span>: <span class="st">"log2"</span> },</span>
+<span id="annotated-cell-132-22"><a href="#annotated-cell-132-22" aria-hidden="true" tabindex="-1"></a>            { <span class="st">"n_trees"</span>: <span class="dv">50</span>, <span class="st">"max_features"</span>: <span class="st">"sqrt"</span> }</span>
+<span id="annotated-cell-132-23"><a href="#annotated-cell-132-23" aria-hidden="true" tabindex="-1"></a>        ]</span>
+<span id="annotated-cell-132-24"><a href="#annotated-cell-132-24" aria-hidden="true" tabindex="-1"></a>templates:</span>
+<span id="annotated-cell-132-25"><a href="#annotated-cell-132-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Entrypoint DAG template</span></span>
+<span id="annotated-cell-132-26"><a href="#annotated-cell-132-26" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> name: main</span>
+<span id="annotated-cell-132-27"><a href="#annotated-cell-132-27" aria-hidden="true" tabindex="-1"></a>    dag:</span>
+<span id="annotated-cell-132-28"><a href="#annotated-cell-132-28" aria-hidden="true" tabindex="-1"></a>        tasks:</span>
+<span id="annotated-cell-132-29"><a href="#annotated-cell-132-29" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Task 0: Start pipeline</span></span>
+<span id="annotated-cell-132-30"><a href="#annotated-cell-132-30" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> name: start<span class="op">-</span>pipeline</span>
+<span id="annotated-cell-132-31"><a href="#annotated-cell-132-31" aria-hidden="true" tabindex="-1"></a>            template: start<span class="op">-</span>pipeline<span class="op">-</span>wt</span>
+<span id="annotated-cell-132-32"><a href="#annotated-cell-132-32" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Task 1: Train model with given params</span></span>
+<span id="annotated-cell-132-33"><a href="#annotated-cell-132-33" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> name: train<span class="op">-</span>model<span class="op">-</span><span class="cf">with</span><span class="op">-</span>params</span>
+<span id="annotated-cell-132-34"><a href="#annotated-cell-132-34" aria-hidden="true" tabindex="-1"></a>            dependencies: [ start<span class="op">-</span>pipeline ]</span>
+<span id="annotated-cell-132-35"><a href="#annotated-cell-132-35" aria-hidden="true" tabindex="-1"></a>            template: run<span class="op">-</span>model<span class="op">-</span>training<span class="op">-</span>wt</span>
+<span id="annotated-cell-132-36"><a href="#annotated-cell-132-36" aria-hidden="true" tabindex="-1"></a>            arguments:</span>
+<span id="annotated-cell-132-37"><a href="#annotated-cell-132-37" aria-hidden="true" tabindex="-1"></a>            parameters:</span>
+<span id="annotated-cell-132-38"><a href="#annotated-cell-132-38" aria-hidden="true" tabindex="-1"></a>                <span class="op">-</span> name: max_features</span>
+<span id="annotated-cell-132-39"><a href="#annotated-cell-132-39" aria-hidden="true" tabindex="-1"></a>                value: <span class="st">"</span><span class="sc">{{</span><span class="st">item.max_features</span><span class="sc">}}</span><span class="st">"</span></span>
+<span id="annotated-cell-132-40"><a href="#annotated-cell-132-40" aria-hidden="true" tabindex="-1"></a>                <span class="op">-</span> name: n_trees</span>
+<span id="annotated-cell-132-41"><a href="#annotated-cell-132-41" aria-hidden="true" tabindex="-1"></a>                value: <span class="st">"</span><span class="sc">{{</span><span class="st">item.n_trees</span><span class="sc">}}</span><span class="st">"</span></span>
+<span id="annotated-cell-132-42"><a href="#annotated-cell-132-42" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Pass the inputs to the task using "withParam"</span></span>
+<span id="annotated-cell-132-43"><a href="#annotated-cell-132-43" aria-hidden="true" tabindex="-1"></a>            withParam: <span class="st">"</span><span class="sc">{{</span><span class="st">workflow.parameters.model-training-conf-list</span><span class="sc">}}</span><span class="st">"</span></span>
+<span id="annotated-cell-132-44"><a href="#annotated-cell-132-44" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Now task container templates are defined</span></span>
+<span id="annotated-cell-132-45"><a href="#annotated-cell-132-45" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Worker template for task 0 : start-pipeline</span></span>
+<span id="annotated-cell-132-46"><a href="#annotated-cell-132-46" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> name: start<span class="op">-</span>pipeline<span class="op">-</span>wt</span>
+<span id="annotated-cell-132-47"><a href="#annotated-cell-132-47" aria-hidden="true" tabindex="-1"></a>    inputs:</span>
+<span id="annotated-cell-132-48"><a href="#annotated-cell-132-48" aria-hidden="true" tabindex="-1"></a>    container:</span>
+<span id="annotated-cell-132-49"><a href="#annotated-cell-132-49" aria-hidden="true" tabindex="-1"></a>        image: busybox</span>
+<span id="annotated-cell-132-50"><a href="#annotated-cell-132-50" aria-hidden="true" tabindex="-1"></a>        command: [ sh, <span class="op">-</span>c ]</span>
+<span id="annotated-cell-132-51"><a href="#annotated-cell-132-51" aria-hidden="true" tabindex="-1"></a>        args: [ <span class="st">"echo Starting pipeline"</span> ]</span>
+<span id="annotated-cell-132-52"><a href="#annotated-cell-132-52" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Worker template for task-1 : train model with params</span></span>
+<span id="annotated-cell-132-53"><a href="#annotated-cell-132-53" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> name: run<span class="op">-</span>model<span class="op">-</span>training<span class="op">-</span>wt</span>
+<span id="annotated-cell-132-54"><a href="#annotated-cell-132-54" aria-hidden="true" tabindex="-1"></a>    inputs:</span>
+<span id="annotated-cell-132-55"><a href="#annotated-cell-132-55" aria-hidden="true" tabindex="-1"></a>        parameters:</span>
+<span id="annotated-cell-132-56"><a href="#annotated-cell-132-56" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> name: n_trees</span>
+<span id="annotated-cell-132-57"><a href="#annotated-cell-132-57" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> name: max_features</span>
+<span id="annotated-cell-132-58"><a href="#annotated-cell-132-58" aria-hidden="true" tabindex="-1"></a>    container:</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-132" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-132-59" class="code-annotation-target"><a href="#annotated-cell-132-59" aria-hidden="true" tabindex="-1"></a>        image: <span class="op">****/</span>application:v0<span class="fl">.0.4</span></span>
+<span id="annotated-cell-132-60"><a href="#annotated-cell-132-60" aria-hidden="true" tabindex="-1"></a>        imagePullPolicy: Always</span>
+<span id="annotated-cell-132-61"><a href="#annotated-cell-132-61" aria-hidden="true" tabindex="-1"></a>        command: [sh, <span class="op">-</span>c]</span>
+<span id="annotated-cell-132-62"><a href="#annotated-cell-132-62" aria-hidden="true" tabindex="-1"></a>        args: [</span>
+<span id="annotated-cell-132-63"><a href="#annotated-cell-132-63" aria-hidden="true" tabindex="-1"></a>        <span class="st">"python3 train.py --n_trees=</span><span class="sc">{{</span><span class="st">inputs.parameters.n_trees</span><span class="sc">}}</span><span class="st"> --max_features=</span><span class="sc">{{</span><span class="st">inputs.parameters.max_features</span><span class="sc">}}</span><span class="st">"</span></span>
+<span id="annotated-cell-132-64"><a href="#annotated-cell-132-64" aria-hidden="true" tabindex="-1"></a>        ]</span>
+<span id="annotated-cell-132-65"><a href="#annotated-cell-132-65" aria-hidden="true" tabindex="-1"></a>        env:</span>
+<span id="annotated-cell-132-66"><a href="#annotated-cell-132-66" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> name: MLFLOW_TRACKING_URI</span>
+<span id="annotated-cell-132-67"><a href="#annotated-cell-132-67" aria-hidden="true" tabindex="-1"></a>            value: <span class="st">"</span><span class="sc">{{</span><span class="st">workflow.parameters.mlflow-tracking-uri</span><span class="sc">}}</span><span class="st">"</span></span>
+<span id="annotated-cell-132-68"><a href="#annotated-cell-132-68" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> name: MLFLOW_EXPERIMENT_NAME</span>
+<span id="annotated-cell-132-69"><a href="#annotated-cell-132-69" aria-hidden="true" tabindex="-1"></a>            value: <span class="st">"</span><span class="sc">{{</span><span class="st">workflow.parameters.mlflow-experiment-name</span><span class="sc">}}</span><span class="st">"</span></span>
+<span id="annotated-cell-132-70"><a href="#annotated-cell-132-70" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> name: AWS_DEFAULT_REGION</span>
+<span id="annotated-cell-132-71"><a href="#annotated-cell-132-71" aria-hidden="true" tabindex="-1"></a>            value: us<span class="op">-</span>east<span class="op">-</span><span class="dv">1</span></span>
+<span id="annotated-cell-132-72"><a href="#annotated-cell-132-72" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> name: AWS_S3_ENDPOINT</span>
+<span id="annotated-cell-132-73"><a href="#annotated-cell-132-73" aria-hidden="true" tabindex="-1"></a>            value: minio.lab.sspcloud.fr</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <dl class="code-annotation-container-grid">
-<dt data-target-cell="annotated-cell-129" data-target-annotation="1">1</dt>
+<dt data-target-cell="annotated-cell-132" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-cell="annotated-cell-129" data-code-lines="13" data-code-annotation="1">Changer pour votre entrepot de modèle</span>
+<span data-code-cell="annotated-cell-132" data-code-lines="13" data-code-annotation="1">Changer pour votre entrepot de modèle</span>
 </dd>
-<dt data-target-cell="annotated-cell-129" data-target-annotation="2">2</dt>
+<dt data-target-cell="annotated-cell-132" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-cell="annotated-cell-129" data-code-lines="15" data-code-annotation="2">Le nom de l’expérimentation <code>MLFLow</code> dont nous allons avoir besoin (on propose de continuer sur <code>titanicml</code>)</span>
+<span data-code-cell="annotated-cell-132" data-code-lines="15" data-code-annotation="2">Le nom de l’expérimentation <code>MLFLow</code> dont nous allons avoir besoin (on propose de continuer sur <code>titanicml</code>)</span>
 </dd>
-<dt data-target-cell="annotated-cell-129" data-target-annotation="3">3</dt>
+<dt data-target-cell="annotated-cell-132" data-target-annotation="3">3</dt>
 <dd>
-<span data-code-cell="annotated-cell-129" data-code-lines="59" data-code-annotation="3">Changer l’image <code>Docker</code> <i class="fa-brands fa-docker" aria-label="docker"></i> ici</span>
+<span data-code-cell="annotated-cell-132" data-code-lines="59" data-code-annotation="3">Changer l’image <code>Docker</code> <i class="fa-brands fa-docker" aria-label="docker"></i> ici</span>
 </dd>
 </dl>
 </details>
@@ -5087,61 +5097,61 @@ Le modèle proposé
 <summary>
 Modèle d’action <code>Github</code>
 </summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-130" data-code-line-numbers=""><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-130-1"><a href="#annotated-cell-130-1" aria-hidden="true" tabindex="-1"></a>name: Titanic Model Training</span>
-<span id="annotated-cell-130-2"><a href="#annotated-cell-130-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="annotated-cell-130-3"><a href="#annotated-cell-130-3" aria-hidden="true" tabindex="-1"></a>on:</span>
-<span id="annotated-cell-130-4"><a href="#annotated-cell-130-4" aria-hidden="true" tabindex="-1"></a>  push:</span>
-<span id="annotated-cell-130-5"><a href="#annotated-cell-130-5" aria-hidden="true" tabindex="-1"></a>    branches:</span>
-<span id="annotated-cell-130-6"><a href="#annotated-cell-130-6" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> main</span>
-<span id="annotated-cell-130-7"><a href="#annotated-cell-130-7" aria-hidden="true" tabindex="-1"></a>  workflow_dispatch:</span>
-<span id="annotated-cell-130-8"><a href="#annotated-cell-130-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="annotated-cell-130-9"><a href="#annotated-cell-130-9" aria-hidden="true" tabindex="-1"></a>jobs:</span>
-<span id="annotated-cell-130-10"><a href="#annotated-cell-130-10" aria-hidden="true" tabindex="-1"></a>  start<span class="op">-</span>pipeline:</span>
-<span id="annotated-cell-130-11"><a href="#annotated-cell-130-11" aria-hidden="true" tabindex="-1"></a>    runs<span class="op">-</span>on: ubuntu<span class="op">-</span>latest</span>
-<span id="annotated-cell-130-12"><a href="#annotated-cell-130-12" aria-hidden="true" tabindex="-1"></a>    steps:</span>
-<span id="annotated-cell-130-13"><a href="#annotated-cell-130-13" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> name: Start Pipeline</span>
-<span id="annotated-cell-130-14"><a href="#annotated-cell-130-14" aria-hidden="true" tabindex="-1"></a>        run: echo <span class="st">"Starting pipeline"</span></span>
-<span id="annotated-cell-130-15"><a href="#annotated-cell-130-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="annotated-cell-130-16"><a href="#annotated-cell-130-16" aria-hidden="true" tabindex="-1"></a>  train<span class="op">-</span>model:</span>
-<span id="annotated-cell-130-17"><a href="#annotated-cell-130-17" aria-hidden="true" tabindex="-1"></a>    needs: start<span class="op">-</span>pipeline</span>
-<span id="annotated-cell-130-18"><a href="#annotated-cell-130-18" aria-hidden="true" tabindex="-1"></a>    runs<span class="op">-</span>on: ubuntu<span class="op">-</span>latest</span>
-<span id="annotated-cell-130-19"><a href="#annotated-cell-130-19" aria-hidden="true" tabindex="-1"></a>    strategy:</span>
-<span id="annotated-cell-130-20"><a href="#annotated-cell-130-20" aria-hidden="true" tabindex="-1"></a>      matrix:</span>
-<span id="annotated-cell-130-21"><a href="#annotated-cell-130-21" aria-hidden="true" tabindex="-1"></a>        model<span class="op">-</span>config:</span>
-<span id="annotated-cell-130-22"><a href="#annotated-cell-130-22" aria-hidden="true" tabindex="-1"></a>          <span class="op">-</span> { n_trees: <span class="dv">10</span>, max_features: <span class="st">"log2"</span> }</span>
-<span id="annotated-cell-130-23"><a href="#annotated-cell-130-23" aria-hidden="true" tabindex="-1"></a>          <span class="op">-</span> { n_trees: <span class="dv">20</span>, max_features: <span class="st">"sqrt"</span> }</span>
-<span id="annotated-cell-130-24"><a href="#annotated-cell-130-24" aria-hidden="true" tabindex="-1"></a>          <span class="op">-</span> { n_trees: <span class="dv">20</span>, max_features: <span class="st">"log2"</span> }</span>
-<span id="annotated-cell-130-25"><a href="#annotated-cell-130-25" aria-hidden="true" tabindex="-1"></a>          <span class="op">-</span> { n_trees: <span class="dv">50</span>, max_features: <span class="st">"sqrt"</span> }</span>
-<span id="annotated-cell-130-26"><a href="#annotated-cell-130-26" aria-hidden="true" tabindex="-1"></a>    container:</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-130" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-130-27" class="code-annotation-target"><a href="#annotated-cell-130-27" aria-hidden="true" tabindex="-1"></a>      image: <span class="op">***/</span>application:v0<span class="fl">.0.4</span></span>
-<span id="annotated-cell-130-28"><a href="#annotated-cell-130-28" aria-hidden="true" tabindex="-1"></a>    env:</span>
-<span id="annotated-cell-130-29"><a href="#annotated-cell-130-29" aria-hidden="true" tabindex="-1"></a>      MLFLOW_TRACKING_URI: <span class="st">"https://user-lgaliana-mlflow.user.lab.sspcloud.fr/"</span></span>
-<span id="annotated-cell-130-30"><a href="#annotated-cell-130-30" aria-hidden="true" tabindex="-1"></a>      MLFLOW_EXPERIMENT_NAME: <span class="st">"titanicml"</span></span>
-<span id="annotated-cell-130-31"><a href="#annotated-cell-130-31" aria-hidden="true" tabindex="-1"></a>      MLFLOW_TRACKING_PASSWORD: <span class="st">"$</span><span class="sc">{{</span><span class="st"> secrets.MLFLOW_TRACKING_PASSWORD </span><span class="sc">}}</span><span class="st">"</span></span>
-<span id="annotated-cell-130-32"><a href="#annotated-cell-130-32" aria-hidden="true" tabindex="-1"></a>      AWS_DEFAULT_REGION: <span class="st">"us-east-1"</span></span>
-<span id="annotated-cell-130-33"><a href="#annotated-cell-130-33" aria-hidden="true" tabindex="-1"></a>      AWS_S3_ENDPOINT: <span class="st">"minio.lab.sspcloud.fr"</span></span>
-<span id="annotated-cell-130-34"><a href="#annotated-cell-130-34" aria-hidden="true" tabindex="-1"></a>      AWS_ACCESS_KEY_ID: <span class="st">"$</span><span class="sc">{{</span><span class="st"> secrets.AWS_ACCESS_KEY_ID </span><span class="sc">}}</span><span class="st">"</span></span>
-<span id="annotated-cell-130-35"><a href="#annotated-cell-130-35" aria-hidden="true" tabindex="-1"></a>      AWS_SECRET_ACCESS_KEY: <span class="st">"$</span><span class="sc">{{</span><span class="st"> secrets.AWS_SECRET_ACCESS_KEY </span><span class="sc">}}</span><span class="st">"</span></span>
-<span id="annotated-cell-130-36"><a href="#annotated-cell-130-36" aria-hidden="true" tabindex="-1"></a>      AWS_SESSION_TOKEN: <span class="st">"$</span><span class="sc">{{</span><span class="st"> secrets.AWS_SESSION_TOKEN </span><span class="sc">}}</span><span class="st">"</span></span>
-<span id="annotated-cell-130-37"><a href="#annotated-cell-130-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="annotated-cell-130-38"><a href="#annotated-cell-130-38" aria-hidden="true" tabindex="-1"></a>    steps:</span>
-<span id="annotated-cell-130-39"><a href="#annotated-cell-130-39" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> name: Checkout Repository</span>
-<span id="annotated-cell-130-40"><a href="#annotated-cell-130-40" aria-hidden="true" tabindex="-1"></a>        uses: actions<span class="op">/</span>checkout<span class="op">@</span>v4</span>
-<span id="annotated-cell-130-41"><a href="#annotated-cell-130-41" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span>:</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-130" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-130-42" class="code-annotation-target"><a href="#annotated-cell-130-42" aria-hidden="true" tabindex="-1"></a>            repository: <span class="st">'ensae-reproductibilite/application'</span></span>
-<span id="annotated-cell-130-43"><a href="#annotated-cell-130-43" aria-hidden="true" tabindex="-1"></a>            ref: appli24</span>
-<span id="annotated-cell-130-44"><a href="#annotated-cell-130-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="annotated-cell-130-45"><a href="#annotated-cell-130-45" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> name: Train Model</span>
-<span id="annotated-cell-130-46"><a href="#annotated-cell-130-46" aria-hidden="true" tabindex="-1"></a>        run: <span class="op">|</span></span>
-<span id="annotated-cell-130-47"><a href="#annotated-cell-130-47" aria-hidden="true" tabindex="-1"></a>          python3 train.py <span class="op">--</span>n_trees<span class="op">=</span>${{ matrix.model<span class="op">-</span>config.n_trees }} <span class="op">--</span>max_features<span class="op">=</span>${{ matrix.model<span class="op">-</span>config.max_features }}</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-133" data-code-line-numbers=""><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-133-1"><a href="#annotated-cell-133-1" aria-hidden="true" tabindex="-1"></a>name: Titanic Model Training</span>
+<span id="annotated-cell-133-2"><a href="#annotated-cell-133-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-133-3"><a href="#annotated-cell-133-3" aria-hidden="true" tabindex="-1"></a>on:</span>
+<span id="annotated-cell-133-4"><a href="#annotated-cell-133-4" aria-hidden="true" tabindex="-1"></a>  push:</span>
+<span id="annotated-cell-133-5"><a href="#annotated-cell-133-5" aria-hidden="true" tabindex="-1"></a>    branches:</span>
+<span id="annotated-cell-133-6"><a href="#annotated-cell-133-6" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> main</span>
+<span id="annotated-cell-133-7"><a href="#annotated-cell-133-7" aria-hidden="true" tabindex="-1"></a>  workflow_dispatch:</span>
+<span id="annotated-cell-133-8"><a href="#annotated-cell-133-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-133-9"><a href="#annotated-cell-133-9" aria-hidden="true" tabindex="-1"></a>jobs:</span>
+<span id="annotated-cell-133-10"><a href="#annotated-cell-133-10" aria-hidden="true" tabindex="-1"></a>  start<span class="op">-</span>pipeline:</span>
+<span id="annotated-cell-133-11"><a href="#annotated-cell-133-11" aria-hidden="true" tabindex="-1"></a>    runs<span class="op">-</span>on: ubuntu<span class="op">-</span>latest</span>
+<span id="annotated-cell-133-12"><a href="#annotated-cell-133-12" aria-hidden="true" tabindex="-1"></a>    steps:</span>
+<span id="annotated-cell-133-13"><a href="#annotated-cell-133-13" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> name: Start Pipeline</span>
+<span id="annotated-cell-133-14"><a href="#annotated-cell-133-14" aria-hidden="true" tabindex="-1"></a>        run: echo <span class="st">"Starting pipeline"</span></span>
+<span id="annotated-cell-133-15"><a href="#annotated-cell-133-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-133-16"><a href="#annotated-cell-133-16" aria-hidden="true" tabindex="-1"></a>  train<span class="op">-</span>model:</span>
+<span id="annotated-cell-133-17"><a href="#annotated-cell-133-17" aria-hidden="true" tabindex="-1"></a>    needs: start<span class="op">-</span>pipeline</span>
+<span id="annotated-cell-133-18"><a href="#annotated-cell-133-18" aria-hidden="true" tabindex="-1"></a>    runs<span class="op">-</span>on: ubuntu<span class="op">-</span>latest</span>
+<span id="annotated-cell-133-19"><a href="#annotated-cell-133-19" aria-hidden="true" tabindex="-1"></a>    strategy:</span>
+<span id="annotated-cell-133-20"><a href="#annotated-cell-133-20" aria-hidden="true" tabindex="-1"></a>      matrix:</span>
+<span id="annotated-cell-133-21"><a href="#annotated-cell-133-21" aria-hidden="true" tabindex="-1"></a>        model<span class="op">-</span>config:</span>
+<span id="annotated-cell-133-22"><a href="#annotated-cell-133-22" aria-hidden="true" tabindex="-1"></a>          <span class="op">-</span> { n_trees: <span class="dv">10</span>, max_features: <span class="st">"log2"</span> }</span>
+<span id="annotated-cell-133-23"><a href="#annotated-cell-133-23" aria-hidden="true" tabindex="-1"></a>          <span class="op">-</span> { n_trees: <span class="dv">20</span>, max_features: <span class="st">"sqrt"</span> }</span>
+<span id="annotated-cell-133-24"><a href="#annotated-cell-133-24" aria-hidden="true" tabindex="-1"></a>          <span class="op">-</span> { n_trees: <span class="dv">20</span>, max_features: <span class="st">"log2"</span> }</span>
+<span id="annotated-cell-133-25"><a href="#annotated-cell-133-25" aria-hidden="true" tabindex="-1"></a>          <span class="op">-</span> { n_trees: <span class="dv">50</span>, max_features: <span class="st">"sqrt"</span> }</span>
+<span id="annotated-cell-133-26"><a href="#annotated-cell-133-26" aria-hidden="true" tabindex="-1"></a>    container:</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-133" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-133-27" class="code-annotation-target"><a href="#annotated-cell-133-27" aria-hidden="true" tabindex="-1"></a>      image: <span class="op">***/</span>application:v0<span class="fl">.0.4</span></span>
+<span id="annotated-cell-133-28"><a href="#annotated-cell-133-28" aria-hidden="true" tabindex="-1"></a>    env:</span>
+<span id="annotated-cell-133-29"><a href="#annotated-cell-133-29" aria-hidden="true" tabindex="-1"></a>      MLFLOW_TRACKING_URI: <span class="st">"https://user-lgaliana-mlflow.user.lab.sspcloud.fr/"</span></span>
+<span id="annotated-cell-133-30"><a href="#annotated-cell-133-30" aria-hidden="true" tabindex="-1"></a>      MLFLOW_EXPERIMENT_NAME: <span class="st">"titanicml"</span></span>
+<span id="annotated-cell-133-31"><a href="#annotated-cell-133-31" aria-hidden="true" tabindex="-1"></a>      MLFLOW_TRACKING_PASSWORD: <span class="st">"$</span><span class="sc">{{</span><span class="st"> secrets.MLFLOW_TRACKING_PASSWORD </span><span class="sc">}}</span><span class="st">"</span></span>
+<span id="annotated-cell-133-32"><a href="#annotated-cell-133-32" aria-hidden="true" tabindex="-1"></a>      AWS_DEFAULT_REGION: <span class="st">"us-east-1"</span></span>
+<span id="annotated-cell-133-33"><a href="#annotated-cell-133-33" aria-hidden="true" tabindex="-1"></a>      AWS_S3_ENDPOINT: <span class="st">"minio.lab.sspcloud.fr"</span></span>
+<span id="annotated-cell-133-34"><a href="#annotated-cell-133-34" aria-hidden="true" tabindex="-1"></a>      AWS_ACCESS_KEY_ID: <span class="st">"$</span><span class="sc">{{</span><span class="st"> secrets.AWS_ACCESS_KEY_ID </span><span class="sc">}}</span><span class="st">"</span></span>
+<span id="annotated-cell-133-35"><a href="#annotated-cell-133-35" aria-hidden="true" tabindex="-1"></a>      AWS_SECRET_ACCESS_KEY: <span class="st">"$</span><span class="sc">{{</span><span class="st"> secrets.AWS_SECRET_ACCESS_KEY </span><span class="sc">}}</span><span class="st">"</span></span>
+<span id="annotated-cell-133-36"><a href="#annotated-cell-133-36" aria-hidden="true" tabindex="-1"></a>      AWS_SESSION_TOKEN: <span class="st">"$</span><span class="sc">{{</span><span class="st"> secrets.AWS_SESSION_TOKEN </span><span class="sc">}}</span><span class="st">"</span></span>
+<span id="annotated-cell-133-37"><a href="#annotated-cell-133-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-133-38"><a href="#annotated-cell-133-38" aria-hidden="true" tabindex="-1"></a>    steps:</span>
+<span id="annotated-cell-133-39"><a href="#annotated-cell-133-39" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> name: Checkout Repository</span>
+<span id="annotated-cell-133-40"><a href="#annotated-cell-133-40" aria-hidden="true" tabindex="-1"></a>        uses: actions<span class="op">/</span>checkout<span class="op">@</span>v4</span>
+<span id="annotated-cell-133-41"><a href="#annotated-cell-133-41" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span>:</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-133" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-133-42" class="code-annotation-target"><a href="#annotated-cell-133-42" aria-hidden="true" tabindex="-1"></a>            repository: <span class="st">'ensae-reproductibilite/application'</span></span>
+<span id="annotated-cell-133-43"><a href="#annotated-cell-133-43" aria-hidden="true" tabindex="-1"></a>            ref: appli24</span>
+<span id="annotated-cell-133-44"><a href="#annotated-cell-133-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="annotated-cell-133-45"><a href="#annotated-cell-133-45" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> name: Train Model</span>
+<span id="annotated-cell-133-46"><a href="#annotated-cell-133-46" aria-hidden="true" tabindex="-1"></a>        run: <span class="op">|</span></span>
+<span id="annotated-cell-133-47"><a href="#annotated-cell-133-47" aria-hidden="true" tabindex="-1"></a>          python3 train.py <span class="op">--</span>n_trees<span class="op">=</span>${{ matrix.model<span class="op">-</span>config.n_trees }} <span class="op">--</span>max_features<span class="op">=</span>${{ matrix.model<span class="op">-</span>config.max_features }}</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <dl class="code-annotation-container-grid">
-<dt data-target-cell="annotated-cell-130" data-target-annotation="1">1</dt>
+<dt data-target-cell="annotated-cell-133" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-cell="annotated-cell-130" data-code-lines="27" data-code-annotation="1">Mettre votre image ici. Si vous n’en avez pas, vous pouvez mettre <code>linogaliana/application:v0.0.4</code></span>
+<span data-code-cell="annotated-cell-133" data-code-lines="27" data-code-annotation="1">Mettre votre image ici. Si vous n’en avez pas, vous pouvez mettre <code>linogaliana/application:v0.0.4</code></span>
 </dd>
-<dt data-target-cell="annotated-cell-130" data-target-annotation="2">2</dt>
+<dt data-target-cell="annotated-cell-133" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-cell="annotated-cell-130" data-code-lines="42" data-code-annotation="2">On reprend le code applicatif de l’application précédente. Vous pouvez remplacer par votre dépôt et une référence adaptée si vous préférez</span>
+<span data-code-cell="annotated-cell-133" data-code-lines="42" data-code-annotation="2">On reprend le code applicatif de l’application précédente. Vous pouvez remplacer par votre dépôt et une référence adaptée si vous préférez</span>
 </dd>
 </dl>
 </details>
