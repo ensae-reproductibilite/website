@@ -14,10 +14,17 @@ parser.add_argument(
 )
 ```
 
-et remplacer la définition de `MAX_FEATURES` par l'argument fourni en ligne de commande:
+et remplacer, dans `train.py`, la définition de l'hyperparamètre adéquat
 
 ```{.python}
-MAX_FEATURES = args.max_features
+param_grid = {
+    "classifier__n_estimators": [
+        n_trees_default,
+    ],
+    "classifier__max_depth": [3, 5],
+    "classifier__max_features": [args.max_features],
+    "classifier__min_samples_split": [2, 5]
+}
 ```
 
 
@@ -35,76 +42,96 @@ Le modèle proposé
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
-generateName: titanic-training-workflow-
-namespace: user-lgaliana
+  generateName: titanic-training-workflow-
+  namespace: user-${SSPCLOUD_USERNAME}
 spec:
-entrypoint: main
-serviceAccountName: workflow
-arguments:
+  entrypoint: main
+  serviceAccountName: workflow
+
+  arguments:
     parameters:
-    # The MLflow tracking server is responsible to log the hyper-parameter and model metrics.
-    - name: mlflow-tracking-uri
-        value: https://user-${USERNAME}-mlflow.user.lab.sspcloud.fr/ #<1>
-    - name: mlflow-experiment-name
-        value: titanicml #<2>
-    - name: model-training-conf-list
+      # The MLflow tracking server is responsible to log the hyper-parameter and model metrics.
+      - name: mlflow-tracking-uri
+        value: "https://user-${SSPCLOUD_USERNAME}-mlflow.user.lab.sspcloud.fr/" #<1>
+      - name: mlflow-experiment-name
+        value: "titanicml" #<2>
+      - name: model-training-conf-list
         value: |
-        [
+          [
             { "n_trees": 10, "max_features": "log2" },
             { "n_trees": 20, "max_features": "sqrt" },
             { "n_trees": 20, "max_features": "log2" },
             { "n_trees": 50, "max_features": "sqrt" }
-        ]
-templates:
+          ]
+
+  templates:
     # Entrypoint DAG template
     - name: main
-    dag:
+      dag:
         tasks:
-        # Task 0: Start pipeline
-        - name: start-pipeline
+          # Task 0: Start pipeline
+          - name: start-pipeline
             template: start-pipeline-wt
-        # Task 1: Train model with given params
-        - name: train-model-with-params
-            dependencies: [ start-pipeline ]
+
+          # Task 1: Train model with given params
+          - name: train-model-with-params
+            dependencies: [start-pipeline]
             template: run-model-training-wt
             arguments:
-            parameters:
+              parameters:
                 - name: max_features
-                value: "{{item.max_features}}"
+                  value: "{{item.max_features}}"
                 - name: n_trees
-                value: "{{item.n_trees}}"
+                  value: "{{item.n_trees}}"
             # Pass the inputs to the task using "withParam"
             withParam: "{{workflow.parameters.model-training-conf-list}}"
-    # Now task container templates are defined
+
     # Worker template for task 0 : start-pipeline
     - name: start-pipeline-wt
-    inputs:
-    container:
+      container:
         image: busybox
-        command: [ sh, -c ]
-        args: [ "echo Starting pipeline" ]
-    # Worker template for task-1 : train model with params
+        command: ["sh", "-c"]
+        args: ["echo Starting pipeline"]
+
+    # Worker template for task 1 : train model with params
     - name: run-model-training-wt
-    inputs:
+      inputs:
         parameters:
-        - name: n_trees
-        - name: max_features
-    container:
-        image: ****/application:v0.0.4 #<3>
+          - name: n_trees
+          - name: max_features
+      container:
+        image: "compte_github/application:v0.0.4" #<3>
         imagePullPolicy: Always
-        command: [sh, -c]
-        args: [
-        "python3 train.py --n_trees={{inputs.parameters.n_trees}} --max_features={{inputs.parameters.max_features}}"
-        ]
+        command: ["sh", "-c"]
+        args:
+          - >-
+            uv run train.py
+            --n_trees={{inputs.parameters.n_trees}}
+            --max_features={{inputs.parameters.max_features}}
         env:
-        - name: MLFLOW_TRACKING_URI
+          - name: MLFLOW_TRACKING_URI
             value: "{{workflow.parameters.mlflow-tracking-uri}}"
-        - name: MLFLOW_EXPERIMENT_NAME
+          - name: MLFLOW_EXPERIMENT_NAME
             value: "{{workflow.parameters.mlflow-experiment-name}}"
-        - name: AWS_DEFAULT_REGION
-            value: us-east-1
-        - name: AWS_S3_ENDPOINT
-            value: minio.lab.sspcloud.fr
+          - name: MLFLOW_TRACKING_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: mlflow-secrets
+                key: MLFLOW_TRACKING_USERNAME
+          - name: MLFLOW_TRACKING_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mlflow-secrets
+                key: MLFLOW_TRACKING_PASSWORD
+          - name: AWS_DEFAULT_REGION
+            value: "us-east-1"
+          - name: AWS_S3_ENDPOINT
+            value: "minio.lab.sspcloud.fr"
+          - name: JETON_API
+            valueFrom:
+              secretKeyRef:
+                name: api-jeton
+                key: JETON_API
 ```
 1. Changer pour votre entrepot de modèle
 2. Le nom de l'expérimentation `MLFLow` dont nous allons avoir besoin (on propose de continuer sur `titanicml`)
