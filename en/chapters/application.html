@@ -4294,108 +4294,191 @@ Modification de <code>train.py</code> pour faire une <em>grid search</em>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb68" data-filename="train.py" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
 <span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="co">Prediction de la survie d'un individu sur le Titanic</span></span>
-<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
-<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a><span class="co">(avec GridSearchCV + cross-validation)</span></span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb68-7"><a href="#cb68-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> argparse</span>
-<span id="cb68-8"><a href="#cb68-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> loguru <span class="im">import</span> logger</span>
-<span id="cb68-9"><a href="#cb68-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> joblib <span class="im">import</span> dump</span>
+<span id="cb68-8"><a href="#cb68-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> logging</span>
+<span id="cb68-9"><a href="#cb68-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
 <span id="cb68-10"><a href="#cb68-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-11"><a href="#cb68-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pathlib</span>
-<span id="cb68-12"><a href="#cb68-12" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb68-13"><a href="#cb68-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split, GridSearchCV</span>
-<span id="cb68-14"><a href="#cb68-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-15"><a href="#cb68-15" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> src.pipeline.build_pipeline <span class="im">import</span> create_pipeline</span>
-<span id="cb68-16"><a href="#cb68-16" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> src.models.train_evaluate <span class="im">import</span> evaluate_model</span>
-<span id="cb68-17"><a href="#cb68-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-18"><a href="#cb68-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-19"><a href="#cb68-19" aria-hidden="true" tabindex="-1"></a><span class="co"># ENVIRONMENT CONFIGURATION ---------------------------</span></span>
+<span id="cb68-11"><a href="#cb68-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> OneHotEncoder</span>
+<span id="cb68-12"><a href="#cb68-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.impute <span class="im">import</span> SimpleImputer</span>
+<span id="cb68-13"><a href="#cb68-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> MinMaxScaler</span>
+<span id="cb68-14"><a href="#cb68-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split, GridSearchCV, StratifiedKFold</span>
+<span id="cb68-15"><a href="#cb68-15" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> Pipeline</span>
+<span id="cb68-16"><a href="#cb68-16" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.compose <span class="im">import</span> ColumnTransformer</span>
+<span id="cb68-17"><a href="#cb68-17" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestClassifier</span>
+<span id="cb68-18"><a href="#cb68-18" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> confusion_matrix</span>
+<span id="cb68-19"><a href="#cb68-19" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> skops.io <span class="im">as</span> sio</span>
 <span id="cb68-20"><a href="#cb68-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-21"><a href="#cb68-21" aria-hidden="true" tabindex="-1"></a>logger.add(<span class="st">"recording.log"</span>, rotation<span class="op">=</span><span class="st">"500 MB"</span>)</span>
-<span id="cb68-22"><a href="#cb68-22" aria-hidden="true" tabindex="-1"></a>load_dotenv()</span>
-<span id="cb68-23"><a href="#cb68-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-24"><a href="#cb68-24" aria-hidden="true" tabindex="-1"></a>parser <span class="op">=</span> argparse.ArgumentParser(description<span class="op">=</span><span class="st">"Paramètres du random forest"</span>)</span>
-<span id="cb68-25"><a href="#cb68-25" aria-hidden="true" tabindex="-1"></a>parser.add_argument(</span>
-<span id="cb68-26"><a href="#cb68-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">"--n_trees"</span>, <span class="bu">type</span><span class="op">=</span><span class="bu">int</span>, default<span class="op">=</span><span class="dv">20</span>, <span class="bu">help</span><span class="op">=</span><span class="st">"Nombre d'arbres"</span></span>
+<span id="cb68-21"><a href="#cb68-21" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
+<span id="cb68-22"><a href="#cb68-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-23"><a href="#cb68-23" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> src.validation.check <span class="im">import</span> (</span>
+<span id="cb68-24"><a href="#cb68-24" aria-hidden="true" tabindex="-1"></a>    check_name_formatting,</span>
+<span id="cb68-25"><a href="#cb68-25" aria-hidden="true" tabindex="-1"></a>    check_missing_values,</span>
+<span id="cb68-26"><a href="#cb68-26" aria-hidden="true" tabindex="-1"></a>    check_data_leakage,</span>
 <span id="cb68-27"><a href="#cb68-27" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb68-28"><a href="#cb68-28" aria-hidden="true" tabindex="-1"></a>args <span class="op">=</span> parser.parse_args()</span>
-<span id="cb68-29"><a href="#cb68-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-30"><a href="#cb68-30" aria-hidden="true" tabindex="-1"></a>URL_RAW <span class="op">=</span> <span class="st">"https://minio.lab.sspcloud.fr/lgaliana/ensae-reproductibilite/data/raw/data.csv"</span></span>
+<span id="cb68-28"><a href="#cb68-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-29"><a href="#cb68-29" aria-hidden="true" tabindex="-1"></a>load_dotenv()</span>
+<span id="cb68-30"><a href="#cb68-30" aria-hidden="true" tabindex="-1"></a>con <span class="op">=</span> duckdb.<span class="ex">connect</span>(database<span class="op">=</span><span class="st">":memory:"</span>)</span>
 <span id="cb68-31"><a href="#cb68-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-32"><a href="#cb68-32" aria-hidden="true" tabindex="-1"></a>n_trees <span class="op">=</span> args.n_trees</span>
-<span id="cb68-33"><a href="#cb68-33" aria-hidden="true" tabindex="-1"></a>jeton_api <span class="op">=</span> os.environ.get(<span class="st">"JETON_API"</span>, <span class="st">""</span>)</span>
-<span id="cb68-34"><a href="#cb68-34" aria-hidden="true" tabindex="-1"></a>data_path <span class="op">=</span> os.environ.get(<span class="st">"data_path"</span>, URL_RAW)</span>
-<span id="cb68-35"><a href="#cb68-35" aria-hidden="true" tabindex="-1"></a>data_train_path <span class="op">=</span> os.environ.get(<span class="st">"train_path"</span>, <span class="st">"data/derived/train.parquet"</span>)</span>
-<span id="cb68-36"><a href="#cb68-36" aria-hidden="true" tabindex="-1"></a>data_test_path <span class="op">=</span> os.environ.get(<span class="st">"test_path"</span>, <span class="st">"data/derived/test.parquet"</span>)</span>
-<span id="cb68-37"><a href="#cb68-37" aria-hidden="true" tabindex="-1"></a>MAX_DEPTH <span class="op">=</span> <span class="va">None</span></span>
-<span id="cb68-38"><a href="#cb68-38" aria-hidden="true" tabindex="-1"></a>MAX_FEATURES <span class="op">=</span> <span class="st">"sqrt"</span></span>
+<span id="cb68-32"><a href="#cb68-32" aria-hidden="true" tabindex="-1"></a>logging.basicConfig(</span>
+<span id="cb68-33"><a href="#cb68-33" aria-hidden="true" tabindex="-1"></a>    <span class="bu">format</span><span class="op">=</span><span class="st">"</span><span class="sc">{asctime}</span><span class="st"> - </span><span class="sc">{levelname}</span><span class="st"> - </span><span class="sc">{message}</span><span class="st">"</span>,</span>
+<span id="cb68-34"><a href="#cb68-34" aria-hidden="true" tabindex="-1"></a>    style<span class="op">=</span><span class="st">"{"</span>,</span>
+<span id="cb68-35"><a href="#cb68-35" aria-hidden="true" tabindex="-1"></a>    datefmt<span class="op">=</span><span class="st">"%Y-%m-</span><span class="sc">%d</span><span class="st"> %H:%M"</span>,</span>
+<span id="cb68-36"><a href="#cb68-36" aria-hidden="true" tabindex="-1"></a>    level<span class="op">=</span>logging.DEBUG,</span>
+<span id="cb68-37"><a href="#cb68-37" aria-hidden="true" tabindex="-1"></a>    handlers<span class="op">=</span>[logging.FileHandler(<span class="st">"recording.log"</span>), logging.StreamHandler()],</span>
+<span id="cb68-38"><a href="#cb68-38" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb68-39"><a href="#cb68-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-40"><a href="#cb68-40" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> jeton_api.startswith(<span class="st">"$"</span>):</span>
-<span id="cb68-41"><a href="#cb68-41" aria-hidden="true" tabindex="-1"></a>    logger.info(<span class="st">"API token has been configured properly"</span>)</span>
-<span id="cb68-42"><a href="#cb68-42" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
-<span id="cb68-43"><a href="#cb68-43" aria-hidden="true" tabindex="-1"></a>    logger.warning(<span class="st">"API token has not been configured"</span>)</span>
-<span id="cb68-44"><a href="#cb68-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-40"><a href="#cb68-40" aria-hidden="true" tabindex="-1"></a><span class="co"># PARAMETERS ---------------------------------------</span></span>
+<span id="cb68-41"><a href="#cb68-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-42"><a href="#cb68-42" aria-hidden="true" tabindex="-1"></a>NUMERIC_FEATURES <span class="op">=</span> [<span class="st">"Age"</span>, <span class="st">"Fare"</span>]</span>
+<span id="cb68-43"><a href="#cb68-43" aria-hidden="true" tabindex="-1"></a>CATEGORICAL_FEATURES <span class="op">=</span> [<span class="st">"Embarked"</span>, <span class="st">"Sex"</span>]</span>
+<span id="cb68-44"><a href="#cb68-44" aria-hidden="true" tabindex="-1"></a>URL_RAW <span class="op">=</span> <span class="st">"https://minio.lab.sspcloud.fr/compte_sspcloud/ensae-reproductibilite/data/raw/data.parquet"</span></span>
 <span id="cb68-45"><a href="#cb68-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-46"><a href="#cb68-46" aria-hidden="true" tabindex="-1"></a><span class="co"># IMPORT ET STRUCTURATION DONNEES --------------------------------</span></span>
+<span id="cb68-46"><a href="#cb68-46" aria-hidden="true" tabindex="-1"></a>jeton_api <span class="op">=</span> os.environ[<span class="st">"JETON_API"</span>]</span>
 <span id="cb68-47"><a href="#cb68-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-48"><a href="#cb68-48" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> pathlib.Path(<span class="st">"data/derived/"</span>)</span>
-<span id="cb68-49"><a href="#cb68-49" aria-hidden="true" tabindex="-1"></a>p.mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb68-50"><a href="#cb68-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-51"><a href="#cb68-51" aria-hidden="true" tabindex="-1"></a>TrainingData <span class="op">=</span> pd.read_csv(data_path)</span>
-<span id="cb68-52"><a href="#cb68-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-53"><a href="#cb68-53" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> TrainingData[<span class="st">"Survived"</span>]</span>
-<span id="cb68-54"><a href="#cb68-54" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> TrainingData.drop(<span class="st">"Survived"</span>, axis<span class="op">=</span><span class="st">"columns"</span>)</span>
-<span id="cb68-55"><a href="#cb68-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-56"><a href="#cb68-56" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(</span>
-<span id="cb68-57"><a href="#cb68-57" aria-hidden="true" tabindex="-1"></a>    X, y, test_size<span class="op">=</span><span class="fl">0.1</span></span>
+<span id="cb68-48"><a href="#cb68-48" aria-hidden="true" tabindex="-1"></a><span class="co"># ENVIRONMENT CONFIGURATION ---------------------------</span></span>
+<span id="cb68-49"><a href="#cb68-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-50"><a href="#cb68-50" aria-hidden="true" tabindex="-1"></a>parser <span class="op">=</span> argparse.ArgumentParser(</span>
+<span id="cb68-51"><a href="#cb68-51" aria-hidden="true" tabindex="-1"></a>    description<span class="op">=</span><span class="st">"Paramètres du random forest + grid search"</span></span>
+<span id="cb68-52"><a href="#cb68-52" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb68-53"><a href="#cb68-53" aria-hidden="true" tabindex="-1"></a>parser.add_argument(</span>
+<span id="cb68-54"><a href="#cb68-54" aria-hidden="true" tabindex="-1"></a>    <span class="st">"--n_trees"</span>,</span>
+<span id="cb68-55"><a href="#cb68-55" aria-hidden="true" tabindex="-1"></a>    <span class="bu">type</span><span class="op">=</span><span class="bu">int</span>,</span>
+<span id="cb68-56"><a href="#cb68-56" aria-hidden="true" tabindex="-1"></a>    default<span class="op">=</span><span class="dv">20</span>,</span>
+<span id="cb68-57"><a href="#cb68-57" aria-hidden="true" tabindex="-1"></a>    <span class="bu">help</span><span class="op">=</span><span class="st">"Valeur par défaut pour n_estimators dans la grille"</span>,</span>
 <span id="cb68-58"><a href="#cb68-58" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb68-59"><a href="#cb68-59" aria-hidden="true" tabindex="-1"></a>pd.concat([X_train, y_train], axis <span class="op">=</span> <span class="dv">1</span>).to_parquet(data_train_path)</span>
-<span id="cb68-60"><a href="#cb68-60" aria-hidden="true" tabindex="-1"></a>pd.concat([X_test, y_test], axis <span class="op">=</span> <span class="dv">1</span>).to_parquet(data_test_path)</span>
-<span id="cb68-61"><a href="#cb68-61" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-62"><a href="#cb68-62" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-63"><a href="#cb68-63" aria-hidden="true" tabindex="-1"></a><span class="co"># PIPELINE ----------------------------</span></span>
-<span id="cb68-64"><a href="#cb68-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-65"><a href="#cb68-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-66"><a href="#cb68-66" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the pipeline</span></span>
-<span id="cb68-67"><a href="#cb68-67" aria-hidden="true" tabindex="-1"></a>pipe <span class="op">=</span> create_pipeline(</span>
-<span id="cb68-68"><a href="#cb68-68" aria-hidden="true" tabindex="-1"></a>    n_trees, max_depth<span class="op">=</span>MAX_DEPTH, max_features<span class="op">=</span>MAX_FEATURES</span>
-<span id="cb68-69"><a href="#cb68-69" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb68-70"><a href="#cb68-70" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-71"><a href="#cb68-71" aria-hidden="true" tabindex="-1"></a>param_grid <span class="op">=</span> {</span>
-<span id="cb68-72"><a href="#cb68-72" aria-hidden="true" tabindex="-1"></a>    <span class="st">"classifier__n_estimators"</span>: [<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">50</span>],</span>
-<span id="cb68-73"><a href="#cb68-73" aria-hidden="true" tabindex="-1"></a>    <span class="st">"classifier__max_leaf_nodes"</span>: [<span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">50</span>],</span>
-<span id="cb68-74"><a href="#cb68-74" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb68-75"><a href="#cb68-75" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-76"><a href="#cb68-76" aria-hidden="true" tabindex="-1"></a>pipe_cross_validation <span class="op">=</span> GridSearchCV(</span>
-<span id="cb68-77"><a href="#cb68-77" aria-hidden="true" tabindex="-1"></a>    pipe,</span>
-<span id="cb68-78"><a href="#cb68-78" aria-hidden="true" tabindex="-1"></a>    param_grid<span class="op">=</span>param_grid,</span>
-<span id="cb68-79"><a href="#cb68-79" aria-hidden="true" tabindex="-1"></a>    scoring<span class="op">=</span>[<span class="st">"accuracy"</span>, <span class="st">"precision"</span>, <span class="st">"recall"</span>, <span class="st">"f1"</span>],</span>
-<span id="cb68-80"><a href="#cb68-80" aria-hidden="true" tabindex="-1"></a>    refit<span class="op">=</span><span class="st">"f1"</span>,</span>
-<span id="cb68-81"><a href="#cb68-81" aria-hidden="true" tabindex="-1"></a>    cv<span class="op">=</span><span class="dv">5</span>,</span>
-<span id="cb68-82"><a href="#cb68-82" aria-hidden="true" tabindex="-1"></a>    n_jobs<span class="op">=</span><span class="dv">5</span>,</span>
-<span id="cb68-83"><a href="#cb68-83" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span><span class="dv">1</span>,</span>
-<span id="cb68-84"><a href="#cb68-84" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb68-85"><a href="#cb68-85" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-86"><a href="#cb68-86" aria-hidden="true" tabindex="-1"></a>pipe_cross_validation.fit(X_train, y_train)</span>
+<span id="cb68-59"><a href="#cb68-59" aria-hidden="true" tabindex="-1"></a>parser.add_argument(</span>
+<span id="cb68-60"><a href="#cb68-60" aria-hidden="true" tabindex="-1"></a>    <span class="st">"--cv"</span>, <span class="bu">type</span><span class="op">=</span><span class="bu">int</span>, default<span class="op">=</span><span class="dv">5</span>, <span class="bu">help</span><span class="op">=</span><span class="st">"Nombre de folds pour la cross-validation"</span></span>
+<span id="cb68-61"><a href="#cb68-61" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb68-62"><a href="#cb68-62" aria-hidden="true" tabindex="-1"></a>args <span class="op">=</span> parser.parse_args()</span>
+<span id="cb68-63"><a href="#cb68-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-64"><a href="#cb68-64" aria-hidden="true" tabindex="-1"></a>n_trees_default <span class="op">=</span> args.n_trees</span>
+<span id="cb68-65"><a href="#cb68-65" aria-hidden="true" tabindex="-1"></a>cv_folds <span class="op">=</span> args.cv</span>
+<span id="cb68-66"><a href="#cb68-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-67"><a href="#cb68-67" aria-hidden="true" tabindex="-1"></a>logging.debug(<span class="ss">f"Valeur de l'argument n_trees: </span><span class="sc">{</span>n_trees_default<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb68-68"><a href="#cb68-68" aria-hidden="true" tabindex="-1"></a>logging.debug(<span class="ss">f"Valeur de l'argument cv: </span><span class="sc">{</span>cv_folds<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb68-69"><a href="#cb68-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-70"><a href="#cb68-70" aria-hidden="true" tabindex="-1"></a><span class="co"># QUALITY DIAGNOSTICS  ---------------------------------------</span></span>
+<span id="cb68-71"><a href="#cb68-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-72"><a href="#cb68-72" aria-hidden="true" tabindex="-1"></a>logging.debug(<span class="ss">f"</span><span class="ch">\n</span><span class="sc">{</span><span class="dv">80</span> <span class="op">*</span> <span class="st">'-'</span><span class="sc">}</span><span class="ch">\n</span><span class="ss">Starting data validation step</span><span class="ch">\n</span><span class="sc">{</span><span class="dv">80</span> <span class="op">*</span> <span class="st">'-'</span><span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb68-73"><a href="#cb68-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-74"><a href="#cb68-74" aria-hidden="true" tabindex="-1"></a>query_definition <span class="op">=</span> (</span>
+<span id="cb68-75"><a href="#cb68-75" aria-hidden="true" tabindex="-1"></a>    <span class="ss">f"CREATE TEMP TABLE titanic AS (SELECT * FROM read_parquet('</span><span class="sc">{</span>URL_RAW<span class="sc">}</span><span class="ss">'))"</span></span>
+<span id="cb68-76"><a href="#cb68-76" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb68-77"><a href="#cb68-77" aria-hidden="true" tabindex="-1"></a>con.sql(query_definition)</span>
+<span id="cb68-78"><a href="#cb68-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-79"><a href="#cb68-79" aria-hidden="true" tabindex="-1"></a>column_names <span class="op">=</span> con.sql(<span class="st">"SELECT column_name FROM (DESCRIBE titanic)"</span>).to_df()[</span>
+<span id="cb68-80"><a href="#cb68-80" aria-hidden="true" tabindex="-1"></a>    <span class="st">"column_name"</span></span>
+<span id="cb68-81"><a href="#cb68-81" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb68-82"><a href="#cb68-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-83"><a href="#cb68-83" aria-hidden="true" tabindex="-1"></a>check_name_formatting(connection<span class="op">=</span>con)</span>
+<span id="cb68-84"><a href="#cb68-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-85"><a href="#cb68-85" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> var <span class="kw">in</span> column_names:</span>
+<span id="cb68-86"><a href="#cb68-86" aria-hidden="true" tabindex="-1"></a>    check_missing_values(connection<span class="op">=</span>con, variable<span class="op">=</span>var)</span>
 <span id="cb68-87"><a href="#cb68-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-88"><a href="#cb68-88" aria-hidden="true" tabindex="-1"></a>pipe <span class="op">=</span> pipe_cross_validation.best_estimator_</span>
+<span id="cb68-88"><a href="#cb68-88" aria-hidden="true" tabindex="-1"></a><span class="co"># FEATURE ENGINEERING    -----------------------------------------</span></span>
 <span id="cb68-89"><a href="#cb68-89" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-90"><a href="#cb68-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-91"><a href="#cb68-91" aria-hidden="true" tabindex="-1"></a><span class="co"># ESTIMATION ET EVALUATION ----------------------</span></span>
-<span id="cb68-92"><a href="#cb68-92" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-93"><a href="#cb68-93" aria-hidden="true" tabindex="-1"></a>pipe.fit(X_train, y_train)</span>
-<span id="cb68-94"><a href="#cb68-94" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-95"><a href="#cb68-95" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"model.joblib"</span>, <span class="st">"wb"</span>) <span class="im">as</span> f:</span>
-<span id="cb68-96"><a href="#cb68-96" aria-hidden="true" tabindex="-1"></a>    dump(pipe, f)</span>
-<span id="cb68-97"><a href="#cb68-97" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-98"><a href="#cb68-98" aria-hidden="true" tabindex="-1"></a><span class="co"># Evaluate the model</span></span>
-<span id="cb68-99"><a href="#cb68-99" aria-hidden="true" tabindex="-1"></a>score, matrix <span class="op">=</span> evaluate_model(pipe, X_test, y_test)</span>
-<span id="cb68-100"><a href="#cb68-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-101"><a href="#cb68-101" aria-hidden="true" tabindex="-1"></a>logger.success(<span class="ss">f"</span><span class="sc">{</span>score<span class="sc">:.1%}</span><span class="ss"> de bonnes réponses sur les données de test pour validation"</span>)</span>
-<span id="cb68-102"><a href="#cb68-102" aria-hidden="true" tabindex="-1"></a>logger.debug(<span class="dv">20</span> <span class="op">*</span> <span class="st">"-"</span>)</span>
-<span id="cb68-103"><a href="#cb68-103" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="st">"Matrice de confusion"</span>)</span>
-<span id="cb68-104"><a href="#cb68-104" aria-hidden="true" tabindex="-1"></a>logger.debug(matrix)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb68-90"><a href="#cb68-90" aria-hidden="true" tabindex="-1"></a>logging.debug(<span class="ss">f"</span><span class="ch">\n</span><span class="sc">{</span><span class="dv">80</span> <span class="op">*</span> <span class="st">'-'</span><span class="sc">}</span><span class="ch">\n</span><span class="ss">Starting feature engineering phase</span><span class="ch">\n</span><span class="sc">{</span><span class="dv">80</span> <span class="op">*</span> <span class="st">'-'</span><span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb68-91"><a href="#cb68-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-92"><a href="#cb68-92" aria-hidden="true" tabindex="-1"></a>titanic <span class="op">=</span> con.sql(</span>
+<span id="cb68-93"><a href="#cb68-93" aria-hidden="true" tabindex="-1"></a>    <span class="ss">f"SELECT Survived, </span><span class="sc">{</span><span class="st">', '</span><span class="sc">.</span>join(CATEGORICAL_FEATURES <span class="op">+</span> NUMERIC_FEATURES)<span class="sc">}</span><span class="ss"> FROM titanic"</span></span>
+<span id="cb68-94"><a href="#cb68-94" aria-hidden="true" tabindex="-1"></a>).to_df()</span>
+<span id="cb68-95"><a href="#cb68-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-96"><a href="#cb68-96" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> titanic[<span class="st">"Survived"</span>]</span>
+<span id="cb68-97"><a href="#cb68-97" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> titanic.drop(<span class="st">"Survived"</span>, axis<span class="op">=</span><span class="st">"columns"</span>)</span>
+<span id="cb68-98"><a href="#cb68-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-99"><a href="#cb68-99" aria-hidden="true" tabindex="-1"></a><span class="co"># Stratify: utile sur Titanic car classes pas parfaitement équilibrées</span></span>
+<span id="cb68-100"><a href="#cb68-100" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(</span>
+<span id="cb68-101"><a href="#cb68-101" aria-hidden="true" tabindex="-1"></a>    X, y, test_size<span class="op">=</span><span class="fl">0.1</span>, random_state<span class="op">=</span><span class="dv">42</span>, stratify<span class="op">=</span>y</span>
+<span id="cb68-102"><a href="#cb68-102" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb68-103"><a href="#cb68-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-104"><a href="#cb68-104" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> string_var <span class="kw">in</span> CATEGORICAL_FEATURES:</span>
+<span id="cb68-105"><a href="#cb68-105" aria-hidden="true" tabindex="-1"></a>    check_data_leakage(X_train, X_test, string_var)</span>
+<span id="cb68-106"><a href="#cb68-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-107"><a href="#cb68-107" aria-hidden="true" tabindex="-1"></a><span class="co"># MODEL DEFINITION -----------------------------------------</span></span>
+<span id="cb68-108"><a href="#cb68-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-109"><a href="#cb68-109" aria-hidden="true" tabindex="-1"></a>numeric_transformer <span class="op">=</span> Pipeline(</span>
+<span id="cb68-110"><a href="#cb68-110" aria-hidden="true" tabindex="-1"></a>    steps<span class="op">=</span>[</span>
+<span id="cb68-111"><a href="#cb68-111" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"imputer"</span>, SimpleImputer(strategy<span class="op">=</span><span class="st">"median"</span>)),</span>
+<span id="cb68-112"><a href="#cb68-112" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"scaler"</span>, MinMaxScaler()),</span>
+<span id="cb68-113"><a href="#cb68-113" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb68-114"><a href="#cb68-114" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb68-115"><a href="#cb68-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-116"><a href="#cb68-116" aria-hidden="true" tabindex="-1"></a>categorical_transformer <span class="op">=</span> Pipeline(</span>
+<span id="cb68-117"><a href="#cb68-117" aria-hidden="true" tabindex="-1"></a>    steps<span class="op">=</span>[</span>
+<span id="cb68-118"><a href="#cb68-118" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"imputer"</span>, SimpleImputer(strategy<span class="op">=</span><span class="st">"most_frequent"</span>)),</span>
+<span id="cb68-119"><a href="#cb68-119" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"onehot"</span>, OneHotEncoder(handle_unknown<span class="op">=</span><span class="st">"ignore"</span>)),</span>
+<span id="cb68-120"><a href="#cb68-120" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb68-121"><a href="#cb68-121" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb68-122"><a href="#cb68-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-123"><a href="#cb68-123" aria-hidden="true" tabindex="-1"></a>preprocessor <span class="op">=</span> ColumnTransformer(</span>
+<span id="cb68-124"><a href="#cb68-124" aria-hidden="true" tabindex="-1"></a>    transformers<span class="op">=</span>[</span>
+<span id="cb68-125"><a href="#cb68-125" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"Preprocessing numerical"</span>, numeric_transformer, NUMERIC_FEATURES),</span>
+<span id="cb68-126"><a href="#cb68-126" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"Preprocessing categorical"</span>, categorical_transformer, CATEGORICAL_FEATURES),</span>
+<span id="cb68-127"><a href="#cb68-127" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb68-128"><a href="#cb68-128" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb68-129"><a href="#cb68-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-130"><a href="#cb68-130" aria-hidden="true" tabindex="-1"></a>pipe <span class="op">=</span> Pipeline(</span>
+<span id="cb68-131"><a href="#cb68-131" aria-hidden="true" tabindex="-1"></a>    steps<span class="op">=</span>[</span>
+<span id="cb68-132"><a href="#cb68-132" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"preprocessor"</span>, preprocessor),</span>
+<span id="cb68-133"><a href="#cb68-133" aria-hidden="true" tabindex="-1"></a>        (<span class="st">"classifier"</span>, RandomForestClassifier(random_state<span class="op">=</span><span class="dv">42</span>)),</span>
+<span id="cb68-134"><a href="#cb68-134" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb68-135"><a href="#cb68-135" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb68-136"><a href="#cb68-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-137"><a href="#cb68-137" aria-hidden="true" tabindex="-1"></a><span class="co"># GRID SEARCH + CV --------------------------------------------</span></span>
+<span id="cb68-138"><a href="#cb68-138" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-139"><a href="#cb68-139" aria-hidden="true" tabindex="-1"></a><span class="co"># Grille d'hyperparamètres (tu peux l'élargir/réduire selon le temps de calcul)</span></span>
+<span id="cb68-140"><a href="#cb68-140" aria-hidden="true" tabindex="-1"></a>param_grid <span class="op">=</span> {</span>
+<span id="cb68-141"><a href="#cb68-141" aria-hidden="true" tabindex="-1"></a>    <span class="st">"classifier__n_estimators"</span>: [</span>
+<span id="cb68-142"><a href="#cb68-142" aria-hidden="true" tabindex="-1"></a>        n_trees_default,</span>
+<span id="cb68-143"><a href="#cb68-143" aria-hidden="true" tabindex="-1"></a>    ],</span>
+<span id="cb68-144"><a href="#cb68-144" aria-hidden="true" tabindex="-1"></a>    <span class="st">"classifier__max_depth"</span>: [<span class="dv">3</span>, <span class="dv">5</span>],</span>
+<span id="cb68-145"><a href="#cb68-145" aria-hidden="true" tabindex="-1"></a>    <span class="st">"classifier__max_features"</span>: [<span class="st">"sqrt"</span>, <span class="st">"log2"</span>],</span>
+<span id="cb68-146"><a href="#cb68-146" aria-hidden="true" tabindex="-1"></a>    <span class="st">"classifier__min_samples_split"</span>: [<span class="dv">2</span>, <span class="dv">5</span>]</span>
+<span id="cb68-147"><a href="#cb68-147" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb68-148"><a href="#cb68-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-149"><a href="#cb68-149" aria-hidden="true" tabindex="-1"></a>cv <span class="op">=</span> StratifiedKFold(n_splits<span class="op">=</span>cv_folds, shuffle<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb68-150"><a href="#cb68-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-151"><a href="#cb68-151" aria-hidden="true" tabindex="-1"></a>search <span class="op">=</span> GridSearchCV(</span>
+<span id="cb68-152"><a href="#cb68-152" aria-hidden="true" tabindex="-1"></a>    estimator<span class="op">=</span>pipe,</span>
+<span id="cb68-153"><a href="#cb68-153" aria-hidden="true" tabindex="-1"></a>    param_grid<span class="op">=</span>param_grid,</span>
+<span id="cb68-154"><a href="#cb68-154" aria-hidden="true" tabindex="-1"></a>    scoring<span class="op">=</span><span class="st">"accuracy"</span>,</span>
+<span id="cb68-155"><a href="#cb68-155" aria-hidden="true" tabindex="-1"></a>    cv<span class="op">=</span>cv,</span>
+<span id="cb68-156"><a href="#cb68-156" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb68-157"><a href="#cb68-157" aria-hidden="true" tabindex="-1"></a>    refit<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb68-158"><a href="#cb68-158" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb68-159"><a href="#cb68-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-160"><a href="#cb68-160" aria-hidden="true" tabindex="-1"></a><span class="co"># TRAINING AND EVALUATION --------------------------------------------</span></span>
+<span id="cb68-161"><a href="#cb68-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-162"><a href="#cb68-162" aria-hidden="true" tabindex="-1"></a>logging.debug(<span class="ss">f"</span><span class="ch">\n</span><span class="sc">{</span><span class="dv">80</span> <span class="op">*</span> <span class="st">'-'</span><span class="sc">}</span><span class="ch">\n</span><span class="ss">Starting grid search fitting phase</span><span class="ch">\n</span><span class="sc">{</span><span class="dv">80</span> <span class="op">*</span> <span class="st">'-'</span><span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb68-163"><a href="#cb68-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-164"><a href="#cb68-164" aria-hidden="true" tabindex="-1"></a>search.fit(X_train, y_train)</span>
+<span id="cb68-165"><a href="#cb68-165" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-166"><a href="#cb68-166" aria-hidden="true" tabindex="-1"></a>logging.info(<span class="ss">f"Best CV score: </span><span class="sc">{</span>search<span class="sc">.</span>best_score_<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
+<span id="cb68-167"><a href="#cb68-167" aria-hidden="true" tabindex="-1"></a>logging.info(<span class="ss">f"Best params: </span><span class="sc">{</span>search<span class="sc">.</span>best_params_<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb68-168"><a href="#cb68-168" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-169"><a href="#cb68-169" aria-hidden="true" tabindex="-1"></a>best_model <span class="op">=</span> search.best_estimator_</span>
+<span id="cb68-170"><a href="#cb68-170" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-171"><a href="#cb68-171" aria-hidden="true" tabindex="-1"></a><span class="co"># Sauvegarde du meilleur pipeline complet</span></span>
+<span id="cb68-172"><a href="#cb68-172" aria-hidden="true" tabindex="-1"></a>sio.dump(best_model, <span class="st">"model.skops"</span>)</span>
+<span id="cb68-173"><a href="#cb68-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-174"><a href="#cb68-174" aria-hidden="true" tabindex="-1"></a>test_score <span class="op">=</span> best_model.score(X_test, y_test)</span>
+<span id="cb68-175"><a href="#cb68-175" aria-hidden="true" tabindex="-1"></a>train_score <span class="op">=</span> best_model.score(X_train, y_train)</span>
+<span id="cb68-176"><a href="#cb68-176" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-177"><a href="#cb68-177" aria-hidden="true" tabindex="-1"></a>logging.info(</span>
+<span id="cb68-178"><a href="#cb68-178" aria-hidden="true" tabindex="-1"></a>    <span class="ss">f"</span><span class="sc">{</span>test_score<span class="sc">:.1%}</span><span class="ss"> de bonnes réponses sur les données de test (best model)"</span></span>
+<span id="cb68-179"><a href="#cb68-179" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb68-180"><a href="#cb68-180" aria-hidden="true" tabindex="-1"></a>logging.info(</span>
+<span id="cb68-181"><a href="#cb68-181" aria-hidden="true" tabindex="-1"></a>    <span class="ss">f"</span><span class="sc">{</span>train_score<span class="sc">:.1%}</span><span class="ss"> de bonnes réponses sur les données de train (best model)"</span></span>
+<span id="cb68-182"><a href="#cb68-182" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb68-183"><a href="#cb68-183" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-184"><a href="#cb68-184" aria-hidden="true" tabindex="-1"></a>logging.info(<span class="st">"Matrice de confusion (test):"</span>)</span>
+<span id="cb68-185"><a href="#cb68-185" aria-hidden="true" tabindex="-1"></a>logging.info(confusion_matrix(y_test, best_model.predict(X_test)))</span>
+<span id="cb68-186"><a href="#cb68-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-187"><a href="#cb68-187" aria-hidden="true" tabindex="-1"></a>logging.debug(<span class="ss">f"</span><span class="ch">\n</span><span class="sc">{</span><span class="dv">80</span> <span class="op">*</span> <span class="st">'-'</span><span class="sc">}</span><span class="ch">\n</span><span class="ss">FILE ENDED SUCCESSFULLY!</span><span class="ch">\n</span><span class="sc">{</span><span class="dv">80</span> <span class="op">*</span> <span class="st">'-'</span><span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </details>
 <ol start="2" type="1">
