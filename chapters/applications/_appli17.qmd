@@ -9,16 +9,14 @@
 ```{.bash filename="api/run.sh" no-prefix=true}
 #/bin/bash
 
-python3 train.py
-uvicorn app.api:app --host "0.0.0.0"
+uv run train.py
+uv run uvicorn app.api:app --host "0.0.0.0"
 ```
 </details>
 
 - Donner au script `app/run.sh` des permissions d'exécution : `chmod +x app/run.sh`
 
 - Ajouter `COPY app ./app` au Dockerfile pour avoir les fichiers nécessaires au lancement dans l'API dans l'image
-
-- Modifier `COPY train.py .` pour tenir compte du nouveau nom du fichier
 
 - Changer l'instruction `CMD` du `Dockerfile` pour exécuter le script `app/run.sh` au lancement du conteneur (`CMD ["bash", "-c", "./app/run.sh"]`)
 
