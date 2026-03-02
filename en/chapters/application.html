@@ -3460,14 +3460,13 @@ Fichier <code>app/run.sh</code>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb58" data-filename="api/run.sh" data-no-prefix="true" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co">#/bin/bash</span></span>
 <span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> train.py</span>
-<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a><span class="ex">uvicorn</span> app.api:app <span class="at">--host</span> <span class="st">"0.0.0.0"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run train.py</span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run uvicorn app.api:app <span class="at">--host</span> <span class="st">"0.0.0.0"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </details>
 <ul>
 <li><p>Donner au script <code>app/run.sh</code> des permissions d’exécution : <code>chmod +x app/run.sh</code></p></li>
 <li><p>Ajouter <code>COPY app ./app</code> au Dockerfile pour avoir les fichiers nécessaires au lancement dans l’API dans l’image</p></li>
-<li><p>Modifier <code>COPY train.py .</code> pour tenir compte du nouveau nom du fichier</p></li>
 <li><p>Changer l’instruction <code>CMD</code> du <code>Dockerfile</code> pour exécuter le script <code>app/run.sh</code> au lancement du conteneur (<code>CMD ["bash", "-c", "./app/run.sh"]</code>)</p></li>
 <li><p><em>Commit</em> et <em>push</em> les changements</p></li>
 <li><p>Une fois le CI terminé, vérifier que le nouveau <em>tag</em> <code>latest</code> a été <em>pushé</em> sur le DockerHub. Récupérer la nouvelle image dans votre environnement de test de <code>Docker</code> et vérifier que l’API se déploie correctement.</p></li>
