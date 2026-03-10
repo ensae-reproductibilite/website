@@ -3618,31 +3618,33 @@ Fichier <code>deployment/ingress.yaml</code>
 <span id="annotated-cell-100-2"><a href="#annotated-cell-100-2" aria-hidden="true" tabindex="-1"></a>kind: Ingress</span>
 <span id="annotated-cell-100-3"><a href="#annotated-cell-100-3" aria-hidden="true" tabindex="-1"></a>metadata:</span>
 <span id="annotated-cell-100-4"><a href="#annotated-cell-100-4" aria-hidden="true" tabindex="-1"></a>  name: titanic<span class="op">-</span>ingress</span>
-<span id="annotated-cell-100-5"><a href="#annotated-cell-100-5" aria-hidden="true" tabindex="-1"></a>spec:</span>
-<span id="annotated-cell-100-6"><a href="#annotated-cell-100-6" aria-hidden="true" tabindex="-1"></a>  ingressClassName: nginx</span>
-<span id="annotated-cell-100-7"><a href="#annotated-cell-100-7" aria-hidden="true" tabindex="-1"></a>  tls:</span>
-<span id="annotated-cell-100-8"><a href="#annotated-cell-100-8" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> hosts:</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-100" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-100-9" class="code-annotation-target"><a href="#annotated-cell-100-9" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> votre_nom_d_application.lab.sspcloud.fr</span>
-<span id="annotated-cell-100-10"><a href="#annotated-cell-100-10" aria-hidden="true" tabindex="-1"></a>  rules:</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-100" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-100-11" class="code-annotation-target"><a href="#annotated-cell-100-11" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> host: votre_nom_d_application.lab.sspcloud.fr</span>
-<span id="annotated-cell-100-12"><a href="#annotated-cell-100-12" aria-hidden="true" tabindex="-1"></a>    http:</span>
-<span id="annotated-cell-100-13"><a href="#annotated-cell-100-13" aria-hidden="true" tabindex="-1"></a>      paths:</span>
-<span id="annotated-cell-100-14"><a href="#annotated-cell-100-14" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> path: <span class="op">/</span></span>
-<span id="annotated-cell-100-15"><a href="#annotated-cell-100-15" aria-hidden="true" tabindex="-1"></a>        pathType: Prefix</span>
-<span id="annotated-cell-100-16"><a href="#annotated-cell-100-16" aria-hidden="true" tabindex="-1"></a>        backend:</span>
-<span id="annotated-cell-100-17"><a href="#annotated-cell-100-17" aria-hidden="true" tabindex="-1"></a>          service:</span>
-<span id="annotated-cell-100-18"><a href="#annotated-cell-100-18" aria-hidden="true" tabindex="-1"></a>            name: titanic<span class="op">-</span>service</span>
-<span id="annotated-cell-100-19"><a href="#annotated-cell-100-19" aria-hidden="true" tabindex="-1"></a>            port:</span>
-<span id="annotated-cell-100-20"><a href="#annotated-cell-100-20" aria-hidden="true" tabindex="-1"></a>              number: <span class="dv">80</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="annotated-cell-100-5"><a href="#annotated-cell-100-5" aria-hidden="true" tabindex="-1"></a>  annotations:</span>
+<span id="annotated-cell-100-6"><a href="#annotated-cell-100-6" aria-hidden="true" tabindex="-1"></a>    nginx.ingress.kubernetes.io<span class="op">/</span>enable<span class="op">-</span>cors: <span class="st">"true"</span></span>
+<span id="annotated-cell-100-7"><a href="#annotated-cell-100-7" aria-hidden="true" tabindex="-1"></a>    nginx.ingress.kubernetes.io<span class="op">/</span>cors<span class="op">-</span>allow<span class="op">-</span>origin: <span class="st">"*"</span></span>
+<span id="annotated-cell-100-8"><a href="#annotated-cell-100-8" aria-hidden="true" tabindex="-1"></a>    nginx.ingress.kubernetes.io<span class="op">/</span>cors<span class="op">-</span>allow<span class="op">-</span>methods: <span class="st">"GET, POST, PUT, DELETE, OPTIONS"</span></span>
+<span id="annotated-cell-100-9"><a href="#annotated-cell-100-9" aria-hidden="true" tabindex="-1"></a>    nginx.ingress.kubernetes.io<span class="op">/</span>cors<span class="op">-</span>allow<span class="op">-</span>headers: <span class="st">"Authorization, Content-Type"</span></span>
+<span id="annotated-cell-100-10"><a href="#annotated-cell-100-10" aria-hidden="true" tabindex="-1"></a>    nginx.ingress.kubernetes.io<span class="op">/</span>cors<span class="op">-</span>allow<span class="op">-</span>credentials: <span class="st">"true"</span></span>
+<span id="annotated-cell-100-11"><a href="#annotated-cell-100-11" aria-hidden="true" tabindex="-1"></a>spec:</span>
+<span id="annotated-cell-100-12"><a href="#annotated-cell-100-12" aria-hidden="true" tabindex="-1"></a>  ingressClassName: nginx</span>
+<span id="annotated-cell-100-13"><a href="#annotated-cell-100-13" aria-hidden="true" tabindex="-1"></a>  tls:</span>
+<span id="annotated-cell-100-14"><a href="#annotated-cell-100-14" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> hosts:</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-100" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-100-15" class="code-annotation-target"><a href="#annotated-cell-100-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span> nom<span class="op">-</span>appli.lab.sspcloud.fr</span>
+<span id="annotated-cell-100-16"><a href="#annotated-cell-100-16" aria-hidden="true" tabindex="-1"></a>  rules:</span>
+<span id="annotated-cell-100-17"><a href="#annotated-cell-100-17" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span> host: nom<span class="op">-</span>appli.lab.sspcloud.fr</span>
+<span id="annotated-cell-100-18"><a href="#annotated-cell-100-18" aria-hidden="true" tabindex="-1"></a>    http:</span>
+<span id="annotated-cell-100-19"><a href="#annotated-cell-100-19" aria-hidden="true" tabindex="-1"></a>      paths:</span>
+<span id="annotated-cell-100-20"><a href="#annotated-cell-100-20" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> path: <span class="op">/</span></span>
+<span id="annotated-cell-100-21"><a href="#annotated-cell-100-21" aria-hidden="true" tabindex="-1"></a>        pathType: Prefix</span>
+<span id="annotated-cell-100-22"><a href="#annotated-cell-100-22" aria-hidden="true" tabindex="-1"></a>        backend:</span>
+<span id="annotated-cell-100-23"><a href="#annotated-cell-100-23" aria-hidden="true" tabindex="-1"></a>          service:</span>
+<span id="annotated-cell-100-24"><a href="#annotated-cell-100-24" aria-hidden="true" tabindex="-1"></a>            name: titanic<span class="op">-</span>service</span>
+<span id="annotated-cell-100-25"><a href="#annotated-cell-100-25" aria-hidden="true" tabindex="-1"></a>            port:</span>
+<span id="annotated-cell-100-26"><a href="#annotated-cell-100-26" aria-hidden="true" tabindex="-1"></a>              number: <span class="dv">80</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <dl class="code-annotation-container-grid">
 <dt data-target-cell="annotated-cell-100" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-cell="annotated-cell-100" data-code-lines="9" data-code-annotation="1">Mettez l’URL auquel vous voulez exposer votre service. Sur le modèle de <code>titanic.lab.sspcloud.fr</code> (mais ne tentez pas celui-là, il est déjà pris 😃)</span>
-</dd>
-<dt data-target-cell="annotated-cell-100" data-target-annotation="2">2</dt>
-<dd>
-<span data-code-cell="annotated-cell-100" data-code-lines="11" data-code-annotation="2">Mettre cette même URL ici aussi</span>
+<span data-code-cell="annotated-cell-100" data-code-lines="15,17" data-code-annotation="1">Mettez l’URL auquel vous voulez exposer votre service. Sur le modèle de <code>titanic-ensae.lab.sspcloud.fr</code> (mais ne tentez pas celui-là, il est déjà pris 😃)</span>
 </dd>
 </dl>
 </details>
