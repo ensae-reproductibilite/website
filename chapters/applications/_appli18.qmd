@@ -67,13 +67,19 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: titanic-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "Authorization, Content-Type"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
 spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - votre_nom_d_application.lab.sspcloud.fr #<1>
+    - nom-appli.lab.sspcloud.fr #<1>
   rules:
-  - host: votre_nom_d_application.lab.sspcloud.fr #<2>
+  - host: nom-appli.lab.sspcloud.fr #<1>
     http:
       paths:
       - path: /
@@ -84,7 +90,7 @@ spec:
             port:
               number: 80
 ```
-1. Mettez l'URL auquel vous voulez exposer votre service. Sur le modèle de `titanic.lab.sspcloud.fr` (mais ne tentez pas celui-là, il est déjà pris 😃)
+1. Mettez l'URL auquel vous voulez exposer votre service. Sur le modèle de `titanic-ensae.lab.sspcloud.fr` (mais ne tentez pas celui-là, il est déjà pris 😃)
 2. Mettre cette même URL ici aussi
 </details>
 
