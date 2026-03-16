@@ -1,0 +1,58 @@
+::: {.callout-tip}
+## Application 25a: faire appel à une API LLM
+
+Cette application consiste à se familiariser avec l'appel à un LLM depuis `Python` via le standard _OpenAI_:
+
+* Créer un jeton d'API pour un fournisseur de service. Vous pouvez utiliser [llm.lab.sspcloud.fr/](https://llm.lab.sspcloud.fr/) qui est certes peu performant (les GPU sont une ressource très consommée sur le SSPCloud et à la disponibilité limitée) mais permettra d'illustrer l'utilisation d'API suivant le standard OpenAI.
+* Stocker ce jeton dans votre `.env` sous le nom `OPENAI_API_KEY`
+* Dans un _notebook_, tester la connexion au LLM que nous utiliserons au cours des prochains exercices:
+
+```{.python}
+from dotenv import load_dotenv
+from openai import OpenAI
+import os
+import json
+
+client = OpenAI(
+    api_key=os.environ["OPENAI_API_KEY"],
+    base_url="https://llm.lab.sspcloud.fr/api/v1/" #<1>
+)
+
+models = client.models.list()
+
+for model in models.data:
+    print(model.id)
+
+client.chat.completions.create(
+  model="qwen3-5-9b", #<2>
+  messages=[{"role": "user", "content": "t'es qui ?"}],
+)
+```
+1. En supposant que vous utilisez le service LLM du SSPCloud. Sinon, remplacer par votre fournisseur de service (attention à la facture...)
+2. Remplacer par le modèle adéquat 
+
+:::
+
+![](/chapters/applications/figures/llm_pipeline.png)
+
+::: {.callout-tip}
+## Application 25b: Générer des données synthétiques avec un LLM en local
+
+Reprendre checkpoint 25
+
+:::
+
+::: {.callout-tip}
+## Application 26: Enregister le prompt et les logs dans langfuse
+
+:::
+
+::: {.callout-tip}
+## Application 27: Logguer les données dans S3 (répéter l'expérience x fois ?)
+
+:::
+
+::: {.callout-tip}
+## Application 28: CRON job pour évaluer la performance du modèle sur données annotées
+
+:::
