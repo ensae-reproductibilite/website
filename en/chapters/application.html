@@ -4889,7 +4889,7 @@ Script d’exemple
 <span id="cb72-240"><a href="#cb72-240" aria-hidden="true" tabindex="-1"></a>    mlflow.log_artifact(matrix_path)</span>
 <span id="cb72-241"><a href="#cb72-241" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb72-242"><a href="#cb72-242" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Log model</span></span>
-<span id="cb72-243"><a href="#cb72-243" aria-hidden="true" tabindex="-1"></a>    mlflow.sklearn.log_model(pipe, <span class="st">"model"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb72-243"><a href="#cb72-243" aria-hidden="true" tabindex="-1"></a>    mlflow.sklearn.log_model(best_model, <span class="st">"model"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </details>
 <ol start="7" type="1">
@@ -5537,13 +5537,13 @@ Modèle d’action <code>Github</code>
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Tip</span>Application 25a: faire appel à une API LLM
+<span class="screen-reader-only">Tip</span>Application 26a: faire appel à une API LLM
 </div>
 </div>
 <div class="callout-body-container callout-body">
 <p>Cette application consiste à se familiariser avec l’appel à un LLM depuis <code>Python</code> via le standard <em>OpenAI</em>:</p>
 <ul>
-<li>Créer un jeton d’API pour un fournisseur de service. Vous pouvez utiliser <a href="https://llm.lab.sspcloud.fr/">llm.lab.sspcloud.fr/</a> qui est certes peu performant (les GPU sont une ressource très consommée sur le SSPCloud et à la disponibilité limitée) mais permettra d’illustrer l’utilisation d’API suivant le standard OpenAI.</li>
+<li>Créer un jeton d’API pour accéder à un fournisseur de service. Pour ne pas avoir une facture démesurée avec un fournisseur de service classique (OpenAI, Anthropic…), dans le cadre de ce cours, vous pouvez utiliser <a href="https://llm.lab.sspcloud.fr/">llm.lab.sspcloud.fr/</a> qui est certes peu performant (les GPU sont une ressource très consommée sur le SSPCloud et à la disponibilité limitée) mais permettra d’illustrer l’utilisation d’API suivant le standard OpenAI.</li>
 <li>Stocker ce jeton dans votre <code>.env</code> sous le nom <code>OPENAI_API_KEY</code></li>
 <li>Dans un <em>notebook</em>, tester la connexion au LLM que nous utiliserons au cours des prochains exercices:</li>
 </ul>
@@ -5578,7 +5578,33 @@ Modèle d’action <code>Github</code>
 </dl>
 </div>
 </div>
-<p><img src="../chapters/applications/figures/llm_pipeline.png" class="img-fluid"></p>
+<p>Nous allons maintenant définir notre <em>pipeline</em> pour générer des données synthétiques. Il dépendra, comme l’illustre <a href="#fig-pipeline-llm" class="quarto-xref">Figure&nbsp;5</a>, de 4 <em>inputs</em>:</p>
+<ul>
+<li>Un <em>prompt</em> indiquant au LLM sa tâche et les éléments de contexte à prendre en considération ;</li>
+<li>Un schéma définissant le format de données qu’on veut en sortie. Ce schéma permet de cadre l’<em>output</em> du LLM</li>
+<li>Des données démographiques tirées aléatoirement depuis le recensement de la population française. Elles nous donneront le profil de nos nouveaux membres du Titanic.</li>
+<li>Une distribution agrégée du prix des tickets sur le Titanic qui permettra au LLM de générer des valeurs vraisemblables pour la variable <code>Fare</code></li>
+</ul>
+<p>Nous allons adopter de bonnes pratiques évitant l’ajout d’un monolithe à notre projet:</p>
+<ul>
+<li>Le prompt est stocké dans un fichier markdown dédié. Nous verrons plus tard, avec langfuse, comment améliorer ceci. On devra injecter dans celui-ci des valeurs réalistes issues de données réelles. On pourra le faire grâce à <code>Python</code>.</li>
+<li>Le schéma est dans un JSON dédié</li>
+<li>Les données réelles sont lues par <code>DuckDB</code> via <code>Python</code> :
+<ul>
+<li>On utilise <code>DuckDB</code> pour tirer aléatoirement des données de recensement qui nous serviront d’<em>input</em> au LLM</li>
+<li>On utilise <code>DuckDB</code> pour calculer la distribution de prix qui nous servira de contexte à la génération de LLM</li>
+</ul></li>
+</ul>
+<div id="fig-pipeline-llm" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pipeline-llm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../chapters/applications/figures/llm_pipeline.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pipeline-llm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Structuration du <em>pipeline</em> d’annotation avec un LLM
+</figcaption>
+</figure>
+</div>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -5589,7 +5615,159 @@ Modèle d’action <code>Github</code>
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Reprendre checkpoint 25</p>
+<p>Créer, selon les modèles ci-dessous, les fichiers :</p>
+<ul>
+<li><code>src/synthetic_data/prompt_generation.md</code></li>
+<li><code>src/synthetic_data/schema_generation.json</code></li>
+<li><code>src/synthetic_data/distribution.json</code></li>
+<li><code>src/synthetic_data/llm.json</code></li>
+</ul>
+<details>
+<summary>
+<p>Fichier <code>src/synthetic_data/prompt_generation.md</code></p>
+</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb79" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>Tu es un simulateur de passagers du Titanic.</span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>Ta tâche:</span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>Pour chaque passager en entrée, compléter :</span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a><span class="fl">1.</span> le champ <span class="st">"fare"</span> (prix du billet) à partir de la PCS,</span>
+<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a><span class="fl">2.</span> le champ <span class="st">"fare_band"</span>,</span>
+<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a><span class="fl">3.</span> le champ <span class="st">"survived"</span> (<span class="dv">0</span> <span class="op">=</span> non, <span class="dv">1</span> <span class="op">=</span> oui) de façon réaliste.</span>
+<span id="cb79-8"><a href="#cb79-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-9"><a href="#cb79-9" aria-hidden="true" tabindex="-1"></a>Règles pour fare_band:</span>
+<span id="cb79-10"><a href="#cb79-10" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> <span class="st">"low"</span> si fare <span class="op">&lt;=</span> {fare_q1}</span>
+<span id="cb79-11"><a href="#cb79-11" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> <span class="st">"mid"</span> si {fare_q1} <span class="op">&lt;</span> fare <span class="op">&lt;=</span> {fare_q3}</span>
+<span id="cb79-12"><a href="#cb79-12" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> <span class="st">"high"</span> si fare <span class="op">&gt;</span> {fare_q3}</span>
+<span id="cb79-13"><a href="#cb79-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-14"><a href="#cb79-14" aria-hidden="true" tabindex="-1"></a>Règles réalistes pour survived:</span>
+<span id="cb79-15"><a href="#cb79-15" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> les femmes survivent plus souvent que les hommes</span>
+<span id="cb79-16"><a href="#cb79-16" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> les passagers avec fare élevé survivent plus souvent</span>
+<span id="cb79-17"><a href="#cb79-17" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> les enfants survivent plus souvent</span>
+<span id="cb79-18"><a href="#cb79-18" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> embarked <span class="op">=</span> C peut légèrement augmenter la survie</span>
+<span id="cb79-19"><a href="#cb79-19" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> rester plausible, sans être déterministe</span>
+<span id="cb79-20"><a href="#cb79-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-21"><a href="#cb79-21" aria-hidden="true" tabindex="-1"></a>Contraintes:</span>
+<span id="cb79-22"><a href="#cb79-22" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> fare doit être un <span class="bu">float</span> <span class="op">&gt;</span> <span class="dv">0</span></span>
+<span id="cb79-23"><a href="#cb79-23" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> fare arrondi à <span class="dv">2</span> décimales</span>
+<span id="cb79-24"><a href="#cb79-24" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> survived doit valoir <span class="dv">0</span> ou <span class="dv">1</span></span>
+<span id="cb79-25"><a href="#cb79-25" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> ne modifie pas les champs d’entrée</span>
+<span id="cb79-26"><a href="#cb79-26" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> ajoute seulement fare, fare_band et survived</span>
+<span id="cb79-27"><a href="#cb79-27" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> renvoie uniquement un JSON valide</span>
+<span id="cb79-28"><a href="#cb79-28" aria-hidden="true" tabindex="-1"></a><span class="op">-</span> renvoie un tableau de {N} objets</span>
+<span id="cb79-29"><a href="#cb79-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-30"><a href="#cb79-30" aria-hidden="true" tabindex="-1"></a>Entrée:</span>
+<span id="cb79-31"><a href="#cb79-31" aria-hidden="true" tabindex="-1"></a>{<span class="bu">input</span>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<details>
+<summary>
+<p>Fichier <code>src/synthetic_data/schema_generation.json</code></p>
+</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb80" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"name"</span>: <span class="st">"TitanicPassengersBatch"</span>,</span>
+<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"schema"</span>: {</span>
+<span id="cb80-4"><a href="#cb80-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"type"</span>: <span class="st">"array"</span>,</span>
+<span id="cb80-5"><a href="#cb80-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"minItems"</span>: <span class="dv">5</span>,</span>
+<span id="cb80-6"><a href="#cb80-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"maxItems"</span>: <span class="dv">5</span>,</span>
+<span id="cb80-7"><a href="#cb80-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"items"</span>: {</span>
+<span id="cb80-8"><a href="#cb80-8" aria-hidden="true" tabindex="-1"></a>      <span class="st">"type"</span>: <span class="st">"object"</span>,</span>
+<span id="cb80-9"><a href="#cb80-9" aria-hidden="true" tabindex="-1"></a>      <span class="st">"additionalProperties"</span>: false,</span>
+<span id="cb80-10"><a href="#cb80-10" aria-hidden="true" tabindex="-1"></a>      <span class="st">"properties"</span>: {</span>
+<span id="cb80-11"><a href="#cb80-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"age"</span>: { <span class="st">"type"</span>: <span class="st">"integer"</span>, <span class="st">"minimum"</span>: <span class="dv">0</span>, <span class="st">"maximum"</span>: <span class="dv">120</span> },</span>
+<span id="cb80-12"><a href="#cb80-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"embarked"</span>: { <span class="st">"type"</span>: <span class="st">"string"</span>, <span class="st">"enum"</span>: [<span class="st">"C"</span>, <span class="st">"Q"</span>, <span class="st">"S"</span>] },</span>
+<span id="cb80-13"><a href="#cb80-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">"sex"</span>: { <span class="st">"type"</span>: <span class="st">"integer"</span>, <span class="st">"enum"</span>: [<span class="dv">1</span>, <span class="dv">2</span>] },</span>
+<span id="cb80-14"><a href="#cb80-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">"pcs"</span>: { <span class="st">"type"</span>: <span class="st">"integer"</span>, <span class="st">"minimum"</span>: <span class="dv">1</span>, <span class="st">"maximum"</span>: <span class="dv">9</span> },</span>
+<span id="cb80-15"><a href="#cb80-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">"fare"</span>: { <span class="st">"type"</span>: <span class="st">"number"</span>, <span class="st">"exclusiveMinimum"</span>: <span class="dv">0</span> },</span>
+<span id="cb80-16"><a href="#cb80-16" aria-hidden="true" tabindex="-1"></a>        <span class="st">"fare_band"</span>: { <span class="st">"type"</span>: <span class="st">"string"</span>, <span class="st">"enum"</span>: [<span class="st">"low"</span>, <span class="st">"mid"</span>, <span class="st">"high"</span>] },</span>
+<span id="cb80-17"><a href="#cb80-17" aria-hidden="true" tabindex="-1"></a>        <span class="st">"survived"</span>: { <span class="st">"type"</span>: <span class="st">"integer"</span>, <span class="st">"enum"</span>: [<span class="dv">0</span>, <span class="dv">1</span>] }</span>
+<span id="cb80-18"><a href="#cb80-18" aria-hidden="true" tabindex="-1"></a>      },</span>
+<span id="cb80-19"><a href="#cb80-19" aria-hidden="true" tabindex="-1"></a>      <span class="st">"required"</span>: [</span>
+<span id="cb80-20"><a href="#cb80-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">"age"</span>,</span>
+<span id="cb80-21"><a href="#cb80-21" aria-hidden="true" tabindex="-1"></a>        <span class="st">"embarked"</span>,</span>
+<span id="cb80-22"><a href="#cb80-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">"sex"</span>,</span>
+<span id="cb80-23"><a href="#cb80-23" aria-hidden="true" tabindex="-1"></a>        <span class="st">"pcs"</span>,</span>
+<span id="cb80-24"><a href="#cb80-24" aria-hidden="true" tabindex="-1"></a>        <span class="st">"fare"</span>,</span>
+<span id="cb80-25"><a href="#cb80-25" aria-hidden="true" tabindex="-1"></a>        <span class="st">"fare_band"</span>,</span>
+<span id="cb80-26"><a href="#cb80-26" aria-hidden="true" tabindex="-1"></a>        <span class="st">"survived"</span></span>
+<span id="cb80-27"><a href="#cb80-27" aria-hidden="true" tabindex="-1"></a>      ]</span>
+<span id="cb80-28"><a href="#cb80-28" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb80-29"><a href="#cb80-29" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb80-30"><a href="#cb80-30" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<details>
+<summary>
+<p>Fichier <code>src/synthetic_data/distribution.json</code></p>
+</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb81" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb81-4"><a href="#cb81-4" aria-hidden="true" tabindex="-1"></a>OBSERVED_DATA <span class="op">=</span> (</span>
+<span id="cb81-5"><a href="#cb81-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"https://minio.lab.sspcloud.fr/projet-formation/"</span></span>
+<span id="cb81-6"><a href="#cb81-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"bonnes-pratiques/data/RPindividus/REGION=84/part-0.parquet"</span></span>
+<span id="cb81-7"><a href="#cb81-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb81-8"><a href="#cb81-8" aria-hidden="true" tabindex="-1"></a>TITANIC_HISTORICAL_DATA <span class="op">=</span> (</span>
+<span id="cb81-9"><a href="#cb81-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"https://minio.lab.sspcloud.fr/"</span></span>
+<span id="cb81-10"><a href="#cb81-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lgaliana/ensae-reproductibilite/data/raw/data.parquet"</span></span>
+<span id="cb81-11"><a href="#cb81-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb81-12"><a href="#cb81-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb81-13"><a href="#cb81-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb81-14"><a href="#cb81-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> pick_observed_data(</span>
+<span id="cb81-15"><a href="#cb81-15" aria-hidden="true" tabindex="-1"></a>    con: duckdb.DuckDBPyConnection,</span>
+<span id="cb81-16"><a href="#cb81-16" aria-hidden="true" tabindex="-1"></a>    path: <span class="bu">str</span>,</span>
+<span id="cb81-17"><a href="#cb81-17" aria-hidden="true" tabindex="-1"></a>    n: <span class="bu">int</span> <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb81-18"><a href="#cb81-18" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb81-19"><a href="#cb81-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb81-20"><a href="#cb81-20" aria-hidden="true" tabindex="-1"></a>    query <span class="op">=</span> <span class="ss">f"""</span></span>
+<span id="cb81-21"><a href="#cb81-21" aria-hidden="true" tabindex="-1"></a><span class="ss">    CREATE TEMP TABLE titanic AS</span></span>
+<span id="cb81-22"><a href="#cb81-22" aria-hidden="true" tabindex="-1"></a><span class="ss">    SELECT</span></span>
+<span id="cb81-23"><a href="#cb81-23" aria-hidden="true" tabindex="-1"></a><span class="ss">        AGED AS age,</span></span>
+<span id="cb81-24"><a href="#cb81-24" aria-hidden="true" tabindex="-1"></a><span class="ss">        'C' AS embarked,</span></span>
+<span id="cb81-25"><a href="#cb81-25" aria-hidden="true" tabindex="-1"></a><span class="ss">        CS1 AS pcs,</span></span>
+<span id="cb81-26"><a href="#cb81-26" aria-hidden="true" tabindex="-1"></a><span class="ss">        SEXE AS sex</span></span>
+<span id="cb81-27"><a href="#cb81-27" aria-hidden="true" tabindex="-1"></a><span class="ss">    FROM '</span><span class="sc">{</span>path<span class="sc">}</span><span class="ss">'</span></span>
+<span id="cb81-28"><a href="#cb81-28" aria-hidden="true" tabindex="-1"></a><span class="ss">    LIMIT 1000</span></span>
+<span id="cb81-29"><a href="#cb81-29" aria-hidden="true" tabindex="-1"></a><span class="ss">    """</span></span>
+<span id="cb81-30"><a href="#cb81-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Assume they all embarked from Cherbourg ('C')</span></span>
+<span id="cb81-31"><a href="#cb81-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb81-32"><a href="#cb81-32" aria-hidden="true" tabindex="-1"></a>    con.sql(query)</span>
+<span id="cb81-33"><a href="#cb81-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb81-34"><a href="#cb81-34" aria-hidden="true" tabindex="-1"></a>    sample_query <span class="op">=</span> <span class="ss">f"""</span></span>
+<span id="cb81-35"><a href="#cb81-35" aria-hidden="true" tabindex="-1"></a><span class="ss">    SELECT age, embarked, pcs, sex</span></span>
+<span id="cb81-36"><a href="#cb81-36" aria-hidden="true" tabindex="-1"></a><span class="ss">    FROM titanic</span></span>
+<span id="cb81-37"><a href="#cb81-37" aria-hidden="true" tabindex="-1"></a><span class="ss">    ORDER BY random()</span></span>
+<span id="cb81-38"><a href="#cb81-38" aria-hidden="true" tabindex="-1"></a><span class="ss">    LIMIT </span><span class="sc">{</span>n<span class="sc">}</span></span>
+<span id="cb81-39"><a href="#cb81-39" aria-hidden="true" tabindex="-1"></a><span class="ss">    """</span></span>
+<span id="cb81-40"><a href="#cb81-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb81-41"><a href="#cb81-41" aria-hidden="true" tabindex="-1"></a>    passengers <span class="op">=</span> (</span>
+<span id="cb81-42"><a href="#cb81-42" aria-hidden="true" tabindex="-1"></a>        con.execute(sample_query)</span>
+<span id="cb81-43"><a href="#cb81-43" aria-hidden="true" tabindex="-1"></a>        .fetchdf()</span>
+<span id="cb81-44"><a href="#cb81-44" aria-hidden="true" tabindex="-1"></a>        .to_dict(orient<span class="op">=</span><span class="st">"records"</span>)</span>
+<span id="cb81-45"><a href="#cb81-45" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb81-46"><a href="#cb81-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb81-47"><a href="#cb81-47" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> passengers</span>
+<span id="cb81-48"><a href="#cb81-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb81-49"><a href="#cb81-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb81-50"><a href="#cb81-50" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> compute_observed_distribution_fare(</span>
+<span id="cb81-51"><a href="#cb81-51" aria-hidden="true" tabindex="-1"></a>    con: duckdb.DuckDBPyConnection,</span>
+<span id="cb81-52"><a href="#cb81-52" aria-hidden="true" tabindex="-1"></a>    titanic_historical_data: <span class="bu">str</span></span>
+<span id="cb81-53"><a href="#cb81-53" aria-hidden="true" tabindex="-1"></a>):</span>
+<span id="cb81-54"><a href="#cb81-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb81-55"><a href="#cb81-55" aria-hidden="true" tabindex="-1"></a>    stat_agg_query <span class="op">=</span> <span class="ss">f"""</span></span>
+<span id="cb81-56"><a href="#cb81-56" aria-hidden="true" tabindex="-1"></a><span class="ss">    SELECT</span></span>
+<span id="cb81-57"><a href="#cb81-57" aria-hidden="true" tabindex="-1"></a><span class="ss">        min(fare) AS fare_min,</span></span>
+<span id="cb81-58"><a href="#cb81-58" aria-hidden="true" tabindex="-1"></a><span class="ss">        quantile(fare, 0.25) AS fare_q1,</span></span>
+<span id="cb81-59"><a href="#cb81-59" aria-hidden="true" tabindex="-1"></a><span class="ss">        quantile(fare, 0.50) AS fare_q2,</span></span>
+<span id="cb81-60"><a href="#cb81-60" aria-hidden="true" tabindex="-1"></a><span class="ss">        quantile(fare, 0.75) AS fare_q3,</span></span>
+<span id="cb81-61"><a href="#cb81-61" aria-hidden="true" tabindex="-1"></a><span class="ss">        max(fare) AS fare_max</span></span>
+<span id="cb81-62"><a href="#cb81-62" aria-hidden="true" tabindex="-1"></a><span class="ss">    FROM read_parquet('</span><span class="sc">{</span>titanic_historical_data<span class="sc">}</span><span class="ss">');</span></span>
+<span id="cb81-63"><a href="#cb81-63" aria-hidden="true" tabindex="-1"></a><span class="ss">    """</span></span>
+<span id="cb81-64"><a href="#cb81-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb81-65"><a href="#cb81-65" aria-hidden="true" tabindex="-1"></a>    fare_stats <span class="op">=</span> (</span>
+<span id="cb81-66"><a href="#cb81-66" aria-hidden="true" tabindex="-1"></a>        con.sql(stat_agg_query)</span>
+<span id="cb81-67"><a href="#cb81-67" aria-hidden="true" tabindex="-1"></a>        .to_df().to_dict()</span>
+<span id="cb81-68"><a href="#cb81-68" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb81-69"><a href="#cb81-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb81-70"><a href="#cb81-70" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> fare_stats</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
 </div>
 </div>
 <div class="callout callout-style-default callout-tip callout-empty-content callout-titled">
