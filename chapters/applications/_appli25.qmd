@@ -1,9 +1,9 @@
 ::: {.callout-tip}
-## Application 25a: faire appel à une API LLM
+## Application 26a: faire appel à une API LLM
 
 Cette application consiste à se familiariser avec l'appel à un LLM depuis `Python` via le standard _OpenAI_:
 
-* Créer un jeton d'API pour un fournisseur de service. Vous pouvez utiliser [llm.lab.sspcloud.fr/](https://llm.lab.sspcloud.fr/) qui est certes peu performant (les GPU sont une ressource très consommée sur le SSPCloud et à la disponibilité limitée) mais permettra d'illustrer l'utilisation d'API suivant le standard OpenAI.
+* Créer un jeton d'API pour accéder à un fournisseur de service. Pour ne pas avoir une facture démesurée avec un fournisseur de service classique (OpenAI, Anthropic...), dans le cadre de ce cours, vous pouvez utiliser [llm.lab.sspcloud.fr/](https://llm.lab.sspcloud.fr/) qui est certes peu performant (les GPU sont une ressource très consommée sur le SSPCloud et à la disponibilité limitée) mais permettra d'illustrer l'utilisation d'API suivant le standard OpenAI.
 * Stocker ce jeton dans votre `.env` sous le nom `OPENAI_API_KEY`
 * Dans un _notebook_, tester la connexion au LLM que nous utiliserons au cours des prochains exercices:
 
@@ -29,16 +29,208 @@ client.chat.completions.create(
 )
 ```
 1. En supposant que vous utilisez le service LLM du SSPCloud. Sinon, remplacer par votre fournisseur de service (attention à la facture...)
-2. Remplacer par le modèle adéquat 
-
+2. Remplacer par le modèle adéquat
 :::
 
-![](/chapters/applications/figures/llm_pipeline.png)
+Nous allons maintenant définir notre _pipeline_ pour générer des données synthétiques. Il dépendra, comme l'illustre @fig-pipeline-llm, de 4 _inputs_:
+
+* Un _prompt_ indiquant au LLM sa tâche et les éléments de contexte à prendre en considération ;
+* Un schéma définissant le format de données qu'on veut en sortie. Ce schéma permet de cadre l'_output_ du LLM
+* Des données démographiques tirées aléatoirement depuis le recensement de la population française. Elles nous donneront le profil de nos nouveaux membres du Titanic.
+* Une distribution agrégée du prix des tickets sur le Titanic qui permettra au LLM de générer des valeurs vraisemblables pour la variable `Fare`
+
+Nous allons adopter de bonnes pratiques évitant l'ajout d'un monolithe à notre projet:
+
+* Le prompt est stocké dans un fichier markdown dédié. Nous verrons plus tard, avec langfuse, comment améliorer ceci. On devra injecter dans celui-ci des valeurs réalistes issues de données réelles. On pourra le faire grâce à `Python`.
+* Le schéma est dans un JSON dédié
+* Les données réelles sont lues par `DuckDB` via `Python` :
+    + On utilise `DuckDB` pour tirer aléatoirement des données de recensement qui nous serviront d'_input_ au LLM
+    + On utilise `DuckDB` pour calculer la distribution de prix qui nous servira de contexte à la génération de LLM
+
+
+![Structuration du _pipeline_ d'annotation avec un LLM](/chapters/applications/figures/llm_pipeline.png){#fig-pipeline-llm}
 
 ::: {.callout-tip}
 ## Application 25b: Générer des données synthétiques avec un LLM en local
 
-Reprendre checkpoint 25
+Créer, selon les modèles ci-dessous, les fichiers :
+
+* `src/synthetic_data/prompt_generation.md`
+* `src/synthetic_data/schema_generation.json`
+* `src/synthetic_data/distribution.json`
+* `src/synthetic_data/llm.json`
+
+<details>
+
+<summary>
+
+Fichier `src/synthetic_data/prompt_generation.md`
+
+</summary>
+
+```{.python}
+Tu es un simulateur de passagers du Titanic.
+
+Ta tâche:
+Pour chaque passager en entrée, compléter :
+1. le champ "fare" (prix du billet) à partir de la PCS,
+2. le champ "fare_band",
+3. le champ "survived" (0 = non, 1 = oui) de façon réaliste.
+
+Règles pour fare_band:
+- "low" si fare <= {fare_q1}
+- "mid" si {fare_q1} < fare <= {fare_q3}
+- "high" si fare > {fare_q3}
+
+Règles réalistes pour survived:
+- les femmes survivent plus souvent que les hommes
+- les passagers avec fare élevé survivent plus souvent
+- les enfants survivent plus souvent
+- embarked = C peut légèrement augmenter la survie
+- rester plausible, sans être déterministe
+
+Contraintes:
+- fare doit être un float > 0
+- fare arrondi à 2 décimales
+- survived doit valoir 0 ou 1
+- ne modifie pas les champs d’entrée
+- ajoute seulement fare, fare_band et survived
+- renvoie uniquement un JSON valide
+- renvoie un tableau de {N} objets
+
+Entrée:
+{input}
+```
+
+</details>
+
+<details>
+
+<summary>
+
+Fichier `src/synthetic_data/schema_generation.json`
+
+</summary>
+
+```{.python}
+{
+  "name": "TitanicPassengersBatch",
+  "schema": {
+    "type": "array",
+    "minItems": 5,
+    "maxItems": 5,
+    "items": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "age": { "type": "integer", "minimum": 0, "maximum": 120 },
+        "embarked": { "type": "string", "enum": ["C", "Q", "S"] },
+        "sex": { "type": "integer", "enum": [1, 2] },
+        "pcs": { "type": "integer", "minimum": 1, "maximum": 9 },
+        "fare": { "type": "number", "exclusiveMinimum": 0 },
+        "fare_band": { "type": "string", "enum": ["low", "mid", "high"] },
+        "survived": { "type": "integer", "enum": [0, 1] }
+      },
+      "required": [
+        "age",
+        "embarked",
+        "sex",
+        "pcs",
+        "fare",
+        "fare_band",
+        "survived"
+      ]
+    }
+  }
+}
+```
+
+</details>
+
+
+<details>
+
+<summary>
+
+Fichier `src/synthetic_data/distribution.json`
+
+</summary>
+
+```{.python}
+import duckdb
+
+
+OBSERVED_DATA = (
+    "https://minio.lab.sspcloud.fr/projet-formation/"
+    "bonnes-pratiques/data/RPindividus/REGION=84/part-0.parquet"
+)
+TITANIC_HISTORICAL_DATA = (
+    "https://minio.lab.sspcloud.fr/"
+    "lgaliana/ensae-reproductibilite/data/raw/data.parquet"
+)
+
+
+def pick_observed_data(
+    con: duckdb.DuckDBPyConnection,
+    path: str,
+    n: int = 5
+):
+
+    query = f"""
+    CREATE TEMP TABLE titanic AS
+    SELECT
+        AGED AS age,
+        'C' AS embarked,
+        CS1 AS pcs,
+        SEXE AS sex
+    FROM '{path}'
+    LIMIT 1000
+    """
+    # Assume they all embarked from Cherbourg ('C')
+
+    con.sql(query)
+
+    sample_query = f"""
+    SELECT age, embarked, pcs, sex
+    FROM titanic
+    ORDER BY random()
+    LIMIT {n}
+    """
+
+    passengers = (
+        con.execute(sample_query)
+        .fetchdf()
+        .to_dict(orient="records")
+    )
+
+    return passengers
+
+
+def compute_observed_distribution_fare(
+    con: duckdb.DuckDBPyConnection,
+    titanic_historical_data: str
+):
+
+    stat_agg_query = f"""
+    SELECT
+        min(fare) AS fare_min,
+        quantile(fare, 0.25) AS fare_q1,
+        quantile(fare, 0.50) AS fare_q2,
+        quantile(fare, 0.75) AS fare_q3,
+        max(fare) AS fare_max
+    FROM read_parquet('{titanic_historical_data}');
+    """
+
+    fare_stats = (
+        con.sql(stat_agg_query)
+        .to_df().to_dict()
+    )
+
+    return fare_stats
+```
+
+</details>
+
 
 :::
 
