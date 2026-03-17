@@ -5619,8 +5619,8 @@ Figure&nbsp;5: Structuration du <em>pipeline</em> d’annotation avec un LLM
 <ul>
 <li><code>src/synthetic_data/prompt_generation.md</code></li>
 <li><code>src/synthetic_data/schema_generation.json</code></li>
-<li><code>src/synthetic_data/distribution.json</code></li>
-<li><code>src/synthetic_data/llm.json</code></li>
+<li><code>src/synthetic_data/distribution.py</code></li>
+<li><code>src/synthetic_data/llm.py</code></li>
 </ul>
 <details>
 <summary>
@@ -5695,7 +5695,7 @@ Figure&nbsp;5: Structuration du <em>pipeline</em> d’annotation avec un LLM
 </details>
 <details>
 <summary>
-<p>Fichier <code>src/synthetic_data/distribution.json</code></p>
+<p>Fichier <code>src/synthetic_data/distribution.py</code></p>
 </summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb81" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
 <span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -5767,6 +5767,144 @@ Figure&nbsp;5: Structuration du <em>pipeline</em> d’annotation avec un LLM
 <span id="cb81-68"><a href="#cb81-68" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb81-69"><a href="#cb81-69" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb81-70"><a href="#cb81-70" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> fare_stats</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<details>
+<summary>
+<p>Fichier <code>src/synthetic_data/llm.py</code></p>
+</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb82" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb82-3"><a href="#cb82-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dotenv <span class="im">import</span> load_dotenv</span>
+<span id="cb82-4"><a href="#cb82-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
+<span id="cb82-5"><a href="#cb82-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> duckdb</span>
+<span id="cb82-6"><a href="#cb82-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> openai <span class="im">import</span> OpenAI</span>
+<span id="cb82-7"><a href="#cb82-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> argparse</span>
+<span id="cb82-8"><a href="#cb82-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> logging</span>
+<span id="cb82-9"><a href="#cb82-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb82-10"><a href="#cb82-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> uuid</span>
+<span id="cb82-11"><a href="#cb82-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb82-12"><a href="#cb82-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-13"><a href="#cb82-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> distribution <span class="im">import</span> (</span>
+<span id="cb82-14"><a href="#cb82-14" aria-hidden="true" tabindex="-1"></a>    pick_observed_data,</span>
+<span id="cb82-15"><a href="#cb82-15" aria-hidden="true" tabindex="-1"></a>    compute_observed_distribution_fare,</span>
+<span id="cb82-16"><a href="#cb82-16" aria-hidden="true" tabindex="-1"></a>    OBSERVED_DATA,</span>
+<span id="cb82-17"><a href="#cb82-17" aria-hidden="true" tabindex="-1"></a>    TITANIC_HISTORICAL_DATA</span>
+<span id="cb82-18"><a href="#cb82-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb82-19"><a href="#cb82-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-20"><a href="#cb82-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-21"><a href="#cb82-21" aria-hidden="true" tabindex="-1"></a><span class="co"># CONFIGURATION -------------------------------------</span></span>
+<span id="cb82-22"><a href="#cb82-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-23"><a href="#cb82-23" aria-hidden="true" tabindex="-1"></a>load_dotenv()</span>
+<span id="cb82-24"><a href="#cb82-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-25"><a href="#cb82-25" aria-hidden="true" tabindex="-1"></a>parser <span class="op">=</span> argparse.ArgumentParser()</span>
+<span id="cb82-26"><a href="#cb82-26" aria-hidden="true" tabindex="-1"></a>parser.add_argument(</span>
+<span id="cb82-27"><a href="#cb82-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"--n"</span>, <span class="bu">type</span><span class="op">=</span><span class="bu">int</span>, required<span class="op">=</span><span class="va">False</span>, default<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb82-28"><a href="#cb82-28" aria-hidden="true" tabindex="-1"></a>    <span class="bu">help</span><span class="op">=</span><span class="st">"Nombre de passagers à générer"</span></span>
+<span id="cb82-29"><a href="#cb82-29" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb82-30"><a href="#cb82-30" aria-hidden="true" tabindex="-1"></a>args <span class="op">=</span> parser.parse_args()</span>
+<span id="cb82-31"><a href="#cb82-31" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> args.n</span>
+<span id="cb82-32"><a href="#cb82-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-33"><a href="#cb82-33" aria-hidden="true" tabindex="-1"></a>logging.basicConfig(</span>
+<span id="cb82-34"><a href="#cb82-34" aria-hidden="true" tabindex="-1"></a>    level<span class="op">=</span>logging.INFO,</span>
+<span id="cb82-35"><a href="#cb82-35" aria-hidden="true" tabindex="-1"></a>    <span class="bu">format</span><span class="op">=</span><span class="st">"</span><span class="sc">%(asctime)s</span><span class="st"> | </span><span class="sc">%(levelname)s</span><span class="st"> | </span><span class="sc">%(message)s</span><span class="st">"</span></span>
+<span id="cb82-36"><a href="#cb82-36" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb82-37"><a href="#cb82-37" aria-hidden="true" tabindex="-1"></a>logger <span class="op">=</span> logging.getLogger(<span class="va">__name__</span>)</span>
+<span id="cb82-38"><a href="#cb82-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-39"><a href="#cb82-39" aria-hidden="true" tabindex="-1"></a>con <span class="op">=</span> duckdb.<span class="ex">connect</span>()</span>
+<span id="cb82-40"><a href="#cb82-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-41"><a href="#cb82-41" aria-hidden="true" tabindex="-1"></a><span class="co"># LLM template</span></span>
+<span id="cb82-42"><a href="#cb82-42" aria-hidden="true" tabindex="-1"></a>template <span class="op">=</span> Path(<span class="st">"src/synthetic_data/prompt_generation.md"</span>).read_text(encoding<span class="op">=</span><span class="st">"utf-8"</span>)</span>
+<span id="cb82-43"><a href="#cb82-43" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"src/synthetic_data/schema_generation.json"</span>, <span class="st">"r"</span>, encoding<span class="op">=</span><span class="st">"utf-8"</span>) <span class="im">as</span> f:</span>
+<span id="cb82-44"><a href="#cb82-44" aria-hidden="true" tabindex="-1"></a>    schema <span class="op">=</span> json.load(f)</span>
+<span id="cb82-45"><a href="#cb82-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-46"><a href="#cb82-46" aria-hidden="true" tabindex="-1"></a><span class="co"># Ensure schema consistency with N</span></span>
+<span id="cb82-47"><a href="#cb82-47" aria-hidden="true" tabindex="-1"></a>schema[<span class="st">"schema"</span>][<span class="st">"minItems"</span>] <span class="op">=</span> N</span>
+<span id="cb82-48"><a href="#cb82-48" aria-hidden="true" tabindex="-1"></a>schema[<span class="st">"schema"</span>][<span class="st">"maxItems"</span>] <span class="op">=</span> N</span>
+<span id="cb82-49"><a href="#cb82-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-50"><a href="#cb82-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-51"><a href="#cb82-51" aria-hidden="true" tabindex="-1"></a>client <span class="op">=</span> OpenAI(</span>
+<span id="cb82-52"><a href="#cb82-52" aria-hidden="true" tabindex="-1"></a>    api_key<span class="op">=</span>os.environ[<span class="st">"OPENAI_API_KEY"</span>],</span>
+<span id="cb82-53"><a href="#cb82-53" aria-hidden="true" tabindex="-1"></a>    base_url<span class="op">=</span><span class="st">"https://llm.lab.sspcloud.fr/api"</span></span>
+<span id="cb82-54"><a href="#cb82-54" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb82-55"><a href="#cb82-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-56"><a href="#cb82-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-57"><a href="#cb82-57" aria-hidden="true" tabindex="-1"></a><span class="co"># OBSERVED DATA PICKED FROM FRENCH CENSUS DATA -------------------------</span></span>
+<span id="cb82-58"><a href="#cb82-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-59"><a href="#cb82-59" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="ss">f"Sélection de </span><span class="sc">{</span>N<span class="sc">}</span><span class="ss"> passagers observés"</span>)</span>
+<span id="cb82-60"><a href="#cb82-60" aria-hidden="true" tabindex="-1"></a>passengers <span class="op">=</span> pick_observed_data(con, OBSERVED_DATA, n<span class="op">=</span>N)</span>
+<span id="cb82-61"><a href="#cb82-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-62"><a href="#cb82-62" aria-hidden="true" tabindex="-1"></a>logger.debug(passengers)</span>
+<span id="cb82-63"><a href="#cb82-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-64"><a href="#cb82-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-65"><a href="#cb82-65" aria-hidden="true" tabindex="-1"></a>fare_stats <span class="op">=</span> compute_observed_distribution_fare(</span>
+<span id="cb82-66"><a href="#cb82-66" aria-hidden="true" tabindex="-1"></a>    con,</span>
+<span id="cb82-67"><a href="#cb82-67" aria-hidden="true" tabindex="-1"></a>    TITANIC_HISTORICAL_DATA</span>
+<span id="cb82-68"><a href="#cb82-68" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb82-69"><a href="#cb82-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-70"><a href="#cb82-70" aria-hidden="true" tabindex="-1"></a>logger.info(</span>
+<span id="cb82-71"><a href="#cb82-71" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Fare données historiques utilisées pour générer des valeurs vraisemblables"</span></span>
+<span id="cb82-72"><a href="#cb82-72" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb82-73"><a href="#cb82-73" aria-hidden="true" tabindex="-1"></a>logger.info(fare_stats)</span>
+<span id="cb82-74"><a href="#cb82-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-75"><a href="#cb82-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-76"><a href="#cb82-76" aria-hidden="true" tabindex="-1"></a><span class="co"># INJECTION DANS LE PROMPT --------------------------</span></span>
+<span id="cb82-77"><a href="#cb82-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-78"><a href="#cb82-78" aria-hidden="true" tabindex="-1"></a>prompt <span class="op">=</span> template.<span class="bu">format</span>(</span>
+<span id="cb82-79"><a href="#cb82-79" aria-hidden="true" tabindex="-1"></a>    N<span class="op">=</span>N,</span>
+<span id="cb82-80"><a href="#cb82-80" aria-hidden="true" tabindex="-1"></a>    fare_min<span class="op">=</span>fare_stats[<span class="st">"fare_min"</span>],</span>
+<span id="cb82-81"><a href="#cb82-81" aria-hidden="true" tabindex="-1"></a>    fare_q1<span class="op">=</span>fare_stats[<span class="st">"fare_q1"</span>],</span>
+<span id="cb82-82"><a href="#cb82-82" aria-hidden="true" tabindex="-1"></a>    fare_q2<span class="op">=</span>fare_stats[<span class="st">"fare_q2"</span>],</span>
+<span id="cb82-83"><a href="#cb82-83" aria-hidden="true" tabindex="-1"></a>    fare_q3<span class="op">=</span>fare_stats[<span class="st">"fare_q3"</span>],</span>
+<span id="cb82-84"><a href="#cb82-84" aria-hidden="true" tabindex="-1"></a>    fare_max<span class="op">=</span>fare_stats[<span class="st">"fare_max"</span>],</span>
+<span id="cb82-85"><a href="#cb82-85" aria-hidden="true" tabindex="-1"></a>    <span class="bu">input</span><span class="op">=</span>json.dumps(passengers, ensure_ascii<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb82-86"><a href="#cb82-86" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb82-87"><a href="#cb82-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-88"><a href="#cb82-88" aria-hidden="true" tabindex="-1"></a>logger.debug(prompt)</span>
+<span id="cb82-89"><a href="#cb82-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-90"><a href="#cb82-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-91"><a href="#cb82-91" aria-hidden="true" tabindex="-1"></a><span class="co"># REQUETE GENERATIVE ------------------------------</span></span>
+<span id="cb82-92"><a href="#cb82-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-93"><a href="#cb82-93" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="st">"Envoi de la requête au LLM"</span>)</span>
+<span id="cb82-94"><a href="#cb82-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-95"><a href="#cb82-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-96"><a href="#cb82-96" aria-hidden="true" tabindex="-1"></a>t0 <span class="op">=</span> time.perf_counter()</span>
+<span id="cb82-97"><a href="#cb82-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-98"><a href="#cb82-98" aria-hidden="true" tabindex="-1"></a>resp <span class="op">=</span> client.chat.completions.create(</span>
+<span id="cb82-99"><a href="#cb82-99" aria-hidden="true" tabindex="-1"></a>    model<span class="op">=</span><span class="st">"qwen3-5-9b"</span>,</span>
+<span id="cb82-100"><a href="#cb82-100" aria-hidden="true" tabindex="-1"></a>    messages<span class="op">=</span>[{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: prompt}],</span>
+<span id="cb82-101"><a href="#cb82-101" aria-hidden="true" tabindex="-1"></a>    response_format<span class="op">=</span>{</span>
+<span id="cb82-102"><a href="#cb82-102" aria-hidden="true" tabindex="-1"></a>        <span class="st">"type"</span>: <span class="st">"json_schema"</span>,</span>
+<span id="cb82-103"><a href="#cb82-103" aria-hidden="true" tabindex="-1"></a>        <span class="st">"json_schema"</span>: {</span>
+<span id="cb82-104"><a href="#cb82-104" aria-hidden="true" tabindex="-1"></a>            <span class="op">**</span>schema,</span>
+<span id="cb82-105"><a href="#cb82-105" aria-hidden="true" tabindex="-1"></a>            <span class="st">"strict"</span>: <span class="va">True</span></span>
+<span id="cb82-106"><a href="#cb82-106" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb82-107"><a href="#cb82-107" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb82-108"><a href="#cb82-108" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb82-109"><a href="#cb82-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-110"><a href="#cb82-110" aria-hidden="true" tabindex="-1"></a>elapsed <span class="op">=</span> time.perf_counter() <span class="op">-</span> t0</span>
+<span id="cb82-111"><a href="#cb82-111" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="st">"Temps de réponse du LLM: </span><span class="sc">%.3f</span><span class="st"> secondes"</span>, elapsed)</span>
+<span id="cb82-112"><a href="#cb82-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-113"><a href="#cb82-113" aria-hidden="true" tabindex="-1"></a>out <span class="op">=</span> resp.choices[<span class="dv">0</span>].message.content</span>
+<span id="cb82-114"><a href="#cb82-114" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> json.loads(out)</span>
+<span id="cb82-115"><a href="#cb82-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-116"><a href="#cb82-116" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="st">"Résultat reçu: </span><span class="sc">%s</span><span class="st"> lignes"</span>, <span class="bu">len</span>(result))</span>
+<span id="cb82-117"><a href="#cb82-117" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="st">"Résultat brut: </span><span class="sc">%s</span><span class="st">"</span>, result)</span>
+<span id="cb82-118"><a href="#cb82-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-119"><a href="#cb82-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-120"><a href="#cb82-120" aria-hidden="true" tabindex="-1"></a><span class="co"># SAVE OBSERVED DATA -----------------------------------------</span></span>
+<span id="cb82-121"><a href="#cb82-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-122"><a href="#cb82-122" aria-hidden="true" tabindex="-1"></a>output_dir <span class="op">=</span> Path(<span class="st">"outputs"</span>)</span>
+<span id="cb82-123"><a href="#cb82-123" aria-hidden="true" tabindex="-1"></a>output_dir.mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb82-124"><a href="#cb82-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-125"><a href="#cb82-125" aria-hidden="true" tabindex="-1"></a>random_filename <span class="op">=</span> <span class="ss">f"titanic_</span><span class="sc">{</span>uuid<span class="sc">.</span>uuid4()<span class="sc">.</span><span class="bu">hex</span><span class="sc">}</span><span class="ss">.parquet"</span></span>
+<span id="cb82-126"><a href="#cb82-126" aria-hidden="true" tabindex="-1"></a>output_path <span class="op">=</span> output_dir <span class="op">/</span> random_filename</span>
+<span id="cb82-127"><a href="#cb82-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-128"><a href="#cb82-128" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame(result)</span>
+<span id="cb82-129"><a href="#cb82-129" aria-hidden="true" tabindex="-1"></a>df.to_parquet(output_path, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb82-130"><a href="#cb82-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-131"><a href="#cb82-131" aria-hidden="true" tabindex="-1"></a>logger.info(<span class="st">"Parquet enregistré dans </span><span class="sc">%s</span><span class="st">"</span>, output_path)</span>
+<span id="cb82-132"><a href="#cb82-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb82-133"><a href="#cb82-133" aria-hidden="true" tabindex="-1"></a>logger.debug(<span class="ss">f"Saved to: </span><span class="sc">{</span>output_path<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 </div>
