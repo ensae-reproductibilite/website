@@ -5,7 +5,7 @@
 Pour construire une image à partir d'un `Dockerfile`, il suffit d'utiliser la commande `docker build` depuis la ligne de commande[^windows]. Il faut ensuite spécifier deux éléments importants :
 
 - le __*build context*__. Il faut indiquer à `Docker` le chemin de notre projet, qui doit contenir le `Dockerfile`. En pratique, il est plus simple de se mettre dans le dossier du projet via la commande `cd`, puis de passer `.` comme *build context* pour indiquer à `Docker` de *build* "d'ici" ;
-- le __*tag*__, c'est à dire le nom de l'image. Tant que l'on utilise `Docker` en local, le *tag* importe peu. On verra par la suite que la structure du *tag* a de l'importance lorsque l'on souhaite [exporter](#imp-docker) ou [importer](#exp-docker) une image `Docker` à partir d'un dépôt distant.
+- le __*tag*__, c'est-à-dire le nom de l'image. Tant que l'on utilise `Docker` en local, le *tag* importe peu. On verra par la suite que la structure du *tag* a de l'importance lorsque l'on souhaite [exporter](#imp-docker) ou [importer](#exp-docker) une image `Docker` à partir d'un dépôt distant.
 
 [^windows]: Si vous êtes sur Windows, les lignes de commande disponibles par défaut (`cmd` ou `Powershell`) sont peu pratiques. Il est recommandé d'utiliser la ligne de commande de `Git Bash` (une émulation minimaliste d'une ligne de commande `Linux`) qui vous permettra de faire des opérations en ligne de commande.
 
@@ -50,11 +50,11 @@ REPOSITORY                               TAG       IMAGE ID       CREATED       
 myflaskapp                               latest    57d2f410a631   2 hours ago      433MB
 ```
 
-Intéressons nous un peu plus en détail aux *logs* de l'étape de *build* 👆️.
+Intéressons-nous un peu plus en détail aux *logs* de l'étape de *build* 👆️.
 
-Entre les étapes, `Docker` affiche des suites de lettres et de chiffres un peu ésotériques, et nous parle de conteneurs intermédiaires. En fait, il faut voir une image `Docker` comme un empilement de couches (*layers*), qui sont elles-mêmes des images `Docker`. Quand on hérite d'une image avec l'instruction `FROM`, on spécifie donc à `Docker` la couche initiale, sur laquelle il va construire le reste de notre environnement. A chaque étape sa nouvelle couche, et à chaque couche son *hash*, un identifiant unique fait de lettres et de chiffres.
+Entre les étapes, `Docker` affiche des suites de lettres et de chiffres un peu ésotériques, et nous parle de conteneurs intermédiaires. En fait, il faut voir une image `Docker` comme un empilement de couches (*layers*), qui sont elles-mêmes des images `Docker`. Quand on hérite d'une image avec l'instruction `FROM`, on spécifie donc à `Docker` la couche initiale, sur laquelle il va construire le reste de notre environnement. À chaque étape sa nouvelle couche, et à chaque couche son *hash*, un identifiant unique fait de lettres et de chiffres.
 
-Cela peut ressembler à des détails techniques, mais c'est en fait extrêmement utile en pratique car cela permet à `Docker` de faire du *caching*. Lorsqu'on développe un `Dockerfile`, il est fréquent de devoir modifier ce dernier de nombreuses fois avant de trouver la bonne recette, et on aimerait bien ne pas avoir à *rebuild* l'environnement complet à chaque fois. `Docker` gère cela très bien : il *cache* chacune des couches intermédiaires[^cacheCI].
+Cela peut ressembler à des détails techniques, mais c'est en fait extrêmement utile en pratique, car cela permet à `Docker` de faire du *caching*. Lorsqu'on développe un `Dockerfile`, il est fréquent de devoir modifier ce dernier de nombreuses fois avant de trouver la bonne recette, et on aimerait bien ne pas avoir à *rebuild* l'environnement complet à chaque fois. `Docker` gère cela très bien : il *cache* chacune des couches intermédiaires[^cacheCI].
 
 Par exemple, si l'on modifie la 5ème commande du `Dockerfile`, `Docker` va utiliser le cache pour ne pas avoir à recalculer les étapes précédentes, qui n'ont pas changé. Cela s'appelle l'_"invalidation du cache"_ :
 dès lors qu'une étape du `Dockerfile` est modifiée, `Docker` va recalculer toutes les étapes suivantes, mais seulement celles-ci. Conséquence directe de cette observation : il faut toujours ordonner les étapes d'un `Dockerfile` de sorte à ce qui est le plus susceptible d'être souvent modifié soit à la fin du fichier, et inversement.
@@ -136,7 +136,7 @@ CONTAINER ID   IMAGE        COMMAND                  CREATED         STATUS     
 
 Les conteneurs peuvent être utilisés pour réaliser des tâches très différentes. Grossièrement, on peut distinguer deux situations :
 
-- le conteneur effectue une tâche "one-shot", c'est à dire une opération qui a vocation à s'effectuer en un certain temps, suite à quoi le conteneur peut s'arrêter ;
+- le conteneur effectue une tâche "one-shot", c'est-à-dire une opération qui a vocation à s'effectuer en un certain temps, suite à quoi le conteneur peut s'arrêter ;
 - le conteneur exécute une application. Dans ce cas, on souhaite que le conteneur reste en vie aussi longtemps que l'on souhaite utiliser l'application en question.
 
 Dans notre cas d'application, on se situe dans la seconde configuration puisque l'on veut exécuter une application web. Lorsque l'application tourne, elle expose sur le *localhost*, accessible depuis un navigateur web — en l'occurence, à l'adresse [localhost:5000/](localhost:5000/). Les calculs sont effectués sur un serveur local, et le navigateur sert d'interface avec l'utilisateur — comme lorsque vous utilisez un _notebook_ `Jupyter` par exemple.
