@@ -2,11 +2,11 @@
 
 ## Application 8a: ajout de données sur le système de stockage `S3`
 
-Le SSPCloud repose sur une implémentation particulière du protocole S3 qui s'appelle [MinIO](https://min.io/docs/minio/linux/reference/minio-mc.html). Cela étend les fonctionnalités de manipulation de fichiers en ligne de commande à des données n'étant pas présentes dans le _filesystem_ local mais dans le _cloud_. En pratique
+Le SSPCloud repose sur une implémentation particulière du protocole S3 qui s'appelle [MinIO](https://min.io/docs/minio/linux/reference/minio-mc.html). Cela étend les fonctionnalités de manipulation de fichiers en ligne de commande à des données n'étant pas présentes dans le _filesystem_ local mais dans le _cloud_.
 
-En pratique, l'implémentation MinIO permet notamment de manipuler des fichiers à distance comme s'ils étaient en local. Les commandes de manipulation de fichier du chapitre [Linux 101](/chapters/linux101.qmd) (lister, copier, supprimer...) sont étendues grâce à l'ajout d'un petit `mc` devant celle-ci. 
+En pratique, l'implémentation MinIO permet notamment de manipuler des fichiers à distance comme s'ils étaient en local. Les commandes de manipulation de fichier du chapitre [Linux 101](/chapters/linux101.qmd) (lister, copier, supprimer...) sont étendues grâce à l'ajout d'un petit `mc` devant celle-ci.
 
-Illustrons cela en copiant les données de départ vers votre bucket personnel. 
+Illustrons cela en copiant les données brutes, que notre script a téléchargées dans `data/raw`, vers votre bucket personnel.
 
 <details>
 <summary>Indice</summary>
@@ -15,7 +15,8 @@ Structure à adopter:
 
 ```{.python filename="terminal"}
 MY_BUCKET="nom_utilisateur_sspcloud"
-mc cp data/raw/titanic.csv s3/${MY_BUCKET}/ensae-reproductibilite/data/raw/data.csv
+mc cp data/raw/dvf.parquet s3/${MY_BUCKET}/ensae-reproductibilite/data/raw/dvf.parquet
+mc cp data/raw/filosofi_carreaux_200m_2021.parquet s3/${MY_BUCKET}/ensae-reproductibilite/data/raw/filosofi_carreaux_200m_2021.parquet
 ```
 
 en modifiant la variable `MY_BUCKET`, l'emplacement de votre bucket personnel
@@ -31,20 +32,18 @@ mc ls s3/${MY_BUCKET}/${CHEMIN}
 1. Changer avec le bucket
 2. Changer en fonction du chemin voulu
 
-En utilisant l'explorateur de fichiers S3 du SSPCloud ([datalab.sspcloud.fr/file-explorer](https://datalab.sspcloud.fr/file-explorer)), faites une deuxième vérification que vos données sont bien sauvegardées sur `S3`. 
-
-Vous pouvez ensuite supprimer le CSV de données présent dans votre dossier local, il ne nous sera plus utile. 
+En utilisant l'explorateur de fichiers S3 du SSPCloud ([datalab.sspcloud.fr/file-explorer](https://datalab.sspcloud.fr/file-explorer)), faites une deuxième vérification que vos données sont bien sauvegardées sur `S3`.
 
 ::::
 
 
 
 
-On va maintenant lire directement une donnée stockée sur `S3` avec `Python`. Pour illustrer le fait qu'être sur un système _cloud_ avec les librairies adaptées change peu notre code, on va lire directement un fichier `CSV` stocké sur le `SSPCloud`, sans passer par un fichier en local[^fss3].
+On va maintenant lire directement une donnée stockée sur `S3` avec `Python`. Pour illustrer le fait qu'être sur un système _cloud_ avec les librairies adaptées change peu notre code, on va lire directement le fichier `Parquet` des transactions DVF stocké sur le `SSPCloud`, sans passer par un fichier en local[^fss3].
 
 [^fss3]: Alors oui, c'est vrai, `S3` se distingue d'un système de fichiers classiques comme on peut le lire dans certains _posts_ énervés sur la question (par exemple sur [Reddit](https://www.reddit.com/r/aws/comments/dplfoa/why_is_s3fs_such_a_bad_idea/?tl=fr)). Mais du point de vue de l'utilisateur `Python` plutôt que de l'architecte _cloud_, on va avoir assez peu de différence avec un système de fichier local. C'est pour le mieux, cela réduit la difficulté à rentrer dans cette technologie.
 
-Pour illustrer la cohérence avec un système de fichier local, voici trois solutions pour lire le fichier que vous venez de mettre sur `S3` (s'appuyant sur `s3fs`, `Arrow` ou `DuckDB`). Attention, il faut avoir des jetons de connexion à `S3` à jour. Si vous avez cette erreur
+Pour illustrer la cohérence avec un système de fichier local, voici trois solutions pour lire le fichier que vous venez de mettre sur `S3` (s'appuyant sur `GeoPandas`, `Arrow` ou `DuckDB`). Attention, il faut avoir des jetons de connexion à `S3` à jour. Si vous avez cette erreur
 
 > A client error (InvalidAccessKeyId) occurred when calling the ListBuckets operation: The AWS Access Key Id you provided does not exist in our records.
 
@@ -56,15 +55,13 @@ c'est que vos identifiants de connexion ne sont plus à jour (pour des raisons d
 
 ## Application 8b: importer une donnée depuis un système de stockage `S3`
 
-Cet exercice illustre trois manières de lire des données sur `S3` au format `CSV`. Ce choix est arbitraire car il existe de nombreux frameworks concurrents ou complémentaires à `Pandas`, `Arrow` ou `DuckDB` qui permettent de lire des données depuis `S3`.
-
-Pour le moment on va garder comme _framework_ de prédilection `Pandas` mais la bascule vers `Parquet` nous fera privilégier `DuckDB` dans les prochaines applications.
+Cet exercice illustre trois manières de lire des données `Parquet` sur `S3`. Ce choix est arbitraire car il existe de nombreux frameworks concurrents ou complémentaires à `Pandas`, `Arrow` ou `DuckDB` qui permettent de lire des données depuis `S3`.
 
 Dans un _notebook_, copier-coller et mettre à jour ces deux variables qui seront utilisées dans différents exemples:
 
 ```{.python}
 MY_BUCKET = "mon_nom_utilisateur_sspcloud" #<1>
-CHEMIN_FICHIER = "ensae-reproductibilite/data/raw/data.csv" #<2>
+CHEMIN_FICHIER = "ensae-reproductibilite/data/raw/dvf.parquet" #<2>
 ```
 1. Changer avec le bucket
 2. Changer en fonction du chemin voulu
@@ -73,122 +70,17 @@ Maintenant lire la donnée depuis S3 avec ce code:
 
 ::: {.panel-tabset}
 
-## Avec `Pandas` et `s3fs`
+## Avec `GeoPandas` et `s3fs`
 
 ```{.python}
 import s3fs
-import pandas as pd
+import geopandas as gpd
 
 fs = s3fs.S3FileSystem(client_kwargs={"endpoint_url": "https://minio.lab.sspcloud.fr"})
 
-with fs.open(f"s3://{MY_BUCKET}/{CHEMIN_FICHIER}") as f:
-    df = pd.read_csv(f)
+df = gpd.read_parquet(f"s3://{MY_BUCKET}/{CHEMIN_FICHIER}", filesystem=fs)
 
 df
-```
-
-## Avec `Pyarrow` et `s3fs`
-
-```{.python}
-import s3fs
-from pyarrow import csv
-
-fs = s3fs.S3FileSystem(client_kwargs={"endpoint_url": "https://minio.lab.sspcloud.fr"})
-
-with fs.open(f"s3://{MY_BUCKET}/{CHEMIN_FICHIER}") as f:
-    df = csv.read_csv(f)
-
-df
-```
-
-## Avec `DuckDB`
-
-```{.python}
-import os
-import duckdb
-
-con = duckdb.connect(database=":memory:")
-
-query_definition = f"SELECT * FROM read_csv('s3://{MY_BUCKET}/{CHEMIN_FICHIER}')"
-df = con.sql(query_definition)
-
-df
-```
-
-:::
-
-::::
-
-Pour illustrer le fonctionnement simple de S3 avec les fichiers `Parquet`, on propose de faire la même chose. Ici il n'est pas pertinent de mesurer le gain de temps car le fichier est très léger en CSV et s'importe ainsi instantanément. Pour faire des exercices plus pertinents sur ce sujet, afin de découvrir certaines bonnes pratiques, regarder les exercices supplémentaires dans [le chapitre dédié à `Parquet`](/chapters/big-data.qmd)).
-
-
-:::: {.application}
-
-## Application 8c: importer une donnée depuis un système de stockage `S3`
-
-D'abord, on va convertir notre fichier au format Parquet avec ce code (à faire tourner qu'une fois donc à ne pas mettre dans `main.py` mais dans un _notebook_ ou un script jetable)
-
-```{.python}
-import os
-import duckdb
-
-MY_BUCKET = "mon_nom_utilisateur_sspcloud" #<1>
-CHEMIN_FICHIER = "ensae-reproductibilite/data/raw/data.csv" #<2>
-
-con = duckdb.connect(database=":memory:")
-
-query_definition = f"SELECT * FROM read_csv('s3://{MY_BUCKET}/{CHEMIN_FICHIER}')"
-con.sql(
-    f"""
-        COPY (
-            SELECT * 
-            FROM read_csv_auto('s3://{MY_BUCKET}/{CHEMIN_FICHIER}')
-        )
-        TO 's3://{MY_BUCKET}/{CHEMIN_FICHIER.replace("csv", "parquet")}'
-        (FORMAT PARQUET);
-    """
-)
-```
-1. Changer avec le bucket
-2. Changer en fonction du chemin voulu
-
-
-```{.python}
-MY_BUCKET="mon_nom_utilisateur_sspcloud" #<1>
-CHEMIN_PARQUET="ensae-reproductibilite/data/raw/data.parquet" #<2>
-```
-1. Remplacer ici par la valeur appropriée
-2. Changer en fonction du chemin voulu
-
-
-::: {.panel-tabset}
-
-## Avec `DuckDB`
-
-```{.python}
-import os
-import duckdb
-
-con = duckdb.connect(database=":memory:")
-
-query_definition = f"SELECT * FROM read_parquet('s3://{MY_BUCKET}/{CHEMIN_PARQUET}')"
-df = con.sql(query_definition)
-
-df
-```
-
-
-## Avec `Pandas` et `s3fs`
-
-```{.python}
-import s3fs
-import pandas as pd
-
-chemin
-
-fs = s3fs.S3FileSystem(client_kwargs={"endpoint_url": "https://minio.lab.sspcloud.fr"})
-
-df = pd.read_parquet(f"s3://{MY_BUCKET}/{CHEMIN_PARQUET}", filesystem=fs)
 ```
 
 ## Avec `Pyarrow` et `s3fs`
@@ -197,24 +89,93 @@ df = pd.read_parquet(f"s3://{MY_BUCKET}/{CHEMIN_PARQUET}", filesystem=fs)
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-s3 = pa.fs.S3FileSystem(endpoint_override ="https://minio.lab.sspcloud.fr")
+s3 = pa.fs.S3FileSystem(endpoint_override="https://minio.lab.sspcloud.fr")
 
-df = pq.read_table(f"{MY_BUCKET}/{CHEMIN_PARQUET}", filesystem=s3)
+df = pq.read_table(f"{MY_BUCKET}/{CHEMIN_FICHIER}", filesystem=s3)
+
+df
+```
+
+## Avec `DuckDB`
+
+```{.python}
+import duckdb
+
+con = duckdb.connect(database=":memory:")
+
+query_definition = f"SELECT * FROM read_parquet('s3://{MY_BUCKET}/{CHEMIN_FICHIER}')"
+df = con.sql(query_definition)
 
 df
 ```
 
 :::
 
+Seul `GeoPandas` reconstruit des géométries exploitables pour des traitements spatiaux. Avec `Arrow` et `DuckDB`, la colonne `geometry` est lue sous une forme binaire (le format standard [WKB](https://fr.wikipedia.org/wiki/Well-known_text)) : nous verrons qu'il est facile de la convertir mais qu'on peut aussi souvent s'en passer.
+
+::::
+
+Nos fichiers sont déjà au format `Parquet` ; nous n'avons donc pas à les convertir. En revanche, notre chaîne n'exploite pas du tout les atouts de ce format : elle télécharge l'intégralité des deux fichiers (plus de 150 Mo), les lit entièrement puis jette l'essentiel des lignes, puisque nous ne nous intéressons qu'à Paris et à la petite couronne.
+
+Le format `Parquet` est un format colonne : il est possible de ne lire que les colonnes utiles. Il stocke aussi, par blocs de lignes, des statistiques (minimum, maximum) qui permettent à un moteur comme `DuckDB` de sauter les blocs qui ne respectent pas un filtre. Enfin, la norme [`GeoParquet`](https://geoparquet.org/) prévoit une colonne `bbox` qui donne l'emprise de chaque géométrie et permet de faire la même chose pour des filtres spatiaux. C'est ce que propose d'illustrer l'application suivante.
+
+
+:::: {.application}
+
+## Application 8c: ne lire que les données nécessaires
+
+Dans le même _notebook_, définir les chemins vers nos deux fichiers :
+
+```{.python}
+MY_BUCKET = "mon_nom_utilisateur_sspcloud" #<1>
+CHEMIN_DVF = f"s3://{MY_BUCKET}/ensae-reproductibilite/data/raw/dvf.parquet"
+CHEMIN_FILOSOFI = f"s3://{MY_BUCKET}/ensae-reproductibilite/data/raw/filosofi_carreaux_200m_2021.parquet"
+```
+1. Remplacer ici par la valeur appropriée
+
+1. Lire l'intégralité du fichier `Filosofi` avec `DuckDB` et mesurer le temps nécessaire :
+
+```{.python}
+import time
+import duckdb
+
+con = duckdb.connect(database=":memory:")
+
+start = time.time()
+filo = con.sql(f"SELECT * FROM read_parquet('{CHEMIN_FILOSOFI}')").to_df()
+print(f"{filo.shape[0]} carreaux lus en {time.time() - start:.1f} secondes")
+```
+
+2. Ne lire maintenant que quelques colonnes et les carreaux qui recoupent l'emprise de Paris et de la petite couronne, grâce à la colonne `bbox` (les coordonnées sont en mètres dans la projection `EPSG:3035` utilisée par les données carroyées) :
+
+```{.python}
+xmin, ymin, xmax, ymax = 3_745_000, 2_869_000, 3_780_000, 2_903_000
+
+start = time.time()
+filo = con.sql(f"""
+    SELECT idcar_200m, men, ind_snv, geometry
+    FROM read_parquet('{CHEMIN_FILOSOFI}')
+    WHERE bbox.xmin <= {xmax} AND bbox.xmax >= {xmin}
+    AND bbox.ymin <= {ymax} AND bbox.ymax >= {ymin}
+""").to_df()
+print(f"{filo.shape[0]} carreaux lus en {time.time() - start:.1f} secondes")
+```
+
+3. Faire la même comparaison pour les transactions DVF : tout lire puis ne lire que les colonnes `code_commune`, `valeur_fonciere`, `surface_reelle_bati` des départements `75`, `92`, `93` et `94`.
+
+4. Comparer les temps de lecture. Pourquoi la seconde requête est-elle beaucoup plus rapide alors qu'elle porte sur le même fichier ? Vous pouvez préfixer vos requêtes par `EXPLAIN` pour voir les colonnes et les filtres transmis à la lecture du fichier.
+
+<!-----
+Ordres de grandeur: Filosofi 2,3 millions de carreaux en ~20 secondes contre 20 000 en moins d'une seconde.
+DVF 1 million de transactions en ~4 secondes contre 93 000 en ~0,4 seconde.
+------>
 
 ::::
 
 ::: {.callout-tip collapse="true"}
 ## Exercices supplémentaires sur le format `Parquet`
 
-Nous n'avons pas explicité pourquoi `Parquet` est un choix pertinent pour la plupart des chaînes _data_. Ici la donnée est de taille réduite, cela ne nous pénalisera pas beaucoup de faire du `CSV` et du `Pandas` même si nous recommandons plutôt de faire du `Parquet` et de pousser le plus loin possible `DuckDB` avant de revenir à `Pandas`. 
-
-Pour découvrir, en pratique, les raisons de ces choix techniques, vous pouvez aller voir les exercices supplémentaires à la fin du [chapitre sur les données](/chapters/big-data.qmd)).
+Pour découvrir, plus en détail, les raisons qui font de `Parquet` un choix pertinent pour la plupart des chaînes _data_, vous pouvez aller voir les exercices supplémentaires à la fin du [chapitre sur les données](/chapters/big-data.qmd)).
 
 :::
 
@@ -224,7 +185,7 @@ Pour découvrir, en pratique, les raisons de ces choix techniques, vous pouvez a
 ::: {.application}
 ## Application 8d: adapter notre chaîne pour lire des données `Parquet` avec `DuckDB`
 
-Par défaut, le contenu de votre _bucket_ est privé, seul vous y avez accès. Pour pouvoir lire votre donnée, vos applications externes devront utiliser des jetons vous identifiant. Ici, comme nous utilisons une donnée publique, vous pouvez rendre accessible celle-ci à tous en lecture. Dans le jargon S3, cela signifie donner un accès anonyme à votre donnée.
+Par défaut, le contenu de votre _bucket_ est privé, seul vous y avez accès. Pour pouvoir lire votre donnée, vos applications externes devront utiliser des jetons vous identifiant. Ici, comme nous utilisons des données publiques, vous pouvez rendre accessible celles-ci à tous en lecture. Dans le jargon S3, cela signifie donner un accès anonyme à votre donnée.
 
 Le modèle de commande à utiliser dans le terminal est le suivant:
 
@@ -239,22 +200,52 @@ mc anonymous set download s3/${BUCKET_PERSONNEL}/ensae-reproductibilite/data/raw
 Les URL de téléchargement seront de la forme
 `https://minio.lab.sspcloud.fr/<BUCKET_PERSONNEL>/ensae-reproductibilite/data/raw/<filename>.<extension>`
 
-On va adapter progressivement notre chaîne à l'utilisation du format Parquet.
+On va adapter progressivement notre chaîne pour lire directement ces fichiers, sans les télécharger au préalable.
 
 D'abord, il faut faire évoluer nos chemins:
 
 ```{.python file="main.py"}
 URL_RAW = "" #<1>
+URL_DVF = f"{URL_RAW}/dvf.parquet"
+URL_FILOSOFI = f"{URL_RAW}/filosofi_carreaux_200m_2021.parquet"
 ```
-1. Modifier `URL_RAW` avec un lien de la forme `"https://minio.lab.sspcloud.fr/${BUCKET_PERSONNEL}/ensae-reproductibilite/data/raw/data.parquet"` (ne laissez pas `${BUCKET_PERSONNEL}`, remplacez par la vraie valeur!).
+1. Modifier `URL_RAW` avec un lien de la forme `"https://minio.lab.sspcloud.fr/${BUCKET_PERSONNEL}/ensae-reproductibilite/data/raw"` (ne laissez pas `${BUCKET_PERSONNEL}`, remplacez par la vraie valeur!).
 
-Maintenant, il faut lire les données `Parquet` avec DuckDB. Modifier le code d'import des données pour utiliser DuckDB plutôt que Pandas pour la lecture. 
+Maintenant, il faut lire les données `Parquet` avec `DuckDB` en ne gardant, comme dans l'application précédente, que ce dont on a besoin :
 
-Il va falloir modifier quelque peu la suite du code pour s'adapter au nouveau moteur d'exécution de nos traitements de données. Essayez d'utiliser le plus tard possible `Pandas` dans la chaîne (via `.to_df()`): normalement vous ne pourrez plus éviter `Pandas` à partir du moment où vous passerez au _pipeline_ de _machine learning_ (`Scikit` ne supporte pas les _dataframes_ `DuckDB`). Mais, si vous avez utilisé les _checkpoints_ ou gardé la logique initiale d'utilisation de `DuckDB` sur le *dataframe* `Pandas`, les évolutions à faire du script sont minimes.  
+- Créer une table `DuckDB` nommée `dvf` avec les transactions des départements de la petite couronne. La colonne `geometry` n'est pas nécessaire (on peut l'exclure avec `SELECT * EXCLUDE (geometry)`), les colonnes `longitude` et `latitude` suffiront à la reconstruire ;
+- Adapter les fonctions `check_*` pour qu'elles s'appliquent à cette table plutôt qu'à un _DataFrame_ `Pandas` : elles n'ont plus besoin que de la connexion `DuckDB` et, éventuellement, du nom de la table ;
+- Ne lire du fichier `Filosofi` que les colonnes utiles et les carreaux qui recoupent l'emprise des transactions (la méthode `total_bounds` d'un `GeoDataFrame` vous donne cette emprise).
 
-Enfin, nettoyer notre dossier de données en local maintenant que le CSV n'est plus nécessaire. 
+Essayez d'utiliser le plus tard possible `Pandas` dans la chaîne (via `.to_df()`): normalement vous ne pourrez plus éviter `(Geo)Pandas` à partir du moment où vous passerez à la jointure spatiale, puis au _pipeline_ de _machine learning_ (`Scikit` ne supporte pas les _dataframes_ `DuckDB`).
 
-- Ajouter le dossier `data/` au `.gitignore` ainsi que les fichiers `*.parquet`
+<details>
+<summary>
+Indice pour reconstruire des `GeoDataFrame` à partir des sorties de `DuckDB`
+</summary>
+
+```{.python}
+# Transactions : des points à partir de la longitude et de la latitude
+dvf = gpd.GeoDataFrame(
+    dvf,
+    geometry=gpd.points_from_xy(dvf["longitude"], dvf["latitude"]),
+    crs="EPSG:4326",
+)
+
+# Carreaux : DuckDB renvoie la géométrie au format WKB (bytearray)
+filo = gpd.GeoDataFrame(
+    filo,
+    geometry=gpd.GeoSeries.from_wkb(filo["geometry"].apply(bytes)),
+    crs="EPSG:3035",
+)
+```
+
+</details>
+
+Enfin, nettoyer notre dossier de données en local maintenant que les fichiers téléchargés ne sont plus nécessaires.
+
+- Supprimer le code de téléchargement des données qui n'est plus utilisé ;
+- Ajouter le dossier `/data/` au `.gitignore` ainsi que les fichiers `*.parquet`. Attention au `/` initial : une règle `data/` ignorerait aussi `src/data/` et donc nos fonctions d'import !
 - Supprimer le dossier `data` de votre projet et faites `git rm --cached -r data`
 
 :::
@@ -283,8 +274,7 @@ vulture .
 ```
 
 ```{.python}
-main.py:53: unused variable 'jeton_api' (60% confidence)
-main.py:147: unused variable 'rdmf_score_tr' (60% confidence)
+src/data/import_data.py:11: unused function 'download_sources' (60% confidence)
 ```
 
 </details>

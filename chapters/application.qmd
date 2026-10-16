@@ -81,6 +81,8 @@ Si vous faites évoluer votre projet de manière expérimentale mais désirez to
 
 Nous allons prendre comme point de départ un projet livré exclusivement avec un _notebook_, à la manière d'un challenge _Kaggle_. Vous pourrez ainsi voir à quel point ce type de livrable est très loin d'être satisfaisant si on veut que le projet soit réutilisable.
 
+Notre cas d'usage est la **prédiction du prix au m² des logements** vendus en 2022 à Paris et dans les départements de la petite couronne (Hauts-de-Seine, Seine-Saint-Denis, Val-de-Marne). Il s'appuie sur les [Demandes de valeurs foncières (DVF)](https://www.data.gouv.fr/datasets/demandes-de-valeurs-foncieres), qui recensent les transactions immobilières, enrichies par des informations socio-économiques issues du dispositif Filosofi de l'Insee : des données carroyées (carreaux de 200 mètres de côté) et des indicateurs communaux récupérés par l'API Melodi. Le modèle est un _gradient boosting_ (`LightGBM`).
+
 {{< include "./applications/_appli0.qmd" >}}
 
 # Partie 1 : qualité du script
@@ -109,7 +111,7 @@ Le plan de la partie est le suivant :
 
 ## Étape 1 : s'assurer que le script s'exécute correctement
 
-On va partir du fichier `notebook.py` qui reprend le contenu du _notebook_[^jupytext] mais dans un script classique. Le travail de nettoyage en sera facilité.
+On va partir du fichier `dvf.py` qui reprend le contenu du _notebook_[^jupytext] mais dans un script classique. Le travail de nettoyage en sera facilité.
 
 [^jupytext]: L'export dans un script `.py` a été fait directement depuis `VSCode`. Comme cela n'est pas vraiment l'objet du cours, nous passons cette étape et fournissons directement le script expurgé du texte intermédiaire. Mais n'oubliez pas que cette démarche, fréquente quand on a démarré sur un _notebook_ et qu'on désire consolider en faisant la transition vers des scripts, nécessite d'être attentif pour ne pas risquer de faire une erreur.
 
@@ -168,7 +170,7 @@ manières:
 1. Avec des __arguments optionnels__ appelés depuis la ligne de commande _(Application 3a)_.
 Cela peut être pratique pour mettre en oeuvre des tests automatisés mais
 n'est pas forcément pertinent pour toutes les variables. Nous allons montrer
-cet usage avec le nombre d'arbres de notre _random forest_ ;
+cet usage avec le nombre d'arbres de notre modèle `LightGBM` ;
 2. En utilisant un __fichier de configuration__ dont les valeurs sont importées dans
 le script principal _(Application 3b)_.
 
@@ -220,8 +222,9 @@ il peut être utle de l'adopter car certains _frameworks_, à commencer par les 
 {{< include "./applications/_appli4.qmd" >}}
 
 Cela ne se remarque pas encore vraiment car nous avons de nombreuses définitions de fonctions
-mais notre chaine de production est beaucoup plus
-concise (le script fait environ 150 lignes dont une centaine issues de définitions de fonctions génériques).
+(plus d'une centaine de lignes) mais notre chaine de production est beaucoup plus
+concise : les diagnostics de qualité tiennent en une boucle et chaque indicateur récupéré
+sur l'API Melodi en un appel de fonction.
 Cette auto-discipline facilitera grandement
 les étapes ultérieures. Cela aurait été néanmoins beaucoup moins coûteux en temps d'adopter
 ces bons gestes de manière plus précoce.
@@ -280,10 +283,15 @@ On dispose maintenant d'une application `Python` fonctionnelle. Néanmoins, le p
 ```
 ├── .gitignore
 ├── .env
-├── data.csv
+├── data
+│   ├── dvf.parquet
+│   └── filosofi_carreaux_200m_2021.parquet
+├── train.csv
+├── test.csv
 ├── README.md
 ├── check.py
-├── titanic.ipynb
+├── import_data.py
+├── dvf.ipynb
 └── main.py
 ```
 
@@ -322,10 +330,16 @@ application
 ├── README.md
 ├── data
 │   ├── raw
-│   │   └── titanic.csv
+│   │   ├── dvf.parquet
+│   │   └── filosofi_carreaux_200m_2021.parquet
+│   └── derived
+│       ├── train.csv
+│       └── test.csv
 ├── notebooks
-│   └── titanic.ipynb
+│   └── dvf.ipynb
 └── src
+    ├── data
+    │   └── import_data.py
     └── validation
         └── check.py
 ```
@@ -417,16 +431,16 @@ Pour un système de stockage `S3`, il suffit de changer les paramètres de conne
 :::
 
 
-Le scénario type de la première partie de l'application (appli8a) est que nous avons une source brute, reçue sous forme de CSV, dont on ne peut changer le format. Un doublon de celle-ci a été écrit sur `S3` et nous allons utiliser le fichier depuis cet emplacement  Il aurait été idéal d'avoir un format plus adapté au traitement de données pour ce fichier mais ce n'était pas de notre ressort. 
+À l'heure actuelle, notre chaîne télécharge, à chaque fois qu'elle est lancée dans un nouvel environnement, deux fichiers depuis des sources externes que nous ne maîtrisons pas (un _bucket_ public du SSPCloud et `data.gouv`). Ce sont des fichiers volumineux (plus de 150 Mo au total) dont nous n'exploitons qu'une petite partie, puisque nous ne nous intéressons qu'à Paris et à la petite couronne. Nous allons d'abord en écrire une copie sur notre propre espace `S3` puis utiliser ces fichiers depuis cet emplacement.
 
-Notre chaine va aller chercher ce fichier, travailler dessus jusqu'à valoriser celui-ci sous la forme de notre matrice de confusion. Néanmoins, ici, nous avons une donnée qui ne change jamais. On n'a pas de mise à jour fréquente de données qui justifie de ne pas changer, une fois pour toute, notre format de données afin d'en adopter un plus pertinent. En l'occurrence, nous allons utiliser le format `Parquet`. C'est l'objet de l'appli 8c. 
+Notre chaine va aller chercher ces fichiers, travailler dessus jusqu'à les valoriser sous la forme de notre modèle de prix et de ses métriques de performance. Bonne nouvelle, les données sont déjà au format `Parquet`, que nous recommandons. Mais notre chaîne n'en tire pas parti : elle lit tout pour ne garder qu'une petite partie. Apprendre à ne lire que ce qui est nécessaire est l'objet de l'appli 8c. 
 
 Cette application va se dérouler en quatre temps:
 
-1. _Upload_ de notre source brute (CSV) sur S3.
-2. Illustration de l'usage des librairies _cloud native_ pour lire celle-ci.
-3. Conversion au format `Parquet` de cette donnée et utilisation de `DuckDB` pour la lire. 
-4. Partage public de cette donnée pour la rendre accessible de manière plus simple à nos futures applications.
+1. _Upload_ de nos sources brutes (`Parquet`) sur S3.
+2. Illustration de l'usage des librairies _cloud native_ pour lire celles-ci.
+3. Utilisation de `DuckDB` pour ne lire que les colonnes et les lignes utiles de ces fichiers.
+4. Partage public de ces données pour les rendre accessibles de manière plus simple à nos futures applications et adaptation de notre chaîne.
 
 {{< include "./applications/_appli8.qmd" >}}
 

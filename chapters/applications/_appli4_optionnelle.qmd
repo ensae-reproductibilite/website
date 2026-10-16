@@ -20,7 +20,7 @@ Le code équivalent sans _pipeline_
 
 * Voyez-vous l'intérêt de l'approche par _pipeline_ en termes de lisibilité, évolutivité et fiabilité ?
 
-* Créer un _notebook_ qui servira de brouillon. Y introduire le code suivant:
+* Créer un _notebook_ qui servira de brouillon. Y introduire le code suivant, qui réutilise les échantillons `train.csv` et `test.csv` écrits par notre chaîne (cela évite de refaire tourner l'import et l'enrichissement des données):
 
 <details>
 
@@ -37,10 +37,11 @@ Le code à copier-coller dans un _notebook_
 
 * Afficher ce pipeline dans une cellule de votre _notebook_. Cela vous aide-t-il mieux à comprendre les différentes étapes du _pipeline_ de modélisation ?
 
-* Comment pouvez-vous accéder aux étapes de _preprocessing_ ?
+* Comment pouvez-vous accéder aux étapes de _preprocessing_ ? Attention, notre _pipeline_ est encapsulé dans un `TransformedTargetRegressor` qui transforme la variable cible : regardez la différence entre les attributs `regressor` et `regressor_` de cet objet.
 
 <!-------
-pipe['preprocessor'] ou pipe[:-1]
+pipe.regressor_['preprocessor'] ou pipe.regressor_[:-1]
+(pipe.regressor est le pipeline non entraîné, pipe.regressor_ la copie entraînée)
 --------->
 
 * Comment pouvez-vous faire pour appliquer le _pipeline_ de _preprocessing_ des variables numériques (et uniquement celui-ci) à ce _DataFrame_ ?
@@ -56,24 +57,18 @@ Le _DataFrame_ à créer pour appliquer un bout de notre _pipeline_
 ```python
 import numpy as np
 
-new_data = {
-    "Age": [22, np.nan, 35, 28, np.nan],
-    "Fare": [7.25, 8.05, np.nan, 13.00, 15.50]
-}
-
-new_data = pd.DataFrame(new_data)
+# Cinq transactions de l'échantillon de test dont on efface quelques valeurs
+new_data = X_test.head(5).copy()
+new_data.iloc[[1, 4], new_data.columns.get_loc("log_surface")] = np.nan
+new_data.iloc[2, new_data.columns.get_loc("ratio_carrez")] = np.nan
 ```
 
 </details>
 
 <!-------
-preprocessor_numeric = pipe['preprocessor']['Preprocessing numerical']
-new_data_preprocessed = preprocessor_numeric.transform(new_data)
-
-pd.DataFrame(
-    new_data_preprocessed,
-    columns=preprocessor_numeric[:-1].get_feature_names_out()
-)
+preprocessor_numeric = pipe.regressor_['preprocessor'].named_transformers_['Preprocessing numerical']
+preprocessor_numeric.transform(new_data[numeric_features])
+(grâce à set_output(transform="pandas"), on récupère directement un DataFrame avec les bons noms de colonnes)
 --------->
 
 * Normalement ce code ne devrait pas prendre plus d'une demie-douzaine de lignes. Sans _pipeline_ le code équivalent, beaucoup plus verbeux et moins fiable, ressemble à celui-ci
@@ -101,30 +96,18 @@ Créer des données _préprocessées_
 </summary>
 
 ```python
-import numpy as np
-import pandas as pd
-
-new_data = pd.DataFrame({
-    "Age": [25, np.nan, 40, 33, np.nan],
-    "Fare": [10.50, 7.85, np.nan, 22.00, 12.75],
-    "Embarked": ["S", "C", np.nan, "Q", "S"],
-    "Sex": ["male", "female", "male", np.nan, "female"]
-})
-new_y = np.random.randint(0, 2, size=len(new_data))
-
-preprocessed_data = pd.DataFrame(
-    pipe[:-1].transform(new_data),
-    columns = preprocessor_numeric.get_feature_names_out()
-)
+preprocessed_data = pipe.regressor_[:-1].transform(new_data)
 preprocessed_data
 ```
 
 </details>
 
-* Déterminer le score en prédiction sur ces données
+* Déterminer le prix au m² prédit pour ces transactions à partir de `preprocessed_data`. Comparer avec `pipe.predict(new_data)`. Qu'est-ce que cela vous apprend sur l'intérêt d'encapsuler toutes les transformations (y compris celle de la variable cible) dans un même objet ?
 
 <!------
-pipe[-1].score(preprocessed_data, new_y)
+np.expm1(pipe.regressor_[-1].predict(preprocessed_data))
+Sans l'inverse de la transformation logarithmique, on obtiendrait des log-prix :
+le TransformedTargetRegressor évite d'oublier cette étape.
 ------->
 
 :::
