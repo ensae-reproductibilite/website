@@ -280,23 +280,23 @@ On dispose maintenant d'une application `Python` fonctionnelle. Néanmoins, le p
 <details>
 <summary>Etat actuel du projet 🙈</summary>
 
-```
-├── .gitignore
-├── .env
-├── data
-│   ├── dvf.parquet
-│   └── filosofi_carreaux_200m_2021.parquet
-├── train.csv
-├── test.csv
-├── README.md
-├── check.py
-├── import_data.py
-├── features.py
-├── model.py
-├── evaluation.py
-├── dvf.ipynb
-└── main.py
-```
+::: {.filetree}
+- .gitignore
+- .env
+- data
+  - dvf.parquet
+  - filosofi_carreaux_200m_2021.parquet
+- train.csv
+- test.csv
+- README.md
+- check.py
+- import_data.py
+- features.py
+- model.py
+- evaluation.py
+- dvf.ipynb
+- main.py
+:::
 
 
 </details>
@@ -325,32 +325,30 @@ En s'inspirant du _cookiecutter data science_ on va adopter la structure suivant
 Structure recommandée
 </summary>
 
-```
-application
-├── main.py
-├── .gitignore
-├── .env
-├── README.md
-├── data
-│   ├── raw
-│   │   ├── dvf.parquet
-│   │   └── filosofi_carreaux_200m_2021.parquet
-│   └── derived
-│       ├── train.csv
-│       └── test.csv
-├── notebooks
-│   └── dvf.ipynb
-└── src
-    ├── data
-    │   └── import_data.py
-    ├── features
-    │   └── build_features.py
-    ├── models
-    │   ├── evaluation.py
-    │   └── model.py
-    └── validation
-        └── check.py
-```
+::: {.filetree}
+- application
+  - main.py
+  - .gitignore
+  - .env
+  - README.md
+  - data
+    - raw
+      - dvf.parquet
+      - filosofi_carreaux_200m_2021.parquet
+    - derived
+      - train.csv
+      - test.csv
+  - notebooks
+    - dvf.ipynb
+  - src
+    - data
+      - build_features.py
+      - check.py
+      - import_data.py
+    - models
+      - evaluation.py
+      - model.py
+:::
 
 </details>
 
@@ -464,7 +462,7 @@ et la portabilité.
 
 Notre code comporte un certain nombre de fonctions génériques.
 On peut vouloir tester leur usage sur des données standardisées,
-différentes de celles du Titanic.
+différentes des transactions DVF.
 
 Même si la notion de tests unitaires
 prend plus de sens dans un _package_, nous pouvons proposer
@@ -492,12 +490,12 @@ coverage report -m
 ```
 
 ```{.python}
-Name                      Stmts   Miss  Cover   Missing
--------------------------------------------------------
-src/validation/check.py      19     10    47%   14-25, 35-41
-tests/test_check.py          18      1    94%   41
--------------------------------------------------------
-TOTAL                        37     11    70%
+Name                  Stmts   Miss  Cover   Missing
+---------------------------------------------------
+src/data/check.py        22     12    45%   19-33, 43-52
+tests/test_check.py      19      1    95%   36
+---------------------------------------------------
+TOTAL                    41     13    68%
 ```
 
 Le taux de couverture est souvent mis en avant par les gros projets comme indicateur de leur qualité. Il existe d'ailleurs des badges `Github` dédiés.
@@ -512,42 +510,55 @@ de [cet ouvrage](https://py-pkgs.org/03-how-to-package-a-python#package-structur
 
 Ce fichier permet de contrôler de manière formelle l'interaction entre nos scripts et le monde extérieur (l'isolation plus ou moins forte entre notre _package_ et le reste de l'écosystème `Python`) tout en donnant des indications à `Python` sur la manière de construire et installer notre _package_ fait maison.
 
-On va créer un _package_ nommé `titanicml` qui encapsule tout notre code et qui sera appelé par notre script principal. La structure attendue est la suivante:
+On va créer un _package_ nommé `dvfml` qui encapsule tout notre code et qui sera appelé par notre script principal. La structure attendue est la suivante:
 
 <details>
 <summary>Structure visée</summary>
 
-```
-application
-├── README.md                               ┐
-├── docs                                    │
-│   └── notebooks                           │ Package documentation and examples
-│       └── titanic.ipynb                   │
-│       └── main.py                         ┘
-├── pyproject.toml                          ┐
-├── src/titanicml                           │ Package source code, metadata
-|   ├── __init__.py
-│   └── validation                          │ and build instructions
-│       └── check.py                        ┘
-└── tests                                   ┐
-    └── test_check.py                       ┘ Package tests
-```
+::: {.filetree}
+- application
+  - README.md {Package documentation and examples
+  - docs
+    - main.py
+    - notebooks
+      - dvf.ipynb }
+  - pyproject.toml {Package source code, metadata and build instructions
+  - src
+    - dvfml
+      - `__init__.py`
+      - data
+        - build_features.py
+        - check.py
+        - import_data.py
+      - models
+        - evaluation.py
+        - model.py }
+  - tests {Package tests
+    - test_check.py }
+:::
 </details>
 
 <details>
 <summary>Rappel: structure actuelle</summary>
 
-```
-application
-├── notebooks
-│   └── titanic.ipynb
-├── main.py
-├── README.md
-├── requirements.txt
-└── src
-    └── validation
-        └── check.py
-```
+::: {.filetree}
+- application
+  - notebooks
+    - dvf.ipynb
+  - main.py
+  - README.md
+  - requirements.txt
+  - src
+    - data
+      - build_features.py
+      - check.py
+      - import_data.py
+    - models
+      - evaluation.py
+      - model.py
+  - tests
+    - test_check.py
+:::
 </details>
 
 Il existe plusieurs _frameworks_ pour construire un _package_. Nous allons privilégier [`uv`](https://docs.astral.sh/uv/), le nouveau venu dans l'écosystème à [`Poetry`](https://python-poetry.org/) ou [`Setuptools`](https://pypi.org/project/setuptools/).
