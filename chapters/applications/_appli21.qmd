@@ -37,7 +37,7 @@ import duckdb
 from src.validation.check import (
     check_name_formatting,
     check_missing_values,
-    check_data_leakage,
+    check_unseen_categories,
 )
 
 load_dotenv()
@@ -116,7 +116,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 for string_var in CATEGORICAL_FEATURES:
-    check_data_leakage(X_train, X_test, string_var)
+    check_unseen_categories(X_train, X_test, string_var)
 
 # MODEL DEFINITION -----------------------------------------
 

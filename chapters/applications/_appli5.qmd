@@ -3,6 +3,7 @@
 
 - Déplacer les fonctions de validation de données (`check_*`) dans un script dédié nommé `check.py`. Ici un seul script suffit car ces fonctions partagent une thématique commune.
 - Déplacer les fonctions de récupération des données (`download_sources` et `get_melodi_indicator`) dans un second script nommé `import_data.py` ;
+- `main.py` reste long : regrouper les autres grandes étapes en fonctions composables, rangées dans des modules dédiés. Par exemple `build_features` dans `features.py` (elle-même composée de petites fonctions : ratios Filosofi, filtre des prix extrêmes, surfaces, distance à la tour Eiffel), la construction du _pipeline_ dans `model.py` et l'évaluation dans `evaluation.py`. Les fonctions d'enrichissement par les données Filosofi rejoignent `import_data.py`. `main.py` doit se lire comme l'enchaînement de ces étapes ;
 - Spécifier les dépendances (i.e. les packages à importer) dans les modules pour que ceux-ci puissent s'exécuter indépendamment ;
 - Renommer `dvf.py` en `main.py` pour suivre la convention de nommage des projets `Python` ;
 - Importer les fonctions nécessaires à partir du module.
