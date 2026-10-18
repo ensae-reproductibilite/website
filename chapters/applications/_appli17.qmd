@@ -1,46 +1,85 @@
 ::: {.application}
-## Application 17: Dockeriser l'API (intégration continue)
 
-- Créer un script `app/run.sh` à la racine du projet qui lance le script `train.py` puis déploie localement l'API. Attention, quand on se place dans le monde des conteneurs et plus généralement des infrastructures *cloud*, on ne va plus déployer sur le *localhost* mais sur "l'ensemble des interfaces réseaux". Lorsqu'on déploie une application web dans un conteneur, on va donc toujours devoir spécifier un *host* valant `0.0.0.0` (et non plus *localhost* ou, de manière équivalente, `http://127.0.0.1`).
+## Application 17a: Dissocier entraînement et évaluation
 
-<details>
-<summary>Fichier `app/run.sh`</summary>
+[^skops]: [`skops`](https://skops.readthedocs.io/en/stable/index.html) est une nouvelle librairie développée par _Probabl_, la startup derrière `Scikit`. Elle vise à sécuriser la réutilisation de modèles de _machine learning_ afin d'éviter que du code malicieux soit exécuté lors de l'ouverture d'un modèle entraîné par quelqu'un d'autre. Elle est progressivement amenée à se substituer à `joblib`, la librairie qui permettait jusqu'à présent d'enregistrer sous forme persistente et réutiliser un modèle de machine learning.  
 
-```{.bash filename="api/run.sh" no-prefix=true}
-#/bin/bash
+- Installer `fastAPI`, `uvicorn` et `skops`[^skops]. N'oubliez pas que nous n'utilisons plus `pip install` pour cela.  
+- Renommer le fichier `main.py` en `train.py`. 
+- Dans ce script, ajouter une sauvegarde du modèle après l'avoir entraîné, en suivant la [documentation de Scikit](https://scikit-learn.org/stable/model_persistence.html#skops-io).
+- Faire tourner `train.py` pour enregistrer en local votre modèle de production. Optionnel: tester la lecture du modèle depuis un _notebook_ et une inférence sur un exemple inventé. 
 
-uv run train.py
-uv run uvicorn app.api:app --host "0.0.0.0"
-```
-</details>
+- Ajouter `model.skops` au `.gitignore` car `Git` n'est pas fait pour ce type de fichiers.
 
-- Donner au script `app/run.sh` des permissions d'exécution : `chmod +x app/run.sh`
+- Modifier les appels à `main.py` dans votre `Dockerfile` et vos actions `Github` sous peine d'essuyer des échecs lors de vos actions `Github` après le prochain _push_.
 
-- Ajouter `COPY app ./app` au Dockerfile pour avoir les fichiers nécessaires au lancement dans l'API dans l'image
-
-- Changer l'instruction `CMD` du `Dockerfile` pour exécuter le script `app/run.sh` au lancement du conteneur (`CMD ["bash", "-c", "./app/run.sh"]`)
-
-- *Commit* et *push* les changements
-
-- Une fois le CI terminé, vérifier que le nouveau *tag* `latest` a été *pushé* sur le DockerHub. Récupérer la nouvelle image dans votre environnement de test de `Docker` et vérifier que l'API se déploie correctement.
-
-<details>
-<summary>Tester l'image sur le SSP Cloud</summary>
-
-Lancer dans un terminal la commande suivante pour *pull* l'application depuis le DockerHub et la déployer en local :
-
-```{.bash filename="terminal"}
-kubectl run -it api-ml --env JETON_API='' --image=votre_compte_docker_hub/application:latest
-kubectl logs api-ml
-```
-
-</details>
-
-- Si tout se passe correctement, vous devriez observer dans la console un *output* similaire au déploiement en local de la partie précédente. Cette fois, l'application est déployée à l'adresse `http://0.0.0.0:8000`. On ne peut néanmoins pas directement l'exploiter à ce stade : si le conteneur de l'API est déployé, il manque un ensemble de ressources Kubernetes qui permettent de déployer proprement l'API à tout utilisateur. C'est l'objet de l'application suivante !
-
-- Si vous avez testé `kubectl get pods`, faire `kubectl delete pod api-ml` pour nettoyer le serveur. 
-
+Nous allons maintenant passer au développement de l'API. Comme découvrir `FastAPI` n'est pas l'objet de cet enseignement, nous donnons directement le modèle pour créer l'API. Si vous désirez tester de vous-mêmes, vous pouvez créer votre fichier sans vous référer à l'exemple.
 :::
 
 
+::: {.application}
+## Application 17b: Utiliser une API pour l'inférence
+
+- Créer le fichier `app/api.py` permettant d'initialiser l'API:
+
+
+<details>
+<summary>
+Fichier `app/api.py`
+</summary>
+
+```{.python include="./applications/code/appli17_api_main.py" filename="app/api.py"}
+```
+
+</details>
+
+- Déployer l'API en local avec la commande suivante.
+
+```{.bash filename="terminal"}
+uv run uvicorn app.api:app
+```
+
+- Observer l'*output* dans la console. Notre API est désormais déployée en local, plus précisément sur le *localhost*, un serveur web local déployé à l'adresse `http://127.0.0.1`. L'API est déployée sur le port par défaut utilisé par `uvicorn`, soit le port `8000`. 
+- **Sans fermer le terminal précédent**, ouvrir un nouveau terminal. Tester le bon déploiement de l'API en requêtant son *endpoint*. Pour cela, on envoie une simple requête `GET` sur le *endpoint* via l'utilitaire `curl`.
+
+```{.bash filename="terminal"}
+curl "http://127.0.0.1:8000"
+```
+
+- Si tout s'est bien passé, on devrait avoir récupéré une réponse (au format `JSON`) affichant le message d'accueil de notre API. Dans ce cas, on va pouvoir requêter notre modèle via l'API.
+
+- En vous inspirant du code qui définit le *endpoint* `/predict` dans le code de l'API (`app/api.py`), effectuer sur le même modèle que la requête précédente une requête qui calcule la survie d'une femme de `32` ans qui aurait payé son billet `16` dollars et aurait embarqué au port `S`.
+
+<details>
+<summary>
+Solution
+</summary>
+
+```{.bash filename="terminal"}
+curl "http://127.0.0.1:8000/predict?sex=female&age=32&fare=16&embarked=S"
+```
+
+</details>
+
+- **Toujours sans fermer le terminal qui déploie l'API**, ouvrir une session `Python` et tester une requête avec des paramètres différents, avec la librairie `requests` :
+
+<details>
+<summary>
+Solution
+</summary>
+
+```{.python}
+import requests
+
+URL = "http://127.0.0.1:8000/predict?sex=male&age=25&fare=80&embarked=S"
+requests.get(URL).json()
+```
+
+</details>
+
+- Une fois que l'API a été testée, vous pouvez fermer l'application en effectuant <kbd>CTRL</kbd>+<kbd>C</kbd> depuis le terminal où elle est lancée.
+
+:::
+
 {{< checkpoint appli17 >}}
+

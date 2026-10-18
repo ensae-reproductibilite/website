@@ -1,64 +1,14 @@
 ::: {.application}
-## Application 22 : archiver nos entraînements avec `MLFlow`
+## Application 22 _(optionnelle)_: restructuration de la chaîne
 
-1. Lancer `MLFlow` depuis l'onglet [Mes services](https://datalab.sspcloud.fr/catalog/automation) du SSPCloud. Attendre que le service soit bien lancé. Cela créera un service dont l'URL est de la forme `https://user-{username}.user.lab.sspcloud.fr`. Ce service `MLFlow` communiquera avec les `VSCode` que vous
-ouvrirez ultérieurement ainsi qu'avec le système de stockage `S3`[^tokenMLFlow].
-
-1. Regarder la page `Experiments`. Elle ne contient que `Default` à ce stade, c'est normal.
-
-[^tokenMLFlow]: Par conséquent, `MLFLow` bénéficie de l'injection automatique des _tokens_
-pour pouvoir lire/écrire sur S3. Ces jetons ont la même durée avant expiration que ceux
-de vos services interactifs `VSCode`. Il faut donc, par défaut, supprimer et rouvrir un service `MLFLow`
-régulièrement. La manière d'éviter cela est de créer des _service account_ sur [https://minio-console.lab.sspcloud.fr/](https://minio-console.lab.sspcloud.fr/login) et de les renseigner sur [la page](https://datalab.sspcloud.fr/project-settings/s3-configs).
+1. Faire les modifications suivantes pour restructurer notre _pipeline_
+afin de mieux distinguer les étapes d'estimation et d'évaluation
 
 
-2. Une fois le service `MLFlow` fonctionnel, lancer un nouveau `VSCode` pour bénéficier de la connexion automatique entre les services interactifs du SSPCloud et les services d'automatisation comme `MLFlow`.
-
-1. Clôner votre projet, vous situer sur la branche de travail.
-
-2. Dans la section de passage des paramètres de notre ligne de commande, introduire ce morceau de code:
-
-```{.python}
-parser.add_argument(
-    "--experiment_name", type=str, default="titanicml", help="MLFlow experiment name"
-)
-args = parser.parse_args()
-```
-
-3. Au début du script `train.py`, ajouter le code suivant
 
 <details>
 <summary>
-Code à ajouter
-</summary>
-
-```{.python filename="début de train.py"}
-# LOGGING IN MLFLOW -----------------
-
-mlflow_server = os.getenv("MLFLOW_TRACKING_URI")
-
-logging.info(f"Saving experiment in {mlflow_server}")
-
-mlflow.set_tracking_uri(mlflow_server)
-mlflow.set_experiment(args.experiment_name)
-```
-</details>
-
-4. Installer les dépendances nécessaires à l'exécution du script en ligne de commande pour test. A l'heure actuelle (février 2026), `mlflow` ne s'est pas encore adapté au passage à `Pandas` 3. Il va donc falloir _downgrader_ Pandas pour pouvoir installer une version récente de `MLFlow`. Pour cela, faire
-
-```{.bash filename="terminal"}
-uv add "pandas<3" "mlflow == 3.10.0"
-```
-
-*Ce morceau de code évoluera quand MLFlow supportera Pandas 3.0*. 
-
-5. Ajouter `mlruns/*` dans `.gitignore`
-
-6. Modifier le script `train.py` pour introduire dans le _context manager_ de `MLFlow` (`with mlflow.start_run():`) tous les éléments intéressants à _logguer_. Si vous avez besoin d'inspiration, vous pouvez prendre le script d'exemple. Mais n'hésitez pas à essayer d'en constituer un similaire de manière progressive (en faisant de manière répétée les questions 6 à 8).  
-
-<details>
-<summary>
-Script d'exemple
+Modification de `train.py` pour faire une _grid search_
 </summary>
 
 ```{.python filename="train.py"}
@@ -81,10 +31,8 @@ from sklearn.compose import ColumnTransformer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import confusion_matrix
 import skops.io as sio
-import mlflow
 
 import duckdb
-import pandas as pd
 
 from src.validation.check import (
     check_name_formatting,
@@ -107,7 +55,7 @@ logging.basicConfig(
 
 NUMERIC_FEATURES = ["Age", "Fare"]
 CATEGORICAL_FEATURES = ["Embarked", "Sex"]
-URL_RAW = "https://minio.lab.sspcloud.fr/lgaliana/ensae-reproductibilite/data/raw/data.parquet"
+URL_RAW = "https://minio.lab.sspcloud.fr/compte_sspcloud/ensae-reproductibilite/data/raw/data.parquet"
 
 jeton_api = os.environ["JETON_API"]
 
@@ -115,9 +63,6 @@ jeton_api = os.environ["JETON_API"]
 
 parser = argparse.ArgumentParser(
     description="Paramètres du random forest + grid search"
-)
-parser.add_argument(
-    "--experiment_name", type=str, default="titanicml", help="MLFlow experiment name"
 )
 parser.add_argument(
     "--n_trees",
@@ -135,17 +80,6 @@ cv_folds = args.cv
 
 logging.debug(f"Valeur de l'argument n_trees: {n_trees_default}")
 logging.debug(f"Valeur de l'argument cv: {cv_folds}")
-
-
-# LOGGING IN MLFLOW -----------------
-
-mlflow_server = os.getenv("MLFLOW_TRACKING_URI")
-
-logging.debug(f"Saving experiment in {mlflow_server}")
-
-mlflow.set_tracking_uri(mlflow_server)
-mlflow.set_experiment(args.experiment_name)
-
 
 # QUALITY DIAGNOSTICS  ---------------------------------------
 
@@ -180,7 +114,6 @@ X = titanic.drop("Survived", axis="columns")
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.1, random_state=42, stratify=y
 )
-
 
 for string_var in CATEGORICAL_FEATURES:
     check_unseen_categories(X_train, X_test, string_var)
@@ -227,104 +160,55 @@ param_grid = {
     "classifier__min_samples_split": [2, 5]
 }
 
+cv = StratifiedKFold(n_splits=cv_folds, shuffle=True, random_state=42)
 
-train_data = pd.concat([X_train, y_train], axis=1)
-
-with mlflow.start_run():
-
-    logging.debug(f"\n{80 * '-'}\nLogging input in MLFlow\n{80 * '-'}")
-
-    mlflow.log_input(
-        mlflow.data.from_pandas(titanic),
-        context="raw",
-    )
-
-    mlflow.log_input(
-        mlflow.data.from_pandas(train_data),
-        context="raw",
-    )
-
-    mlflow.log_param("n_trees", n_trees_default)
-
-    cv = StratifiedKFold(n_splits=cv_folds, shuffle=True, random_state=42)
-
-    search = GridSearchCV(
-        estimator=pipe,
-        param_grid=param_grid,
-        scoring="accuracy",
-        cv=cv,
-        verbose=1,
-        refit=True,
-    )
+search = GridSearchCV(
+    estimator=pipe,
+    param_grid=param_grid,
+    scoring="accuracy",
+    cv=cv,
+    verbose=1,
+    refit=True,
+)
 
 # TRAINING AND EVALUATION --------------------------------------------
 
-    logging.debug(f"\n{80 * '-'}\nStarting grid search fitting phase\n{80 * '-'}")
+logging.debug(f"\n{80 * '-'}\nStarting grid search fitting phase\n{80 * '-'}")
 
-    search.fit(X_train, y_train)
+search.fit(X_train, y_train)
 
-    logging.info(f"Best CV score: {search.best_score_:.3f}")
-    logging.info(f"Best params: {search.best_params_}")
+logging.info(f"Best CV score: {search.best_score_:.3f}")
+logging.info(f"Best params: {search.best_params_}")
 
-    best_model = search.best_estimator_
+best_model = search.best_estimator_
 
-    best_params = search.best_params_
+# Sauvegarde du meilleur pipeline complet
+sio.dump(best_model, "model.skops")
 
-    for param, value in best_params.items():
-        mlflow.log_param(param, value)
+test_score = best_model.score(X_test, y_test)
+train_score = best_model.score(X_train, y_train)
 
+logging.info(
+    f"{test_score:.1%} de bonnes réponses sur les données de test (best model)"
+)
+logging.info(
+    f"{train_score:.1%} de bonnes réponses sur les données de train (best model)"
+)
 
-    # Sauvegarde du meilleur pipeline complet
-    sio.dump(best_model, "model.skops")
+logging.info("Matrice de confusion (test):")
+logging.info(confusion_matrix(y_test, best_model.predict(X_test)))
 
-    test_score = best_model.score(X_test, y_test)
-    train_score = best_model.score(X_train, y_train)
-
-    logging.info(
-        f"{test_score:.1%} de bonnes réponses sur les données de test (best model)"
-    )
-    logging.info(
-        f"{train_score:.1%} de bonnes réponses sur les données de train (best model)"
-    )
-
-    # Log metrics
-    mlflow.log_metric("accuracy", test_score)
-
-    matrix = confusion_matrix(y_test, best_model.predict(X_test))
-    
-    logging.info("Matrice de confusion (test):")
-    logging.info(matrix)
-
-    logging.debug(f"\n{80 * '-'}\nFILE ENDED SUCCESSFULLY!\n{80 * '-'}")
-
-    # Log confusion matrix as an artifact
-    matrix_path = "confusion_matrix.txt"
-    with open(matrix_path, "w") as f:
-        f.write(str(matrix))
-    mlflow.log_artifact(matrix_path)
-
-    # Log model
-    mlflow.sklearn.log_model(best_model, "model")
+logging.debug(f"\n{80 * '-'}\nFILE ENDED SUCCESSFULLY!\n{80 * '-'}")
 ```
 
 </details>
 
-7. Tester `uv run train.py`
-
-6. Observer l'évolution de la page `Experiments`. Cliquer sur un des _run_.
-Observer toutes les métadonnées archivées (hyperparamètres, métriques d'évaluation, `requirements.txt` dont `MLFlow` a fait l'inférence, etc.)
-
-7. Observer le code proposé par `MLFlow` pour récupérer le _run_ en question. Tester celui-ci dans un _notebook_ sur le fichier intermédiaire de test au format `Parquet`
-
-8. En ligne de commande, faites tourner pour une autre valeur de `n_trees`.  Retourner à la liste des _runs_ en cliquant à nouveau sur _"titanicml"_ dans les expérimentations.
-
-9.  Sélectionner plusieurs expérimentations, cliquer sur `Compare` et ajouter la statistique d'*accuracy*. Afficher un _scatterplot_ des performances
-en fonction du nombre d'estimateurs. Conclure.
+2. Dans le code de l'API (`app/api.py`), changer la version du modèle mis en oeuvre en _"0.2"_ (dans la fonction `show_welcome_page`)
+2. Après avoir committé cette nouvelle version du code applicatif, tagguer ce dépôt avec le tag `v0.0.2`
+3. Modifier `deployment/deployment.yaml` dans le code `GitOps` pour utiliser ce _tag_.
 
 :::
 
 
 
 {{< checkpoint appli22 >}}
-
-

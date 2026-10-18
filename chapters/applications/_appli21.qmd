@@ -1,214 +1,45 @@
 ::: {.application}
-## Application 21 _(optionnelle)_: restructuration de la chaîne
 
-1. Faire les modifications suivantes pour restructurer notre _pipeline_
-afin de mieux distinguer les étapes d'estimation et d'évaluation
+## Application 21: Création d'un site web pour valoriser le projet
 
-
-
-<details>
-<summary>
-Modification de `train.py` pour faire une _grid search_
-</summary>
-
-```{.python filename="train.py"}
-"""
-Prediction de la survie d'un individu sur le Titanic
-(avec GridSearchCV + cross-validation)
-"""
-
-import os
-import argparse
-import logging
-from dotenv import load_dotenv
-
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.model_selection import train_test_split, GridSearchCV, StratifiedKFold
-from sklearn.pipeline import Pipeline
-from sklearn.compose import ColumnTransformer
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import confusion_matrix
-import skops.io as sio
-
-import duckdb
-
-from src.validation.check import (
-    check_name_formatting,
-    check_missing_values,
-    check_unseen_categories,
-)
-
-load_dotenv()
-con = duckdb.connect(database=":memory:")
-
-logging.basicConfig(
-    format="{asctime} - {levelname} - {message}",
-    style="{",
-    datefmt="%Y-%m-%d %H:%M",
-    level=logging.DEBUG,
-    handlers=[logging.FileHandler("recording.log"), logging.StreamHandler()],
-)
-
-# PARAMETERS ---------------------------------------
-
-NUMERIC_FEATURES = ["Age", "Fare"]
-CATEGORICAL_FEATURES = ["Embarked", "Sex"]
-URL_RAW = "https://minio.lab.sspcloud.fr/compte_sspcloud/ensae-reproductibilite/data/raw/data.parquet"
-
-jeton_api = os.environ["JETON_API"]
-
-# ENVIRONMENT CONFIGURATION ---------------------------
-
-parser = argparse.ArgumentParser(
-    description="Paramètres du random forest + grid search"
-)
-parser.add_argument(
-    "--n_trees",
-    type=int,
-    default=20,
-    help="Valeur par défaut pour n_estimators dans la grille",
-)
-parser.add_argument(
-    "--cv", type=int, default=5, help="Nombre de folds pour la cross-validation"
-)
-args = parser.parse_args()
-
-n_trees_default = args.n_trees
-cv_folds = args.cv
-
-logging.debug(f"Valeur de l'argument n_trees: {n_trees_default}")
-logging.debug(f"Valeur de l'argument cv: {cv_folds}")
-
-# QUALITY DIAGNOSTICS  ---------------------------------------
-
-logging.debug(f"\n{80 * '-'}\nStarting data validation step\n{80 * '-'}")
-
-query_definition = (
-    f"CREATE TEMP TABLE titanic AS (SELECT * FROM read_parquet('{URL_RAW}'))"
-)
-con.sql(query_definition)
-
-column_names = con.sql("SELECT column_name FROM (DESCRIBE titanic)").to_df()[
-    "column_name"
-]
-
-check_name_formatting(connection=con)
-
-for var in column_names:
-    check_missing_values(connection=con, variable=var)
-
-# FEATURE ENGINEERING    -----------------------------------------
-
-logging.debug(f"\n{80 * '-'}\nStarting feature engineering phase\n{80 * '-'}")
-
-titanic = con.sql(
-    f"SELECT Survived, {', '.join(CATEGORICAL_FEATURES + NUMERIC_FEATURES)} FROM titanic"
-).to_df()
-
-y = titanic["Survived"]
-X = titanic.drop("Survived", axis="columns")
-
-# Stratify: utile sur Titanic car classes pas parfaitement équilibrées
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.1, random_state=42, stratify=y
-)
-
-for string_var in CATEGORICAL_FEATURES:
-    check_unseen_categories(X_train, X_test, string_var)
-
-# MODEL DEFINITION -----------------------------------------
-
-numeric_transformer = Pipeline(
-    steps=[
-        ("imputer", SimpleImputer(strategy="median")),
-        ("scaler", MinMaxScaler()),
-    ]
-)
-
-categorical_transformer = Pipeline(
-    steps=[
-        ("imputer", SimpleImputer(strategy="most_frequent")),
-        ("onehot", OneHotEncoder(handle_unknown="ignore")),
-    ]
-)
-
-preprocessor = ColumnTransformer(
-    transformers=[
-        ("Preprocessing numerical", numeric_transformer, NUMERIC_FEATURES),
-        ("Preprocessing categorical", categorical_transformer, CATEGORICAL_FEATURES),
-    ]
-)
-
-pipe = Pipeline(
-    steps=[
-        ("preprocessor", preprocessor),
-        ("classifier", RandomForestClassifier(random_state=42)),
-    ]
-)
-
-# GRID SEARCH + CV --------------------------------------------
-
-# Grille d'hyperparamètres (tu peux l'élargir/réduire selon le temps de calcul)
-param_grid = {
-    "classifier__n_estimators": [
-        n_trees_default,
-    ],
-    "classifier__max_depth": [3, 5],
-    "classifier__max_features": ["sqrt", "log2"],
-    "classifier__min_samples_split": [2, 5]
-}
-
-cv = StratifiedKFold(n_splits=cv_folds, shuffle=True, random_state=42)
-
-search = GridSearchCV(
-    estimator=pipe,
-    param_grid=param_grid,
-    scoring="accuracy",
-    cv=cv,
-    verbose=1,
-    refit=True,
-)
-
-# TRAINING AND EVALUATION --------------------------------------------
-
-logging.debug(f"\n{80 * '-'}\nStarting grid search fitting phase\n{80 * '-'}")
-
-search.fit(X_train, y_train)
-
-logging.info(f"Best CV score: {search.best_score_:.3f}")
-logging.info(f"Best params: {search.best_params_}")
-
-best_model = search.best_estimator_
-
-# Sauvegarde du meilleur pipeline complet
-sio.dump(best_model, "model.skops")
-
-test_score = best_model.score(X_test, y_test)
-train_score = best_model.score(X_train, y_train)
-
-logging.info(
-    f"{test_score:.1%} de bonnes réponses sur les données de test (best model)"
-)
-logging.info(
-    f"{train_score:.1%} de bonnes réponses sur les données de train (best model)"
-)
-
-logging.info("Matrice de confusion (test):")
-logging.info(confusion_matrix(y_test, best_model.predict(X_test)))
-
-logging.debug(f"\n{80 * '-'}\nFILE ENDED SUCCESSFULLY!\n{80 * '-'}")
+```{.python file="terminal"}
+quarto create project website mysite
 ```
 
-</details>
+- Faire remonter d'un niveau `_quarto.yml`
+- Supprimer `about.qmd`, déplacer `index.qmd` vers la racine de notre projet.
+- Remplacer le contenu de `index.qmd` par [celui-ci](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli21/index.qmd) et retirer `about.qmd` des fichiers à compiler.
+- Déplacer `styles.css` à la racine du projet
+- Mettre à jour le `.gitignore` avec les instructions suivantes
 
-2. Dans le code de l'API (`app/api.py`), changer la version du modèle mis en oeuvre en _"0.2"_ (dans la fonction `show_welcome_page`)
-2. Après avoir committé cette nouvelle version du code applicatif, tagguer ce dépôt avec le tag `v0.0.2`
-3. Modifier `deployment/deployment.yaml` dans le code `GitOps` pour utiliser ce _tag_.
+```{.bash file=".gitignore" no-prefix=true}
+/.quarto/
+*.html
+*_files
+_site/
+```
+
+- En ligne de commande, faire `quarto preview`
+- Observer le site web généré en local
+
+Enfin, on va construire et déployer automatiquement ce site web grâce au
+combo `Github Actions` et `Github Pages`:
+
+- Créer une branche `gh-pages` à partir des lignes suivantes
+
+```{.python filename="terminal"}
+git checkout --orphan gh-pages
+git reset --hard # make sure all changes are committed before running this!
+git commit --allow-empty -m "Initialising gh-pages branch"
+git push origin gh-pages
+```
+
+- Revenir à votre branche principale (`main` normalement)
+- Créer un fichier `.github/workflows/website.yaml` avec le contenu de [ce fichier](https://raw.githubusercontent.com/ensae-reproductibilite/application/tree/appli21/.github/workflows/publish.yaml)
+- Modifier le `README` pour indiquer l'URL de votre site web et de votre API
 
 :::
 
 
-
 {{< checkpoint appli21 >}}
+

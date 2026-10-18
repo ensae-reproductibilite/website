@@ -762,7 +762,14 @@ afin de la rétablir immédiatemment.
 
 
 
-## Étape 2: Automatisation de la livraison de l'image `Docker`
+## Étape 2: vérifier la qualité du code dès le _commit_ avec un _hook_ `Git`
+
+L'intégration continue intervient après le _push_. Pour détecter les erreurs de forme encore plus tôt, directement sur notre poste de travail, nous pouvons faire tourner `ruff` automatiquement à chaque _commit_ grâce à un _hook_ `Git`.
+
+{{< include "./applications/_appli15.qmd" >}}
+
+
+## Étape 3: Automatisation de la livraison de l'image `Docker`
 
 Maintenant, nous allons automatiser la mise à disposition de notre image
 sur `DockerHub` (le lieu de partage des images `Docker`). Cela facilitera sa réutilisation mais aussi des
@@ -776,7 +783,7 @@ un jeton (_token_) `DockerHub` que nous allons mettre dans un espace
 sécurisé associé à votre dépôt `Github`.
 
 
-{{< include "./applications/_appli15a.qmd" >}}
+{{< include "./applications/_appli16a.qmd" >}}
 
 
 A ce stade, nous avons donné les moyens à `Github` de s'authentifier avec
@@ -786,7 +793,7 @@ On ne va modifier que trois éléments dans ce fichier. Effectuer les
 actions suivantes:
 
 
-{{< include "./applications/_appli15b.qmd" >}}
+{{< include "./applications/_appli16b.qmd" >}}
 
 
 
@@ -830,7 +837,7 @@ Le premier livrable devenu classique dans un projet impliquant du _machine learn
 
 
 
-{{< include "./applications/_appli16.qmd" >}}
+{{< include "./applications/_appli17.qmd" >}}
 
 
 ## Étape 2: déployer l'API de manière manuelle
@@ -859,7 +866,7 @@ Et si jamais vous voulez avoir un `SSPCloud` dans votre entreprise c'est possibl
 
 
 
-{{< include "./applications/_appli17.qmd" >}}
+{{< include "./applications/_appli18.qmd" >}}
 
 
 Nous avons préparé la mise à disposition de notre API mais à l'heure
@@ -868,7 +875,7 @@ de lancer manuellement une image `Docker` pour pouvoir y accéder.
 Ce type de travail est la spécialité de `Kubernetes` que nous allons
 utiliser pour gérer la mise à disposition de notre API.
 
-{{< include "./applications/_appli18.qmd" >}}
+{{< include "./applications/_appli19.qmd" >}}
 
 On peut remarquer quelques voies d'amélioration de notre approche qui
 seront ultérieurement traitées:
@@ -899,9 +906,9 @@ branche principale sur laquelle nous travaillons. Toutes les prochaines applicat
 Si vous avez utilisé un `tag` pour sauter une ou plusieurs étapes, il va
 être nécessaire de se placer sur une branche car vous êtes en _head detached_. Si vous avez utilisé les scripts automatisés de checkpoint, cette gymnastique a été faite pour vous.
 
-Les prochaines applications vont également nécessiter d'utiliser une image `Docker`. Si vous avez suivi de manière linéaire cette application, votre image `Docker` devrait exister depuis l'application 15 si vous avez pushé votre dépôt à ce moment là.
+Les prochaines applications vont également nécessiter d'utiliser une image `Docker`. Si vous avez suivi de manière linéaire cette application, votre image `Docker` devrait exister depuis l'application 16 si vous avez pushé votre dépôt à ce moment là.
 
-Néanmoins, si vous n'avez pas fait cette application, vous pouvez utiliser le _checkpoint_ de l'application 18 et faire un `git push origin main --force` (à ne pas reproduire sur vos projets!) qui devrait déclencher les opérations côté `Github` pour construire et livrer votre image `Docker`. Cela nécessite quelques opérations de votre côté, notamment la création d'un _token_ `Dockerhub` à renseigner en secret `Github`. Pour vous refraîchir la mémoire sur le sujet, vous pouvez retourner consulter l'application 15.
+Néanmoins, si vous n'avez pas fait cette application, vous pouvez utiliser le _checkpoint_ de l'application 19 et faire un `git push origin main --force` (à ne pas reproduire sur vos projets!) qui devrait déclencher les opérations côté `Github` pour construire et livrer votre image `Docker`. Cela nécessite quelques opérations de votre côté, notamment la création d'un _token_ `Dockerhub` à renseigner en secret `Github`. Pour vous refraîchir la mémoire sur le sujet, vous pouvez retourner consulter l'application 15.
 
 :::
 
@@ -931,7 +938,7 @@ Pour automatiser au maximum la mise en production, on va utiliser un nouvel outi
 C'est l'approche dite **GitOps** : le dépôt `Git` du déploiement fait office de **source de vérité unique** de l'état voulu de l'application, tout changement sur ce dernier doit donc se répercuter immédiatement sur le déploiement effectif.
 
 
-{{< include "./applications/_appli19a.qmd" >}}
+{{< include "./applications/_appli20a.qmd" >}}
 
 
 A présent, nous avons tous les outils à notre disposition pour construire un vrai **pipeline de CI/CD, automatisé de bout en bout**. Il va nous suffire pour cela de mettre à bout les composants :
@@ -942,7 +949,7 @@ A présent, nous avons tous les outils à notre disposition pour construire un v
 
 Il y a donc un élément qui fait la liaison entre ces deux pipelines et qui nous sert de garde-fou en cas d'erreur : la **version de l'application**.
 
-{{< include "./applications/_appli19b.qmd" >}}
+{{< include "./applications/_appli20b.qmd" >}}
 
 
 ## Etape 4: construire un site web
@@ -951,7 +958,7 @@ Il y a donc un élément qui fait la liaison entre ces deux pipelines et qui nou
 ## Si vous prenez ce projet fil rouge en cours de route
 
 ```{.bash filename="terminal"}
-git checkout appli19
+git checkout appli20b
 git checkout -b dev
 git push origin dev
 ```
@@ -964,13 +971,13 @@ On va proposer un nouveau livrable pour parler à un public plus large.
 Pour faire ce site web,
 on va utiliser `Quarto` et déployer sur `Github Pages`.
 
-{{< include "./applications/_appli20.qmd" >}}
+{{< include "./applications/_appli21.qmd" >}}
 
 
 # Partie 6: adopter une approche MLOps pour améliorer notre modèle
 
 
-{{< checkpoint appli20 "Reprendre à partir d'ici" "true" "pre-appli21" >}}
+{{< checkpoint appli21 "Reprendre à partir d'ici" "true" "pre-appli22" >}}
 
 
 Maintenant que nous avons tout préparé pour mettre à disposition rapidement un modèle,
@@ -982,17 +989,17 @@ Le problème que nous allons rencontrer va être que nous voudrions facilement t
 
 Pour pouvoir faire ceci, il va falloir changer un tout petit peu notre code applicatif dans sa phase d'entraînement.
 
-{{< include "./applications/_appli21.qmd" >}}
+{{< include "./applications/_appli22.qmd" >}}
 
 
 ## Garder une trace des entraînements de notre modèle grâce au _register_ de `MLFlow`
 
-{{< checkpoint appli21 "Reprendre à partir d'ici" "true" "pre-appli22" >}}
+{{< checkpoint appli22 "Reprendre à partir d'ici" "true" "pre-appli23" >}}
 
 
 ## Enregistrer nos premiers entraînements
 
-{{< include "./applications/_appli22.qmd" >}}
+{{< include "./applications/_appli23.qmd" >}}
 
 Cette appplication illustre l'un des premiers apports de `MLFlow`: on garde
 une trace de nos expérimentations: le modèle est archivé avec les paramètres et des métriques de performance. On peut donc retrouver de plusieurs manières un modèle qui nous avait tapé dans l'oeil.
@@ -1008,14 +1015,14 @@ Les prochaines applications permettront d'améliorer ceci.
 
 A l'heure actuelle, notre _pipeline_ est linéaire:
 
-![](/chapters/applications/figures/pipeline_avant_appli23.png)
+![](/chapters/applications/figures/pipeline_avant_appli24.png)
 
 Ceci nous gêne pour faire évoluer notre modèle: on ne dissocie pas ce qui relève de l'entraînement du modèle de son utilisation. Un _pipeline_ plus cyclique permettra de mieux dissocier l'expérimentation de la production:
 
-![](/chapters/applications/figures/pipeline_apres_appli23.png)
+![](/chapters/applications/figures/pipeline_apres_appli24.png)
 
 
-{{< include "./applications/_appli23.qmd" >}}
+{{< include "./applications/_appli24.qmd" >}}
 
 
 A ce stade, nous avons amélioré la fiabilité de notre application car
@@ -1062,11 +1069,11 @@ _Pipeline_ d'entraînement de nos modèles avec deux outils d'automatisation dif
 L'outil permettant une intégration native de notre _pipeline_ dans l'infrastructure _cloud_ (`SSPCloud`) que nous avons utilisée jusqu'à présent est `Argo Workflows`. Néanmoins, pour illustrer la modularité de notre chaîne, permise par l'adoption de `Docker`, nous allons montrer que les serveurs d'intégration continue de `Github` peuvent très bien servir d'environnement d'exécution, sans rien perdre de ce que nous avons mis en oeuvre précédemment (_logging_ des modèles dans `MLFlow`, récupération de données depuis `S3`, etc.)
 
 
-{{< include "./applications/_appli24.qmd" >}}
+{{< include "./applications/_appli25.qmd" >}}
 
 Nous pouvons maintenant passer à la version `Github`. Celle-ci est optionnelle car elle vient surtout démontrer l'intérêt d'avoir une chaine modulaire et la dissociation que cela permet entre l'environnement d'exécution et les autres environnements nécessaires à notre chaine (notamment le stockage code et le _logging_).
 
-{{< include "./applications/_appli24b.qmd" >}}
+{{< include "./applications/_appli25b.qmd" >}}
 
 
 
@@ -1074,7 +1081,7 @@ Nous pouvons maintenant passer à la version `Github`. Celle-ci est optionnelle 
 
 Nous n'avons géré qu'une partie du cycle de vie d'un projet _data_, à savoir l'entraînement et la mise à disposition d'un modèle. Comme nous partions de très long, ce sprint avait plutôt l'allure d'un marathon. Néanmoins, nous avons maintenant un projet très flexible qui pourrait permettre d'aller plus loin et d'intégrer d'autres aspects du cycle de vie d'un projet _data_.
 
-En premier lieu, pour suivre la vie d'un modèle en production (enjeu de l'[observabilité](https://www.giskard.ai/glossary/model-observability)), il faut collecter de nouvelles données annotées. Si cette collecte n'est pas naturelle (de nouveaux enregistrement du _label_ sont automatiques), il faut généralement mettre en oeuvre de l'annotation humaine ou des _feedbacks_. Parmi les outils disponibles sur le `SSPCloud` pour cela, il existe [`Label Studio`](https://labelstud.io/). L'objet des applications bonus 25 à ** est de simuler l'enjeu de remontée régulière d'informations annotées en donnant ce travail à un LLM appelé à intervalle régulier. 
+En premier lieu, pour suivre la vie d'un modèle en production (enjeu de l'[observabilité](https://www.giskard.ai/glossary/model-observability)), il faut collecter de nouvelles données annotées. Si cette collecte n'est pas naturelle (de nouveaux enregistrement du _label_ sont automatiques), il faut généralement mettre en oeuvre de l'annotation humaine ou des _feedbacks_. Parmi les outils disponibles sur le `SSPCloud` pour cela, il existe [`Label Studio`](https://labelstud.io/). L'objet des applications bonus 26 à ** est de simuler l'enjeu de remontée régulière d'informations annotées en donnant ce travail à un LLM appelé à intervalle régulier. 
 
 En second lieu, on a encore une chaîne de production où peu de profils non _tech_ peuvent s'insérer. On pourrait vouloir la rendre plus accessible: soit en améliorant notre _output_ site web, soit en mettant en oeuvre des _dashboards_ plus orientés _BI_, pensés pour des profils moins techniques mais ayant une place dans la chaîne de valeur _data_ comme les _data analysts_. Pour cela, il existe des outils sur le `SSPCloud` comme [`Apache Superset`](https://superset.apache.org/).
 
@@ -1082,7 +1089,7 @@ Gardons aussi à l'esprit que notre chaine dépend de données tabulaires simple
 
 # Applications bonus
 
-{{< include "./applications/_appli25.qmd" >}}
+{{< include "./applications/_appli26.qmd" >}}
 
 
 

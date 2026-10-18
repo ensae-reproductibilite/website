@@ -1,0 +1,50 @@
+::: {.application}
+
+## Application 15: vérifier la qualité du code avant chaque _commit_ avec un _hook_
+
+L'intégration continue ne vérifie notre code qu'une fois celui-ci _pushé_ : les erreurs de forme sont découvertes alors que le _commit_ est déjà partagé. Les _hooks_ `Git` permettent de faire ces vérifications plus tôt, au moment du _commit_. Nous allons utiliser [`pre-commit`](https://pre-commit.com/), un outil qui facilite la gestion de ces _hooks_, pour lancer `ruff` avant chaque _commit_.
+
+1. Créer à la racine du projet un fichier `.pre-commit-config.yaml` utilisant les _hooks_ `ruff-check` (_linter_) et `ruff-format` (_formatter_) proposés par [`ruff-pre-commit`](https://github.com/astral-sh/ruff-pre-commit). Restreindre ces _hooks_ aux fichiers `Python` avec l'option `types_or: [python, pyi]` afin de ne pas les appliquer aux _notebooks_.
+
+<details>
+<summary>Fichier `.pre-commit-config.yaml`</summary>
+
+```{.yaml filename=".pre-commit-config.yaml"}
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.1
+    hooks:
+      # Linter
+      - id: ruff-check
+        types_or: [python, pyi]
+      # Formatter
+      - id: ruff-format
+        types_or: [python, pyi]
+```
+
+</details>
+
+2. Installer le _hook_ dans votre copie locale du dépôt[^uvx] :
+
+```{.bash filename="terminal"}
+uvx pre-commit install
+```
+
+3. Observer le fichier `.git/hooks/pre-commit` qui a été créé. Le dossier `.git/` n'étant pas versionné, comprenez-vous pourquoi chaque personne travaillant sur le projet doit faire cette installation ?
+4. Committer le fichier `.pre-commit-config.yaml`. Les _hooks_ s'exécutent et doivent être validés (`Passed`).
+5. Introduire volontairement une erreur dans un fichier du dossier `src`, par exemple un `import os` inutilisé suivi d'une ligne mal formatée comme `x=1`, puis essayer de committer cette modification. Lire le message renvoyé et vérifier avec `git log` que le _commit_ a été refusé.
+6. Observer avec `git status` que `ruff format` a déjà reformaté le fichier. Corriger l'erreur restante signalée par `ruff check`, refaire un `git add` puis committer.
+7. Ajouter dans le `README.md` une section expliquant comment activer le _hook_.
+
+:::
+
+[^uvx]: `uvx` (alias de `uv tool run`) exécute un outil dans un environnement temporaire, sans l'ajouter aux dépendances du projet. `pre-commit` est un outil de développement : il n'a pas vocation à être installé dans l'image `Docker` de l'application.
+
+::: {.callout-note}
+
+Il est possible de contourner les _hooks_ avec `git commit --no-verify`. C'est utile ponctuellement mais cela montre que les _hooks_ ne remplacent pas l'intégration continue : ils permettent de détecter les problèmes plus tôt, sur l'environnement de chaque développeur, alors que l'intégration continue reste le garde-fou commun à tout le projet.
+
+:::
+
+
+{{< checkpoint appli15 >}}
