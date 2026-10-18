@@ -683,6 +683,8 @@ Sinon, elle peut être réalisée en essai-erreur par le biais des services d'in
 
 Maintenant qu'on sait que ce script préparatoire fonctionne, on va le transformer en `Dockerfile` pour anticiper la mise en production.  Comme la syntaxe `Docker` est légèrement différente de la syntaxe `Linux` classique (voir le [chapitre portabilité](/chapters/portability.qmd)), il va être nécessaire de changer quelques instructions mais ceci sera très léger.
 
+Plutôt que de partir d'une image `ubuntu` quasi-vierge et d'y installer `Python` puis `uv` comme le fait notre script `install.sh`, nous allons partir d'une image qui les contient déjà : l'image [`astral/uv`](https://docs.astral.sh/uv/guides/integration/docker/) maintenue par les développeurs d'`uv`. Les images `Docker` s'empilent : autant partir d'une base adaptée à notre besoin. Cette image étant très légère (`slim`), il faudra simplement y ajouter une dépendance système dont a besoin `LightGBM` (`libgomp1`).
+
 On va tester le `Dockerfile` dans un environnement bac à sable pour ensuite
 pouvoir plus facilement automatiser la construction de l'image
 `Docker`.

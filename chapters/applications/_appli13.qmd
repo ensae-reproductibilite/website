@@ -23,17 +23,14 @@ touch Dockerfile
 <details><summary>Premier `Dockerfile`</summary>
 
 ```{.bash filename="terminal" no-prefix=true}
-FROM ubuntu:22.04
+FROM astral/uv:python3.13-trixie-slim
 
-# Install Python
+# System dependency needed by lightgbm
 RUN apt-get -y update && \
-    apt-get install -y python3-pip curl
+    apt-get install -y libgomp1
 
-# Install uv
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-ENV PATH="/root/.local/bin/:$PATH"
-
-# Install project dependencies
+# Install project dependencies (development ones excluded, also for uv run)
+ENV UV_NO_DEV=1
 COPY pyproject.toml .
 RUN uv sync
 
@@ -73,7 +70,8 @@ docker run -it my-python-app
 ```
 
 ```{.python}
-python3: can't open file '/~/titanic/main.py': [Errno 2] No such file or directory
+error: Failed to spawn: `main.py`
+  Caused by: No such file or directory (os error 2)
 ```
 
 Le message d'erreur est clair : `Docker` ne sait pas où trouver le fichier `main.py`. D'ailleurs, il ne connait pas non plus les autres fichiers de notre application qui sont nécessaires pour faire tourner le code, par exemple le dossier `src`.
@@ -84,17 +82,14 @@ Le message d'erreur est clair : `Docker` ne sait pas où trouver le fichier `mai
 <summary>Nouveau `Dockerfile` </summary>
 
 ```{.bash filename="terminal" no-prefix=true}
-FROM ubuntu:22.04
+FROM astral/uv:python3.13-trixie-slim
 
-# Install Python
+# System dependency needed by lightgbm
 RUN apt-get -y update && \
-    apt-get install -y python3-pip curl
+    apt-get install -y libgomp1
 
-# Install uv
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-ENV PATH="/root/.local/bin/:$PATH"
-
-# Install project dependencies
+# Install project dependencies (development ones excluded, also for uv run)
+ENV UV_NO_DEV=1
 COPY pyproject.toml .
 RUN uv sync
 

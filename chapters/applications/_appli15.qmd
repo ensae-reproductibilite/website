@@ -4,7 +4,7 @@
 
 L'intégration continue ne vérifie notre code qu'une fois celui-ci _pushé_ : les erreurs de forme sont découvertes alors que le _commit_ est déjà partagé. Les _hooks_ `Git` permettent de faire ces vérifications plus tôt, au moment du _commit_. Nous allons utiliser [`pre-commit`](https://pre-commit.com/), un outil qui facilite la gestion de ces _hooks_, pour lancer `ruff` avant chaque _commit_.
 
-1. Créer à la racine du projet un fichier `.pre-commit-config.yaml` utilisant les _hooks_ `ruff-check` (_linter_) et `ruff-format` (_formatter_) proposés par [`ruff-pre-commit`](https://github.com/astral-sh/ruff-pre-commit). Restreindre ces _hooks_ aux fichiers `Python` avec l'option `types_or: [python, pyi]` afin de ne pas les appliquer aux _notebooks_.
+1. Créer à la racine du projet un fichier `.pre-commit-config.yaml` utilisant les _hooks_ `ruff-check` (_linter_) et `ruff-format` (_formatter_) proposés par [`ruff-pre-commit`](https://github.com/astral-sh/ruff-pre-commit). Ces _hooks_ utilisent la configuration de `ruff` présente dans le `pyproject.toml` : les _notebooks_, exclus depuis l'application 11, ne seront donc pas vérifiés.
 
 <details>
 <summary>Fichier `.pre-commit-config.yaml`</summary>
@@ -16,10 +16,8 @@ repos:
     hooks:
       # Linter
       - id: ruff-check
-        types_or: [python, pyi]
       # Formatter
       - id: ruff-format
-        types_or: [python, pyi]
 ```
 
 </details>
