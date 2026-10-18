@@ -15,8 +15,20 @@ uv run python -c "print('Hello')"
 7. Faire la même chose mais avec `import pandas as pd`: comprenez-vous ce qu'il se passe ? Maintenant, essayer `uv run main.py` en ligne de commande: comprenez-vous l'erreur ?
 8. Installer de manière itérative les _packages_ à partir d'`uv add` ([documentation](https://docs.astral.sh/uv/guides/projects/#managing-dependencies)) et en testant avec `uv run main.py`: avez-vous remarqué la vitesse à laquelle cela a été quand vous avez fait `uv add pandas` ?
 9. Observer votre `pyproject.toml`. Regarder le _lockfile_ `uv.lock`. Générer automatiquement le `requirements.txt` en faisant [`uv pip compile`](https://docs.astral.sh/uv/pip/compile/#locking-requirements) et regarder celui-ci.
-10. Ajouter le dossier `.venv/` au `.gitignore` s'il n'y est pas déjà pour ne pas ajouter ce dossier à `Git`.
-11. *Optionnel*: créer un nouveau service avec le _checkpoint_ de cette application, créer l'environnement virtuel avec la commande adéquate et tester l'application. 
+10. `ruff` est un outil de développement : il sert à écrire le code mais pas à le faire tourner. L'ajouter comme dépendance de développement avec `uv add --dev ruff` et observer la section `[dependency-groups]` créée dans le `pyproject.toml`. Le `pyproject.toml` sert aussi à configurer les outils de développement, dans des sections `[tool.xxx]`. Ajouter une section `[tool.ruff]` pour exclure les _notebooks_ du périmètre de `ruff`, puis vérifier avec `uv run ruff check .` que le code passe toujours le _linter_.
+
+<details>
+<summary>Section à ajouter au `pyproject.toml`</summary>
+
+```{.toml filename="pyproject.toml"}
+[tool.ruff]
+extend-exclude = ["*.ipynb"]
+```
+
+</details>
+
+11. Ajouter le dossier `.venv/` au `.gitignore` s'il n'y est pas déjà pour ne pas ajouter ce dossier à `Git`.
+12. *Optionnel*: créer un nouveau service avec le _checkpoint_ de cette application, créer l'environnement virtuel avec la commande adéquate et tester l'application. 
 </details>
 
 ::::

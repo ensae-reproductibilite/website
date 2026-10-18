@@ -1,144 +1,249 @@
 ::: {.application}
-## Application 24 : industrialisation des entraînements avec `Argo Workflow`
+## Application 24 : passer en production un modèle avec MLFlow
 
-A l'heure actuelle, notre entraînement ne dépend que d'un hyperparamètre fixé à partir de la ligne de commande: `n_trees`. Nous allons commencer par ajouter un argument à notre chaine de production (code applicatif):
+1. Si vous avez entraîné plusieurs modèles avec des `n_trees` différents, utiliser l'interface de `MLFlow` pour sélectionner le "meilleur". Cliquer sur le modèle en question et faire l'action _"Register Model"_. L'enregistrer comme le modèle de _"production"_
 
-1. Dans `train.py`, dans la section relative au _parsing_ de nos arguments, ajouter ce bout de code
+2. Rendez-vous sur l'onglet `Models` et observez cet entrepôt de modèles. Cliquez sur le modèle de production. Vous pourrez par ce biais suivre ses différentes versions.
 
-```{.python}
-parser.add_argument(
-    "--max_features",
-    type=str, default="sqrt",
-    choices=['sqrt', 'log2'],
-    help="Number of features to consider when looking for the best split"
-)
-```
-
-et remplacer, dans `train.py`, la définition de l'hyperparamètre adéquat
-
-```{.python}
-param_grid = {
-    "classifier__n_estimators": [
-        n_trees_default,
-    ],
-    "classifier__max_depth": [3, 5],
-    "classifier__max_features": [args.max_features],
-    "classifier__min_samples_split": [2, 5]
-}
-```
-
-
-2. Faire un _commit_, taguer cette version (`v0.0.4`) et _pusher_ le _tag_
-
-3. Maintenant, dans le dépôt `GitOps`, créer un fichier `argo-workflow/manifest.yaml`
+3. Ouvrir un notebook temporaire et observer le résultat.
 
 <details>
-
 <summary>
-Le modèle proposé
+Exemple de code à tester
 </summary>
 
-```{.python}
-apiVersion: argoproj.io/v1alpha1
-kind: Workflow
-metadata:
-  generateName: titanic-training-workflow-
-  namespace: user-${SSPCLOUD_USERNAME}
-spec:
-  entrypoint: main
-  serviceAccountName: workflow
 
-  arguments:
-    parameters:
-      # The MLflow tracking server is responsible to log the hyper-parameter and model metrics.
-      - name: mlflow-tracking-uri
-        value: "https://user-${SSPCLOUD_USERNAME}-mlflow.user.lab.sspcloud.fr/" #<1>
-      - name: mlflow-experiment-name
-        value: "titanicml" #<2>
-      - name: model-training-conf-list
-        value: |
-          [
-            { "n_trees": 10, "max_features": "log2" },
-            { "n_trees": 20, "max_features": "sqrt" },
-            { "n_trees": 20, "max_features": "log2" },
-            { "n_trees": 50, "max_features": "sqrt" }
-          ]
+```{.python file="Dans une cellule de notebook"}
+import mlflow
+import pandas as pd
 
-  templates:
-    # Entrypoint DAG template
-    - name: main
-      dag:
-        tasks:
-          # Task 0: Start pipeline
-          - name: start-pipeline
-            template: start-pipeline-wt
+model_name = "production"
+model_version = "latest"
 
-          # Task 1: Train model with given params
-          - name: train-model-with-params
-            dependencies: [start-pipeline]
-            template: run-model-training-wt
-            arguments:
-              parameters:
-                - name: max_features
-                  value: "{{item.max_features}}"
-                - name: n_trees
-                  value: "{{item.n_trees}}"
-            # Pass the inputs to the task using "withParam"
-            withParam: "{{workflow.parameters.model-training-conf-list}}"
+# Load the model from the Model Registry
+model_uri = f"models:/{model_name}/{model_version}"
+logged_model = mlflow.sklearn.load_model(model_uri)
 
-    # Worker template for task 0 : start-pipeline
-    - name: start-pipeline-wt
-      container:
-        image: busybox
-        command: ["sh", "-c"]
-        args: ["echo Starting pipeline"]
+# GENERATE PREDICTION DATA ---------------------
 
-    # Worker template for task 1 : train model with params
-    - name: run-model-training-wt
-      inputs:
-        parameters:
-          - name: n_trees
-          - name: max_features
-      container:
-        image: "compte_github/application:v0.0.4" #<3>
-        imagePullPolicy: Always
-        command: ["sh", "-c"]
-        args:
-          - >-
-            uv run train.py
-            --n_trees={{inputs.parameters.n_trees}}
-            --max_features={{inputs.parameters.max_features}}
-        env:
-          - name: MLFLOW_TRACKING_URI
-            value: "{{workflow.parameters.mlflow-tracking-uri}}"
-          - name: MLFLOW_EXPERIMENT_NAME
-            value: "{{workflow.parameters.mlflow-experiment-name}}"
-          - name: MLFLOW_TRACKING_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: mlflow-secrets
-                key: MLFLOW_TRACKING_USERNAME
-          - name: MLFLOW_TRACKING_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: mlflow-secrets
-                key: MLFLOW_TRACKING_PASSWORD
-          - name: AWS_DEFAULT_REGION
-            value: "us-east-1"
-          - name: AWS_S3_ENDPOINT
-            value: "minio.lab.sspcloud.fr"
-          - name: JETON_API
-            valueFrom:
-              secretKeyRef:
-                name: api-jeton
-                key: JETON_API
+def create_data(
+    sex: str = "female",
+    age: float = 29.0,
+    fare: float = 16.5,
+    embarked: str = "S",
+) -> str:
+    """
+    """
+
+    df = pd.DataFrame(
+        {
+            "Sex": [sex],
+            "Age": [age],
+            "Fare": [fare],
+            "Embarked": [embarked],
+        }
+    )
+
+    return df
+
+
+data = pd.concat(
+    [create_data(age=40), create_data(sex="male")]
+)
+
+# PREDICTION ---------------------
+
+logged_model.predict(pd.DataFrame(data))
 ```
-1. Changer pour votre entrepot de modèle
-2. Le nom de l'expérimentation `MLFLow` dont nous allons avoir besoin (on propose de continuer sur `titanicml`)
-3. Changer l'image `Docker` {{< fa brands docker >}} ici
 
 </details>
 
-4. Observer l'UI d'`Argo Workflow` dans vos services ouverts du _SSPCloud_. Vous devriez retrouver @fig-pipeline-argo dans celle-ci.
+4. On va adapter le code applicatif de notre API pour tenir compte de ce modèle de production.
+
+<details>
+<summary>
+Voir le script `app/api.py` proposé
+</summary>
+
+```{.python file="app/api.py"}
+"""A simple API to expose our trained RandomForest model for Tutanic survival."""
+
+import logging
+from fastapi import FastAPI
+import pandas as pd
+import mlflow
+
+
+logging.basicConfig(
+    format="{asctime} - {levelname} - {message}",
+    style="{",
+    datefmt="%Y-%m-%d %H:%M",
+    level=logging.DEBUG,
+    handlers=[logging.FileHandler("api.log"), logging.StreamHandler()],
+)
+
+# Preload model -------------------
+
+logging.info(
+    "Getting model from MLFlow"
+)
+
+model_name = "production"
+model_version = "latest"
+
+# Load the model from the Model Registry
+model_uri = f"models:/{model_name}/{model_version}"
+model = mlflow.sklearn.load_model(model_uri)
+
+# Define app -------------------------
+
+
+app = FastAPI(
+    title="Prédiction de survie sur le Titanic",
+    description=
+    "Application de prédiction de survie sur le Titanic 🚢 <br>Une version par API pour faciliter la réutilisation du modèle 🚀" +\
+        "<br><br><img src=\"https://media.vogue.fr/photos/5faac06d39c5194ff9752ec9/1:1/w_2404,h_2404,c_limit/076_CHL_126884.jpg\" width=\"200\">"
+    )
+
+
+@app.get("/", tags=["Welcome"])
+def show_welcome_page():
+    """
+    Show welcome page with model name and version.
+    """
+
+    return {
+        "Message": "API de prédiction de survie sur le Titanic",
+        "Model_name": 'Titanic ML',
+        "Model_version": "0.3",
+    }
+
+
+@app.get("/predict", tags=["Predict"])
+async def predict(
+    sex: str = "female",
+    age: float = 29.0,
+    fare: float = 16.5,
+    embarked: str = "S"
+) -> str:
+    """
+    """
+
+    df = pd.DataFrame(
+        {
+            "Sex": [sex],
+            "Age": [age],
+            "Fare": [fare],
+            "Embarked": [embarked],
+        }
+    )
+
+    prediction = int(model.predict(df)[0])
+
+    logging.debug(f"Predicting {prediction} for {df.to_dict()}")
+
+    prediction = "Survived 🎉" if prediction == 1 else "Dead ⚰️"
+
+    return prediction
+```
+
+</details>
+
+Les changements principaux de ce code sont:
+
+* on va chercher le modèle de production
+* on met à jour la version de notre API pour signaler à nos clients que celle-ci a évolué
+* on utilise un peu plus le _logging_ pour mieux comprendre ce qu'il se passe
+
+5. On va retirer l'entraînement de la séquence d'opération du `api/run.sh`. En supprimant la ligne relative à l'entraînement du modèle, vous devriez avoir
+
+```{.python}
+#/bin/bash
+uvicorn app.api:app --host "0.0.0.0"
+```
+
+Mettons en production cette nouvelle version. Cela implique de faire les gestes suivants:
+
+6. _Commit_ de ce changement dans `main`
+
+7. Publier un tag `v0.0.3` pour le code applicatif
+
+8. Mettre à jour notre manifeste dans le dépôt `GitOps`.
+   * En premier lieu, il faut changer la version de référence pour utiliser le tag `v0.0.3`.
+   * De plus, il faut déclarer la variable d'environnement `MLFLOW_TRACKING_URI` qui indique à `Python` l'entrepôt de modèles où aller chercher celui en production. La bonne pratique est de définir ceci hors du code, dans un fichier de configuration donc, ce qui est l'objet de notre manifeste `deployment.yaml`.
+   * Indiquer au _pod_ qui va se lancer comment s'authentifier à `MLFlow` pour récupérer le modèle de production. On ne va pas mettre en brut nos informations d'authentification dans `deployment.yaml` (n'oublions pas les bonnes pratiques!). On va utiliser un secret *Kubernetes* pour cela, comme on a fait pour notre variable d'environnement précédente (le jeton d'API).
+
+Pour créer le secret Kubernetes:
+
+```{.python}
+kubectl create secret generic mlflow-secrets \
+  --from-literal=MLFLOW_TRACKING_USERNAME="$MLFLOW_TRACKING_USERNAME" \
+  --from-literal=MLFLOW_TRACKING_PASSWORD="$MLFLOW_TRACKING_PASSWORD"
+```
+   
+Changer le `deployment.yaml` de votre dépôt `GitOps`
+
+<details>
+<summary>
+Le modèle `deployment.yaml` proposé
+</summary>
+
+```{.python}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: titanic-deployment
+  labels:
+    app: titanic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: titanic
+  template:
+    metadata:
+      labels:
+        app: titanic
+    spec:
+      containers:
+        - name: titanic
+          image: compte_docker/application:v0.0.3 #<1>
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          env:
+            - name: JETON_API
+              valueFrom:
+                secretKeyRef:
+                  name: api-jeton
+                  key: JETON_API
+            - name: MLFLOW_TRACKING_URI
+              value: "https://user-${USERNAME}-mlflow.user.lab.sspcloud.fr" #<2>
+            - name: MLFLOW_TRACKING_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mlflow-secrets
+                  key: MLFLOW_TRACKING_USERNAME
+            - name: MLFLOW_TRACKING_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mlflow-secrets
+                  key: MLFLOW_TRACKING_PASSWORD
+          resources:
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+```
+1. Le _tag_ de notre code applicatif
+2. La variable d'environnement à adapter en fonction de l'adresse du dépôt demodèles utilisé. Remplacer par votre URL `MLFlow`.
+
+</details>
+
+10. _Committer_ vos dépôts applicatifs puis GitOps. 
+
+11.  Pour s'assurer que l'application fonctionne bien, on peut aller voir les _logs_ de la machine qui fait tourner notre code. Pour ça, faire `kubectl get pods` et, en supposant que votre service soit nommé `titanic` dans vos fichiers YAML de configuration, récupérer le nom commençant par `titanic-deployment-*` et faire `kubectl logs titanic-deployment-*`
 
 :::
+
+
+{{< checkpoint appli24 >}}

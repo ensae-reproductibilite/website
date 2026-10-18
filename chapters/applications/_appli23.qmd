@@ -1,249 +1,330 @@
 ::: {.application}
-## Application 23 : passer en production un modèle avec MLFlow
+## Application 23 : archiver nos entraînements avec `MLFlow`
 
-1. Si vous avez entraîné plusieurs modèles avec des `n_trees` différents, utiliser l'interface de `MLFlow` pour sélectionner le "meilleur". Cliquer sur le modèle en question et faire l'action _"Register Model"_. L'enregistrer comme le modèle de _"production"_
+1. Lancer `MLFlow` depuis l'onglet [Mes services](https://datalab.sspcloud.fr/catalog/automation) du SSPCloud. Attendre que le service soit bien lancé. Cela créera un service dont l'URL est de la forme `https://user-{username}.user.lab.sspcloud.fr`. Ce service `MLFlow` communiquera avec les `VSCode` que vous
+ouvrirez ultérieurement ainsi qu'avec le système de stockage `S3`[^tokenMLFlow].
 
-2. Rendez-vous sur l'onglet `Models` et observez cet entrepôt de modèles. Cliquez sur le modèle de production. Vous pourrez par ce biais suivre ses différentes versions.
+1. Regarder la page `Experiments`. Elle ne contient que `Default` à ce stade, c'est normal.
 
-3. Ouvrir un notebook temporaire et observer le résultat.
-
-<details>
-<summary>
-Exemple de code à tester
-</summary>
-
-
-```{.python file="Dans une cellule de notebook"}
-import mlflow
-import pandas as pd
-
-model_name = "production"
-model_version = "latest"
-
-# Load the model from the Model Registry
-model_uri = f"models:/{model_name}/{model_version}"
-logged_model = mlflow.sklearn.load_model(model_uri)
-
-# GENERATE PREDICTION DATA ---------------------
-
-def create_data(
-    sex: str = "female",
-    age: float = 29.0,
-    fare: float = 16.5,
-    embarked: str = "S",
-) -> str:
-    """
-    """
-
-    df = pd.DataFrame(
-        {
-            "Sex": [sex],
-            "Age": [age],
-            "Fare": [fare],
-            "Embarked": [embarked],
-        }
-    )
-
-    return df
+[^tokenMLFlow]: Par conséquent, `MLFLow` bénéficie de l'injection automatique des _tokens_
+pour pouvoir lire/écrire sur S3. Ces jetons ont la même durée avant expiration que ceux
+de vos services interactifs `VSCode`. Il faut donc, par défaut, supprimer et rouvrir un service `MLFLow`
+régulièrement. La manière d'éviter cela est de créer des _service account_ sur [https://minio-console.lab.sspcloud.fr/](https://minio-console.lab.sspcloud.fr/login) et de les renseigner sur [la page](https://datalab.sspcloud.fr/project-settings/s3-configs).
 
 
-data = pd.concat(
-    [create_data(age=40), create_data(sex="male")]
+2. Une fois le service `MLFlow` fonctionnel, lancer un nouveau `VSCode` pour bénéficier de la connexion automatique entre les services interactifs du SSPCloud et les services d'automatisation comme `MLFlow`.
+
+1. Clôner votre projet, vous situer sur la branche de travail.
+
+2. Dans la section de passage des paramètres de notre ligne de commande, introduire ce morceau de code:
+
+```{.python}
+parser.add_argument(
+    "--experiment_name", type=str, default="titanicml", help="MLFlow experiment name"
 )
-
-# PREDICTION ---------------------
-
-logged_model.predict(pd.DataFrame(data))
+args = parser.parse_args()
 ```
 
-</details>
-
-4. On va adapter le code applicatif de notre API pour tenir compte de ce modèle de production.
+3. Au début du script `train.py`, ajouter le code suivant
 
 <details>
 <summary>
-Voir le script `app/api.py` proposé
+Code à ajouter
 </summary>
 
-```{.python file="app/api.py"}
-"""A simple API to expose our trained RandomForest model for Tutanic survival."""
+```{.python filename="début de train.py"}
+# LOGGING IN MLFLOW -----------------
 
+mlflow_server = os.getenv("MLFLOW_TRACKING_URI")
+
+logging.info(f"Saving experiment in {mlflow_server}")
+
+mlflow.set_tracking_uri(mlflow_server)
+mlflow.set_experiment(args.experiment_name)
+```
+</details>
+
+4. Installer les dépendances nécessaires à l'exécution du script en ligne de commande pour test. A l'heure actuelle (février 2026), `mlflow` ne s'est pas encore adapté au passage à `Pandas` 3. Il va donc falloir _downgrader_ Pandas pour pouvoir installer une version récente de `MLFlow`. Pour cela, faire
+
+```{.bash filename="terminal"}
+uv add "pandas<3" "mlflow == 3.10.0"
+```
+
+*Ce morceau de code évoluera quand MLFlow supportera Pandas 3.0*. 
+
+5. Ajouter `mlruns/*` dans `.gitignore`
+
+6. Modifier le script `train.py` pour introduire dans le _context manager_ de `MLFlow` (`with mlflow.start_run():`) tous les éléments intéressants à _logguer_. Si vous avez besoin d'inspiration, vous pouvez prendre le script d'exemple. Mais n'hésitez pas à essayer d'en constituer un similaire de manière progressive (en faisant de manière répétée les questions 6 à 8).  
+
+<details>
+<summary>
+Script d'exemple
+</summary>
+
+```{.python filename="train.py"}
+"""
+Prediction de la survie d'un individu sur le Titanic
+(avec GridSearchCV + cross-validation)
+"""
+
+import os
+import argparse
 import logging
-from fastapi import FastAPI
-import pandas as pd
+from dotenv import load_dotenv
+
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import train_test_split, GridSearchCV, StratifiedKFold
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import confusion_matrix
+import skops.io as sio
 import mlflow
 
+import duckdb
+import pandas as pd
+
+from src.validation.check import (
+    check_name_formatting,
+    check_missing_values,
+    check_unseen_categories,
+)
+
+load_dotenv()
+con = duckdb.connect(database=":memory:")
 
 logging.basicConfig(
     format="{asctime} - {levelname} - {message}",
     style="{",
     datefmt="%Y-%m-%d %H:%M",
     level=logging.DEBUG,
-    handlers=[logging.FileHandler("api.log"), logging.StreamHandler()],
+    handlers=[logging.FileHandler("recording.log"), logging.StreamHandler()],
 )
 
-# Preload model -------------------
+# PARAMETERS ---------------------------------------
 
-logging.info(
-    "Getting model from MLFlow"
+NUMERIC_FEATURES = ["Age", "Fare"]
+CATEGORICAL_FEATURES = ["Embarked", "Sex"]
+URL_RAW = "https://minio.lab.sspcloud.fr/lgaliana/ensae-reproductibilite/data/raw/data.parquet"
+
+jeton_api = os.environ["JETON_API"]
+
+# ENVIRONMENT CONFIGURATION ---------------------------
+
+parser = argparse.ArgumentParser(
+    description="Paramètres du random forest + grid search"
+)
+parser.add_argument(
+    "--experiment_name", type=str, default="titanicml", help="MLFlow experiment name"
+)
+parser.add_argument(
+    "--n_trees",
+    type=int,
+    default=20,
+    help="Valeur par défaut pour n_estimators dans la grille",
+)
+parser.add_argument(
+    "--cv", type=int, default=5, help="Nombre de folds pour la cross-validation"
+)
+args = parser.parse_args()
+
+n_trees_default = args.n_trees
+cv_folds = args.cv
+
+logging.debug(f"Valeur de l'argument n_trees: {n_trees_default}")
+logging.debug(f"Valeur de l'argument cv: {cv_folds}")
+
+
+# LOGGING IN MLFLOW -----------------
+
+mlflow_server = os.getenv("MLFLOW_TRACKING_URI")
+
+logging.debug(f"Saving experiment in {mlflow_server}")
+
+mlflow.set_tracking_uri(mlflow_server)
+mlflow.set_experiment(args.experiment_name)
+
+
+# QUALITY DIAGNOSTICS  ---------------------------------------
+
+logging.debug(f"\n{80 * '-'}\nStarting data validation step\n{80 * '-'}")
+
+query_definition = (
+    f"CREATE TEMP TABLE titanic AS (SELECT * FROM read_parquet('{URL_RAW}'))"
+)
+con.sql(query_definition)
+
+column_names = con.sql("SELECT column_name FROM (DESCRIBE titanic)").to_df()[
+    "column_name"
+]
+
+check_name_formatting(connection=con)
+
+for var in column_names:
+    check_missing_values(connection=con, variable=var)
+
+# FEATURE ENGINEERING    -----------------------------------------
+
+logging.debug(f"\n{80 * '-'}\nStarting feature engineering phase\n{80 * '-'}")
+
+titanic = con.sql(
+    f"SELECT Survived, {', '.join(CATEGORICAL_FEATURES + NUMERIC_FEATURES)} FROM titanic"
+).to_df()
+
+y = titanic["Survived"]
+X = titanic.drop("Survived", axis="columns")
+
+# Stratify: utile sur Titanic car classes pas parfaitement équilibrées
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.1, random_state=42, stratify=y
 )
 
-model_name = "production"
-model_version = "latest"
 
-# Load the model from the Model Registry
-model_uri = f"models:/{model_name}/{model_version}"
-model = mlflow.sklearn.load_model(model_uri)
+for string_var in CATEGORICAL_FEATURES:
+    check_unseen_categories(X_train, X_test, string_var)
 
-# Define app -------------------------
+# MODEL DEFINITION -----------------------------------------
+
+numeric_transformer = Pipeline(
+    steps=[
+        ("imputer", SimpleImputer(strategy="median")),
+        ("scaler", MinMaxScaler()),
+    ]
+)
+
+categorical_transformer = Pipeline(
+    steps=[
+        ("imputer", SimpleImputer(strategy="most_frequent")),
+        ("onehot", OneHotEncoder(handle_unknown="ignore")),
+    ]
+)
+
+preprocessor = ColumnTransformer(
+    transformers=[
+        ("Preprocessing numerical", numeric_transformer, NUMERIC_FEATURES),
+        ("Preprocessing categorical", categorical_transformer, CATEGORICAL_FEATURES),
+    ]
+)
+
+pipe = Pipeline(
+    steps=[
+        ("preprocessor", preprocessor),
+        ("classifier", RandomForestClassifier(random_state=42)),
+    ]
+)
+
+# GRID SEARCH + CV --------------------------------------------
+
+# Grille d'hyperparamètres (tu peux l'élargir/réduire selon le temps de calcul)
+param_grid = {
+    "classifier__n_estimators": [
+        n_trees_default,
+    ],
+    "classifier__max_depth": [3, 5],
+    "classifier__max_features": ["sqrt", "log2"],
+    "classifier__min_samples_split": [2, 5]
+}
 
 
-app = FastAPI(
-    title="Prédiction de survie sur le Titanic",
-    description=
-    "Application de prédiction de survie sur le Titanic 🚢 <br>Une version par API pour faciliter la réutilisation du modèle 🚀" +\
-        "<br><br><img src=\"https://media.vogue.fr/photos/5faac06d39c5194ff9752ec9/1:1/w_2404,h_2404,c_limit/076_CHL_126884.jpg\" width=\"200\">"
+train_data = pd.concat([X_train, y_train], axis=1)
+
+with mlflow.start_run():
+
+    logging.debug(f"\n{80 * '-'}\nLogging input in MLFlow\n{80 * '-'}")
+
+    mlflow.log_input(
+        mlflow.data.from_pandas(titanic),
+        context="raw",
     )
 
-
-@app.get("/", tags=["Welcome"])
-def show_welcome_page():
-    """
-    Show welcome page with model name and version.
-    """
-
-    return {
-        "Message": "API de prédiction de survie sur le Titanic",
-        "Model_name": 'Titanic ML',
-        "Model_version": "0.3",
-    }
-
-
-@app.get("/predict", tags=["Predict"])
-async def predict(
-    sex: str = "female",
-    age: float = 29.0,
-    fare: float = 16.5,
-    embarked: str = "S"
-) -> str:
-    """
-    """
-
-    df = pd.DataFrame(
-        {
-            "Sex": [sex],
-            "Age": [age],
-            "Fare": [fare],
-            "Embarked": [embarked],
-        }
+    mlflow.log_input(
+        mlflow.data.from_pandas(train_data),
+        context="raw",
     )
 
-    prediction = int(model.predict(df)[0])
+    mlflow.log_param("n_trees", n_trees_default)
 
-    logging.debug(f"Predicting {prediction} for {df.to_dict()}")
+    cv = StratifiedKFold(n_splits=cv_folds, shuffle=True, random_state=42)
 
-    prediction = "Survived 🎉" if prediction == 1 else "Dead ⚰️"
+    search = GridSearchCV(
+        estimator=pipe,
+        param_grid=param_grid,
+        scoring="accuracy",
+        cv=cv,
+        verbose=1,
+        refit=True,
+    )
 
-    return prediction
+# TRAINING AND EVALUATION --------------------------------------------
+
+    logging.debug(f"\n{80 * '-'}\nStarting grid search fitting phase\n{80 * '-'}")
+
+    search.fit(X_train, y_train)
+
+    logging.info(f"Best CV score: {search.best_score_:.3f}")
+    logging.info(f"Best params: {search.best_params_}")
+
+    best_model = search.best_estimator_
+
+    best_params = search.best_params_
+
+    for param, value in best_params.items():
+        mlflow.log_param(param, value)
+
+
+    # Sauvegarde du meilleur pipeline complet
+    sio.dump(best_model, "model.skops")
+
+    test_score = best_model.score(X_test, y_test)
+    train_score = best_model.score(X_train, y_train)
+
+    logging.info(
+        f"{test_score:.1%} de bonnes réponses sur les données de test (best model)"
+    )
+    logging.info(
+        f"{train_score:.1%} de bonnes réponses sur les données de train (best model)"
+    )
+
+    # Log metrics
+    mlflow.log_metric("accuracy", test_score)
+
+    matrix = confusion_matrix(y_test, best_model.predict(X_test))
+    
+    logging.info("Matrice de confusion (test):")
+    logging.info(matrix)
+
+    logging.debug(f"\n{80 * '-'}\nFILE ENDED SUCCESSFULLY!\n{80 * '-'}")
+
+    # Log confusion matrix as an artifact
+    matrix_path = "confusion_matrix.txt"
+    with open(matrix_path, "w") as f:
+        f.write(str(matrix))
+    mlflow.log_artifact(matrix_path)
+
+    # Log model
+    mlflow.sklearn.log_model(best_model, "model")
 ```
 
 </details>
 
-Les changements principaux de ce code sont:
+7. Tester `uv run train.py`
 
-* on va chercher le modèle de production
-* on met à jour la version de notre API pour signaler à nos clients que celle-ci a évolué
-* on utilise un peu plus le _logging_ pour mieux comprendre ce qu'il se passe
+6. Observer l'évolution de la page `Experiments`. Cliquer sur un des _run_.
+Observer toutes les métadonnées archivées (hyperparamètres, métriques d'évaluation, `requirements.txt` dont `MLFlow` a fait l'inférence, etc.)
 
-5. On va retirer l'entraînement de la séquence d'opération du `api/run.sh`. En supprimant la ligne relative à l'entraînement du modèle, vous devriez avoir
+7. Observer le code proposé par `MLFlow` pour récupérer le _run_ en question. Tester celui-ci dans un _notebook_ sur le fichier intermédiaire de test au format `Parquet`
 
-```{.python}
-#/bin/bash
-uvicorn app.api:app --host "0.0.0.0"
-```
+8. En ligne de commande, faites tourner pour une autre valeur de `n_trees`.  Retourner à la liste des _runs_ en cliquant à nouveau sur _"titanicml"_ dans les expérimentations.
 
-Mettons en production cette nouvelle version. Cela implique de faire les gestes suivants:
-
-6. _Commit_ de ce changement dans `main`
-
-7. Publier un tag `v0.0.3` pour le code applicatif
-
-8. Mettre à jour notre manifeste dans le dépôt `GitOps`.
-   * En premier lieu, il faut changer la version de référence pour utiliser le tag `v0.0.3`.
-   * De plus, il faut déclarer la variable d'environnement `MLFLOW_TRACKING_URI` qui indique à `Python` l'entrepôt de modèles où aller chercher celui en production. La bonne pratique est de définir ceci hors du code, dans un fichier de configuration donc, ce qui est l'objet de notre manifeste `deployment.yaml`.
-   * Indiquer au _pod_ qui va se lancer comment s'authentifier à `MLFlow` pour récupérer le modèle de production. On ne va pas mettre en brut nos informations d'authentification dans `deployment.yaml` (n'oublions pas les bonnes pratiques!). On va utiliser un secret *Kubernetes* pour cela, comme on a fait pour notre variable d'environnement précédente (le jeton d'API).
-
-Pour créer le secret Kubernetes:
-
-```{.python}
-kubectl create secret generic mlflow-secrets \
-  --from-literal=MLFLOW_TRACKING_USERNAME="$MLFLOW_TRACKING_USERNAME" \
-  --from-literal=MLFLOW_TRACKING_PASSWORD="$MLFLOW_TRACKING_PASSWORD"
-```
-   
-Changer le `deployment.yaml` de votre dépôt `GitOps`
-
-<details>
-<summary>
-Le modèle `deployment.yaml` proposé
-</summary>
-
-```{.python}
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: titanic-deployment
-  labels:
-    app: titanic
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: titanic
-  template:
-    metadata:
-      labels:
-        app: titanic
-    spec:
-      containers:
-        - name: titanic
-          image: compte_docker/application:v0.0.3 #<1>
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 8000
-          env:
-            - name: JETON_API
-              valueFrom:
-                secretKeyRef:
-                  name: api-jeton
-                  key: JETON_API
-            - name: MLFLOW_TRACKING_URI
-              value: "https://user-${USERNAME}-mlflow.user.lab.sspcloud.fr" #<2>
-            - name: MLFLOW_TRACKING_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: mlflow-secrets
-                  key: MLFLOW_TRACKING_USERNAME
-            - name: MLFLOW_TRACKING_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mlflow-secrets
-                  key: MLFLOW_TRACKING_PASSWORD
-          resources:
-            limits:
-              memory: "2Gi"
-              cpu: "1000m"
-```
-1. Le _tag_ de notre code applicatif
-2. La variable d'environnement à adapter en fonction de l'adresse du dépôt demodèles utilisé. Remplacer par votre URL `MLFlow`.
-
-</details>
-
-10. _Committer_ vos dépôts applicatifs puis GitOps. 
-
-11.  Pour s'assurer que l'application fonctionne bien, on peut aller voir les _logs_ de la machine qui fait tourner notre code. Pour ça, faire `kubectl get pods` et, en supposant que votre service soit nommé `titanic` dans vos fichiers YAML de configuration, récupérer le nom commençant par `titanic-deployment-*` et faire `kubectl logs titanic-deployment-*`
+9.  Sélectionner plusieurs expérimentations, cliquer sur `Compare` et ajouter la statistique d'*accuracy*. Afficher un _scatterplot_ des performances
+en fonction du nombre d'estimateurs. Conclure.
 
 :::
 
 
+
 {{< checkpoint appli23 >}}
+
+

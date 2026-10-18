@@ -18,7 +18,7 @@ import src.models.train_evaluate as te
 # Paramètres ligne de commande
 parser = argparse.ArgumentParser(description="Paramètres du random forest")
 parser.add_argument("--n_trees", type=int, default=20, help="Nombre d'arbres")
-parser.add_argument("--appli", type=str, default="appli21", help="Application number")
+parser.add_argument("--appli", type=str, default="appli22", help="Application number")
 args = parser.parse_args()
 
 # Paramètres YAML

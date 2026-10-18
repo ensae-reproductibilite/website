@@ -3,7 +3,7 @@ import os
 
 
 def log_gsvc_to_mlflow(
-    gscv, mlflow_experiment_name, application_number: str = "appli21"
+    gscv, mlflow_experiment_name, application_number: str = "appli22"
 ):
     """Log a scikit-learn trained GridSearchCV object as an MLflow experiment."""
     # Set up MLFlow context

@@ -5,16 +5,17 @@ Maintenant, revenons à notre chaine de production et appliquons des fonctions p
 
 *Cette application peut être chronophage, vous pouvez aller plus ou moins loin dans la fonctionalisation de votre script en fonction du temps dont vous disposez.*
 
-Cette application vise à transformer nos tests de validation de données en fonctions génériques. Nous allons adopter la convention arbitraire de nommer nos vérifications `check_*`. 
+Cette application vise principalement à transformer nos tests de validation de données en fonctions génériques. Nous allons adopter la convention arbitraire de nommer nos vérifications `check_*`. 
 
-* Pour comprendre la manière dont une fonction peut être un outil d'**autodocumentation**, créer une fonction `check_name_formatting` qui vérifie que le colonne *"Name"* est bien séparable en deux éléments par une virgule. Faire en sorte que cette fonction soit pure[^fonction-pure]. Utiliser le _type hinting_ des arguments pour renforcer l'autodocumentation de la chaîne[^pydantic]. 
+* Pour comprendre la manière dont une fonction peut être un outil d'**autodocumentation**, créer une fonction `check_code_commune_formatting` qui vérifie que la colonne *"code_commune"* est bien composée de 5 caractères commençant par le code du département. Faire en sorte que cette fonction soit pure[^fonction-pure]. Utiliser le _type hinting_ des arguments pour renforcer l'autodocumentation de la chaîne[^pydantic]. 
 * Pour comprendre la manière dont une fonction répond au problème du __*don't repeat yourself*__, créer une fonction `check_missing_values` pour recenser les valeurs manquantes pour une colonne donnée. 
-* Faire la même chose avec une fonction `check_data_leakage`
+* Faire la même chose avec une fonction `check_unseen_categories`, qui vérifie que les modalités des variables catégorielles du test sont toutes présentes dans l'apprentissage.
 * Appliquer `check_missing_values` à l'ensemble des variables du dataset[^column-names] 
+* Le script contient une autre duplication, encore plus flagrante : les deux appels à l'API Melodi (niveau de vie médian et taux de pauvreté) ne diffèrent que par le code de l'indicateur et le nom de la colonne produite. Créer une fonction `get_melodi_indicator` qui renvoie un `DataFrame` pour un indicateur donné, en passant le jeton d'API en argument pour que la fonction reste pure, et l'utiliser pour les deux indicateurs.
 :::
 
 [^fonction-pure]: Une fonction pure est une fonction qui n'attend pas de variables autres que ceux définis dans ses arguments. 
 [^pydantic]: `Python` n'étant pas un langage fortement typé, le _type hinting_ n'est pas coercitif. Il n'y aura pas d'erreur si on fournit un argument différent de celui indiqué dans la définition de la fonction. Il existe des _frameworks_, notamment [`Pydantic`](https://docs.pydantic.dev/latest/), qui visent à sécuriser le code en production en assurant l'homogénéité des types entre les définitions et les usages d'une variable. Nous n'allons pas utiliser ce _framework_ explicitement, cela nécessiterait d'aller plus loin dans le domaine de la programmation orientée objet. Néanmoins, quand nous utiliserons `FastAPI`, nous l'utiliserons indirectement. 
-[^column-names]: A ce stade, il est tout à fait possible d'utiliser `.columns` pour lister les colonnes. Mais comme nous allons ultérieurement privilégier `DuckDB` (application 8) il est possible dès maintenant de récupérer la liste des noms de colonnes avec `DuckDB`
+[^column-names]: A ce stade, il est tout à fait possible d'utiliser `.columns` pour lister les colonnes. Mais comme nous allons ultérieurement privilégier `DuckDB` (application 8) il est possible dès maintenant de récupérer la liste des noms de colonnes avec `DuckDB`. Attention, `DuckDB` ne sait pas lire la colonne `geometry` d'un `GeoDataFrame` : c'est pour cela que les tests portent sur `dvf_attributs`, une version du _DataFrame_ sans cette colonne.
 
 {{< checkpoint appli4 >}}

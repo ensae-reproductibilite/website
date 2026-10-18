@@ -3,9 +3,9 @@
 
 1. En s'inspirant de l'exemple ci-dessus 👆️,
 créer une variable `n_trees` qui peut éventuellement être paramétrée en ligne de commande
-et dont la valeur par défaut est 20 ;
+et dont la valeur par défaut est 1500. L'utiliser pour définir le nombre d'arbres (`n_estimators`) de notre modèle `LightGBM` ;
 2. Tester cette paramétrisation en ligne de commande avec la valeur par défaut
-puis 2, 10 et 50 arbres.
+puis 10, 100 et 500 arbres. Comment évolue la RMSE sur l'échantillon de test ?
 :::
 
 L'exercice suivant permet de mettre en application le fait de paramétriser
@@ -17,10 +17,10 @@ un script en utilisant des variables définies dans un fichier YAML.
 
 1. Installer le package `python-dotenv` que nous allons utiliser pour charger notre jeton d'API à partir d'une variable d'environnement.
 2. A partir de l'exemple de la [documentation](https://pypi.org/project/python-dotenv/), utiliser la fonction `load_dotenv` pour charger dans `Python` nos variables d'environnement à partir d'un fichier (vous pouvez le créer mais ne pas le remplir encore avec les valeurs voulues, ce sera fait ensuite)
-3. Créer la variable comme proposé ci-dessous et vérifier la sortie de `Python` en faisant tourner `titanic.py` en ligne de commande ce code
+3. Créer la variable comme proposé ci-dessous et l'utiliser à la place de `jetonapi` dans les appels à l'API Melodi[^melodi]. Vérifier la sortie de `Python` en faisant tourner `dvf.py` en ligne de commande
 
 
-```{.python filename="titanic.py"}
+```{.python filename="dvf.py"}
 jeton_api = os.environ["JETON_API"]
 ```
 
@@ -28,6 +28,8 @@ jeton_api = os.environ["JETON_API"]
 5. S'il n'existe pas déjà, créer un fichier `.gitignore` (cf. [Chapitre `Git`](/chapters/git.qmd)). Ajouter dans ce fichier `.env` car il ne faut pas committer ce fichier. Au passage ajouter `__pycache__/` au `.gitignore`[^pycache], cela évitera d'avoir à le faire ultérieurement ;
 1. Créer un fichier `README.md` où vous indiquez qu'il faut créer un fichier `.env` pour
 pouvoir utiliser l'API.
+
+[^melodi]: L'API Melodi de l'Insee est en accès libre : le jeton fictif présent dans le script n'est pas vérifié. Nous faisons comme s'il l'était car c'est le cas de nombreuses API et la bonne pratique est la même.
 
 [^pycache]: Il est normal d'avoir des dossiers `__pycache__` qui traînent en local : ils se créent automatiquement à l'exécution d'un script en `Python`. Néanmoins, il ne faut pas associer ces fichiers à `Git`, voilà pourquoi on les ajoute au `.gitignore`.
 
