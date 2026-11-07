@@ -1,42 +1,146 @@
 ::: {.application}
+## Application 21: Mettre à disposition l'API (déploiement manuel)
 
-## Application 21: Création d'un site web pour valoriser le projet
+Cette partie nécessite d'avoir à disposition une infrastructure _cloud_.
 
-```{.python file="terminal"}
-quarto create project website mysite
+- Créer un dossier `deployment` à la racine du projet qui va contenir les fichiers de configuration nécessaires pour déployer sur un cluster `Kubernetes`
+
+- En vous inspirant de la [documentation](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment), y ajouter un premier fichier `deployment.yaml` qui va spécifier la configuration du *Pod* à lancer sur le cluster
+
+<details>
+<summary>Fichier `deployment/deployment.yaml`</summary>
+
+```{.python filename="deployment/deployment.yaml"}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: titanic-deployment
+  labels:
+    app: titanic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: titanic
+  template:
+    metadata:
+      labels:
+        app: titanic
+    spec:
+      containers:
+      - name: titanic
+        image: votre_compte_docker_hub/application:latest #<1>
+        ports:
+        - containerPort: 8000
+1. Remplacer ici par votre compte Docker
 ```
 
-- Faire remonter d'un niveau `_quarto.yml`
-- Supprimer `about.qmd`, déplacer `index.qmd` vers la racine de notre projet.
-- Remplacer le contenu de `index.qmd` par [celui-ci](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli21/index.qmd) et retirer `about.qmd` des fichiers à compiler.
-- Déplacer `styles.css` à la racine du projet
-- Mettre à jour le `.gitignore` avec les instructions suivantes
+</details>
 
-```{.bash file=".gitignore" no-prefix=true}
-/.quarto/
-*.html
-*_files
-_site/
+- En vous inspirant de la [documentation](https://kubernetes.io/fr/docs/concepts/services-networking/service/#d%C3%A9finition-d-un-service), y ajouter un second fichier `service.yaml` qui va créer une ressource `Service` permettant de donner une identité fixe au `Pod` précédemment créé au sein du cluster
+
+<details>
+<summary>Fichier `deployment/service.yaml`</summary>
+
+```{.yaml filename="deployment/service.yaml"}
+apiVersion: v1
+kind: Service
+metadata:
+  name: titanic-service
+spec:
+  selector:
+    app: titanic
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+```
+</details>
+
+- En vous inspirant de la [documentation](https://kubernetes.io/docs/concepts/services-networking/ingress/#the-ingress-resource), y ajouter un troisième fichier `ingress.yaml` qui va créer une ressource `Ingress` permettant d'exposer le service via une URL en dehors du cluster
+
+<details>
+<summary>Fichier `deployment/ingress.yaml`</summary>
+
+```{.python filename="deployment/ingress.yaml"}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: titanic-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "Authorization, Content-Type"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - nom-appli.lab.sspcloud.fr #<1>
+  rules:
+  - host: nom-appli.lab.sspcloud.fr #<1>
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: titanic-service
+            port:
+              number: 80
+```
+1. Mettez l'URL auquel vous voulez exposer votre service. Sur le modèle de `titanic-ensae.lab.sspcloud.fr` (mais ne tentez pas celui-là, il est déjà pris 😃)
+2. Mettre cette même URL ici aussi
+</details>
+
+- Appliquer ces fichiers de configuration sur le cluster : `kubectl apply -f deployment/`
+
+- Vérifier le bon déploiement de l'application (c'est à dire du `Pod` qui encapsule le conteneur) à l'aide de la commande `kubectl get pods`. Regarder les _logs_ avec `kubectl logs -l app=titanic -f --tail=200`. Comprenez vous la source de l'erreur ?
+
+- Créer un secret pour votre jeton d'API. Il y a plusieurs manières de faire. En l'occurrence, vous pouvez utiliser cette commande
+
+```{.bash filename="terminal"}
+kubectl create secret generic api-jeton --from-literal=JETON_API='mon_super_jeton'
 ```
 
-- En ligne de commande, faire `quarto preview`
-- Observer le site web généré en local
+- Mettre à jour votre _deployment_ pour indiquer à Kubernetes (le seul avec vous à connaître la valeur derrière le jeton):
 
-Enfin, on va construire et déployer automatiquement ce site web grâce au
-combo `Github Actions` et `Github Pages`:
-
-- Créer une branche `gh-pages` à partir des lignes suivantes
-
-```{.python filename="terminal"}
-git checkout --orphan gh-pages
-git reset --hard # make sure all changes are committed before running this!
-git commit --allow-empty -m "Initialising gh-pages branch"
-git push origin gh-pages
+```{.python}
+#| filename: "deployment/deployment.yaml"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: titanic-deployment
+  labels:
+    app: titanic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: titanic
+  template:
+    metadata:
+      labels:
+        app: titanic
+    spec:
+      containers:
+      - name: titanic
+        image: votre_compte_docker_hub/application:latest #<1>
+        ports:
+        - containerPort: 8000
+        env:
+        - name: JETON_API
+          valueFrom:
+            secretKeyRef:
+              name: api-jeton
+              key: JETON_API
 ```
+1. Remplacer ici par votre compte Docker
 
-- Revenir à votre branche principale (`main` normalement)
-- Créer un fichier `.github/workflows/website.yaml` avec le contenu de [ce fichier](https://raw.githubusercontent.com/ensae-reproductibilite/application/tree/appli21/.github/workflows/publish.yaml)
-- Modifier le `README` pour indiquer l'URL de votre site web et de votre API
+- Si tout a correctement fonctionné, vous devriez pouvoir accéder depuis votre navigateur à l'API à l'URL spécifiée dans le fichier `deployment/ingress.yaml`. Par exemple `https://api-titanic-test.lab.sspcloud.fr/` si vous avez mis celui-ci plus tôt.
+
+- Explorer le *swagger* de votre API à l'adresse `https://api-titanic-test.lab.sspcloud.fr/docs`. Il s'agit d'une page de documentation standard à la plupart des APIs, bien utiles pour tester des requêtes de manière interactive. Regarder les _logs_ avant/après avoir testé les exemples interactifs d'utilisation. 
 
 :::
 

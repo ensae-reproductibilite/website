@@ -1,397 +1,249 @@
-::: {.callout-tip}
-## Application 26a: faire appel à une API LLM
+::: {.application}
+## Application 26 : passer en production un modèle avec MLFlow
 
-Cette application consiste à se familiariser avec l'appel à un LLM depuis `Python` via le standard _OpenAI_:
+1. Si vous avez entraîné plusieurs modèles avec des `n_trees` différents, utiliser l'interface de `MLFlow` pour sélectionner le "meilleur". Cliquer sur le modèle en question et faire l'action _"Register Model"_. L'enregistrer comme le modèle de _"production"_
 
-* Créer un jeton d'API pour accéder à un fournisseur de service. Pour ne pas avoir une facture démesurée avec un fournisseur de service classique (OpenAI, Anthropic...), dans le cadre de ce cours, vous pouvez utiliser [llm.lab.sspcloud.fr/](https://llm.lab.sspcloud.fr/) qui est certes peu performant (les GPU sont une ressource très consommée sur le SSPCloud et à la disponibilité limitée) mais permettra d'illustrer l'utilisation d'API suivant le standard OpenAI.
-* Stocker ce jeton dans votre `.env` sous le nom `OPENAI_API_KEY`
-* Dans un _notebook_, tester la connexion au LLM que nous utiliserons au cours des prochains exercices:
+2. Rendez-vous sur l'onglet `Models` et observez cet entrepôt de modèles. Cliquez sur le modèle de production. Vous pourrez par ce biais suivre ses différentes versions.
 
-```{.python}
-from dotenv import load_dotenv
-from openai import OpenAI
-import os
-import json
-
-client = OpenAI(
-    api_key=os.environ["OPENAI_API_KEY"],
-    base_url="https://llm.lab.sspcloud.fr/api/v1/" #<1>
-)
-
-models = client.models.list()
-
-for model in models.data:
-    print(model.id)
-
-client.chat.completions.create(
-  model="qwen3-5-9b", #<2>
-  messages=[{"role": "user", "content": "t'es qui ?"}],
-)
-```
-1. En supposant que vous utilisez le service LLM du SSPCloud. Sinon, remplacer par votre fournisseur de service (attention à la facture...)
-2. Remplacer par le modèle adéquat
-:::
-
-Nous allons maintenant définir notre _pipeline_ pour générer des données synthétiques. Il dépendra, comme l'illustre @fig-pipeline-llm, de 4 _inputs_:
-
-* Un _prompt_ indiquant au LLM sa tâche et les éléments de contexte à prendre en considération ;
-* Un schéma définissant le format de données qu'on veut en sortie. Ce schéma permet de cadre l'_output_ du LLM
-* Des données démographiques tirées aléatoirement depuis le recensement de la population française. Elles nous donneront le profil de nos nouveaux membres du Titanic.
-* Une distribution agrégée du prix des tickets sur le Titanic qui permettra au LLM de générer des valeurs vraisemblables pour la variable `Fare`
-
-Nous allons adopter de bonnes pratiques évitant l'ajout d'un monolithe à notre projet:
-
-* Le prompt est stocké dans un fichier markdown dédié. Nous verrons plus tard, avec langfuse, comment améliorer ceci. On devra injecter dans celui-ci des valeurs réalistes issues de données réelles. On pourra le faire grâce à `Python`.
-* Le schéma est dans un JSON dédié
-* Les données réelles sont lues par `DuckDB` via `Python` :
-    + On utilise `DuckDB` pour tirer aléatoirement des données de recensement qui nous serviront d'_input_ au LLM
-    + On utilise `DuckDB` pour calculer la distribution de prix qui nous servira de contexte à la génération de LLM
-
-
-![Structuration du _pipeline_ d'annotation avec un LLM](/chapters/applications/figures/llm_pipeline.png){#fig-pipeline-llm}
-
-::: {.callout-tip}
-## Application 26b: Générer des données synthétiques avec un LLM en local
-
-Créer, selon les modèles ci-dessous, les fichiers :
-
-* `src/synthetic_data/prompt_generation.md`
-* `src/synthetic_data/schema_generation.json`
-* `src/synthetic_data/distribution.py`
-* `src/synthetic_data/llm.py`
+3. Ouvrir un notebook temporaire et observer le résultat.
 
 <details>
-
 <summary>
-
-Fichier `src/synthetic_data/prompt_generation.md`
-
+Exemple de code à tester
 </summary>
 
-```{.python}
-Tu es un simulateur de passagers du Titanic.
 
-Ta tâche:
-Pour chaque passager en entrée, compléter :
-1. le champ "fare" (prix du billet) à partir de la PCS,
-2. le champ "fare_band",
-3. le champ "survived" (0 = non, 1 = oui) de façon réaliste.
-
-Règles pour fare_band:
-- "low" si fare <= {fare_q1}
-- "mid" si {fare_q1} < fare <= {fare_q3}
-- "high" si fare > {fare_q3}
-
-Règles réalistes pour survived:
-- les femmes survivent plus souvent que les hommes
-- les passagers avec fare élevé survivent plus souvent
-- les enfants survivent plus souvent
-- embarked = C peut légèrement augmenter la survie
-- rester plausible, sans être déterministe
-
-Contraintes:
-- fare doit être un float > 0
-- fare arrondi à 2 décimales
-- survived doit valoir 0 ou 1
-- ne modifie pas les champs d’entrée
-- ajoute seulement fare, fare_band et survived
-- renvoie uniquement un JSON valide
-- renvoie un tableau de {N} objets
-
-Entrée:
-{input}
-```
-
-</details>
-
-<details>
-
-<summary>
-
-Fichier `src/synthetic_data/schema_generation.json`
-
-</summary>
-
-```{.python}
-{
-  "name": "TitanicPassengersBatch",
-  "schema": {
-    "type": "array",
-    "minItems": 5,
-    "maxItems": 5,
-    "items": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "age": { "type": "integer", "minimum": 0, "maximum": 120 },
-        "embarked": { "type": "string", "enum": ["C", "Q", "S"] },
-        "sex": { "type": "integer", "enum": [1, 2] },
-        "pcs": { "type": "integer", "minimum": 1, "maximum": 9 },
-        "fare": { "type": "number", "exclusiveMinimum": 0 },
-        "fare_band": { "type": "string", "enum": ["low", "mid", "high"] },
-        "survived": { "type": "integer", "enum": [0, 1] }
-      },
-      "required": [
-        "age",
-        "embarked",
-        "sex",
-        "pcs",
-        "fare",
-        "fare_band",
-        "survived"
-      ]
-    }
-  }
-}
-```
-
-</details>
-
-
-<details>
-
-<summary>
-
-Fichier `src/synthetic_data/distribution.py`
-
-</summary>
-
-```{.python}
-import duckdb
-
-
-OBSERVED_DATA = (
-    "https://minio.lab.sspcloud.fr/projet-formation/"
-    "bonnes-pratiques/data/RPindividus/REGION=84/part-0.parquet"
-)
-TITANIC_HISTORICAL_DATA = (
-    "https://minio.lab.sspcloud.fr/"
-    "lgaliana/ensae-reproductibilite/data/raw/data.parquet"
-)
-
-
-def pick_observed_data(
-    con: duckdb.DuckDBPyConnection,
-    path: str,
-    n: int = 5
-):
-
-    query = f"""
-    CREATE TEMP TABLE titanic AS
-    SELECT
-        AGED AS age,
-        'C' AS embarked,
-        CS1 AS pcs,
-        SEXE AS sex
-    FROM '{path}'
-    LIMIT 1000
-    """
-    # Assume they all embarked from Cherbourg ('C')
-
-    con.sql(query)
-
-    sample_query = f"""
-    SELECT age, embarked, pcs, sex
-    FROM titanic
-    ORDER BY random()
-    LIMIT {n}
-    """
-
-    passengers = (
-        con.execute(sample_query)
-        .fetchdf()
-        .to_dict(orient="records")
-    )
-
-    return passengers
-
-
-def compute_observed_distribution_fare(
-    con: duckdb.DuckDBPyConnection,
-    titanic_historical_data: str
-):
-
-    stat_agg_query = f"""
-    SELECT
-        min(fare) AS fare_min,
-        quantile(fare, 0.25) AS fare_q1,
-        quantile(fare, 0.50) AS fare_q2,
-        quantile(fare, 0.75) AS fare_q3,
-        max(fare) AS fare_max
-    FROM read_parquet('{titanic_historical_data}');
-    """
-
-    fare_stats = (
-        con.sql(stat_agg_query)
-        .to_df().to_dict()
-    )
-
-    return fare_stats
-```
-
-</details>
-
-
-<details>
-
-<summary>
-
-Fichier `src/synthetic_data/llm.py`
-
-</summary>
-
-```{.python}
-import os
-from pathlib import Path
-from dotenv import load_dotenv
-import json
-import duckdb
-from openai import OpenAI
-import argparse
-import logging
-import time
-import uuid
+```{.python file="Dans une cellule de notebook"}
+import mlflow
 import pandas as pd
 
-from distribution import (
-    pick_observed_data,
-    compute_observed_distribution_fare,
-    OBSERVED_DATA,
-    TITANIC_HISTORICAL_DATA
-)
+model_name = "production"
+model_version = "latest"
 
+# Load the model from the Model Registry
+model_uri = f"models:/{model_name}/{model_version}"
+logged_model = mlflow.sklearn.load_model(model_uri)
 
-# CONFIGURATION -------------------------------------
+# GENERATE PREDICTION DATA ---------------------
 
-load_dotenv()
+def create_data(
+    sex: str = "female",
+    age: float = 29.0,
+    fare: float = 16.5,
+    embarked: str = "S",
+) -> str:
+    """
+    """
 
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    "--n", type=int, required=False, default=5,
-    help="Nombre de passagers à générer"
-)
-args = parser.parse_args()
-N = args.n
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s | %(levelname)s | %(message)s"
-)
-logger = logging.getLogger(__name__)
-
-con = duckdb.connect()
-
-# LLM template
-template = Path("src/synthetic_data/prompt_generation.md").read_text(encoding="utf-8")
-with open("src/synthetic_data/schema_generation.json", "r", encoding="utf-8") as f:
-    schema = json.load(f)
-
-# Ensure schema consistency with N
-schema["schema"]["minItems"] = N
-schema["schema"]["maxItems"] = N
-
-
-client = OpenAI(
-    api_key=os.environ["OPENAI_API_KEY"],
-    base_url="https://llm.lab.sspcloud.fr/api"
-)
-
-
-# OBSERVED DATA PICKED FROM FRENCH CENSUS DATA -------------------------
-
-logger.info(f"Sélection de {N} passagers observés")
-passengers = pick_observed_data(con, OBSERVED_DATA, n=N)
-
-logger.debug(passengers)
-
-
-fare_stats = compute_observed_distribution_fare(
-    con,
-    TITANIC_HISTORICAL_DATA
-)
-
-logger.info(
-    "Fare données historiques utilisées pour générer des valeurs vraisemblables"
-)
-logger.info(fare_stats)
-
-
-# INJECTION DANS LE PROMPT --------------------------
-
-prompt = template.format(
-    N=N,
-    fare_min=fare_stats["fare_min"],
-    fare_q1=fare_stats["fare_q1"],
-    fare_q2=fare_stats["fare_q2"],
-    fare_q3=fare_stats["fare_q3"],
-    fare_max=fare_stats["fare_max"],
-    input=json.dumps(passengers, ensure_ascii=False)
-)
-
-logger.debug(prompt)
-
-
-# REQUETE GENERATIVE ------------------------------
-
-logger.info("Envoi de la requête au LLM")
-
-
-t0 = time.perf_counter()
-
-resp = client.chat.completions.create(
-    model="qwen3-5-9b",
-    messages=[{"role": "user", "content": prompt}],
-    response_format={
-        "type": "json_schema",
-        "json_schema": {
-            **schema,
-            "strict": True
+    df = pd.DataFrame(
+        {
+            "Sex": [sex],
+            "Age": [age],
+            "Fare": [fare],
+            "Embarked": [embarked],
         }
-    }
+    )
+
+    return df
+
+
+data = pd.concat(
+    [create_data(age=40), create_data(sex="male")]
 )
 
-elapsed = time.perf_counter() - t0
-logger.info("Temps de réponse du LLM: %.3f secondes", elapsed)
+# PREDICTION ---------------------
 
-out = resp.choices[0].message.content
-result = json.loads(out)
-
-logger.info("Résultat reçu: %s lignes", len(result))
-logger.info("Résultat brut: %s", result)
-
-
-# SAVE OBSERVED DATA -----------------------------------------
-
-output_dir = Path("outputs")
-output_dir.mkdir(parents=True, exist_ok=True)
-
-random_filename = f"titanic_{uuid.uuid4().hex}.parquet"
-output_path = output_dir / random_filename
-
-df = pd.DataFrame(result)
-df.to_parquet(output_path, index=False)
-
-logger.info("Parquet enregistré dans %s", output_path)
-
-logger.debug(f"Saved to: {output_path}")
+logged_model.predict(pd.DataFrame(data))
 ```
 
 </details>
 
+4. On va adapter le code applicatif de notre API pour tenir compte de ce modèle de production.
+
+<details>
+<summary>
+Voir le script `app/api.py` proposé
+</summary>
+
+```{.python file="app/api.py"}
+"""A simple API to expose our trained RandomForest model for Tutanic survival."""
+
+import logging
+from fastapi import FastAPI
+import pandas as pd
+import mlflow
+
+
+logging.basicConfig(
+    format="{asctime} - {levelname} - {message}",
+    style="{",
+    datefmt="%Y-%m-%d %H:%M",
+    level=logging.DEBUG,
+    handlers=[logging.FileHandler("api.log"), logging.StreamHandler()],
+)
+
+# Preload model -------------------
+
+logging.info(
+    "Getting model from MLFlow"
+)
+
+model_name = "production"
+model_version = "latest"
+
+# Load the model from the Model Registry
+model_uri = f"models:/{model_name}/{model_version}"
+model = mlflow.sklearn.load_model(model_uri)
+
+# Define app -------------------------
+
+
+app = FastAPI(
+    title="Prédiction de survie sur le Titanic",
+    description=
+    "Application de prédiction de survie sur le Titanic 🚢 <br>Une version par API pour faciliter la réutilisation du modèle 🚀" +\
+        "<br><br><img src=\"https://media.vogue.fr/photos/5faac06d39c5194ff9752ec9/1:1/w_2404,h_2404,c_limit/076_CHL_126884.jpg\" width=\"200\">"
+    )
+
+
+@app.get("/", tags=["Welcome"])
+def show_welcome_page():
+    """
+    Show welcome page with model name and version.
+    """
+
+    return {
+        "Message": "API de prédiction de survie sur le Titanic",
+        "Model_name": 'Titanic ML',
+        "Model_version": "0.3",
+    }
+
+
+@app.get("/predict", tags=["Predict"])
+async def predict(
+    sex: str = "female",
+    age: float = 29.0,
+    fare: float = 16.5,
+    embarked: str = "S"
+) -> str:
+    """
+    """
+
+    df = pd.DataFrame(
+        {
+            "Sex": [sex],
+            "Age": [age],
+            "Fare": [fare],
+            "Embarked": [embarked],
+        }
+    )
+
+    prediction = int(model.predict(df)[0])
+
+    logging.debug(f"Predicting {prediction} for {df.to_dict()}")
+
+    prediction = "Survived 🎉" if prediction == 1 else "Dead ⚰️"
+
+    return prediction
+```
+
+</details>
+
+Les changements principaux de ce code sont:
+
+* on va chercher le modèle de production
+* on met à jour la version de notre API pour signaler à nos clients que celle-ci a évolué
+* on utilise un peu plus le _logging_ pour mieux comprendre ce qu'il se passe
+
+5. On va retirer l'entraînement de la séquence d'opération du `api/run.sh`. En supprimant la ligne relative à l'entraînement du modèle, vous devriez avoir
+
+```{.python}
+#/bin/bash
+uvicorn app.api:app --host "0.0.0.0"
+```
+
+Mettons en production cette nouvelle version. Cela implique de faire les gestes suivants:
+
+6. _Commit_ de ce changement dans `main`
+
+7. Publier un tag `v0.0.3` pour le code applicatif
+
+8. Mettre à jour notre manifeste dans le dépôt `GitOps`.
+   * En premier lieu, il faut changer la version de référence pour utiliser le tag `v0.0.3`.
+   * De plus, il faut déclarer la variable d'environnement `MLFLOW_TRACKING_URI` qui indique à `Python` l'entrepôt de modèles où aller chercher celui en production. La bonne pratique est de définir ceci hors du code, dans un fichier de configuration donc, ce qui est l'objet de notre manifeste `deployment.yaml`.
+   * Indiquer au _pod_ qui va se lancer comment s'authentifier à `MLFlow` pour récupérer le modèle de production. On ne va pas mettre en brut nos informations d'authentification dans `deployment.yaml` (n'oublions pas les bonnes pratiques!). On va utiliser un secret *Kubernetes* pour cela, comme on a fait pour notre variable d'environnement précédente (le jeton d'API).
+
+Pour créer le secret Kubernetes:
+
+```{.python}
+kubectl create secret generic mlflow-secrets \
+  --from-literal=MLFLOW_TRACKING_USERNAME="$MLFLOW_TRACKING_USERNAME" \
+  --from-literal=MLFLOW_TRACKING_PASSWORD="$MLFLOW_TRACKING_PASSWORD"
+```
+   
+Changer le `deployment.yaml` de votre dépôt `GitOps`
+
+<details>
+<summary>
+Le modèle `deployment.yaml` proposé
+</summary>
+
+```{.python}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: titanic-deployment
+  labels:
+    app: titanic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: titanic
+  template:
+    metadata:
+      labels:
+        app: titanic
+    spec:
+      containers:
+        - name: titanic
+          image: compte_docker/application:v0.0.3 #<1>
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          env:
+            - name: JETON_API
+              valueFrom:
+                secretKeyRef:
+                  name: api-jeton
+                  key: JETON_API
+            - name: MLFLOW_TRACKING_URI
+              value: "https://user-${USERNAME}-mlflow.user.lab.sspcloud.fr" #<2>
+            - name: MLFLOW_TRACKING_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mlflow-secrets
+                  key: MLFLOW_TRACKING_USERNAME
+            - name: MLFLOW_TRACKING_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mlflow-secrets
+                  key: MLFLOW_TRACKING_PASSWORD
+          resources:
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+```
+1. Le _tag_ de notre code applicatif
+2. La variable d'environnement à adapter en fonction de l'adresse du dépôt demodèles utilisé. Remplacer par votre URL `MLFlow`.
+
+</details>
+
+10. _Committer_ vos dépôts applicatifs puis GitOps. 
+
+11.  Pour s'assurer que l'application fonctionne bien, on peut aller voir les _logs_ de la machine qui fait tourner notre code. Pour ça, faire `kubectl get pods` et, en supposant que votre service soit nommé `titanic` dans vos fichiers YAML de configuration, récupérer le nom commençant par `titanic-deployment-*` et faire `kubectl logs titanic-deployment-*`
 
 :::
 
-::: {.callout-tip}
-## Application 27: Enregister le prompt et les logs dans langfuse
 
-:::
-
-::: {.callout-tip}
-## Application 28: Logguer les données dans S3 (répéter l'expérience x fois ?)
-
-:::
-
-::: {.callout-tip}
-## Application 29: CRON job pour évaluer la performance du modèle sur données annotées
-
-:::
+{{< checkpoint appli26 >}}
