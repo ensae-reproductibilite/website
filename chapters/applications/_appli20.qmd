@@ -6,13 +6,15 @@
 <details>
 <summary>Fichier `app/run.sh`</summary>
 
-```{.bash filename="api/run.sh" no-prefix=true}
-#/bin/bash
+```{.bash filename="app/run.sh" no-prefix=true}
+#!/bin/bash
 
 uv run train.py
 uv run uvicorn app.api:app --host "0.0.0.0"
 ```
 </details>
+
+- Pourquoi lancer `train.py` avant l'API ? Le fichier `model.skops` est ignoré par Git (il figure dans le `.gitignore`) : il n'est donc ni dans le dépôt, ni dans l'image Docker. Le conteneur entraîne alors le modèle au démarrage, avant de le servir. Ce démarrage est long (plusieurs minutes, le temps de télécharger les données et d'entraîner le modèle) ; nous reviendrons plus tard sur ce point, avec une meilleure façon de partager un modèle entraîné entre l'entraînement et l'API.
 
 - Donner au script `app/run.sh` des permissions d'exécution : `chmod +x app/run.sh`
 
@@ -36,7 +38,7 @@ kubectl logs api-ml
 
 </details>
 
-- Si tout se passe correctement, vous devriez observer dans la console un *output* similaire au déploiement en local de la partie précédente. Cette fois, l'application est déployée à l'adresse `http://0.0.0.0:8000`. On ne peut néanmoins pas directement l'exploiter à ce stade : si le conteneur de l'API est déployé, il manque un ensemble de ressources Kubernetes qui permettent de déployer proprement l'API à tout utilisateur. C'est l'objet de l'application suivante !
+- Si tout se passe correctement, vous devriez observer dans la console un *output* similaire au déploiement en local de la partie précédente. Les journaux de l'entraînement s'affichent d'abord, puis ceux d'`uvicorn` une fois l'API lancée. Cette fois, l'application est déployée à l'adresse `http://0.0.0.0:8000`. On ne peut néanmoins pas directement l'exploiter à ce stade : si le conteneur de l'API est déployé, il manque un ensemble de ressources Kubernetes qui permettent de déployer proprement l'API à tout utilisateur. C'est l'objet de l'application suivante !
 
 - Si vous avez testé `kubectl get pods`, faire `kubectl delete pod api-ml` pour nettoyer le serveur. 
 
