@@ -26,13 +26,13 @@ La réponse est au format `GeoJSON`, un format `JSON` standardisé pour représe
 - `properties.label` : l'adresse telle que la BAN l'a reconnue, après normalisation.
 - `properties.score` : un nombre entre 0 et 1 qui indique la confiance du géocodeur. Un score faible signale une adresse mal reconnue.
 
-Pour voir à quoi ressemble cette réponse sans quitter cette page, tapez une adresse ci-dessous : la requête est envoyée à la BAN par votre navigateur.
+Pour voir à quoi ressemble cette réponse sans quitter cette page, tapez une adresse ci-dessous puis cliquez sur _Géocoder_ : la requête est envoyée à la BAN par votre navigateur.
 
 ```{ojs}
 //| label: ban-adresse-input
 //| eval: true
 //| echo: false
-viewof adresse_ban = Inputs.text({value: "20 avenue de Ségur 75007 Paris", placeholder: "20 avenue de Ségur 75007 Paris", label: md`**Adresse**`})
+viewof adresse_ban = Inputs.text({value: "20 avenue de Ségur 75007 Paris", placeholder: "20 avenue de Ségur 75007 Paris", label: md`**Adresse**`, submit: "Géocoder"})
 ```
 
 ```{ojs}
@@ -99,7 +99,8 @@ import {L} from "@observablehq/hello-leaflet"
 carte_ban = {
   const features = localisation_ban.features;
   if (features.length === 0) {
-    return html`<p><em>Pas de carte à afficher : aucune adresse trouvée.</em></p>`;
+    yield html`<p><em>Pas de carte à afficher : aucune adresse trouvée.</em></p>`;
+    return;
   }
   const [longitude, latitude] = features[0].geometry.coordinates;
   const container = html`<div style="height:300px;"></div>`;
@@ -111,7 +112,6 @@ carte_ban = {
   L.marker([latitude, longitude]).addTo(carte)
     .bindPopup(features[0].properties.label).openPopup();
   invalidation.then(() => carte.remove());
-  return container;
 }
 ```
 
