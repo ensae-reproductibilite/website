@@ -97,7 +97,7 @@ Dans ce fichier, écrire la fonction `build_inference_features`, qui prend en en
 4. ajouter les données du carreau Filosofi et les indicateurs de la commune ;
 5. appeler `add_filosofi_ratios`, `add_surface_features` et `add_distance_eiffel`, exactement comme à l'entraînement.
 
-Les variables que l'utilisateur ne connaît pas, comme `surface_terrain`, `nombre_lots` ou la surface Carrez, sont des arguments optionnels laissés vides par défaut. Le pipeline du modèle les remplace par la valeur médiane observée à l'entraînement.
+Les informations que l'utilisateur ne connaît pas forcément deviennent des arguments optionnels, avec une valeur par défaut correspondant au cas le plus courant : un seul lot (`nombre_lots=1`) et pas de terrain (`surface_terrain=0`). La surface Carrez est laissée vide par défaut : la variable `ratio_carrez` est alors manquante, et l'étape d'imputation du pipeline la remplace par la médiane observée à l'entraînement.
 
 Il faut bien remarquer ce qu'on **n'**appelle **pas** : `build_features`. Cette fonction calcule la cible `prix_m2`, que nous cherchons justement à prédire et que nous ne connaissons pas ici. Elle filtre aussi les valeurs aberrantes, ce qui supprimerait la seule ligne que nous voulons évaluer. Nous réutilisons donc uniquement les fonctions qui calculent les variables explicatives.
 
@@ -139,7 +139,6 @@ URL_RAW = "https://minio.lab.sspcloud.fr/lgaliana/ensae-reproductibilite/data/ra
 URL_FILOSOFI = f"{URL_RAW}/filosofi_carreaux_200m_2021.parquet"
 
 con = duckdb.connect(database=":memory:")
-con.sql("INSTALL spatial; LOAD spatial;")
 
 unknown_types = sio.get_untrusted_types(file="model.skops")
 model = sio.load("model.skops", trusted=unknown_types)
@@ -151,7 +150,7 @@ features = build_inference_features(
     nombre_pieces_principales=3,
     connection=con,
     url_filosofi=URL_FILOSOFI,
-    jeton_api=os.environ["JETON_API"],
+    jeton_api=os.environ.get("JETON_API", ""),
 )
 
 predict_prix_m2(model, features)
@@ -165,7 +164,7 @@ predict_prix_m2(model, features)
 
 ## Application 17c: Exposer le pipeline d'inférence avec une API
 
-Notre pipeline fonctionne, mais seulement depuis une session `Python`. Pour qu'une application ou une autre personne puisse l'interroger, nous allons, comme à l'étape précédente, le mettre à disposition par une API. Nous utilisons à nouveau [`FastAPI`](https://fastapi.tiangolo.com/), accompagné du serveur web `uvicorn` qui fait tourner l'application.
+Notre pipeline fonctionne, mais seulement depuis une session `Python`. Pour qu'une application ou une autre personne puisse l'interroger, nous allons le mettre à disposition par une API, comme annoncé en introduction de cette partie. Nous utilisons à nouveau [`FastAPI`](https://fastapi.tiangolo.com/), accompagné du serveur web `uvicorn` qui fait tourner l'application.
 
 - Installer `fastapi` et `uvicorn` avec `uv` :
 
@@ -173,7 +172,7 @@ Notre pipeline fonctionne, mais seulement depuis une session `Python`. Pour qu'u
 uv add fastapi uvicorn
 ```
 
-- Comme à l'application précédente, nous donnons directement le code de l'API. Créer le fichier `app/api.py` :
+- Comme découvrir `FastAPI` n'est pas l'objet de cet enseignement, nous donnons directement le code de l'API. Si vous désirez tester par vous-mêmes, vous pouvez écrire votre fichier sans vous référer à l'exemple. Créer le fichier `app/api.py` :
 
 <details>
 <summary>
@@ -185,7 +184,7 @@ Fichier `app/api.py`
 
 </details>
 
-Le modèle et la connexion `DuckDB` sont chargés une seule fois au démarrage de l'API. Chaque requête appelle ensuite le pipeline d'inférence. L'API lit le jeton Melodi dans la variable d'environnement `JETON_API`, comme `main.py`. Vérifiez que votre fichier `.env` est bien présent.
+Le modèle et la connexion `DuckDB` sont chargés une seule fois au démarrage de l'API. Chaque requête appelle ensuite le pipeline d'inférence. L'API lit le jeton Melodi dans la variable d'environnement `JETON_API`, comme `train.py`, et utilise un jeton vide s'il n'est pas défini.
 
 - Déployer l'API en local avec la commande suivante :
 
