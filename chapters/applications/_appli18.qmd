@@ -18,12 +18,15 @@ Un modèle ne comprend pas une adresse écrite en texte libre, il comprend des n
 curl "https://data.geopf.fr/geocodage/search?q=20+avenue+de+segur+paris&limit=1"
 ```
 
-On obtient la réponse suivante (cliquez sur les flèches pour déplier les champs) :
+Voici par exemple le contenu de `properties` dans la réponse obtenue (les coordonnées sont à part, dans `geometry`) :
 
 ```{ojs}
 //| eval: true
 //| echo: false
-d3.json("https://data.geopf.fr/geocodage/search?q=20+avenue+de+segur+paris&limit=1")
+{
+  const reponse = await d3.json("https://data.geopf.fr/geocodage/search?q=20+avenue+de+segur+paris&limit=1");
+  return reponse.features[0].properties;
+}
 ```
 
 La réponse est au format `GeoJSON`, un format `JSON` standardisé pour représenter des données géographiques. Les champs utiles sont les suivants :
