@@ -1,0 +1,46 @@
+::: {.application}
+## Application 20: Dockeriser l'API (intégration continue)
+
+- Créer un script `app/run.sh` à la racine du projet qui lance le script `train.py` puis déploie localement l'API. Attention, quand on se place dans le monde des conteneurs et plus généralement des infrastructures *cloud*, on ne va plus déployer sur le *localhost* mais sur "l'ensemble des interfaces réseaux". Lorsqu'on déploie une application web dans un conteneur, on va donc toujours devoir spécifier un *host* valant `0.0.0.0` (et non plus *localhost* ou, de manière équivalente, `http://127.0.0.1`).
+
+<details>
+<summary>Fichier `app/run.sh`</summary>
+
+```{.bash filename="api/run.sh" no-prefix=true}
+#/bin/bash
+
+uv run train.py
+uv run uvicorn app.api:app --host "0.0.0.0"
+```
+</details>
+
+- Donner au script `app/run.sh` des permissions d'exécution : `chmod +x app/run.sh`
+
+- Ajouter `COPY app ./app` au Dockerfile pour avoir les fichiers nécessaires au lancement dans l'API dans l'image
+
+- Changer l'instruction `CMD` du `Dockerfile` pour exécuter le script `app/run.sh` au lancement du conteneur (`CMD ["bash", "-c", "./app/run.sh"]`)
+
+- *Commit* et *push* les changements
+
+- Une fois le CI terminé, vérifier que le nouveau *tag* `latest` a été *pushé* sur le DockerHub. Récupérer la nouvelle image dans votre environnement de test de `Docker` et vérifier que l'API se déploie correctement.
+
+<details>
+<summary>Tester l'image sur le SSP Cloud</summary>
+
+Lancer dans un terminal la commande suivante pour *pull* l'application depuis le DockerHub et la déployer en local :
+
+```{.bash filename="terminal"}
+kubectl run -it api-ml --env JETON_API='' --image=votre_compte_docker_hub/application:latest
+kubectl logs api-ml
+```
+
+</details>
+
+- Si tout se passe correctement, vous devriez observer dans la console un *output* similaire au déploiement en local de la partie précédente. Cette fois, l'application est déployée à l'adresse `http://0.0.0.0:8000`. On ne peut néanmoins pas directement l'exploiter à ce stade : si le conteneur de l'API est déployé, il manque un ensemble de ressources Kubernetes qui permettent de déployer proprement l'API à tout utilisateur. C'est l'objet de l'application suivante !
+
+- Si vous avez testé `kubectl get pods`, faire `kubectl delete pod api-ml` pour nettoyer le serveur. 
+
+:::
+
+
+{{< checkpoint appli20 >}}

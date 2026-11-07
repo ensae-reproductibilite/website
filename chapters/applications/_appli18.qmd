@@ -1,46 +1,146 @@
+Nous disposons maintenant d'un fichier `model.skops` contenant notre modèle entraîné. Peut-on pour autant s'en servir pour estimer le prix d'un bien ? Pas directement. Le modèle attend en entrée les 17 variables utilisées pendant l'entraînement, et la plupart ne sont connues ni de l'utilisateur ni de l'application : le taux de pauvreté du carreau de 200 mètres où se situe le bien, le revenu médian de la commune, la distance à la tour Eiffel (en log), le ratio Carrez, etc. Ce que l'utilisateur connaît, c'est une adresse, le type de logement, sa surface et son nombre de pièces.
+
+Il nous faut donc un **pipeline d'inférence**, c'est-à-dire une chaîne de traitements qui part de ces quatre informations, reconstruit les 17 variables, puis appelle le modèle. Ce pipeline doit calculer ces variables exactement comme pendant l'entraînement. Sinon, le modèle reçoit en production des données différentes de celles sur lesquelles il a appris, et ses prédictions deviennent peu fiables. Ce décalage entre l'entraînement et l'utilisation réelle s'appelle le *training/serving skew*. La meilleure façon de l'éviter est de réutiliser les mêmes fonctions de calcul des variables que pendant l'entraînement. C'est ce que nous allons faire dans l'application suivante.
+
 ::: {.application}
-## Application 18: Dockeriser l'API (intégration continue)
 
-- Créer un script `app/run.sh` à la racine du projet qui lance le script `train.py` puis déploie localement l'API. Attention, quand on se place dans le monde des conteneurs et plus généralement des infrastructures *cloud*, on ne va plus déployer sur le *localhost* mais sur "l'ensemble des interfaces réseaux". Lorsqu'on déploie une application web dans un conteneur, on va donc toujours devoir spécifier un *host* valant `0.0.0.0` (et non plus *localhost* ou, de manière équivalente, `http://127.0.0.1`).
+## Application 18: Construire un pipeline d'inférence à partir d'une adresse
 
-<details>
-<summary>Fichier `app/run.sh`</summary>
+Nous allons construire ce pipeline pas à pas, en partant de l'adresse. Chaque étape ajoute au même tableau d'une seule ligne les informations dont le modèle a besoin.
 
-```{.bash filename="api/run.sh" no-prefix=true}
-#/bin/bash
+### Étape 1 : géocoder l'adresse
 
-uv run train.py
-uv run uvicorn app.api:app --host "0.0.0.0"
-```
-</details>
+Un modèle ne comprend pas une adresse écrite en texte libre, il comprend des nombres. Il faut donc transformer l'adresse en coordonnées géographiques, opération appelée **géocodage**. La [Base Adresse Nationale](https://adresse.data.gouv.fr/) (BAN) fournit ce service gratuitement. Il est désormais servi par la Géoplateforme de l'IGN, à l'adresse `https://data.geopf.fr/geocodage/search`.
 
-- Donner au script `app/run.sh` des permissions d'exécution : `chmod +x app/run.sh`
-
-- Ajouter `COPY app ./app` au Dockerfile pour avoir les fichiers nécessaires au lancement dans l'API dans l'image
-
-- Changer l'instruction `CMD` du `Dockerfile` pour exécuter le script `app/run.sh` au lancement du conteneur (`CMD ["bash", "-c", "./app/run.sh"]`)
-
-- *Commit* et *push* les changements
-
-- Une fois le CI terminé, vérifier que le nouveau *tag* `latest` a été *pushé* sur le DockerHub. Récupérer la nouvelle image dans votre environnement de test de `Docker` et vérifier que l'API se déploie correctement.
-
-<details>
-<summary>Tester l'image sur le SSP Cloud</summary>
-
-Lancer dans un terminal la commande suivante pour *pull* l'application depuis le DockerHub et la déployer en local :
+- Tester le géocodage d'une adresse depuis un terminal :
 
 ```{.bash filename="terminal"}
-kubectl run -it api-ml --env JETON_API='' --image=votre_compte_docker_hub/application:latest
-kubectl logs api-ml
+curl "https://data.geopf.fr/geocodage/search?q=20+avenue+de+segur+paris&limit=1"
+```
+
+La réponse est au format `GeoJSON`, un format `JSON` standardisé pour représenter des données géographiques. Les champs utiles sont les suivants :
+
+- `geometry.coordinates` : la longitude puis la latitude du point. Attention à l'ordre, qui est inversé par rapport à ce qu'on écrit parfois à l'oral.
+- `properties.citycode` : le code INSEE de la commune. Pour Paris, c'est le code de l'arrondissement (`75107` pour le 7e), la même convention que dans DVF.
+- `properties.depcode` : le code du département (`75`, `92`, `93`, `94`...).
+- `properties.label` : l'adresse telle que la BAN l'a reconnue, après normalisation.
+- `properties.score` : un nombre entre 0 et 1 qui indique la confiance du géocodeur. Un score faible signale une adresse mal reconnue.
+
+- Écrire la fonction `geocode_address(adresse)` dans un nouveau fichier `src/data/geocoding.py`. Elle prend une adresse en texte libre et renvoie un dictionnaire contenant la longitude, la latitude, le code commune, le code département, l'adresse normalisée et le score. Si l'API ne trouve aucun résultat, la fonction doit lever une `ValueError`.
+
+<details>
+<summary>
+Solution
+</summary>
+
+```{.python include="./applications/code/appli17_geocoding.py" filename="src/data/geocoding.py"}
 ```
 
 </details>
 
-- Si tout se passe correctement, vous devriez observer dans la console un *output* similaire au déploiement en local de la partie précédente. Cette fois, l'application est déployée à l'adresse `http://0.0.0.0:8000`. On ne peut néanmoins pas directement l'exploiter à ce stade : si le conteneur de l'API est déployé, il manque un ensemble de ressources Kubernetes qui permettent de déployer proprement l'API à tout utilisateur. C'est l'objet de l'application suivante !
+### Étape 2 : retrouver le carreau Filosofi
 
-- Si vous avez testé `kubectl get pods`, faire `kubectl delete pod api-ml` pour nettoyer le serveur. 
+Pendant l'entraînement, nous avons rattaché des centaines de milliers de transactions à leur carreau de 200 mètres avec `geopandas`. Ici, nous n'avons qu'un seul point à localiser. Plutôt que de manipuler tout le fichier en mémoire, nous allons interroger directement le fichier `Parquet` distant avec une requête `SQL` dans `DuckDB`, grâce à son extension *spatial* qui ajoute des fonctions géographiques :
+
+- `ST_Point(longitude, latitude)` crée un point à partir de ses coordonnées ;
+- `ST_Transform(point, 'EPSG:4326', 'EPSG:3035', always_xy := true)` reprojette ce point du système de coordonnées GPS (`EPSG:4326`, en degrés) vers celui de Filosofi (`EPSG:3035`, en mètres, le même que pendant l'entraînement). L'option `always_xy := true` impose l'ordre longitude puis latitude, car selon les conventions de l'`EPSG` l'ordre des axes peut être inversé ;
+- `ST_Contains(carreau, point)` vérifie que la géométrie du carreau contient le point. C'est l'équivalent de la jointure spatiale `within` de l'entraînement.
+
+Il reste un point important pour la performance. Le fichier `Parquet` est lu depuis internet, et contient la France entière. Or, comme à l'entraînement, la colonne `bbox` décrit l'emprise de chaque carreau. Filtrer d'abord sur ces colonnes simples permet à `DuckDB` d'ignorer les blocs de lignes qui ne contiennent aucun carreau proche du point, sans même lire leur géométrie.
+
+- Écrire la fonction `get_filosofi_carreau(longitude, latitude, connection, url_filosofi)` dans `src/data/import_data.py`. Elle renvoie un `DataFrame` d'une seule ligne, avec les colonnes renommées comme dans `add_filosofi_carreaux`.
+- Pour éviter de dupliquer la liste des colonnes et leur renommage, les extraire de `add_filosofi_carreaux` dans une constante de module `FILOSOFI_COLUMNS`, et l'utiliser dans les deux fonctions.
+
+<details>
+<summary>
+Solution
+</summary>
+
+```{.python include="./applications/code/appli17_filosofi_carreau.py" filename="src/data/import_data.py"}
+```
+
+</details>
+
+### Étape 3 : ajouter les indicateurs de la commune
+
+Les deux indicateurs communaux, `NIVVIE_MEDIAN` (revenu médian) et `TAUX_PAUVRETE`, viennent de l'API Melodi de l'Insee. Nous réutilisons la fonction `get_melodi_indicator` de l'entraînement, mais cette fois pour une seule commune. Pendant l'entraînement, elle récupérait toutes les communes d'un coup ; ici, son argument `geo_level` permet de demander uniquement la commune concernée :
+
+- `ARM-75107` pour un arrondissement parisien ;
+- `COM-92012` pour les autres communes.
+
+L'API Melodi fonctionne sans jeton, mais avec un débit limité. Le jeton reste donc recommandé, surtout si vous enchaînez les tests.
+
+### Étape 4 : assembler le pipeline dans `src/models/predict.py`
+
+Dans ce fichier, écrire la fonction `build_inference_features`, qui prend en entrée l'adresse et les informations du logement, et renvoie un `GeoDataFrame` d'une seule ligne avec les 17 variables du modèle. Elle doit :
+
+1. géocoder l'adresse avec `geocode_address` ;
+2. rejeter avec une `ValueError` toute adresse située hors des départements 75, 92, 93 et 94. Le modèle n'a rien appris ailleurs, il ne doit donc pas produire d'estimation ;
+3. construire un `GeoDataFrame` d'une ligne, avec le point en `EPSG:4326` et les colonnes saisies par l'utilisateur ;
+4. ajouter les données du carreau Filosofi et les indicateurs de la commune ;
+5. appeler `add_filosofi_ratios`, `add_surface_features` et `add_distance_eiffel`, exactement comme à l'entraînement.
+
+Les informations que l'utilisateur ne connaît pas forcément deviennent des arguments optionnels, avec une valeur par défaut correspondant au cas le plus courant : un seul lot (`nombre_lots=1`) et pas de terrain (`surface_terrain=0`). La surface Carrez est laissée vide par défaut : la variable `ratio_carrez` est alors manquante, et l'étape d'imputation du pipeline la remplace par la médiane observée à l'entraînement.
+
+Il faut bien remarquer ce qu'on **n'**appelle **pas** : `build_features`. Cette fonction calcule la cible `prix_m2`, que nous cherchons justement à prédire et que nous ne connaissons pas ici. Elle filtre aussi les valeurs aberrantes, ce qui supprimerait la seule ligne que nous voulons évaluer. Nous réutilisons donc uniquement les fonctions qui calculent les variables explicatives.
+
+Écrire aussi la fonction `predict_prix_m2(model, features)`, qui renvoie le prix au m² prédit. Grâce à la transformation inverse enregistrée dans le modèle, la valeur renvoyée est directement exprimée en euros par m².
+
+<details>
+<summary>
+Solution
+</summary>
+
+```{.python include="./applications/code/appli17_predict.py" filename="src/models/predict.py"}
+```
+
+</details>
+
+### Étape 5 : tester le pipeline
+
+Dans une session `Python` ou un _notebook_, chargez le modèle enregistré à l'application 17. Avant de charger un fichier `skops`, on demande la liste des types qu'il contient avec `get_untrusted_types`. Une fois cette liste vérifiée, on la passe à `load` pour autoriser explicitement ces types, comme le prévoit la sécurité de `skops`.
+
+Construisez ensuite les variables d'un logement de votre choix, puis estimez son prix au m². Vérifiez que l'ordre de grandeur est cohérent avec le marché parisien, c'est-à-dire de quelques milliers d'euros par m².
+
+<details>
+<summary>
+Solution
+</summary>
+
+```{.python}
+import os
+
+import duckdb
+import skops.io as sio
+from dotenv import load_dotenv
+
+from src.models.predict import build_inference_features, predict_prix_m2
+
+load_dotenv()
+
+URL_RAW = "https://minio.lab.sspcloud.fr/lgaliana/ensae-reproductibilite/data/raw"
+URL_FILOSOFI = f"{URL_RAW}/filosofi_carreaux_200m_2021.parquet"
+
+con = duckdb.connect(database=":memory:")
+
+unknown_types = sio.get_untrusted_types(file="model.skops")
+model = sio.load("model.skops", trusted=unknown_types)
+
+features = build_inference_features(
+    adresse="20 avenue de Ségur 75007 Paris",
+    type_local="Appartement",
+    surface_reelle_bati=65,
+    nombre_pieces_principales=3,
+    connection=con,
+    url_filosofi=URL_FILOSOFI,
+    jeton_api=os.environ.get("JETON_API", ""),
+)
+
+predict_prix_m2(model, features)
+```
+
+</details>
 
 :::
-
 
 {{< checkpoint appli18 >}}

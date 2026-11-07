@@ -1,149 +1,93 @@
 ::: {.application}
-## Application 19: Mettre à disposition l'API (déploiement manuel)
 
-Cette partie nécessite d'avoir à disposition une infrastructure _cloud_.
+## Application 19: Exposer le pipeline d'inférence avec une API
 
-- Créer un dossier `deployment` à la racine du projet qui va contenir les fichiers de configuration nécessaires pour déployer sur un cluster `Kubernetes`
+Notre pipeline fonctionne, mais seulement depuis une session `Python`. Pour qu'une application ou une autre personne puisse l'interroger, nous allons le mettre à disposition par une API, comme annoncé en introduction de cette partie. Nous utilisons à nouveau [`FastAPI`](https://fastapi.tiangolo.com/), accompagné du serveur web `uvicorn` qui fait tourner l'application.
 
-- En vous inspirant de la [documentation](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#creating-a-deployment), y ajouter un premier fichier `deployment.yaml` qui va spécifier la configuration du *Pod* à lancer sur le cluster
-
-<details>
-<summary>Fichier `deployment/deployment.yaml`</summary>
-
-```{.python filename="deployment/deployment.yaml"}
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: titanic-deployment
-  labels:
-    app: titanic
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: titanic
-  template:
-    metadata:
-      labels:
-        app: titanic
-    spec:
-      containers:
-      - name: titanic
-        image: votre_compte_docker_hub/application:latest #<1>
-        ports:
-        - containerPort: 8000
-1. Remplacer ici par votre compte Docker
-```
-
-</details>
-
-- En vous inspirant de la [documentation](https://kubernetes.io/fr/docs/concepts/services-networking/service/#d%C3%A9finition-d-un-service), y ajouter un second fichier `service.yaml` qui va créer une ressource `Service` permettant de donner une identité fixe au `Pod` précédemment créé au sein du cluster
-
-<details>
-<summary>Fichier `deployment/service.yaml`</summary>
-
-```{.yaml filename="deployment/service.yaml"}
-apiVersion: v1
-kind: Service
-metadata:
-  name: titanic-service
-spec:
-  selector:
-    app: titanic
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8000
-```
-</details>
-
-- En vous inspirant de la [documentation](https://kubernetes.io/docs/concepts/services-networking/ingress/#the-ingress-resource), y ajouter un troisième fichier `ingress.yaml` qui va créer une ressource `Ingress` permettant d'exposer le service via une URL en dehors du cluster
-
-<details>
-<summary>Fichier `deployment/ingress.yaml`</summary>
-
-```{.python filename="deployment/ingress.yaml"}
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: titanic-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
-    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
-    nginx.ingress.kubernetes.io/cors-allow-headers: "Authorization, Content-Type"
-    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
-spec:
-  ingressClassName: nginx
-  tls:
-  - hosts:
-    - nom-appli.lab.sspcloud.fr #<1>
-  rules:
-  - host: nom-appli.lab.sspcloud.fr #<1>
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: titanic-service
-            port:
-              number: 80
-```
-1. Mettez l'URL auquel vous voulez exposer votre service. Sur le modèle de `titanic-ensae.lab.sspcloud.fr` (mais ne tentez pas celui-là, il est déjà pris 😃)
-2. Mettre cette même URL ici aussi
-</details>
-
-- Appliquer ces fichiers de configuration sur le cluster : `kubectl apply -f deployment/`
-
-- Vérifier le bon déploiement de l'application (c'est à dire du `Pod` qui encapsule le conteneur) à l'aide de la commande `kubectl get pods`. Regarder les _logs_ avec `kubectl logs -l app=titanic -f --tail=200`. Comprenez vous la source de l'erreur ?
-
-- Créer un secret pour votre jeton d'API. Il y a plusieurs manières de faire. En l'occurrence, vous pouvez utiliser cette commande
+- Installer `fastapi` et `uvicorn` avec `uv` :
 
 ```{.bash filename="terminal"}
-kubectl create secret generic api-jeton --from-literal=JETON_API='mon_super_jeton'
+uv add fastapi uvicorn
 ```
 
-- Mettre à jour votre _deployment_ pour indiquer à Kubernetes (le seul avec vous à connaître la valeur derrière le jeton):
+- Comme découvrir `FastAPI` n'est pas l'objet de cet enseignement, nous donnons directement le code de l'API. Si vous désirez tester par vous-mêmes, vous pouvez écrire votre fichier sans vous référer à l'exemple. Créer le fichier `app/api.py` :
+
+<details>
+<summary>
+Fichier `app/api.py`
+</summary>
+
+```{.python include="./applications/code/appli17_api_main.py" filename="app/api.py"}
+```
+
+</details>
+
+Le modèle et la connexion `DuckDB` sont chargés une seule fois au démarrage de l'API. Chaque requête appelle ensuite le pipeline d'inférence. L'API lit le jeton Melodi dans la variable d'environnement `JETON_API`, comme `train.py`, et utilise un jeton vide s'il n'est pas défini.
+
+- Déployer l'API en local avec la commande suivante :
+
+```{.bash filename="terminal"}
+uv run uvicorn app.api:app
+```
+
+Cette commande signifie : lancer l'objet `app` du fichier `app/api.py`.
+
+- Observer l'*output* dans la console. Notre API est désormais déployée en local, plus précisément sur le *localhost*, un serveur web local accessible à l'adresse `http://127.0.0.1`. L'API est déployée sur le port par défaut utilisé par `uvicorn`, soit le port `8000`.
+- **Sans fermer le terminal précédent**, ouvrir un nouveau terminal. Tester le bon déploiement de l'API en requêtant son *endpoint* racine avec `curl` :
+
+```{.bash filename="terminal"}
+curl "http://127.0.0.1:8000"
+```
+
+- Si tout s'est bien passé, on devrait récupérer une réponse au format `JSON` affichant le message d'accueil de l'API.
+
+- Le *endpoint* `/predict` prend en paramètres l'adresse, le type de logement (`Appartement` ou `Maison`), la surface et le nombre de pièces, et renvoie un `JSON` avec les champs `adresse`, `code_commune`, `prix_m2` et `prix_estime`. Pour le tester, estimons le prix d'un appartement de 3 pièces de 65 m² à `12 rue de Paris 93100 Montreuil`.
+
+Une adresse contient des espaces, des accents et parfois des virgules, qui ne peuvent pas figurer tels quels dans une URL. Il faut les **encoder** (par exemple l'espace devient `%20`). L'option `-G` de `curl` envoie les données comme paramètres de l'URL, et `--data-urlencode` se charge de l'encodage.
+
+<details>
+<summary>
+Solution
+</summary>
+
+```{.bash filename="terminal"}
+curl -G "http://127.0.0.1:8000/predict" \
+  --data-urlencode "adresse=12 rue de Paris 93100 Montreuil" \
+  --data-urlencode "type_local=Appartement" \
+  -d surface=65 \
+  -d nombre_pieces=3
+```
+
+</details>
+
+- Toujours sans fermer le terminal qui déploie l'API, ouvrir une session `Python` et estimer le prix d'une maison, avec la librairie `requests`. Ici, `requests` se charge d'encoder les paramètres :
+
+<details>
+<summary>
+Solution
+</summary>
 
 ```{.python}
-#| filename: "deployment/deployment.yaml"
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: titanic-deployment
-  labels:
-    app: titanic
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: titanic
-  template:
-    metadata:
-      labels:
-        app: titanic
-    spec:
-      containers:
-      - name: titanic
-        image: votre_compte_docker_hub/application:latest #<1>
-        ports:
-        - containerPort: 8000
-        env:
-        - name: JETON_API
-          valueFrom:
-            secretKeyRef:
-              name: api-jeton
-              key: JETON_API
+import requests
+
+URL = "http://127.0.0.1:8000/predict"
+params = {
+    "adresse": "5 avenue du Général de Gaulle 94300 Vincennes",
+    "type_local": "Maison",
+    "surface": 120,
+    "nombre_pieces": 5,
+}
+requests.get(URL, params=params).json()
 ```
-1. Remplacer ici par votre compte Docker
 
-- Si tout a correctement fonctionné, vous devriez pouvoir accéder depuis votre navigateur à l'API à l'URL spécifiée dans le fichier `deployment/ingress.yaml`. Par exemple `https://api-titanic-test.lab.sspcloud.fr/` si vous avez mis celui-ci plus tôt.
+</details>
 
-- Explorer le *swagger* de votre API à l'adresse `https://api-titanic-test.lab.sspcloud.fr/docs`. Il s'agit d'une page de documentation standard à la plupart des APIs, bien utiles pour tester des requêtes de manière interactive. Regarder les _logs_ avant/après avoir testé les exemples interactifs d'utilisation. 
+- Tester une adresse hors du périmètre du modèle, par exemple `1 place de l'Hôtel de Ville 95000 Cergy` (Val-d'Oise). L'API doit refuser la demande avec une erreur `400`, qui signale que le problème vient de la requête et non du serveur.
+
+- Une fois l'API testée, la documentation interactive générée automatiquement par `FastAPI` est accessible à l'adresse `http://127.0.0.1:8000/docs`. Vous pouvez y tester les *endpoints* directement depuis le navigateur.
+
+- Vous pouvez fermer l'API en effectuant <kbd>CTRL</kbd>+<kbd>C</kbd> depuis le terminal où elle est lancée.
 
 :::
 
-
 {{< checkpoint appli19 >}}
-
