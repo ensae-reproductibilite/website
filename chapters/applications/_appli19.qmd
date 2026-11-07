@@ -24,7 +24,13 @@ Fichier `app/api.py`
 
 Le modèle et la connexion `DuckDB` sont chargés une seule fois au démarrage de l'API. Chaque requête appelle ensuite le pipeline d'inférence. L'API lit le jeton Melodi dans la variable d'environnement `JETON_API`, comme `train.py`, et utilise un jeton vide s'il n'est pas défini.
 
-- Déployer l'API en local avec la commande suivante :
+- L'API charge le modèle `model.skops` au démarrage : celui-ci doit donc avoir été produit auparavant par `train.py`. Comme `model.skops` est ignoré par `Git`, il n'existe pas encore si vous venez d'utiliser un _checkpoint_ ou de cloner le dépôt. Dans ce cas, entraîner d'abord le modèle :
+
+```{.bash filename="terminal"}
+uv run train.py
+```
+
+- Déployer ensuite l'API en local avec la commande suivante :
 
 ```{.bash filename="terminal"}
 uv run uvicorn app.api:app
