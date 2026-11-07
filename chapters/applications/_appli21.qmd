@@ -10,30 +10,30 @@ Cette partie nécessite d'avoir à disposition une infrastructure _cloud_.
 <details>
 <summary>Fichier `deployment/deployment.yaml`</summary>
 
-```{.python filename="deployment/deployment.yaml"}
+```{.yaml filename="deployment/deployment.yaml"}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: titanic-deployment
+  name: dvf-deployment
   labels:
-    app: titanic
+    app: dvf
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: titanic
+      app: dvf
   template:
     metadata:
       labels:
-        app: titanic
+        app: dvf
     spec:
       containers:
-      - name: titanic
+      - name: dvf
         image: votre_compte_docker_hub/application:latest #<1>
         ports:
         - containerPort: 8000
-1. Remplacer ici par votre compte Docker
 ```
+1. Remplacer ici par votre compte Docker
 
 </details>
 
@@ -46,10 +46,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: titanic-service
+  name: dvf-service
 spec:
   selector:
-    app: titanic
+    app: dvf
   ports:
     - protocol: TCP
       port: 80
@@ -62,11 +62,11 @@ spec:
 <details>
 <summary>Fichier `deployment/ingress.yaml`</summary>
 
-```{.python filename="deployment/ingress.yaml"}
+```{.yaml filename="deployment/ingress.yaml"}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: titanic-ingress
+  name: dvf-ingress
   annotations:
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/cors-allow-origin: "*"
@@ -79,26 +79,26 @@ spec:
   - hosts:
     - nom-appli.lab.sspcloud.fr #<1>
   rules:
-  - host: nom-appli.lab.sspcloud.fr #<1>
+  - host: nom-appli.lab.sspcloud.fr #<2>
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: titanic-service
+            name: dvf-service
             port:
               number: 80
 ```
-1. Mettez l'URL auquel vous voulez exposer votre service. Sur le modèle de `titanic-ensae.lab.sspcloud.fr` (mais ne tentez pas celui-là, il est déjà pris 😃)
+1. Mettez l'URL auquel vous voulez exposer votre service. Sur le modèle de `dvf-ensae.lab.sspcloud.fr` (mais ne tentez pas celui-là, il est déjà pris 😃)
 2. Mettre cette même URL ici aussi
 </details>
 
 - Appliquer ces fichiers de configuration sur le cluster : `kubectl apply -f deployment/`
 
-- Vérifier le bon déploiement de l'application (c'est à dire du `Pod` qui encapsule le conteneur) à l'aide de la commande `kubectl get pods`. Regarder les _logs_ avec `kubectl logs -l app=titanic -f --tail=200`. Comprenez vous la source de l'erreur ?
+- Vérifier le bon déploiement de l'application (c'est à dire du `Pod` qui encapsule le conteneur) à l'aide de la commande `kubectl get pods`. Regarder les _logs_ avec `kubectl logs -l app=dvf -f --tail=200`. Le `Pod` échoue au démarrage : comprenez-vous pourquoi ? Pour vous aider, rappelez-vous de ce dont a besoin `train.py` et de ce que nous lui avons passé avec `--env` à l'application précédente.
 
-- Créer un secret pour votre jeton d'API. Il y a plusieurs manières de faire. En l'occurrence, vous pouvez utiliser cette commande
+- Créer un secret pour votre jeton d'API. Le script `train.py` attend que la variable d'environnement `JETON_API` soit définie : sans elle, il s'arrête avec l'erreur `KeyError: 'JETON_API'`. Il faut donc transmettre le jeton au conteneur, sans l'écrire dans les fichiers de configuration : ceux-ci sont versionnés dans Git et seraient visibles de toutes les personnes ayant accès au dépôt. Nous allons plutôt stocker le jeton dans un `Secret` Kubernetes, que Kubernetes injecte dans le conteneur sous forme de variable d'environnement. Vous pouvez utiliser votre jeton personnel de l'API Melodi de l'Insee (l'API fonctionne aussi avec un jeton vide, mais avec un nombre de requêtes limité). Il y a plusieurs manières de faire. En l'occurrence, vous pouvez utiliser cette commande
 
 ```{.bash filename="terminal"}
 kubectl create secret generic api-jeton --from-literal=JETON_API='mon_super_jeton'
@@ -106,26 +106,25 @@ kubectl create secret generic api-jeton --from-literal=JETON_API='mon_super_jeto
 
 - Mettre à jour votre _deployment_ pour indiquer à Kubernetes (le seul avec vous à connaître la valeur derrière le jeton):
 
-```{.python}
-#| filename: "deployment/deployment.yaml"
+```{.yaml filename="deployment/deployment.yaml"}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: titanic-deployment
+  name: dvf-deployment
   labels:
-    app: titanic
+    app: dvf
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: titanic
+      app: dvf
   template:
     metadata:
       labels:
-        app: titanic
+        app: dvf
     spec:
       containers:
-      - name: titanic
+      - name: dvf
         image: votre_compte_docker_hub/application:latest #<1>
         ports:
         - containerPort: 8000
@@ -138,9 +137,11 @@ spec:
 ```
 1. Remplacer ici par votre compte Docker
 
-- Si tout a correctement fonctionné, vous devriez pouvoir accéder depuis votre navigateur à l'API à l'URL spécifiée dans le fichier `deployment/ingress.yaml`. Par exemple `https://api-titanic-test.lab.sspcloud.fr/` si vous avez mis celui-ci plus tôt.
+- Si tout a correctement fonctionné, vous devriez pouvoir accéder depuis votre navigateur à l'API à l'URL spécifiée dans le fichier `deployment/ingress.yaml`. Par exemple `https://api-dvf-test.lab.sspcloud.fr/` si vous avez mis celui-ci plus tôt.
 
-- Explorer le *swagger* de votre API à l'adresse `https://api-titanic-test.lab.sspcloud.fr/docs`. Il s'agit d'une page de documentation standard à la plupart des APIs, bien utiles pour tester des requêtes de manière interactive. Regarder les _logs_ avant/après avoir testé les exemples interactifs d'utilisation. 
+- L'API n'est accessible qu'une fois l'entraînement terminé, c'est-à-dire quelques minutes après le démarrage du `Pod`. Suivez les _logs_ jusqu'à voir le message de démarrage d'`uvicorn`. Vous pouvez alors tester une prédiction directement dans votre navigateur, par exemple à l'adresse `https://api-dvf-test.lab.sspcloud.fr/predict?adresse=20%20avenue%20de%20S%C3%A9gur%2075007%20Paris&type_local=Appartement&surface=65&nombre_pieces=3`.
+
+- Explorer le *swagger* de votre API à l'adresse `https://api-dvf-test.lab.sspcloud.fr/docs`. Il s'agit d'une page de documentation standard à la plupart des APIs, bien utiles pour tester des requêtes de manière interactive. Regarder les _logs_ avant/après avoir testé les exemples interactifs d'utilisation. 
 
 :::
 
