@@ -26,6 +26,105 @@ La réponse est au format `GeoJSON`, un format `JSON` standardisé pour représe
 - `properties.label` : l'adresse telle que la BAN l'a reconnue, après normalisation.
 - `properties.score` : un nombre entre 0 et 1 qui indique la confiance du géocodeur. Un score faible signale une adresse mal reconnue.
 
+Pour voir à quoi ressemble cette réponse sans quitter cette page, tapez une adresse ci-dessous : la requête est envoyée à la BAN par votre navigateur.
+
+```{ojs}
+//| label: ban-adresse-input
+//| eval: true
+//| echo: false
+viewof adresse_ban = Inputs.text({value: "20 avenue de Ségur 75007 Paris", placeholder: "20 avenue de Ségur 75007 Paris", label: md`**Adresse**`})
+```
+
+```{ojs}
+//| label: ban-url
+//| eval: true
+//| echo: false
+//| output: false
+url_ban = `https://data.geopf.fr/geocodage/search?q=${encodeURIComponent(adresse_ban)}&limit=1`
+```
+
+```{ojs}
+//| label: ban-url-affichage
+//| eval: true
+//| echo: false
+html`<p>Requête envoyée à la BAN : <a href="${url_ban}" target="_blank" rel="noopener" style="word-break: break-all;">${url_ban}</a></p>`
+```
+
+```{ojs}
+//| label: ban-requete
+//| eval: true
+//| echo: false
+//| output: false
+localisation_ban = d3.json(url_ban)
+```
+
+```{ojs}
+//| label: ban-tableau
+//| eval: true
+//| echo: false
+tableau_ban = {
+  const features = localisation_ban.features;
+  if (features.length === 0) {
+    return html`<p><strong>Aucun résultat : la BAN ne reconnaît pas cette adresse.</strong></p>`;
+  }
+  const f = features[0];
+  const [longitude, latitude] = f.geometry.coordinates;
+  const p = f.properties;
+  return html`<table>
+    <thead><tr><th>Champ</th><th>Valeur</th></tr></thead>
+    <tbody>
+      <tr><td>Longitude</td><td>${longitude}</td></tr>
+      <tr><td>Latitude</td><td>${latitude}</td></tr>
+      <tr><td>Code commune (<code>citycode</code>)</td><td>${p.citycode}</td></tr>
+      <tr><td>Code département (<code>depcode</code>)</td><td>${p.depcode}</td></tr>
+      <tr><td>Adresse normalisée (<code>label</code>)</td><td>${p.label}</td></tr>
+      <tr><td>Score</td><td>${p.score.toFixed(2)}</td></tr>
+    </tbody>
+  </table>`;
+}
+```
+
+```{ojs}
+//| label: ban-import-leaflet
+//| eval: true
+//| echo: false
+//| output: false
+import {L} from "@observablehq/hello-leaflet"
+```
+
+```{ojs}
+//| label: ban-carte
+//| eval: true
+//| echo: false
+carte_ban = {
+  const features = localisation_ban.features;
+  if (features.length === 0) {
+    return html`<p><em>Pas de carte à afficher : aucune adresse trouvée.</em></p>`;
+  }
+  const [longitude, latitude] = features[0].geometry.coordinates;
+  const container = html`<div style="height:300px;"></div>`;
+  yield container;
+  const carte = L.map(container).setView([latitude, longitude], 17);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "&copy; <a href=https://www.openstreetmap.org/copyright>OpenStreetMap</a> contributors"
+  }).addTo(carte);
+  L.marker([latitude, longitude]).addTo(carte)
+    .bindPopup(features[0].properties.label).openPopup();
+  invalidation.then(() => carte.remove());
+  return container;
+}
+```
+
+```{ojs}
+//| label: ban-json
+//| eval: true
+//| echo: false
+html`<details>
+  <summary>Réponse JSON complète</summary>
+  <pre>${JSON.stringify(localisation_ban, null, 2)}</pre>
+</details>`
+```
+
 - Écrire la fonction `geocode_address(adresse)` dans un nouveau fichier `src/data/geocoding.py`. Elle prend une adresse en texte libre et renvoie un dictionnaire contenant la longitude, la latitude, le code commune, le code département, l'adresse normalisée et le score. Si l'API ne trouve aucun résultat, la fonction doit lever une `ValueError`.
 
 <details>
