@@ -82,7 +82,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-615d87005bed2b8dcc33df2bc09fb7b0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-0c72191f2bba49b536c236b85389eefd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <link href="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.css" rel="stylesheet">
 <link href="../site_libs/quarto-contrib/filetree-1.0.0/filetree.css" rel="stylesheet">
 <link href="../site_libs/quarto-contrib/fontawesome6-1.2.0/all.min.css" rel="stylesheet">
@@ -4385,7 +4385,7 @@ Note&nbsp;1: Et le <em>versionning</em> des données ?
 <p>Si celles-ci évoluaient, il pourrait être utile de versionner les données, à la manière dont on le fait pour le code. <code>Git</code> n’est pas l’outil approprié pour cela. Parmi les outils populaires de versionning de données, bien intégrés avec <code>S3</code>, il y a, sur le <code>SSPCloud</code>, <a href="https://lakefs.io/"><code>lakefs</code></a>.</p>
 </div>
 </div>
-<p>Pour automatiser au maximum la mise en production, on va utiliser un nouvel outil : <code>ArgoCD</code>. Ainsi, au lieu de devoir appliquer manuellement la commande <code>kubectl apply</code> à chaque modification des fichiers de déploiement (présents dans le dossier <code>kubernetes/</code>), c’est l’<strong>opérateur</strong> <code>ArgoCD</code>, déployé sur le <em>cluster</em>, qui va détecter les changements de configuration du déploiement et les appliquer automatiquement.</p>
+<p>Pour automatiser au maximum la mise en production, on va utiliser un nouvel outil : <code>ArgoCD</code>. Ainsi, au lieu de devoir appliquer manuellement la commande <code>kubectl apply</code> à chaque modification des fichiers de déploiement (présents dans le dossier <code>deployment/</code>), c’est l’<strong>opérateur</strong> <code>ArgoCD</code>, déployé sur le <em>cluster</em>, qui va détecter les changements de configuration du déploiement et les appliquer automatiquement.</p>
 <p>C’est l’approche dite <strong>GitOps</strong> : le dépôt <code>Git</code> du déploiement fait office de <strong>source de vérité unique</strong> de l’état voulu de l’application, tout changement sur ce dernier doit donc se répercuter immédiatement sur le déploiement effectif.</p>
 <div class="callout callout-style-default callout-application callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -4400,28 +4400,28 @@ Note&nbsp;1: Et le <em>versionning</em> des données ?
 <ul>
 <li><p>Lancer un service <code>ArgoCD</code> sur le <code>SSPCloud</code> depuis la page <code>Mes services</code> (catalogue <code>Automation</code>). Laisser les configurations par défaut.</p></li>
 <li><p>Sur <code>GitHub</code>, créer un dépôt <code>application-deployment</code> qui va servir de <strong>dépôt GitOps</strong>, c’est à dire un dépôt qui spécifie le paramétrage du déploiement de votre application.</p></li>
-<li><p>Ajouter un dossier <code>deployment</code> à votre dépôt <code>GitOps</code>, dans lequel on mettra les trois fichiers de déploiement qui permettent de déployer notre application sur <code>Kubernetes</code> (<code>deployment.yaml</code>, <code>service.yaml</code>, <code>ingress.yaml</code>).</p></li>
-<li><p>A la racine de votre dépôt <code>GitOps</code>, créez un fichier <code>application.yml</code> avec le contenu suivant, en prenant bien soin de modifier les lignes annotées avec des informations pertinentes :</p>
+<li><p>Ajouter un dossier <code>deployment</code> à votre dépôt <code>GitOps</code>, dans lequel on mettra les trois fichiers de déploiement qui permettent de déployer notre application sur <code>Kubernetes</code> (<code>deployment.yaml</code>, <code>service.yaml</code>, <code>ingress.yaml</code>). Ce sont les trois fichiers écrits à l’application précédente : copiez-y le dossier <code>deployment</code> de votre dépôt applicatif.</p></li>
+<li><p>A la racine de votre dépôt <code>GitOps</code>, créez un fichier <code>application.yaml</code> avec le contenu suivant, en prenant bien soin de modifier les lignes annotées avec des informations pertinentes :</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>application.yaml</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-121" data-filename="application.yaml" data-file="application.yaml" data-source-line-numbers="8-9,13" data-code-line-numbers="8-9,13"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-121-1"><a href="#annotated-cell-121-1" aria-hidden="true" tabindex="-1"></a>apiVersion: argoproj.io<span class="op">/</span>v1alpha1</span>
-<span id="annotated-cell-121-2"><a href="#annotated-cell-121-2" aria-hidden="true" tabindex="-1"></a>kind: Application</span>
-<span id="annotated-cell-121-3"><a href="#annotated-cell-121-3" aria-hidden="true" tabindex="-1"></a>metadata:</span>
-<span id="annotated-cell-121-4"><a href="#annotated-cell-121-4" aria-hidden="true" tabindex="-1"></a>  name: ensae<span class="op">-</span>mlops</span>
-<span id="annotated-cell-121-5"><a href="#annotated-cell-121-5" aria-hidden="true" tabindex="-1"></a>spec:</span>
-<span id="annotated-cell-121-6"><a href="#annotated-cell-121-6" aria-hidden="true" tabindex="-1"></a>  project: default</span>
-<span id="annotated-cell-121-7"><a href="#annotated-cell-121-7" aria-hidden="true" tabindex="-1"></a>  source:</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-121" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-121-8" class="code-annotation-target"><a href="#annotated-cell-121-8" aria-hidden="true" tabindex="-1"></a>    repoURL: https:<span class="op">//</span>github.com<span class="op">/&lt;</span>your_github_username<span class="op">&gt;/</span>application<span class="op">-</span>deployment.git</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-121" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-121-9" class="code-annotation-target"><a href="#annotated-cell-121-9" aria-hidden="true" tabindex="-1"></a>    targetRevision: main</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-121" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-121-10" class="code-annotation-target"><a href="#annotated-cell-121-10" aria-hidden="true" tabindex="-1"></a>    path: deployment</span>
-<span id="annotated-cell-121-11"><a href="#annotated-cell-121-11" aria-hidden="true" tabindex="-1"></a>  destination:</span>
-<span id="annotated-cell-121-12"><a href="#annotated-cell-121-12" aria-hidden="true" tabindex="-1"></a>    server: https:<span class="op">//</span>kubernetes.default.svc</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-121" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-121-13" class="code-annotation-target"><a href="#annotated-cell-121-13" aria-hidden="true" tabindex="-1"></a>    namespace: user<span class="op">-&lt;</span>your_sspcloud_username<span class="op">&gt;</span></span>
-<span id="annotated-cell-121-14"><a href="#annotated-cell-121-14" aria-hidden="true" tabindex="-1"></a>  syncPolicy:</span>
-<span id="annotated-cell-121-15"><a href="#annotated-cell-121-15" aria-hidden="true" tabindex="-1"></a>    automated:</span>
-<span id="annotated-cell-121-16"><a href="#annotated-cell-121-16" aria-hidden="true" tabindex="-1"></a>      selfHeal: true</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-121" data-filename="application.yaml" data-source-line-numbers="8-9,13" data-code-line-numbers="8-9,13"><pre class="sourceCode yaml code-annotation-code code-with-copy code-annotated"><code class="sourceCode yaml"><span id="annotated-cell-121-1"><a href="#annotated-cell-121-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> argoproj.io/v1alpha1</span></span>
+<span id="annotated-cell-121-2"><a href="#annotated-cell-121-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Application</span></span>
+<span id="annotated-cell-121-3"><a href="#annotated-cell-121-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="annotated-cell-121-4"><a href="#annotated-cell-121-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> ensae-mlops</span></span>
+<span id="annotated-cell-121-5"><a href="#annotated-cell-121-5" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="annotated-cell-121-6"><a href="#annotated-cell-121-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">project</span><span class="kw">:</span><span class="at"> default</span></span>
+<span id="annotated-cell-121-7"><a href="#annotated-cell-121-7" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">source</span><span class="kw">:</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-121" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-121-8" class="code-annotation-target"><a href="#annotated-cell-121-8" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">repoURL</span><span class="kw">:</span><span class="at"> https://github.com/&lt;your_github_username&gt;/application-deployment.git</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-121" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-121-9" class="code-annotation-target"><a href="#annotated-cell-121-9" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">targetRevision</span><span class="kw">:</span><span class="at"> main</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-121" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-121-10" class="code-annotation-target"><a href="#annotated-cell-121-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">path</span><span class="kw">:</span><span class="at"> deployment</span></span>
+<span id="annotated-cell-121-11"><a href="#annotated-cell-121-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">destination</span><span class="kw">:</span></span>
+<span id="annotated-cell-121-12"><a href="#annotated-cell-121-12" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">server</span><span class="kw">:</span><span class="at"> https://kubernetes.default.svc</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-121" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-121-13" class="code-annotation-target"><a href="#annotated-cell-121-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">namespace</span><span class="kw">:</span><span class="at"> user-&lt;your_sspcloud_username&gt;</span></span>
+<span id="annotated-cell-121-14"><a href="#annotated-cell-121-14" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">syncPolicy</span><span class="kw">:</span></span>
+<span id="annotated-cell-121-15"><a href="#annotated-cell-121-15" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">automated</span><span class="kw">:</span></span>
+<span id="annotated-cell-121-16"><a href="#annotated-cell-121-16" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">selfHeal</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <dl class="code-annotation-container-grid">
 <dt data-target-cell="annotated-cell-121" data-target-annotation="1">1</dt>
@@ -4442,9 +4442,10 @@ Note&nbsp;1: Et le <em>versionning</em> des données ?
 </dd>
 </dl></li>
 <li><p>Pousser sur <code>Github</code> le dépôt <code>GitOps</code>.</p></li>
-<li><p>Dans <code>ArgoCD</code>, cliquez sur <code>New App</code> puis <code>Edit as a YAML</code>. Copiez-collez le contenu de <code>application.yml</code> et cliquez sur <code>Create</code>.</p></li>
+<li><p>Dans <code>ArgoCD</code>, cliquez sur <code>New App</code> puis <code>Edit as a YAML</code>. Copiez-collez le contenu de <code>application.yaml</code> et cliquez sur <code>Create</code>.</p></li>
 <li><p>Observez dans l’interface d’<code>ArgoCD</code> le déploiement progressif des ressources nécessaires à votre application sur le cluster. Joli non ?</p></li>
-<li><p>Vérifiez que votre API est bien déployée en utilisant l’URL définie dans le fichier <code>ingress.yml</code>.</p></li>
+<li><p>Vérifiez que votre API est bien déployée en utilisant l’URL définie dans le fichier <code>ingress.yaml</code>.</p></li>
+<li><p>Le secret <code>api-jeton</code> créé à l’application précédente est toujours présent dans votre <em>namespace</em>. <code>ArgoCD</code> ne le gère pas : il n’est volontairement pas dans le dépôt <code>GitOps</code>, puisqu’il contient votre jeton. Vous n’avez rien à faire. Si vous l’avez supprimé, recréez-le avec la commande <code>kubectl create secret</code> de l’application précédente.</p></li>
 <li><p>Supprimer du code applicatif le dossier <code>deployment</code> puisque c’est maintenant votre dépôt de déploiement qui le contrôle.</p></li>
 <li><p>Indiquer dans le <code>README.md</code> que le déploiement de votre application (dont vous pouvez mettre l’URL dans le README) est contrôlé par un autre dépôt.</p></li>
 </ul>
@@ -4547,7 +4548,7 @@ rm -f update.sh</code></pre>
 <span id="annotated-cell-122-24"><a href="#annotated-cell-122-24" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">id</span><span class="kw">:</span><span class="at"> meta</span></span>
 <span id="annotated-cell-122-25"><a href="#annotated-cell-122-25" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> docker/metadata-action@v5</span></span>
 <span id="annotated-cell-122-26"><a href="#annotated-cell-122-26" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-122" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-122-27" class="code-annotation-target"><a href="#annotated-cell-122-27" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">images</span><span class="kw">:</span><span class="at"> username_github/application</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-122" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-122-27" class="code-annotation-target"><a href="#annotated-cell-122-27" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">images</span><span class="kw">:</span><span class="at"> username_dockerhub/application</span></span>
 <span id="annotated-cell-122-28"><a href="#annotated-cell-122-28" aria-hidden="true" tabindex="-1"></a></span>
 <span id="annotated-cell-122-29"><a href="#annotated-cell-122-29" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span></span>
 <span id="annotated-cell-122-30"><a href="#annotated-cell-122-30" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Login to Docker Hub</span></span>
@@ -4566,22 +4567,25 @@ rm -f update.sh</code></pre>
 <dl class="code-annotation-container-grid">
 <dt data-target-cell="annotated-cell-122" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-cell="annotated-cell-122" data-code-lines="27" data-code-annotation="1">Modifier ici !</span>
+<span data-code-cell="annotated-cell-122" data-code-lines="27" data-code-annotation="1">Remplacer par votre compte DockerHub</span>
 </dd>
 </dl>
 </details>
 <ul>
-<li><p>Dans le dépôt de l’application, mettre à jour le code dans <code>app/main.py</code> pour changer un élément de l’interface de votre documentation. Par exemple, mettre en gras un titre.</p>
+<li><p>Dans le dépôt de l’application, mettre à jour le code dans <code>app/api.py</code> pour changer un élément de l’interface de votre documentation. Par exemple, mettre en gras un titre.</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
-<pre><strong>app/main.py</strong></pre>
+<pre><strong>app/api.py</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb69" data-filename="app/main.py" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>app <span class="op">=</span> FastAPI(</span>
-<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">"Démonstration du modèle de prédiction de survie sur le Titanic"</span>,</span>
-<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>    description<span class="op">=</span></span>
-<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"&lt;b&gt;Application de prédiction de survie sur le Titanic&lt;/b&gt; 🚢 &lt;br&gt;Une version par API pour faciliter la réutilisation du modèle 🚀"</span> <span class="op">+\</span></span>
-<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"&lt;br&gt;&lt;br&gt;&lt;img src=</span><span class="ch">\"</span><span class="st">https://media.vogue.fr/photos/5faac06d39c5194ff9752ec9/1:1/w_2404,h_2404,c_limit/076_CHL_126884.jpg</span><span class="ch">\"</span><span class="st"> width=</span><span class="ch">\"</span><span class="st">200</span><span class="ch">\"</span><span class="st">&gt;"</span></span>
-<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb69" data-filename="app/api.py" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>app <span class="op">=</span> FastAPI(</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">"Démonstration du modèle de prix au m² en petite couronne"</span>,</span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>    description<span class="op">=</span>(</span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">"&lt;b&gt;Estimation du prix au m² des logements&lt;/b&gt; à Paris et dans les "</span></span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"départements 92, 93 et 94, à partir des transactions DVF enrichies "</span></span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"par des données socio-économiques Filosofi 🏠&lt;br&gt;"</span></span>
+<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Une version par API pour faciliter la réutilisation du modèle 🚀"</span></span>
+<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb69-9"><a href="#cb69-9" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div></li>
 <li><p><em>Commit</em> et <em>push</em> les changements.</p></li>
 <li><p><em>Tagger</em> le commit effectué précédemment et <em>push</em> le nouveau tag :</p>
@@ -4589,10 +4593,10 @@ rm -f update.sh</code></pre>
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb70" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>git tag <span class="op">-</span>a v0<span class="fl">.0.1</span> <span class="op">-</span>m <span class="st">"Version minimale de l'API avec FastAPI et uv"</span></span>
-<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>git push <span class="op">--</span>tags</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb70" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> tag <span class="at">-a</span> v0.0.1 <span class="at">-m</span> <span class="st">"Version minimale de l'API avec FastAPI et uv"</span></span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push <span class="at">--tags</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div></li>
-<li><p>Vérifier sur le dépôt <code>GitHub</code> de l’application que ce <em>commit</em> lance bien un pipeline de CI <strong>associé au tag v1.0.0</strong>. Une fois terminé, vérifier sur le <code>DockerHub</code> que le tag <code>v0.0.1</code> existe bien parmi les tags disponibles de l’image.</p></li>
+<li><p>Vérifier sur le dépôt <code>GitHub</code> de l’application que ce <em>commit</em> lance bien un pipeline de CI <strong>associé au tag <code>v0.0.1</code></strong>. Une fois terminé, vérifier sur le <code>DockerHub</code> que le tag <code>v0.0.1</code> existe bien parmi les tags disponibles de l’image.</p></li>
 </ul>
 <p>La partie CI a correctement fonctionné. Intéressons-nous à présent à la partie CD.</p>
 <ul>
@@ -4606,39 +4610,38 @@ rm -f update.sh</code></pre>
 <div class="code-with-filename-file">
 <pre><strong>deployment/deployment.yaml</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-123" data-file="deployment/deployment.yaml" data-filename="deployment/deployment.yaml" data-source-line-numbers="19" data-code-line-numbers="19"><pre class="sourceCode python code-annotation-code code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-123-1"><a href="#annotated-cell-123-1" aria-hidden="true" tabindex="-1"></a><span class="co">#| filename: "deployment/deployment.yaml"</span></span>
-<span id="annotated-cell-123-2"><a href="#annotated-cell-123-2" aria-hidden="true" tabindex="-1"></a>apiVersion: apps<span class="op">/</span>v1</span>
-<span id="annotated-cell-123-3"><a href="#annotated-cell-123-3" aria-hidden="true" tabindex="-1"></a>kind: Deployment</span>
-<span id="annotated-cell-123-4"><a href="#annotated-cell-123-4" aria-hidden="true" tabindex="-1"></a>metadata:</span>
-<span id="annotated-cell-123-5"><a href="#annotated-cell-123-5" aria-hidden="true" tabindex="-1"></a>  name: titanic<span class="op">-</span>deployment</span>
-<span id="annotated-cell-123-6"><a href="#annotated-cell-123-6" aria-hidden="true" tabindex="-1"></a>  labels:</span>
-<span id="annotated-cell-123-7"><a href="#annotated-cell-123-7" aria-hidden="true" tabindex="-1"></a>    app: titanic</span>
-<span id="annotated-cell-123-8"><a href="#annotated-cell-123-8" aria-hidden="true" tabindex="-1"></a>spec:</span>
-<span id="annotated-cell-123-9"><a href="#annotated-cell-123-9" aria-hidden="true" tabindex="-1"></a>  replicas: <span class="dv">1</span></span>
-<span id="annotated-cell-123-10"><a href="#annotated-cell-123-10" aria-hidden="true" tabindex="-1"></a>  selector:</span>
-<span id="annotated-cell-123-11"><a href="#annotated-cell-123-11" aria-hidden="true" tabindex="-1"></a>    matchLabels:</span>
-<span id="annotated-cell-123-12"><a href="#annotated-cell-123-12" aria-hidden="true" tabindex="-1"></a>      app: titanic</span>
-<span id="annotated-cell-123-13"><a href="#annotated-cell-123-13" aria-hidden="true" tabindex="-1"></a>  template:</span>
-<span id="annotated-cell-123-14"><a href="#annotated-cell-123-14" aria-hidden="true" tabindex="-1"></a>    metadata:</span>
-<span id="annotated-cell-123-15"><a href="#annotated-cell-123-15" aria-hidden="true" tabindex="-1"></a>      labels:</span>
-<span id="annotated-cell-123-16"><a href="#annotated-cell-123-16" aria-hidden="true" tabindex="-1"></a>        app: titanic</span>
-<span id="annotated-cell-123-17"><a href="#annotated-cell-123-17" aria-hidden="true" tabindex="-1"></a>    spec:</span>
-<span id="annotated-cell-123-18"><a href="#annotated-cell-123-18" aria-hidden="true" tabindex="-1"></a>      containers:</span>
-<span id="annotated-cell-123-19"><a href="#annotated-cell-123-19" aria-hidden="true" tabindex="-1"></a>      <span class="op">-</span> name: titanic</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-123" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-123-20" class="code-annotation-target"><a href="#annotated-cell-123-20" aria-hidden="true" tabindex="-1"></a>        image: username_dockerhub<span class="op">/</span>application:v0<span class="fl">.0.1</span></span>
-<span id="annotated-cell-123-21"><a href="#annotated-cell-123-21" aria-hidden="true" tabindex="-1"></a>        ports:</span>
-<span id="annotated-cell-123-22"><a href="#annotated-cell-123-22" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> containerPort: <span class="dv">8000</span></span>
-<span id="annotated-cell-123-23"><a href="#annotated-cell-123-23" aria-hidden="true" tabindex="-1"></a>        env:</span>
-<span id="annotated-cell-123-24"><a href="#annotated-cell-123-24" aria-hidden="true" tabindex="-1"></a>        <span class="op">-</span> name: JETON_API</span>
-<span id="annotated-cell-123-25"><a href="#annotated-cell-123-25" aria-hidden="true" tabindex="-1"></a>          valueFrom:</span>
-<span id="annotated-cell-123-26"><a href="#annotated-cell-123-26" aria-hidden="true" tabindex="-1"></a>            secretKeyRef:</span>
-<span id="annotated-cell-123-27"><a href="#annotated-cell-123-27" aria-hidden="true" tabindex="-1"></a>              name: api<span class="op">-</span>jeton</span>
-<span id="annotated-cell-123-28"><a href="#annotated-cell-123-28" aria-hidden="true" tabindex="-1"></a>              key: JETON_API</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="annotated-cell-123" data-filename="deployment/deployment.yaml" data-source-line-numbers="19" data-code-line-numbers="19"><pre class="sourceCode yaml code-annotation-code code-with-copy code-annotated"><code class="sourceCode yaml"><span id="annotated-cell-123-1"><a href="#annotated-cell-123-1" aria-hidden="true" tabindex="-1"></a><span class="fu">apiVersion</span><span class="kw">:</span><span class="at"> apps/v1</span></span>
+<span id="annotated-cell-123-2"><a href="#annotated-cell-123-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Deployment</span></span>
+<span id="annotated-cell-123-3"><a href="#annotated-cell-123-3" aria-hidden="true" tabindex="-1"></a><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="annotated-cell-123-4"><a href="#annotated-cell-123-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> dvf-deployment</span></span>
+<span id="annotated-cell-123-5"><a href="#annotated-cell-123-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">labels</span><span class="kw">:</span></span>
+<span id="annotated-cell-123-6"><a href="#annotated-cell-123-6" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">app</span><span class="kw">:</span><span class="at"> dvf</span></span>
+<span id="annotated-cell-123-7"><a href="#annotated-cell-123-7" aria-hidden="true" tabindex="-1"></a><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="annotated-cell-123-8"><a href="#annotated-cell-123-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">replicas</span><span class="kw">:</span><span class="at"> </span><span class="dv">1</span></span>
+<span id="annotated-cell-123-9"><a href="#annotated-cell-123-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">selector</span><span class="kw">:</span></span>
+<span id="annotated-cell-123-10"><a href="#annotated-cell-123-10" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">matchLabels</span><span class="kw">:</span></span>
+<span id="annotated-cell-123-11"><a href="#annotated-cell-123-11" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">app</span><span class="kw">:</span><span class="at"> dvf</span></span>
+<span id="annotated-cell-123-12"><a href="#annotated-cell-123-12" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">template</span><span class="kw">:</span></span>
+<span id="annotated-cell-123-13"><a href="#annotated-cell-123-13" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="annotated-cell-123-14"><a href="#annotated-cell-123-14" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">labels</span><span class="kw">:</span></span>
+<span id="annotated-cell-123-15"><a href="#annotated-cell-123-15" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">app</span><span class="kw">:</span><span class="at"> dvf</span></span>
+<span id="annotated-cell-123-16"><a href="#annotated-cell-123-16" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">spec</span><span class="kw">:</span></span>
+<span id="annotated-cell-123-17"><a href="#annotated-cell-123-17" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="fu">containers</span><span class="kw">:</span></span>
+<span id="annotated-cell-123-18"><a href="#annotated-cell-123-18" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> dvf</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-123" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-123-19" class="code-annotation-target"><a href="#annotated-cell-123-19" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">image</span><span class="kw">:</span><span class="at"> username_dockerhub/application:v0.0.1</span></span>
+<span id="annotated-cell-123-20"><a href="#annotated-cell-123-20" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">ports</span><span class="kw">:</span></span>
+<span id="annotated-cell-123-21"><a href="#annotated-cell-123-21" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">containerPort</span><span class="kw">:</span><span class="at"> </span><span class="dv">8000</span></span>
+<span id="annotated-cell-123-22"><a href="#annotated-cell-123-22" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">env</span><span class="kw">:</span></span>
+<span id="annotated-cell-123-23"><a href="#annotated-cell-123-23" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> JETON_API</span></span>
+<span id="annotated-cell-123-24"><a href="#annotated-cell-123-24" aria-hidden="true" tabindex="-1"></a><span class="at">          </span><span class="fu">valueFrom</span><span class="kw">:</span></span>
+<span id="annotated-cell-123-25"><a href="#annotated-cell-123-25" aria-hidden="true" tabindex="-1"></a><span class="at">            </span><span class="fu">secretKeyRef</span><span class="kw">:</span></span>
+<span id="annotated-cell-123-26"><a href="#annotated-cell-123-26" aria-hidden="true" tabindex="-1"></a><span class="at">              </span><span class="fu">name</span><span class="kw">:</span><span class="at"> api-jeton</span></span>
+<span id="annotated-cell-123-27"><a href="#annotated-cell-123-27" aria-hidden="true" tabindex="-1"></a><span class="at">              </span><span class="fu">key</span><span class="kw">:</span><span class="at"> JETON_API</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <dl class="code-annotation-container-grid">
 <dt data-target-cell="annotated-cell-123" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-cell="annotated-cell-123" data-code-lines="20" data-code-annotation="1">Remplacer ici par le dépôt applicatif adéquat</span>
+<span data-code-cell="annotated-cell-123" data-code-lines="19" data-code-annotation="1">Remplacer par votre compte DockerHub</span>
 </dd>
 </dl>
 </details>
@@ -4647,7 +4650,7 @@ rm -f update.sh</code></pre>
 </ul>
 <p><img src="../argocd-waiting.png" class="img-fluid"></p>
 <ul>
-<li>Vérifier que l’API a bien été mise à jour.</li>
+<li>Vérifier que l’API a bien été mise à jour. Par exemple, le titre de la page <code>/docs</code> doit maintenant être le nouveau.</li>
 </ul>
 </div>
 </div>
