@@ -39,7 +39,7 @@ Fichier `.github/workflows/docker.yaml`
           id: meta
           uses: docker/metadata-action@v5
           with:
-            images: username_github/application #<1>
+            images: username_dockerhub/application #<1>
 
         -
           name: Login to Docker Hub
@@ -55,32 +55,35 @@ Fichier `.github/workflows/docker.yaml`
             tags: ${{ steps.meta.outputs.tags }}
             labels: ${{ steps.meta.outputs.labels }}
   ```
-  1. Modifier ici !
+  1. Remplacer par votre compte DockerHub
 
 </details>
 
-- Dans le dépôt de l'application, mettre à jour le code dans `app/main.py` pour changer un élément de l'interface de votre documentation.
+- Dans le dépôt de l'application, mettre à jour le code dans `app/api.py` pour changer un élément de l'interface de votre documentation.
 Par exemple, mettre en gras un titre.
 
-  ```{.python filename="app/main.py"}
+  ```{.python filename="app/api.py"}
   app = FastAPI(
-      title="Démonstration du modèle de prédiction de survie sur le Titanic",
-      description=
-      "<b>Application de prédiction de survie sur le Titanic</b> 🚢 <br>Une version par API pour faciliter la réutilisation du modèle 🚀" +\
-          "<br><br><img src=\"https://media.vogue.fr/photos/5faac06d39c5194ff9752ec9/1:1/w_2404,h_2404,c_limit/076_CHL_126884.jpg\" width=\"200\">"
-      )
+      title="Démonstration du modèle de prix au m² en petite couronne",
+      description=(
+          "<b>Estimation du prix au m² des logements</b> à Paris et dans les "
+          "départements 92, 93 et 94, à partir des transactions DVF enrichies "
+          "par des données socio-économiques Filosofi 🏠<br>"
+          "Une version par API pour faciliter la réutilisation du modèle 🚀"
+      ),
+  )
   ```
 
 - *Commit* et *push* les changements.
 
 - _Tagger_ le commit effectué précédemment et *push* le nouveau tag :
 
-  ```{.python filename="terminal"}
+  ```{.bash filename="terminal"}
   git tag -a v0.0.1 -m "Version minimale de l'API avec FastAPI et uv"
   git push --tags
   ```
 
-- Vérifier sur le dépôt `GitHub` de l'application que ce *commit* lance bien un pipeline de CI **associé au tag v1.0.0**. Une fois terminé, vérifier sur le `DockerHub` que le tag `v0.0.1` existe bien parmi les tags disponibles de l'image.
+- Vérifier sur le dépôt `GitHub` de l'application que ce *commit* lance bien un pipeline de CI **associé au tag `v0.0.1`**. Une fois terminé, vérifier sur le `DockerHub` que le tag `v0.0.1` existe bien parmi les tags disponibles de l'image.
 
 La partie CI a correctement fonctionné. Intéressons-nous à présent à la partie CD.
 
@@ -93,26 +96,25 @@ Fichier `deployment/deployment.yaml`
 
 </summary>
 
-  ```{.python file="deployment/deployment.yaml" filename="deployment/deployment.yaml" source-line-numbers="19"}
-  #| filename: "deployment/deployment.yaml"
+  ```{.yaml filename="deployment/deployment.yaml" source-line-numbers="19"}
   apiVersion: apps/v1
   kind: Deployment
   metadata:
-    name: titanic-deployment
+    name: dvf-deployment
     labels:
-      app: titanic
+      app: dvf
   spec:
     replicas: 1
     selector:
       matchLabels:
-        app: titanic
+        app: dvf
     template:
       metadata:
         labels:
-          app: titanic
+          app: dvf
       spec:
         containers:
-        - name: titanic
+        - name: dvf
           image: username_dockerhub/application:v0.0.1 #<1>
           ports:
           - containerPort: 8000
@@ -123,7 +125,7 @@ Fichier `deployment/deployment.yaml`
                 name: api-jeton
                 key: JETON_API
   ```
-  1. Remplacer ici par le dépôt applicatif adéquat
+  1. Remplacer par votre compte DockerHub
 
 
 </details>
@@ -132,7 +134,7 @@ Fichier `deployment/deployment.yaml`
 
 ![](/argocd-waiting.png)
 
-- Vérifier que l'API a bien été mise à jour.
+- Vérifier que l'API a bien été mise à jour. Par exemple, le titre de la page `/docs` doit maintenant être le nouveau.
 
 :::
 
