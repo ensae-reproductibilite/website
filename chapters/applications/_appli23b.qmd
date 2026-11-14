@@ -1,4 +1,4 @@
-Jusqu'ici, le site ne faisait qu'afficher le résultat de l'API. Ici, on partage le travail entre le **frontend**, le code JavaScript qui s'exécute dans le navigateur du visiteur, et le **backend**, notre API. Le navigateur télécharge les ventes DVF et calcule lui-même les médianes avec DuckDB-WASM (une base de données compilée en WebAssembly, un format de code exécutable par le navigateur). Il dessine la carte avec MapLibre à partir de tuiles vectorielles. Il ne demande à l'API que ce qui nécessite le modèle : l'estimation d'un prix.
+Jusqu'ici, le site ne faisait qu'afficher le résultat de l'API. Ici, on partage le travail entre le **frontend**, le code JavaScript qui s'exécute dans le navigateur du visiteur, et le **backend**, notre API. Le navigateur lit lui-même les ventes DVF avec DuckDB-WASM (une base de données compilée en WebAssembly, un format de code exécutable par le navigateur) et calcule la médiane des prix au m² de chaque parcelle. Il dessine la carte avec MapLibre à partir des tuiles vectorielles du cadastre : sections, puis parcelles. Il ne demande à l'API que ce qui nécessite le modèle : l'estimation d'un prix.
 
 Cette répartition a trois conséquences. Le modèle et les secrets, comme le `JETON_API`, restent sur le serveur et ne sont jamais envoyés au navigateur. Un site statique comme celui-ci s'héberge gratuitement sur GitHub Pages. Enfin, un navigateur n'appelle une API située sur un autre domaine que si celle-ci l'y autorise : c'est le rôle de CORS, déjà activé dans l'`ingress` de notre déploiement.
 
@@ -7,14 +7,16 @@ Cette répartition a trois conséquences. Le modèle et les secrets, comme le `J
 ## Application 23b: Une carte interactive pour explorer les prix
 
 - Créer un dossier `js/` à la racine du projet et y placer les quatre modules suivants :
-  - [`donnees.js`](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23b/js/donnees.js) charge les ventes DVF avec DuckDB-WASM et calcule les médianes (rôle : les données) ;
-  - [`carte.js`](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23b/js/carte.js) affiche la carte MapLibre, les communes et les parcelles (rôle : le rendu de la carte) ;
+  - [`donnees.js`](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23b/js/donnees.js) charge les ventes DVF avec DuckDB-WASM et calcule les médianes par parcelle (rôle : les données) ;
+  - [`carte.js`](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23b/js/carte.js) affiche la carte MapLibre, les sections et les parcelles du cadastre (rôle : le rendu de la carte) ;
   - [`prediction.js`](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23b/js/prediction.js) géocode l'adresse et appelle `/predict` (rôle : la prédiction) ;
-  - [`graphiques.js`](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23b/js/graphiques.js) dessine l'histogramme des prix et le tableau des ventes (rôle : la visualisation).
+  - [`graphiques.js`](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23b/js/graphiques.js) construit le tableau des ventes du bandeau et le bloc qui compare prix réel et estimation (rôle : la visualisation).
 
     Ces modules ne se connaissent pas entre eux. C'est `index.qmd` qui les relie, grâce à des cellules OJS qui importent ce dont elles ont besoin, par exemple `import {chargerVentes} from "./js/donnees.js"`.
 
 - Remplacer `index.qmd` par [celui-ci](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23b/index.qmd).
+
+- Ajouter une page `a-propos.qmd` à la racine, en la récupérant [ici](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23b/a-propos.qmd). Elle explique le partage entre frontend et backend que nous venons de décrire.
 
 - Remplacer le contenu de `_quarto.yml` par le fichier suivant :
 
@@ -23,6 +25,7 @@ Cette répartition a trois conséquences. Le modèle et les secrets, comme le `J
       type: website
       render:
         - index.qmd
+        - a-propos.qmd
       resources:
         - js/
 
@@ -32,6 +35,8 @@ Cette répartition a trois conséquences. Le modèle et les secrets, comme le `J
         left:
           - href: index.qmd
             text: Accueil
+          - href: a-propos.qmd
+            text: À propos
 
     format:
       html:
@@ -39,12 +44,11 @@ Cette répartition a trois conséquences. Le modèle et les secrets, comme le `J
         theme: cosmo
         css: styles.css
         toc: false
-        page-layout: full
     ```
 
-    La liste `render:` ne contient que `index.qmd`, donc Quarto ne compile aucune autre page. Les modules JavaScript ne sont pas des pages : sans `resources: - js/`, Quarto ne les copierait pas dans le site et le navigateur ne trouverait pas les `import`. L'option `page-layout: full` étend la page à toute la largeur de l'écran, pour laisser la place à la carte.
+    La liste `render:` indique les pages à compiler : `index.qmd` et `a-propos.qmd`, et aucune autre. Les modules JavaScript ne sont pas des pages : sans `resources: - js/`, Quarto ne les copierait pas dans le site et le navigateur ne trouverait pas les `import`. La page d'accueil, elle, demande une mise en page pleine largeur grâce à `page-layout: custom` dans son en-tête, pour laisser toute la place à la carte.
 
-- Remplacer `styles.css` par [celui-ci](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23b/styles.css). Il fixe la hauteur de la carte et place la légende par-dessus.
+- Remplacer `styles.css` par [celui-ci](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23b/styles.css). Il fixe la hauteur de la carte et place la légende et la recherche d'adresse par-dessus.
 
 - Dans `index.qmd`, remplacer la valeur de `apiRoot` (dans la cellule qui importe les modules) par l'URL de votre API. Puis lancer le site en local :
 
@@ -53,9 +57,10 @@ quarto preview
 ```
 
 - Explorer la page avec les outils de développement du navigateur (touche `F12`), onglet `Réseau` (`Network`) :
-  - les requêtes vers `dvf.parquet` renvoient le statut `206 Partial Content` : DuckDB ne télécharge que les octets des colonnes dont il a besoin, environ 16 Mo sur les 58 Mo du fichier ;
-  - des tuiles vectorielles du cadastre se chargent lorsqu’on zoome, à partir du zoom 13 ;
-  - l'appel à `/predict` n'a lieu qu'au clic sur « Estimer ».
+  - les requêtes vers `dvf.parquet` renvoient le statut `206 Partial Content` : DuckDB ne demande que des portions du fichier. Attention toutefois, il en télécharge encore environ 40 Mo sur 58 Mo. Le fichier ne compte que deux gros blocs (les « row groups »), donc le filtre sur le département ne permet pas d'en sauter beaucoup. C'est un point d'attention pour les prochaines étapes, pas un acquis ;
+  - les tuiles vectorielles des sections se chargent à partir du zoom 11, celles des parcelles à partir du zoom 13 ;
+  - un appel à `/predict` part à chaque sélection d'une vente, et après chaque réglage de curseur une fois celui-ci stabilisé.
+- Déplacer un curseur rapidement, puis observer l'onglet `Réseau` : une seule requête `/predict` part, pas une par position du curseur. Dans `index.qmd`, trouver la cellule responsable de ce comportement (celle qui utilise `invalidation` et `Promises.delay`).
 - Dans `index.qmd`, repérer quelles cellules s'exécutent dans le navigateur et laquelle délègue le calcul à l'API (celle qui contient `estimerPrix`).
 - Pourquoi ne pas calculer la prédiction dans le navigateur, comme les médianes ?
 
@@ -68,12 +73,12 @@ Le fichier du modèle, l'enrichissement avec les données Filosofi et le jeton s
 - Publier le site : on enregistre les fichiers, puis on envoie le commit. Le workflow de l'application 23a reconstruit et republie le site automatiquement.
 
 ```{.bash filename="terminal"}
-git add js/ index.qmd _quarto.yml styles.css
+git add js/ index.qmd a-propos.qmd _quarto.yml styles.css
 git commit -m "Carte interactive : frontend et backend séparés"
 git push
 ```
 
-- Attendre la fin du workflow dans l'onglet `Actions` de votre dépôt, puis ouvrir l'URL de votre site (indiquée dans le `README`). Vérifier que la carte s'affiche et que l'estimation fonctionne.
+- Attendre la fin du workflow dans l'onglet `Actions` de votre dépôt, puis ouvrir l'URL de votre site (indiquée dans le `README`). Vérifier que la carte s'affiche, qu'un clic sur une section fait apparaître ses parcelles colorées, et que le bandeau d'une parcelle donne une estimation.
 
 :::
 
