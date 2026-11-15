@@ -2,40 +2,122 @@
 
 ## Application 23: Création d'un site web pour valoriser le projet
 
-```{.python file="terminal"}
+- Initialiser le projet avec la commande
+
+```{.bash filename="terminal"}
 quarto create project website mysite
 ```
 
 - Faire remonter d'un niveau `_quarto.yml`
-- Supprimer `about.qmd`, déplacer `index.qmd` vers la racine de notre projet.
-- Remplacer le contenu de `index.qmd` par [celui-ci](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23/index.qmd) et retirer `about.qmd` des fichiers à compiler.
-- Déplacer `styles.css` à la racine du projet
-- Mettre à jour le `.gitignore` avec les instructions suivantes
+- Supprimer `about.qmd` et déplacer `index.qmd` vers la racine de notre projet.
+- Remplacer le contenu de `index.qmd` par [celui-ci](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23/index.qmd). Cette page permet aux visiteurs de saisir une adresse, un type de logement, une surface et un nombre de pièces, et affiche le prix estimé par votre API. Dans cette page, remplacer `apiRoot` par l'URL de votre propre API.
+- Dans `_quarto.yml`, retirer `about.qmd` de la barre de navigation et ajouter sous `project:` une liste `render:` ne contenant que `index.qmd`. Sans cela, Quarto compilerait aussi le `README` et le notebook du dossier `notebooks/`.
 
-```{.bash file=".gitignore" no-prefix=true}
-/.quarto/
-*.html
-*_files
-_site/
-```
+    <details>
+    <summary>Contenu attendu de `_quarto.yml`</summary>
+
+    ```{.yaml filename="_quarto.yml"}
+    project:
+      type: website
+      render:
+        - index.qmd
+
+    website:
+      title: "Prix de l'immobilier en petite couronne"
+      navbar:
+        left:
+          - text: "Accueil"
+            href: index.qmd
+
+    format:
+      html:
+        lang: fr
+        theme: cosmo
+        css: styles.css
+        toc: true
+    ```
+
+    </details>
+
+- Déplacer `styles.css` à la racine du projet
+- Ajouter au `.gitignore` les lignes suivantes (sans effacer le contenu existant)
+
+    <details>
+    <summary>Contenu attendu de `.gitignore`</summary>
+
+    ```{.bash filename=".gitignore" no-prefix=true}
+    /.quarto/
+    *.html
+    *_files
+    _site/
+    ```
+
+    </details>
 
 - En ligne de commande, faire `quarto preview`
-- Observer le site web généré en local
+- Observer le site web généré en local et jouer avec.
 
-Enfin, on va construire et déployer automatiquement ce site web grâce au
-combo `Github Actions` et `Github Pages`:
+Enfin, on va construire et déployer automatiquement ce site web grâce au combo `Github Actions` et `Github Pages` :
 
-- Créer une branche `gh-pages` à partir des lignes suivantes
+- Dans les paramètres de votre dépôt sur GitHub (`Settings` > `Pages` > `Build and deployment`), choisir `GitHub Actions` comme source (`Source`). Le site ne sera plus publié à partir d'une branche : c'est un workflow qui le construira puis le déploiera.
+- Créer un fichier `.github/workflows/publish.yml` avec le contenu de [ce fichier](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23/.github/workflows/publish.yml). Il comporte deux étapes (_jobs_) : `build` construit le site avec `Quarto` dans le dossier `_site/` et le met de côté sous forme d'artefact, `deploy` publie cet artefact sur GitHub Pages.
 
-```{.python filename="terminal"}
-git checkout --orphan gh-pages
-git reset --hard # make sure all changes are committed before running this!
-git commit --allow-empty -m "Initialising gh-pages branch"
-git push origin gh-pages
-```
+    <details>
+    <summary>Contenu attendu de `.github/workflows/publish.yml`</summary>
 
-- Revenir à votre branche principale (`main` normalement)
-- Créer un fichier `.github/workflows/website.yaml` avec le contenu de [ce fichier](https://raw.githubusercontent.com/ensae-reproductibilite/application/tree/appli23/.github/workflows/publish.yaml)
+    ```{.yaml filename=".github/workflows/publish.yml"}
+    name: Publish website
+
+    # Le site est publié à chaque push sur la branche par défaut : l'environnement
+    # github-pages n'autorise par défaut que cette branche
+    on:
+      push:
+        branches:
+          - main
+      workflow_dispatch:
+
+    # Droits nécessaires pour déployer sur GitHub Pages
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    # Un seul déploiement à la fois
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+
+    jobs:
+      build:
+        runs-on: ubuntu-latest
+        steps:
+          - name: Checkout
+            uses: actions/checkout@v7
+          - name: Set up quarto
+            uses: quarto-dev/quarto-actions/setup@v2
+          - name: Render
+            uses: quarto-dev/quarto-actions/render@v2
+          - name: Upload site
+            uses: actions/upload-pages-artifact@v5
+            with:
+              path: _site
+
+      deploy:
+        needs: build
+        runs-on: ubuntu-latest
+        environment:
+          name: github-pages
+          url: ${{ steps.deployment.outputs.page_url }}
+        steps:
+          - name: Deploy to GitHub Pages
+            id: deployment
+            uses: actions/deploy-pages@v5
+    ```
+
+    </details>
+
+- Le workflow se déclenche à chaque _push_ sur `main` : l'environnement `github-pages`, que GitHub crée pour ce mode de déploiement, n'autorise par défaut que la branche principale.
+- Pousser ces modifications sur `main`, puis suivre l'exécution du workflow dans l'onglet `Actions`. L'adresse du site (`https://<compte>.github.io/<depot>/`) s'affiche à la fin du _job_ `deploy`.
 - Modifier le `README` pour indiquer l'URL de votre site web et de votre API
 
 :::
