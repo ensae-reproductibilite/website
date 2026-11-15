@@ -1,24 +1,3 @@
-Le site de l'étape précédente se contente d'afficher une estimation. Avec un assistant IA intégré à VSCode, on peut aller beaucoup plus loin en faisant du **vibecoding** : on décrit ce que l'on veut à une IA qui écrit le code, puis on itère sur le résultat en corrigeant et en précisant la demande. Vous êtes invités à le faire ici.
-
-**Penser le produit avant de coder.** Les clients de ce modèle voudront une application interactive qui leur permette à la fois de parcourir la carte des prix et d'obtenir une prédiction pour un bien donné.
-
-- Avant d'écrire la moindre ligne, prenez quelques minutes pour décrire ce produit : qui l'utilise, que voit-il en arrivant, quelles actions doit-il pouvoir faire ? Cette description est le premier message à donner à votre assistant.
-
-**Le dogfooding.** Il consiste à utiliser soi-même son propre produit pour en trouver les défauts. Ajoutons à l'application des informations qui nourrissent l'amélioration continue du modèle : comparer le prix prédit au prix observé lors de ventes passées. Les biens pour lesquels l'écart est systématique révèlent les faiblesses du modèle, et donc ce qu'il faut corriger à la prochaine itération de son cycle de vie.
-
-::: {.callout-warning}
-## Un second pipeline dans le projet
-
-Ce site est un second pipeline, parallèle au premier (données, modèle, API), avec un cycle de vie un peu différent (nous y reviendrons plus loin dans le cours). Les bonnes pratiques vues pour Python s'appliquent aussi ici, même si l'usage de JavaScript reste très limité :
-
-- **structurer le code** du site en modules séparés (données, rendu de la carte, prédiction, visualisation, comme dans le dossier `js/` proposé) pour faciliter la maintenance et les évolutions ;
-- **organiser la donnée** pour celui qui la consomme : c'est l'objet de la partie sur le partitionnement du fichier Parquet, un format et une organisation adaptés à un navigateur.
-:::
-
-**Vous êtes libres.** Les possibilités d'un frontend sont nombreuses. La version proposée (tag `appli24`) n'est qu'un exemple : prenez-la comme point de départ (notamment pour les appels à l'API) ou comme source d'inspiration.
-
-Elle fonctionne ainsi. La page d'accueil est une carte plein écran : fond Plan IGN, sections cadastrales, puis parcelles colorées selon le prix médian au m². Un clic sur une parcelle ouvre un bandeau latéral qui liste ses ventes. On peut y ajuster les caractéristiques du bien (type, surface, nombre de pièces) : l'API réestime alors le prix, après une attente de 400 ms (anti-rebond) pour ne pas envoyer une requête par position du curseur. Le bandeau compare l'estimation au prix de vente et affiche deux histogrammes des prix au m², pour la commune et pour la section. Le site propose un thème clair ou sombre et une page « À propos ». Le navigateur lit lui-même les ventes DVF avec DuckDB-WASM (une base de données compilée en WebAssembly, exécutable par le navigateur) et dessine la carte avec MapLibre ; il ne sollicite l'API que pour ce qui nécessite le modèle. Le modèle et les secrets (`JETON_API`) restent ainsi sur le serveur, et CORS, déjà activé dans l'`ingress`, autorise le navigateur à appeler une API située sur un autre domaine.
-
 ::: {.application}
 
 ## Application 24: Une carte interactive pour explorer les prix

@@ -984,26 +984,76 @@ On va proposer un nouveau livrable pour parler à un public plus large. Les site
 
 [^appli-r]: Il existe bien d'autres *frameworks* pour les utilisateurs de Python mais `Streamlit` est le plus populaire depuis des années. L'équivalent, en {{< fa brands r-project >}}, est le *framework* *Shiny*.
 
-La première approche a du sens si des opérations complexes en `Python` sont à mettre en œuvre suite à une action de l'utilisateur. Il faut un serveur qui soit disponible en continu et sache faire ces opérations.
+La première approche a du sens si des opérations complexes en `Python` sont à mettre en oeuvre suite à une action de l'utilisateur. Il faut cependant un serveur qui soit disponible en continu, sache faire ces opérations et répondre à l'utilisateur. C'est un niveau technique exigeant.
 
-Cependant, dans notre cas, nous avons déjà délégué ce type d'opérations à l'API : nous n'avons pas besoin d'un autre serveur. Un site statique suffit[^statique] : `JavaScript` est parfait pour envoyer et récupérer des résultats d'une API.
+Dans notre cas, nous avons déjà délégué ce type d'opérations à l'API : nous n'avons pas besoin d'un autre serveur, plus complexe à maintenir. Comme dans de nombreuses situations, un site statique exposé sur un serveur web suffit [^statique] : `JavaScript` est parfait pour envoyer et récupérer des résultats d'une API.
 
 [^statique]: Pour être honnête, les sites statiques suffisent souvent. Dans de nombreux cas, le besoin d'une application interactive est lié à une mauvaise architecture logicielle : plutôt qu'un `Streamlit` monolithique, on pourrait se contenter d'une API en _backend_ et d'un site statique en _frontend_.
 
-Les *frameworks* de construction de sites sont nombreux. Comme on veut garder un *pipeline* simple et maintenable, on va prendre un outil très adapté: `Quarto`. Le site sera déployé via `Github Pages`.
+Les *frameworks* de construction de sites sont nombreux. Comme on veut garder un *pipeline* simple et maintenable, on va prendre un outil très adapté: `Quarto`. Le site sera déployé via `Github Pages` par intégration continue.
 
 ## Étape 1 : intégrer l'API dans un site statique
 
 L'objectif de cette première étape est de montrer comment **intégrer une API dans un _frontend_ minimaliste et léger, déployé comme un site statique** sur GitHub Pages.
 
-Quarto est bien connu des utilisateurs.trices de R et Python mais permet aussi d'embarquer du code exécutable en `JavaScript` (cellules OJS) qui appellent l'API en fonction des valeurs affichées par le navigateur.
+Quarto est bien connu des utilisateurs.trices de R et Python mais permet aussi d'embarquer du code exécutable en JavaScript (cellules OJS) qui appellent l'API en fonction des valeurs affichées par le navigateur (plus de détails dans la [documentation](https://quarto.org/docs/interactive/ojs/)).
 
-Le coût de maintenance est donc réduit : on n'a besoin de changer notre site que si on change l'endpoint de notre API ou si on désire ajouter des fonctionnalités.
+Le coût de maintenance est faible : on n'a besoin de changer notre site que si on change l'*endpoint* de notre API ou si on désire ajouter des fonctionnalités.
 
 
 {{< include "./applications/_appli23.qmd" >}}
 
 ## Étape 2 : une application interactive pour les clients du modèle
+
+Le site de l'étape précédente se contente d'afficher une estimation. Avec un assistant IA intégré à VSCode, on peut aller beaucoup plus loin en faisant du *vibecoding* : on décrit ce que l'on veut à une IA qui écrit le code, puis on itère sur le résultat en corrigeant et en précisant la demande. 
+
+La prochaine application proposé de faire exactement ceci. Elle vise à vous apprendre les vertus de :
+
+1. **Penser le produit avant de coder.**:
+  + On va supposer que les clients de notre modèle veulent une application interactive qui leur permette à la fois de parcourir la carte des prix et d'obtenir une prédiction pour un bien donné. Pour répondre à ce besoin, on va s'inspirer de [explore.data.gouv.fr/](https://explore.data.gouv.fr/fr/immobilier?onglet=carte&filtre=tous). 
+  + Avant d'écrire la moindre ligne, prenez quelques minutes pour décrire ce produit : qui l'utilise, que voit-il en arrivant, quelles actions doit-il pouvoir faire ? Cette description est le premier message à donner à votre assistant.
+
+2. **Le dogfooding.**: utiliser soi-même son propre produit pour en trouver les défauts.
+   + Ajoutons à l'application des informations qui nourrissent l'amélioration continue du modèle : comparer le prix prédit au prix observé lors de ventes passées. Les biens pour lesquels l'écart est systématique révèlent les faiblesses du modèle, et donc ce qu'il faut corriger à la prochaine itération de son cycle de vie.
+
+::: {.callout-warning}
+## Un second pipeline dans le projet
+
+Ce site est un second produit, donc *pipeline data*, complémentaire mais pas identique au premier dont l'aboutissement était l'API. Bien qu'il expose notre modèle, son cycle de vie diffère du premier produit (nous y reviendrons plus loin dans le cours). 
+
+Cependant, les bonnes pratiques vues pour Python s'appliquent aussi ici, même si l'usage de JavaScript reste très limité :
+
+- **structurer le code** du site en modules séparés, cohérents avec le *pipeline* (lecture des données, rendu de la carte, prédiction, visualisation) ;
+- **organiser la donnée** pour celui qui la consomme : c'est l'objet de la partie sur le partitionnement du fichier Parquet, qui permettra d'avoir un modèle de données plus adapté à la manière dont on désire faire voir la donnée.
+:::
+
+**Vous êtes libres.** Les possibilités d'un *frontend* sont nombreuses. La version proposée (tag `appli24`) n'est qu'un exemple : prenez-la comme point de départ (notamment pour les appels à l'API) ou comme source d'inspiration.
+
+<details>
+<summary>
+Architecture de la solution d'exemple mise en oeuvre
+</summary>
+
+La page d'accueil est une carte plein écran interactive qui expose: 
+
+* un fond de plan de l'IGN
+* les sections cadastrales pour simplifier la requête des parcelles cadastrales dans lesquelles s'insèrent nos bien évalués
+* des parcelles colorées selon le prix médian au m² sont cliquables pour passer au niveau bien. 
+
+Les actions possibles pour l'utilisateur:
+
+* Un clic sur une parcelle ouvre un bandeau latéral qui liste ses ventes.
+* On peut y ajuster les caractéristiques du bien (type, surface, nombre de pièces) : l'API réestime alors le prix
+
+Le bandeau compare l'estimation au prix de vente et affiche deux histogrammes des prix au m², pour la commune et pour la section. 
+
+Les choix techniques qui en découlent:
+
+* DuckDB-WASM (implémentation dans la navigateur de DuckDB) pour lire la donnée et effectuer des opérations 
+* carte s'appuyant sur avec MapLibre
+* notre API sollicitée seulement lorsqu'on a besoin d'une prédiction.
+
+</details>
 
 {{< include "./applications/_appli24.qmd" >}}
 
