@@ -82,7 +82,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-0c72191f2bba49b536c236b85389eefd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-018b3a0dfd0c85d2214bd2aa6e797fef.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <link href="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.css" rel="stylesheet">
 <link href="../site_libs/quarto-contrib/filetree-1.0.0/filetree.css" rel="stylesheet">
 <link href="../site_libs/quarto-contrib/fontawesome6-1.2.0/all.min.css" rel="stylesheet">
@@ -569,9 +569,9 @@ Ce que vous devriez voir sur la page de création du <em>fork</em>.
 <div class="code-with-filename-file">
 <pre><strong>terminal</strong></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://<span class="va">$TOKEN</span>@github.com/<span class="va">$USERNAME</span>/application.git</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://<span class="va">$GIT_PERSONAL_ACCESS_TOKEN</span>@github.com/<span class="va">$GIT_USER_NAME</span>/application.git</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>où <code>$TOKEN</code> et <code>$USERNAME</code> sont à remplacer, respectivement, par le jeton que vous avez généré précédemment et votre nom d’utilisateur.</p>
+<p>où <code>$GIT_PERSONAL_ACCESS_TOKEN</code> et <code>$GIT_USER_NAME</code> sont à remplacer, respectivement, par le jeton que vous avez généré précédemment et votre nom d’utilisateur.</p>
 <details>
 <summary>
 Le script d’initialisation proposé
@@ -926,7 +926,7 @@ Un exemple de définition d’un argument pour l’utilisation en ligne de comma
 </ol>
 </div>
 </div>
-<p>L’exercice suivant permet de mettre en application le fait de paramétriser un script en utilisant des variables définies dans un fichier YAML.</p>
+<p>L’exercice suivant permet de mettre en application le fait de paramétriser un script en utilisant des variables définies dans un fichier <code>.env</code>.</p>
 <div class="callout callout-style-default callout-application callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1444,7 +1444,7 @@ Note
 <pre><strong>terminal</strong></pre>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14" data-filename="terminal" data-code-line-numbers=""><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install cookiecutter</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cookiecutter</span> https://github.com/drivendata/cookiecutter-data-science</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="ex">cookiecutter</span> https://github.com/drivendata/cookiecutter-data-science <span class="at">-c</span> v1</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Ici, on a déjà un projet, on va donc faire les choses dans l’autre sens : on va s’inspirer de la structure proposée afin de réorganiser celle de notre projet selon les standards communautaires.</p>
 </div>
@@ -3178,11 +3178,11 @@ rm -f update.sh</code></pre>
 <ul>
 <li>Se rendre sur <a href="https://hub.docker.com/">https://hub.docker.com/</a> et créer un compte. Il est recommandé d’associer ce compte à votre compte <code>Github</code>.</li>
 <li>Créer un dépôt public <code>application</code></li>
-<li>Aller dans les <a href="https://hub.docker.com/settings/general">paramètres de votre compte</a> et cliquer, à gauche, sur <code>Security</code></li>
+<li>Aller dans les <a href="https://hub.docker.com/settings/general">paramètres de votre compte</a> et cliquer, à gauche, sur <code>Personal Access Token</code></li>
 <li>Créer un jeton personnel d’accès, ne fermez pas l’onglet en question, vous ne pouvez voir sa valeur qu’une fois.</li>
-<li>Dans le dépôt <code>Github</code> de votre projet, cliquer sur l’onglet <code>Settings</code> et cliquer, à gauche, sur <code>Secrets and variables</code> puis dans le menu déroulant en dessous sur <code>Actions</code>. Sur la page qui s’affiche, aller dans la section <code>Repository secrets</code></li>
+<li>Dans le dépôt <code>Github</code> de votre projet, cliquer sur l’onglet <code>Settings</code> et cliquer, à gauche, sur <code>Secrets and variables</code> puis dans le menu déroulant en dessous sur <code>Actions</code>. Sur la page qui s’affiche, aller dans la section <code>Repository secrets</code> de l’onglet <code>Secrets</code></li>
 <li>Créer un jeton <code>DOCKERHUB_TOKEN</code> à partir du jeton que vous aviez créé sur <code>Dockerhub</code>. Valider</li>
-<li>Créer un deuxième secret nommé <code>DOCKERHUB_USERNAME</code> ayant comme valeur le nom d’utilisateur que vous avez créé sur <code>Dockerhub</code></li>
+<li>Créer une variable nommée <code>DOCKERHUB_USERNAME</code> ayant comme valeur le nom d’utilisateur que vous avez créé sur <code>Dockerhub</code> dans la section <code>Repository variables</code> de l’onglet <code>Variables</code></li>
 </ul>
 </div>
 </div>
@@ -4049,7 +4049,7 @@ Fichier <code>app/run.sh</code>
 <li><p>Pourquoi lancer <code>train.py</code> avant l’API ? Le fichier <code>model.skops</code> est ignoré par Git (il figure dans le <code>.gitignore</code>) : il n’est donc ni dans le dépôt, ni dans l’image Docker. Le conteneur entraîne alors le modèle au démarrage, avant de le servir. Ce démarrage est long (plusieurs minutes, le temps de télécharger les données et d’entraîner le modèle) ; nous reviendrons plus tard sur ce point, avec une meilleure façon de partager un modèle entraîné entre l’entraînement et l’API.</p></li>
 <li><p>Donner au script <code>app/run.sh</code> des permissions d’exécution : <code>chmod +x app/run.sh</code></p></li>
 <li><p>Ajouter <code>COPY app ./app</code> au Dockerfile pour avoir les fichiers nécessaires au lancement dans l’API dans l’image</p></li>
-<li><p>Changer l’instruction <code>CMD</code> du <code>Dockerfile</code> pour exécuter le script <code>app/run.sh</code> au lancement du conteneur (<code>CMD ["bash", "-c", "./app/run.sh"]</code>)</p></li>
+<li><p>Changer l’instruction <code>CMD</code> du <code>Dockerfile</code> pour exécuter le script <code>app/run.sh</code> au lancement du conteneur (<code>CMD ["./app/run.sh"]</code>)</p></li>
 <li><p><em>Commit</em> et <em>push</em> les changements</p></li>
 <li><p>Une fois le CI terminé, vérifier que le nouveau <em>tag</em> <code>latest</code> a été <em>pushé</em> sur le DockerHub. Récupérer la nouvelle image dans votre environnement de test de <code>Docker</code> et vérifier que l’API se déploie correctement.</p></li>
 </ul>
@@ -4799,7 +4799,8 @@ rm -f update.sh</code></pre>
 </div>
 </details></li>
 <li><p>Déplacer <code>styles.css</code> à la racine du projet</p></li>
-<li><p>Ajouter au <code>.gitignore</code> les lignes suivantes (sans effacer le contenu existant)</p>
+<li><p>Supprimer le dossier <code>mysite</code> (avec son fichier .gitignore généré par Quarto)</p></li>
+<li><p>Mettre à jour le <code>.gitignore</code> avec les instructions suivantes</p>
 <details>
 <summary>
 <p>Contenu attendu de <code>.gitignore</code></p>
@@ -5323,7 +5324,18 @@ Modification de <code>train.py</code> pour faire une <em>grid search</em>
 <span id="cb77-184"><a href="#cb77-184" aria-hidden="true" tabindex="-1"></a>logging.info(<span class="st">"Matrice de confusion (test):"</span>)</span>
 <span id="cb77-185"><a href="#cb77-185" aria-hidden="true" tabindex="-1"></a>logging.info(confusion_matrix(y_test, best_model.predict(X_test)))</span>
 <span id="cb77-186"><a href="#cb77-186" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-187"><a href="#cb77-187" aria-hidden="true" tabindex="-1"></a>logging.debug(<span class="ss">f"</span><span class="ch">\n</span><span class="sc">{</span><span class="dv">80</span> <span class="op">*</span> <span class="st">'-'</span><span class="sc">}</span><span class="ch">\n</span><span class="ss">FILE ENDED SUCCESSFULLY!</span><span class="ch">\n</span><span class="sc">{</span><span class="dv">80</span> <span class="op">*</span> <span class="st">'-'</span><span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb77-187"><a href="#cb77-187" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Log model</span></span>
+<span id="cb77-188"><a href="#cb77-188" aria-hidden="true" tabindex="-1"></a>    input_example <span class="op">=</span> pd.DataFrame(</span>
+<span id="cb77-189"><a href="#cb77-189" aria-hidden="true" tabindex="-1"></a>        {</span>
+<span id="cb77-190"><a href="#cb77-190" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Sex"</span>: [<span class="st">"female"</span>],</span>
+<span id="cb77-191"><a href="#cb77-191" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Age"</span>: [<span class="fl">29.0</span>],</span>
+<span id="cb77-192"><a href="#cb77-192" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Fare"</span>: [<span class="fl">16.5</span>],</span>
+<span id="cb77-193"><a href="#cb77-193" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Embarked"</span>: [<span class="st">"S"</span>],</span>
+<span id="cb77-194"><a href="#cb77-194" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb77-195"><a href="#cb77-195" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb77-196"><a href="#cb77-196" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-197"><a href="#cb77-197" aria-hidden="true" tabindex="-1"></a>    mlflow.sklearn.log_model(best_model, <span class="st">"model"</span>, input_example<span class="op">=</span>input_example)</span>
+<span id="cb77-198"><a href="#cb77-198" aria-hidden="true" tabindex="-1"></a>logging.debug(<span class="ss">f"</span><span class="ch">\n</span><span class="sc">{</span><span class="dv">80</span> <span class="op">*</span> <span class="st">'-'</span><span class="sc">}</span><span class="ch">\n</span><span class="ss">FILE ENDED SUCCESSFULLY!</span><span class="ch">\n</span><span class="sc">{</span><span class="dv">80</span> <span class="op">*</span> <span class="st">'-'</span><span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </details>
 <ol start="2" type="1">
