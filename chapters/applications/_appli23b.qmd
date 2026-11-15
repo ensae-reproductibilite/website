@@ -23,78 +23,17 @@ Elle fonctionne ainsi. La page d'accueil est une carte plein écran : fond Plan 
 
 ## Application 23b: Une carte interactive pour explorer les prix
 
-- Créer un dossier `js/` à la racine du projet et y placer les quatre modules suivants :
-  - [`donnees.js`](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23b/js/donnees.js) charge les ventes DVF avec DuckDB-WASM et calcule les médianes par parcelle (rôle : les données) ;
-  - [`carte.js`](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23b/js/carte.js) affiche la carte MapLibre, les sections et les parcelles du cadastre (rôle : le rendu de la carte) ;
-  - [`prediction.js`](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23b/js/prediction.js) géocode l'adresse et appelle `/predict` (rôle : la prédiction) ;
-  - [`graphiques.js`](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23b/js/graphiques.js) construit le tableau des ventes du bandeau, le bloc qui compare prix réel et estimation, et les histogrammes des prix au m² de la commune et de la section (rôle : la visualisation).
+**Partie 1 : une carte interactive à partir de notre parquet**
 
-    Ces modules ne se connaissent pas entre eux. C'est `index.qmd` qui les relie, grâce à des cellules OJS qui importent ce dont elles ont besoin, par exemple `import {chargerVentes} from "./js/donnees.js"`.
+- Avec votre assistant IA, et en partant de la description du produit que vous avez rédigée, construisez un site Quarto avec des cellules OJS, comme à l'application 23a. La carte des ventes et des prix lit directement le fichier `https://minio.lab.sspcloud.fr/lgaliana/ensae-reproductibilite/data/raw/dvf.parquet` dans le navigateur, avec DuckDB-WASM. Pour un bien choisi, elle demande son estimation à votre API et la compare au prix observé. Gardez le code structuré (données, carte, prédiction, visualisation dans des fichiers séparés, comme le rappelle l'encadré ci-dessus).
+- La version proposée est consultable sous le tag `appli23b` du [dépôt de l'application](https://github.com/ensae-reproductibilite/application/tree/appli23b) et illustrée par la vidéo ci-dessous. Vous pouvez partir de cette version si vous préférez.
+- Prévisualisez le site avec `quarto preview`, puis publiez-le en poussant vos modifications : le workflow de l'application 23a le republie automatiquement.
 
-- Remplacer `index.qmd` par [celui-ci](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23b/index.qmd).
+**Partie 2 : une donnée mal organisée pour cet usage**
 
-- Ajouter une page `a-propos.qmd` à la racine, en la récupérant [ici](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23b/a-propos.qmd). Elle explique le partage entre frontend et backend que nous venons de décrire.
+- Ouvrez les outils de développement du navigateur (touche `F12`, onglet `Réseau`) sur votre site. Les requêtes vers `dvf.parquet` renvoient `206 Partial Content`, pourtant environ 40 Mo sont téléchargés et la carte met du temps à se charger. Relevez ces deux chiffres.
 
-- Remplacer le contenu de `_quarto.yml` par le fichier suivant :
-
-    ```{.yaml filename="_quarto.yml"}
-    project:
-      type: website
-      render:
-        - index.qmd
-        - a-propos.qmd
-      resources:
-        - js/
-
-    website:
-      title: "Prix de l'immobilier en petite couronne"
-      navbar:
-        left:
-          - href: index.qmd
-            text: Accueil
-          - href: a-propos.qmd
-            text: À propos
-
-    format:
-      html:
-        lang: fr
-        # Thème clair ou sombre selon la préférence du navigateur (prefers-color-scheme),
-        # avec un interrupteur dans la barre de navigation
-        theme:
-          light: cosmo
-          dark: darkly
-        respect-user-color-scheme: true
-        css: styles.css
-        toc: false
-    ```
-
-    La liste `render:` indique les pages à compiler : `index.qmd` et `a-propos.qmd`, et aucune autre. Les modules JavaScript ne sont pas des pages : sans `resources: - js/`, Quarto ne les copierait pas dans le site et le navigateur ne trouverait pas les `import`. Avec deux thèmes (`light` et `dark`) et `respect-user-color-scheme: true`, Quarto suit la préférence de couleur du navigateur (clair ou sombre) et ajoute un interrupteur dans la barre de navigation. La page d'accueil, elle, demande une mise en page pleine largeur grâce à `page-layout: custom` dans son en-tête, pour laisser toute la place à la carte.
-
-- Remplacer `styles.css` par [celui-ci](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23b/styles.css). Il fixe la hauteur de la carte et place la légende et la recherche d'adresse par-dessus.
-
-- Dans `index.qmd`, remplacer la valeur de `apiRoot` (dans la cellule qui importe les modules) par l'URL de votre API. Puis lancer le site en local :
-
-```{.bash filename="terminal"}
-quarto preview
-```
-
-- Explorer la page avec les outils de développement du navigateur (touche `F12`), onglet `Réseau` (`Network`) :
-  - les requêtes vers `dvf.parquet` renvoient le statut `206 Partial Content` : DuckDB ne demande que des portions du fichier. Relevez pourtant la taille totale téléchargée (environ 40 Mo) et le temps de chargement de la carte. Nous verrons juste après pourquoi c'est si lourd, et comment y remédier ;
-  - les tuiles vectorielles des sections se chargent à partir du zoom 11, celles des parcelles à partir du zoom 13 ;
-  - un appel à `/predict` part à chaque sélection d'une vente, et après chaque réglage de curseur une fois celui-ci stabilisé.
-- Déplacer un curseur rapidement, puis observer l'onglet `Réseau` : une seule requête `/predict` part, pas une par position du curseur. Dans `index.qmd`, trouver la cellule responsable de ce comportement (celle qui utilise `invalidation` et `Promises.delay`).
-- Dans `index.qmd`, repérer quelles cellules s'exécutent dans le navigateur et laquelle délègue le calcul à l'API (celle qui contient `estimerPrix`).
-- Pourquoi ne pas calculer la prédiction dans le navigateur, comme les médianes ?
-
-::: {.callout-tip collapse="true"}
-## Réponse
-
-Le fichier du modèle, l'enrichissement avec les données Filosofi et le jeton secret restent côté serveur : les envoyer au navigateur les rendrait publics. Par ailleurs, l'API peut aussi servir d'autres clients, comme un script ou une autre application, qui utilisent le même modèle sans en avoir une copie.
-:::
-
-**Une donnée mal organisée pour cet usage**
-
-Le fichier `dvf.parquet` est découpé en deux « row groups », deux blocs de lignes. Pour chaque bloc et chaque colonne, Parquet stocke le minimum et le maximum des valeurs, et DuckDB s'en sert pour sauter les blocs qui ne peuvent pas répondre à un `WHERE`. Ici, ça ne marche pas : `code_departement` n'a pas ces statistiques, et les ventes de Paris sont mélangées au reste de la France dans un seul gros bloc. Le filtre ne saute donc rien, et DuckDB doit lire les 13 colonnes utiles pour toute la France. Les requêtes par plage n'évitent que les colonnes inutiles, pas les lignes. Pour cet usage, il vaut mieux réorganiser le fichier : le découper par département, trier les lignes et écrire des blocs plus petits.
+Le fichier `dvf.parquet` compte deux « row groups », deux blocs de lignes. Pour chaque bloc et chaque colonne, Parquet stocke le minimum et le maximum des valeurs, et DuckDB s'en sert pour sauter les blocs qui ne peuvent pas répondre à un `WHERE`. Ici, cela ne marche pas : `code_departement` n'a pas ces statistiques, et les ventes de Paris sont mêlées au reste de la France dans un seul gros bloc. Le filtre ne saute donc rien, et DuckDB lit les 13 colonnes utiles pour toute la France. Les requêtes par plage n'évitent que les colonnes inutiles, pas les lignes. Mieux vaut réorganiser le fichier : le découper par département, trier les lignes et écrire des blocs plus petits.
 
 - Récupérer le script [`partitionner_dvf.py`](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23b/partitionner_dvf.py) à la racine du projet.
 - Le lancer une fois, en remplaçant `<votre_bucket>` par le nom de votre bucket. Il écrit un dossier par département (`code_departement=75/`, etc.) dans `diffusion/`, le dossier de votre bucket lisible publiquement sur SSP Cloud :
@@ -103,20 +42,9 @@ Le fichier `dvf.parquet` est découpé en deux « row groups », deux blocs de l
     uv run partitionner_dvf.py s3://<votre_bucket>/diffusion/dvf
     ```
 
-- Dans `js/donnees.js`, remplacer `URL_DVF` par `https://minio.lab.sspcloud.fr/<votre_bucket>/diffusion/dvf`. La page ne lit que quatre fichiers (`code_departement=75`, `92`, `93` et `94`, chacun dans son `dvf_0.parquet`), nommés explicitement car DuckDB-WASM ne peut pas lister un dossier en HTTP.
-- Recharger la page et comparer l'onglet `Réseau` : quatre petits fichiers, quelques Mo au total, au lieu de 40 Mo.
+- Dans `js/donnees.js`, remplacer `URL_DVF` par `https://minio.lab.sspcloud.fr/<votre_bucket>/diffusion/dvf`. La page ne lit que quatre fichiers (`code_departement=75`, `92`, `93` et `94`, chacun dans son `dvf_0.parquet`), nommés explicitement car DuckDB-WASM ne peut pas lister un dossier en HTTP. Recharger la page et comparer l'onglet `Réseau` : quelques Mo au lieu de 40.
 
 Ce script ne s'exécute qu'une fois, à la main : le fichier brut reste la référence, celle qu'utilise `train.py`.
-
-- Publier le site : on enregistre les fichiers, puis on envoie le commit. Le workflow de l'application 23a reconstruit et republie le site automatiquement.
-
-```{.bash filename="terminal"}
-git add js/ index.qmd a-propos.qmd _quarto.yml styles.css partitionner_dvf.py
-git commit -m "Carte interactive : frontend et backend séparés"
-git push
-```
-
-- Attendre la fin du workflow dans l'onglet `Actions` de votre dépôt, puis ouvrir l'URL de votre site (indiquée dans le `README`). Vérifier que la carte s'affiche, qu'un clic sur une section fait apparaître ses parcelles colorées, et que le bandeau d'une parcelle donne une estimation.
 
 :::
 
