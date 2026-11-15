@@ -41,12 +41,17 @@ Cette répartition a trois conséquences. Le modèle et les secrets, comme le `J
     format:
       html:
         lang: fr
-        theme: cosmo
+        # Thème clair ou sombre selon la préférence du navigateur (prefers-color-scheme),
+        # avec un interrupteur dans la barre de navigation
+        theme:
+          light: cosmo
+          dark: darkly
+        respect-user-color-scheme: true
         css: styles.css
         toc: false
     ```
 
-    La liste `render:` indique les pages à compiler : `index.qmd` et `a-propos.qmd`, et aucune autre. Les modules JavaScript ne sont pas des pages : sans `resources: - js/`, Quarto ne les copierait pas dans le site et le navigateur ne trouverait pas les `import`. La page d'accueil, elle, demande une mise en page pleine largeur grâce à `page-layout: custom` dans son en-tête, pour laisser toute la place à la carte.
+    La liste `render:` indique les pages à compiler : `index.qmd` et `a-propos.qmd`, et aucune autre. Les modules JavaScript ne sont pas des pages : sans `resources: - js/`, Quarto ne les copierait pas dans le site et le navigateur ne trouverait pas les `import`. Avec deux thèmes (`light` et `dark`) et `respect-user-color-scheme: true`, Quarto suit la préférence de couleur du navigateur (clair ou sombre) et ajoute un interrupteur dans la barre de navigation. La page d'accueil, elle, demande une mise en page pleine largeur grâce à `page-layout: custom` dans son en-tête, pour laisser toute la place à la carte.
 
 - Remplacer `styles.css` par [celui-ci](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23b/styles.css). Il fixe la hauteur de la carte et place la légende et la recherche d'adresse par-dessus.
 
