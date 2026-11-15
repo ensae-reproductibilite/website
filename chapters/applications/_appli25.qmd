@@ -198,6 +198,17 @@ logging.info(
 logging.info("Matrice de confusion (test):")
 logging.info(confusion_matrix(y_test, best_model.predict(X_test)))
 
+    # Log model
+    input_example = pd.DataFrame(
+        {
+            "Sex": ["female"],
+            "Age": [29.0],
+            "Fare": [16.5],
+            "Embarked": ["S"],
+        }
+    )
+
+    mlflow.sklearn.log_model(best_model, "model", input_example=input_example)
 logging.debug(f"\n{80 * '-'}\nFILE ENDED SUCCESSFULLY!\n{80 * '-'}")
 ```
 
