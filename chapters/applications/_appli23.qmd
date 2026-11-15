@@ -59,15 +59,8 @@ quarto create project website mysite
 
 Enfin, on va construire et déployer automatiquement ce site web grâce au combo `Github Actions` et `Github Pages` :
 
-- Publier le site une première fois depuis votre ordinateur avec la commande suivante :
-
-```{.bash filename="terminal"}
-quarto publish gh-pages --no-browser
-```
-
-- Cette commande effectue le rendu du site, crée la branche `gh-pages`, y envoie le site et crée le fichier `_publish.yml` dont l'action GitHub aura besoin. Ajoutez ce fichier à votre dépôt par un commit. Pour un site de projet, GitHub Pages est alors configuré automatiquement : le site est publié à l'adresse `https://<compte>.github.io/<depot>/`.
-- Dans les paramètres de votre dépôt sur GitHub (`Settings` > `Actions` > `General` > `Workflow permissions`), cocher `Read and write permissions` : l'action doit pouvoir pousser le site sur la branche `gh-pages`.
-- Créer un fichier `.github/workflows/publish.yml` avec le contenu de [ce fichier](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23/.github/workflows/publish.yml)
+- Dans les paramètres de votre dépôt sur GitHub (`Settings` > `Pages` > `Build and deployment`), choisir `GitHub Actions` comme source (`Source`). Le site ne sera plus publié à partir d'une branche : c'est un workflow qui le construira puis le déploiera.
+- Créer un fichier `.github/workflows/publish.yml` avec le contenu de [ce fichier](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23/.github/workflows/publish.yml). Il comporte deux étapes (_jobs_) : `build` construit le site avec `Quarto` dans le dossier `_site/` et le met de côté sous forme d'artefact, `deploy` publie cet artefact sur GitHub Pages.
 
     <details>
     <summary>Contenu attendu de `.github/workflows/publish.yml`</summary>
@@ -75,34 +68,56 @@ quarto publish gh-pages --no-browser
     ```{.yaml filename=".github/workflows/publish.yml"}
     name: Publish website
 
+    # Le site est publié à chaque push sur la branche par défaut : l'environnement
+    # github-pages n'autorise par défaut que cette branche
     on:
       push:
         branches:
           - main
-          - dev
       workflow_dispatch:
 
+    # Droits nécessaires pour déployer sur GitHub Pages
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    # Un seul déploiement à la fois
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+
     jobs:
-      publish:
+      build:
         runs-on: ubuntu-latest
-        permissions:
-          contents: write
         steps:
           - name: Checkout
             uses: actions/checkout@v7
           - name: Set up quarto
             uses: quarto-dev/quarto-actions/setup@v2
-          - name: Publish to GitHub Pages (and render)
-            uses: quarto-dev/quarto-actions/publish@v2
+          - name: Render
+            uses: quarto-dev/quarto-actions/render@v2
+          - name: Upload site
+            uses: actions/upload-pages-artifact@v5
             with:
-              target: gh-pages
-            env:
-              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              path: _site
+
+      deploy:
+        needs: build
+        runs-on: ubuntu-latest
+        environment:
+          name: github-pages
+          url: ${{ steps.deployment.outputs.page_url }}
+        steps:
+          - name: Deploy to GitHub Pages
+            id: deployment
+            uses: actions/deploy-pages@v5
     ```
 
     </details>
 
-- Pousser ces modifications sur GitHub, puis suivre l'exécution du workflow dans l'onglet `Actions` et ouvrir l'URL de votre site.
+- Le workflow se déclenche à chaque _push_ sur `main` : l'environnement `github-pages`, que GitHub crée pour ce mode de déploiement, n'autorise par défaut que la branche principale. Pour publier aussi depuis une autre branche, l'ajouter dans `Settings` > `Environments` > `github-pages`.
+- Pousser ces modifications sur `main`, puis suivre l'exécution du workflow dans l'onglet `Actions`. L'adresse du site (`https://<compte>.github.io/<depot>/`) s'affiche à la fin du _job_ `deploy`.
 - Modifier le `README` pour indiquer l'URL de votre site web et de votre API
 
 :::
