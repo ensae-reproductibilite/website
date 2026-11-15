@@ -973,33 +973,32 @@ git push origin dev
 
 :::
 
-Nous avons un modèle dont l'inférence est facile d'accès et nous avons déjà commencé à faire le travail pour avoir de la liberté dans les paramètres à fournir à l'API. 
+Nous avons un modèle dont l'inférence est facile d'accès et nous avons déjà commencé à faire le travail pour avoir de la liberté dans les paramètres à fournir à l'API.
 
-Cependant, l'API n'est pas vraiment un produit qu'on peut exposer au grand public: si c'était le seul mode d'exposition de notre modèle, nous ne pourrions parler qu'à des publics ayant un certain bagage technique. 
+Cependant, l'API n'est pas vraiment un produit qu'on peut exposer au grand public : si c'était le seul mode d'exposition de notre modèle, nous ne pourrions parler qu'à des publics ayant un certain bagage technique.
 
-On va proposer un nouveau livrable pour parler à un public plus large. Les sites interactifs sont de bons produits pour cela. Il existe deux approches pour cela:
+On va proposer un nouveau livrable pour parler à un public plus large. Les sites interactifs sont de bons produits pour cela, et deux approches existent :
 
-* Les applications dynamiques à la *Streamlit* (`Python` {{< fa brands python >}})[^appli-r]. Chaque interaction avec l'interface déclenche une série d'opérations `Python`. 
-* Les site web statiques qui délèguent les opérations à Javascript {{< fa brands js-square >}}, embarqué dans n'importe quel navigateur.
+- Les applications dynamiques avec `Streamlit` (`Python` {{< fa brands python >}})[^appli-r]. Chaque interaction avec l'interface déclenche une série d'opérations `Python`.
+- Les sites web statiques qui délèguent les opérations à `JavaScript` {{< fa brands js-square >}}, embarqué dans n'importe quel navigateur.
 
-[^appli-r]: Il existe bien d'autres *frameworks* pour les utilisateurs de Python mais Streamlit est le plus populaire depuis des années. L'équivalent, en {{< fa brands r-project >}}, est le *framework* *Shiny*.
+[^appli-r]: Il existe bien d'autres *frameworks* pour les utilisateurs de Python mais `Streamlit` est le plus populaire depuis des années. L'équivalent, en {{< fa brands r-project >}}, est le *framework* *Shiny*.
 
-La première approche a du sens si des opérations complexes en `Python` sont à mettre en oeuvre suite à une action de l'utilisateur. Il faut un serveur qui soit disponible en continu et sache faire ces opérations. 
+La première approche a du sens si des opérations complexes en `Python` sont à mettre en œuvre suite à une action de l'utilisateur. Il faut un serveur qui soit disponible en continu et sache faire ces opérations.
 
-Cependant, dans notre cas, nous avons déjà délégué ce type d'opérations à l'API: nous n'avons pas besoin d'un autre serveur.  Un site statique suffit[^statique] : javascript est parfait pour envoyer et récupérer des résultats d'une API
+Cependant, dans notre cas, nous avons déjà délégué ce type d'opérations à l'API : nous n'avons pas besoin d'un autre serveur. Un site statique suffit[^statique] : `JavaScript` est parfait pour envoyer et récupérer des résultats d'une API.
 
-[^statique]: Pour être honnête, les sites statiques suffisent souvent. Dans de nombreux cas, le besoin d'une application interactive est liée à une mauvaise architecture logicielle: plutôt qu'un streamlit monolithique, on pourrait se contenter d'une API en *backend* et d'un site statique en *front*. 
+[^statique]: Pour être honnête, les sites statiques suffisent souvent. Dans de nombreux cas, le besoin d'une application interactive est lié à une mauvaise architecture logicielle : plutôt qu'un `Streamlit` monolithique, on pourrait se contenter d'une API en _backend_ et d'un site statique en _frontend_.
 
 Les *frameworks* de construction de sites sont nombreux. Comme on veut garder un *pipeline* simple et maintenable, on va prendre un outil très adapté: `Quarto`. Le site sera déployé via `Github Pages`.
 
 ## Étape 1 : intégrer l'API dans un site statique
 
-L'objectif de cette première étape est de montrer comment **intégrer une API dans un frontend minimaliste et léger, déployé comme un site statique** sur GitHub Pages.
+L'objectif de cette première étape est de montrer comment **intégrer une API dans un _frontend_ minimaliste et léger, déployé comme un site statique** sur GitHub Pages.
 
-Quarto est bien connu des utilisateurs.trices de R et Python mais permet aussi d'embarquer du code exécutable en javascript (cellules OJS) qui appelent l'API en fonction des valeurs affichées par le navigateur. 
+Quarto est bien connu des utilisateurs.trices de R et Python mais permet aussi d'embarquer du code exécutable en `JavaScript` (cellules OJS) qui appellent l'API en fonction des valeurs affichées par le navigateur.
 
-Le coût en maintenance en devient réduit: on n'a besoin de changer notre site que si on change l'endpoint de notre API ou si on désire ajouter des fonctionnalités. 
-
+Le coût de maintenance est donc réduit : on n'a besoin de changer notre site que si on change l'endpoint de notre API ou si on désire ajouter des fonctionnalités.
 
 
 {{< include "./applications/_appli23.qmd" >}}
