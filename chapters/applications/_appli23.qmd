@@ -13,6 +13,9 @@ quarto create project website mysite
 - Remplacer le contenu de `index.qmd` par [celui-ci](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23/index.qmd). Cette page permet aux visiteurs de saisir une adresse, un type de logement, une surface et un nombre de pièces, et affiche le prix estimé par votre API. Dans cette page, remplacer `apiRoot` par l'URL de votre propre API.
 - Dans `_quarto.yml`, retirer `about.qmd` de la barre de navigation et ajouter sous `project:` une liste `render:` ne contenant que `index.qmd`. Sans cela, Quarto compilerait aussi le `README` et le notebook du dossier `notebooks/`.
 
+    <details>
+    <summary>Contenu attendu de `_quarto.yml`</summary>
+
     ```{.yaml filename="_quarto.yml"}
     project:
       type: website
@@ -34,33 +37,72 @@ quarto create project website mysite
         toc: true
     ```
 
+    </details>
+
 - Déplacer `styles.css` à la racine du projet
 - Ajouter au `.gitignore` les lignes suivantes (sans effacer le contenu existant)
 
-```{.bash filename=".gitignore" no-prefix=true}
-/.quarto/
-*.html
-*_files
-_site/
-```
+    <details>
+    <summary>Contenu attendu de `.gitignore`</summary>
+
+    ```{.bash filename=".gitignore" no-prefix=true}
+    /.quarto/
+    *.html
+    *_files
+    _site/
+    ```
+
+    </details>
 
 - En ligne de commande, faire `quarto preview`
 - Observer le site web généré en local et jouer avec.
 
-Enfin, on va construire et déployer automatiquement ce site web grâce au combo `Github Actions` et `Github Pages`:
+Enfin, on va construire et déployer automatiquement ce site web grâce au combo `Github Actions` et `Github Pages` :
 
-- Créer une branche `gh-pages` à partir des lignes suivantes
+- Publier le site une première fois depuis votre ordinateur avec la commande suivante :
 
 ```{.bash filename="terminal"}
-git checkout --orphan gh-pages
-git reset --hard # make sure all changes are committed before running this!
-git commit --allow-empty -m "Initialising gh-pages branch"
-git push origin gh-pages
+quarto publish gh-pages --no-browser
 ```
 
-- Dans les paramètres de votre dépôt sur GitHub (`Settings` > `Pages`), vérifier que le site est publié à partir de la branche `gh-pages`
-- Revenir à votre branche principale (`main` normalement)
-- Créer un fichier `.github/workflows/publish.yaml` avec le contenu de [ce fichier](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23/.github/workflows/publish.yaml)
+- Cette commande effectue le rendu du site, crée la branche `gh-pages`, y envoie le site et crée le fichier `_publish.yml` dont l'action GitHub aura besoin. Ajoutez ce fichier à votre dépôt par un commit. Pour un site de projet, GitHub Pages est alors configuré automatiquement : le site est publié à l'adresse `https://<compte>.github.io/<depot>/`.
+- Dans les paramètres de votre dépôt sur GitHub (`Settings` > `Actions` > `General` > `Workflow permissions`), cocher `Read and write permissions` : l'action doit pouvoir pousser le site sur la branche `gh-pages`.
+- Créer un fichier `.github/workflows/publish.yml` avec le contenu de [ce fichier](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23/.github/workflows/publish.yml)
+
+    <details>
+    <summary>Contenu attendu de `.github/workflows/publish.yml`</summary>
+
+    ```{.yaml filename=".github/workflows/publish.yml"}
+    name: Publish website
+
+    on:
+      push:
+        branches:
+          - main
+          - dev
+      workflow_dispatch:
+
+    jobs:
+      publish:
+        runs-on: ubuntu-latest
+        permissions:
+          contents: write
+        steps:
+          - name: Checkout
+            uses: actions/checkout@v7
+          - name: Set up quarto
+            uses: quarto-dev/quarto-actions/setup@v2
+          - name: Publish to GitHub Pages (and render)
+            uses: quarto-dev/quarto-actions/publish@v2
+            with:
+              target: gh-pages
+            env:
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    ```
+
+    </details>
+
+- Pousser ces modifications sur GitHub, puis suivre l'exécution du workflow dans l'onglet `Actions` et ouvrir l'URL de votre site.
 - Modifier le `README` pour indiquer l'URL de votre site web et de votre API
 
 :::
