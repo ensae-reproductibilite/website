@@ -57,7 +57,7 @@ quarto preview
 ```
 
 - Explorer la page avec les outils de développement du navigateur (touche `F12`), onglet `Réseau` (`Network`) :
-  - les requêtes vers `dvf.parquet` renvoient le statut `206 Partial Content` : DuckDB ne demande que des portions du fichier. Attention toutefois, il en télécharge encore environ 40 Mo sur 58 Mo. Le fichier ne compte que deux gros blocs (les « row groups »), donc le filtre sur le département ne permet pas d'en sauter beaucoup. C'est un point d'attention pour les prochaines étapes, pas un acquis ;
+  - les requêtes vers `dvf.parquet` renvoient le statut `206 Partial Content` : DuckDB ne demande que des portions du fichier. Relevez pourtant la taille totale téléchargée (environ 40 Mo) et le temps de chargement de la carte. Nous verrons juste après pourquoi c'est si lourd, et comment y remédier ;
   - les tuiles vectorielles des sections se chargent à partir du zoom 11, celles des parcelles à partir du zoom 13 ;
   - un appel à `/predict` part à chaque sélection d'une vente, et après chaque réglage de curseur une fois celui-ci stabilisé.
 - Déplacer un curseur rapidement, puis observer l'onglet `Réseau` : une seule requête `/predict` part, pas une par position du curseur. Dans `index.qmd`, trouver la cellule responsable de ce comportement (celle qui utilise `invalidation` et `Promises.delay`).
@@ -70,10 +70,26 @@ quarto preview
 Le fichier du modèle, l'enrichissement avec les données Filosofi et le jeton secret restent côté serveur : les envoyer au navigateur les rendrait publics. Par ailleurs, l'API peut aussi servir d'autres clients, comme un script ou une autre application, qui utilisent le même modèle sans en avoir une copie.
 :::
 
+**Une donnée mal organisée pour cet usage**
+
+Le fichier `dvf.parquet` est découpé en deux « row groups », deux blocs de lignes. Pour chaque bloc et chaque colonne, Parquet stocke le minimum et le maximum des valeurs, et DuckDB s'en sert pour sauter les blocs qui ne peuvent pas répondre à un `WHERE`. Ici, ça ne marche pas : `code_departement` n'a pas ces statistiques, et les ventes de Paris sont mélangées au reste de la France dans un seul gros bloc. Le filtre ne saute donc rien, et DuckDB doit lire les 13 colonnes utiles pour toute la France. Les requêtes par plage n'évitent que les colonnes inutiles, pas les lignes. Pour cet usage, il vaut mieux réorganiser le fichier : le découper par département, trier les lignes et écrire des blocs plus petits.
+
+- Récupérer le script [`partitionner_dvf.py`](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli23b/partitionner_dvf.py) à la racine du projet.
+- Le lancer une fois, en remplaçant `<votre_bucket>` par le nom de votre bucket. Il écrit un dossier par département (`code_departement=75/`, etc.) dans `diffusion/`, le dossier de votre bucket lisible publiquement sur SSP Cloud :
+
+    ```{.bash filename="terminal"}
+    uv run partitionner_dvf.py s3://<votre_bucket>/diffusion/dvf
+    ```
+
+- Dans `js/donnees.js`, remplacer `URL_DVF` par `https://minio.lab.sspcloud.fr/<votre_bucket>/diffusion/dvf`. La page ne lit que quatre fichiers (`code_departement=75`, `92`, `93` et `94`, chacun dans son `dvf_0.parquet`), nommés explicitement car DuckDB-WASM ne peut pas lister un dossier en HTTP.
+- Recharger la page et comparer l'onglet `Réseau` : quatre petits fichiers, quelques Mo au total, au lieu de 40 Mo.
+
+Ce script ne s'exécute qu'une fois, à la main : le fichier brut reste la référence, celle qu'utilise `train.py`.
+
 - Publier le site : on enregistre les fichiers, puis on envoie le commit. Le workflow de l'application 23a reconstruit et republie le site automatiquement.
 
 ```{.bash filename="terminal"}
-git add js/ index.qmd a-propos.qmd _quarto.yml styles.css
+git add js/ index.qmd a-propos.qmd _quarto.yml styles.css partitionner_dvf.py
 git commit -m "Carte interactive : frontend et backend séparés"
 git push
 ```
