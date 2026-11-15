@@ -815,9 +815,9 @@ Cependant, nous allons voir que **le modèle que nous avons pour le moment n'est
 ::: {.callout-warning collapse="true"}
 ## Site statique vs application réactive
 
-La solution que nous allons proposer pour les sites statiques, `Quarto` associé à `Github Pages`, peut être utilisée dans le cadre des parcours _"rapport reproductible"_ ou _"dashboard / application interactive"_.
+La solution que nous allons proposer pour les sites statiques, `Quarto` associé à `Github Pages`, peut être utilisée dans le cadre du parcours _"dashboard / application interactive"_.
 
-Pour ce dernier parcours, d'autres approches techniques sont néanmoins possibles, comme `Streamlit`. Celles-ci sont plus exigeantes sur le plan technique puisqu'elles nécessitent de mettre en production sur des serveurs conteuneurisés (comme la mise en production de l'API)
+Pour ce parcours, d'autres approches techniques sont néanmoins possibles, comme `Streamlit`. Celles-ci sont plus exigeantes sur le plan technique puisqu'elles nécessitent de mettre en production sur des serveurs conteuneurisés (comme la mise en production de l'API)
 là où le site statique ne nécessite qu'un serveur web, mis à disposition gratuitement par `Github`.
 
 
@@ -939,7 +939,7 @@ Ici, nous nous plaçons dans le cas simple où les données brutes reçues sont 
 Si celles-ci évoluaient, il pourrait être utile de versionner les données, à la manière dont on le fait pour le code. `Git` n'est pas l'outil approprié pour cela. Parmi les outils populaires de versionning de données, bien intégrés avec `S3`, il y a, sur le `SSPCloud`, [`lakefs`](https://lakefs.io/).
 :::
 
-Pour automatiser au maximum la mise en production, on va utiliser un nouvel outil : `ArgoCD`. Ainsi, au lieu de devoir appliquer manuellement la commande `kubectl apply` à chaque modification des fichiers de déploiement (présents dans le dossier `kubernetes/`), c'est l'**opérateur** `ArgoCD`, déployé sur le _cluster_, qui va détecter les changements de configuration du déploiement et les appliquer automatiquement.
+Pour automatiser au maximum la mise en production, on va utiliser un nouvel outil : `ArgoCD`. Ainsi, au lieu de devoir appliquer manuellement la commande `kubectl apply` à chaque modification des fichiers de déploiement (présents dans le dossier `deployment/`), c'est l'**opérateur** `ArgoCD`, déployé sur le _cluster_, qui va détecter les changements de configuration du déploiement et les appliquer automatiquement.
 
 C'est l'approche dite **GitOps** : le dépôt `Git` du déploiement fait office de **source de vérité unique** de l'état voulu de l'application, tout changement sur ce dernier doit donc se répercuter immédiatement sur le déploiement effectif.
 
@@ -958,7 +958,7 @@ Il y a donc un élément qui fait la liaison entre ces deux pipelines et qui nou
 {{< include "./applications/_appli22b.qmd" >}}
 
 
-## Etape 4: construire un site web
+# Partie 6 : construire un produit utilisant notre modèle
 
 ::: {.callout-caution collapse="true"}
 ## Si vous prenez ce projet fil rouge en cours de route
@@ -973,17 +973,95 @@ git push origin dev
 
 :::
 
-On va proposer un nouveau livrable pour parler à un public plus large.
-Pour faire ce site web,
-on va utiliser `Quarto` et déployer sur `Github Pages`.
+Nous avons un modèle dont l'inférence est facile d'accès et nous avons déjà commencé à faire le travail pour avoir de la liberté dans les paramètres à fournir à l'API.
+
+Cependant, l'API n'est pas vraiment un produit qu'on peut exposer au grand public : si c'était le seul mode d'exposition de notre modèle, nous ne pourrions parler qu'à des publics ayant un certain bagage technique.
+
+On va proposer un nouveau livrable pour parler à un public plus large. Les sites interactifs sont de bons produits pour cela, et deux approches existent :
+
+- Les applications dynamiques avec `Streamlit` (`Python` {{< fa brands python >}})[^appli-r]. Chaque interaction avec l'interface déclenche une série d'opérations `Python`.
+- Les sites web statiques qui délèguent les opérations à `JavaScript` {{< fa brands js-square >}}, embarqué dans n'importe quel navigateur.
+
+[^appli-r]: Il existe bien d'autres *frameworks* pour les utilisateurs de Python mais `Streamlit` est le plus populaire depuis des années. L'équivalent, en {{< fa brands r-project >}}, est le *framework* *Shiny*.
+
+La première approche a du sens si des opérations complexes en `Python` sont à mettre en oeuvre suite à une action de l'utilisateur. Il faut cependant un serveur qui soit disponible en continu, sache faire ces opérations et répondre à l'utilisateur. C'est un niveau technique exigeant.
+
+Dans notre cas, nous avons déjà délégué ce type d'opérations à l'API : nous n'avons pas besoin d'un autre serveur, plus complexe à maintenir. Comme dans de nombreuses situations, un site statique exposé sur un serveur web suffit [^statique] : `JavaScript` est parfait pour envoyer et récupérer des résultats d'une API.
+
+[^statique]: Pour être honnête, les sites statiques suffisent souvent. Dans de nombreux cas, le besoin d'une application interactive est lié à une mauvaise architecture logicielle : plutôt qu'un `Streamlit` monolithique, on pourrait se contenter d'une API en _backend_ et d'un site statique en _frontend_.
+
+Les *frameworks* de construction de sites sont nombreux. Comme on veut garder un *pipeline* simple et maintenable, on va prendre un outil très adapté: `Quarto`. Le site sera déployé via `Github Pages` par intégration continue.
+
+## Étape 1 : intégrer l'API dans un site statique
+
+L'objectif de cette première étape est de montrer comment **intégrer une API dans un _frontend_ minimaliste et léger, déployé comme un site statique** sur GitHub Pages.
+
+Quarto est bien connu des utilisateurs.trices de R et Python mais permet aussi d'embarquer du code exécutable en JavaScript (cellules OJS) qui appellent l'API en fonction des valeurs affichées par le navigateur (plus de détails dans la [documentation](https://quarto.org/docs/interactive/ojs/)).
+
+Le coût de maintenance est faible : on n'a besoin de changer notre site que si on change l'*endpoint* de notre API ou si on désire ajouter des fonctionnalités.
+
 
 {{< include "./applications/_appli23.qmd" >}}
 
+## Étape 2 : une application interactive pour les clients du modèle
 
-# Partie 6: adopter une approche MLOps pour améliorer notre modèle
+Le site de l'étape précédente se contente d'afficher une estimation. Avec un assistant IA intégré à VSCode, on peut aller beaucoup plus loin en faisant du *vibecoding* : on décrit ce que l'on veut à une IA qui écrit le code, puis on itère sur le résultat en corrigeant et en précisant la demande. 
+
+La prochaine application proposé de faire exactement ceci. Elle vise à vous apprendre les vertus de :
+
+1. **Penser le produit avant de coder.**:
+  + On va supposer que les clients de notre modèle veulent une application interactive qui leur permette à la fois de parcourir la carte des prix et d'obtenir une prédiction pour un bien donné. Pour répondre à ce besoin, on va s'inspirer de [explore.data.gouv.fr/](https://explore.data.gouv.fr/fr/immobilier?onglet=carte&filtre=tous). 
+  + Avant d'écrire la moindre ligne, prenez quelques minutes pour décrire ce produit : qui l'utilise, que voit-il en arrivant, quelles actions doit-il pouvoir faire ? Cette description est le premier message à donner à votre assistant.
+
+2. **Le dogfooding.**: utiliser soi-même son propre produit pour en trouver les défauts.
+   + Ajoutons à l'application des informations qui nourrissent l'amélioration continue du modèle : comparer le prix prédit au prix observé lors de ventes passées. Les biens pour lesquels l'écart est systématique révèlent les faiblesses du modèle, et donc ce qu'il faut corriger à la prochaine itération de son cycle de vie.
+
+::: {.callout-warning}
+## Un second pipeline dans le projet
+
+Ce site est un second produit, donc *pipeline data*, complémentaire mais pas identique au premier dont l'aboutissement était l'API. Bien qu'il expose notre modèle, son cycle de vie diffère du premier produit (nous y reviendrons plus loin dans le cours). 
+
+Cependant, les bonnes pratiques vues pour Python s'appliquent aussi ici, même si l'usage de JavaScript reste très limité :
+
+- **structurer le code** du site en modules séparés, cohérents avec le *pipeline* (lecture des données, rendu de la carte, prédiction, visualisation) ;
+- **organiser la donnée** pour celui qui la consomme : c'est l'objet de la partie sur le partitionnement du fichier Parquet, qui permettra d'avoir un modèle de données plus adapté à la manière dont on désire faire voir la donnée.
+:::
+
+Vous êtes libres. Les possibilités d'un *frontend* sont nombreuses. La version proposée (tag `appli24`) n'est qu'un exemple : prenez-la comme point de départ (notamment pour les appels à l'API) ou comme source d'inspiration.
+
+<details>
+<summary>
+Architecture de la solution d'exemple mise en oeuvre
+</summary>
+
+La page d'accueil est une carte plein écran interactive qui expose: 
+
+* un fond de plan de l'IGN
+* les sections cadastrales pour simplifier la requête des parcelles cadastrales dans lesquelles s'insèrent nos bien évalués
+* des parcelles colorées selon le prix médian au m² sont cliquables pour passer au niveau bien. 
+
+Les actions possibles pour l'utilisateur:
+
+* Un clic sur une parcelle ouvre un bandeau latéral qui liste ses ventes.
+* On peut y ajuster les caractéristiques du bien (type, surface, nombre de pièces) : l'API réestime alors le prix
+
+Le bandeau compare l'estimation au prix de vente et affiche deux histogrammes des prix au m², pour la commune et pour la section. 
+
+Les choix techniques qui en découlent:
+
+* DuckDB-WASM (implémentation dans la navigateur de DuckDB) pour lire la donnée et effectuer des opérations 
+* carte s'appuyant sur avec MapLibre
+* notre API sollicitée seulement lorsqu'on a besoin d'une prédiction.
+
+</details>
+
+{{< include "./applications/_appli24.qmd" >}}
 
 
-{{< checkpoint appli23 "Reprendre à partir d'ici" "true" "pre-appli24" >}}
+# Partie 7 : adopter une approche MLOps pour améliorer notre modèle
+
+
+{{< checkpoint appli24 "Reprendre à partir d'ici" "true" "pre-appli25" >}}
 
 
 Maintenant que nous avons tout préparé pour mettre à disposition rapidement un modèle,
@@ -995,17 +1073,17 @@ Le problème que nous allons rencontrer va être que nous voudrions facilement t
 
 Pour pouvoir faire ceci, il va falloir changer un tout petit peu notre code applicatif dans sa phase d'entraînement.
 
-{{< include "./applications/_appli24.qmd" >}}
+{{< include "./applications/_appli25.qmd" >}}
 
 
 ## Garder une trace des entraînements de notre modèle grâce au _register_ de `MLFlow`
 
-{{< checkpoint appli24 "Reprendre à partir d'ici" "true" "pre-appli25" >}}
+{{< checkpoint appli25 "Reprendre à partir d'ici" "true" "pre-appli26" >}}
 
 
 ## Enregistrer nos premiers entraînements
 
-{{< include "./applications/_appli25.qmd" >}}
+{{< include "./applications/_appli26.qmd" >}}
 
 Cette appplication illustre l'un des premiers apports de `MLFlow`: on garde
 une trace de nos expérimentations: le modèle est archivé avec les paramètres et des métriques de performance. On peut donc retrouver de plusieurs manières un modèle qui nous avait tapé dans l'oeil.
@@ -1021,14 +1099,14 @@ Les prochaines applications permettront d'améliorer ceci.
 
 A l'heure actuelle, notre _pipeline_ est linéaire:
 
-![](/chapters/applications/figures/pipeline_avant_appli24.png)
+![](/chapters/applications/figures/pipeline_avant_appli25.png)
 
 Ceci nous gêne pour faire évoluer notre modèle: on ne dissocie pas ce qui relève de l'entraînement du modèle de son utilisation. Un _pipeline_ plus cyclique permettra de mieux dissocier l'expérimentation de la production:
 
-![](/chapters/applications/figures/pipeline_apres_appli24.png)
+![](/chapters/applications/figures/pipeline_apres_appli25.png)
 
 
-{{< include "./applications/_appli26.qmd" >}}
+{{< include "./applications/_appli27.qmd" >}}
 
 
 A ce stade, nous avons amélioré la fiabilité de notre application car
@@ -1075,11 +1153,11 @@ _Pipeline_ d'entraînement de nos modèles avec deux outils d'automatisation dif
 L'outil permettant une intégration native de notre _pipeline_ dans l'infrastructure _cloud_ (`SSPCloud`) que nous avons utilisée jusqu'à présent est `Argo Workflows`. Néanmoins, pour illustrer la modularité de notre chaîne, permise par l'adoption de `Docker`, nous allons montrer que les serveurs d'intégration continue de `Github` peuvent très bien servir d'environnement d'exécution, sans rien perdre de ce que nous avons mis en oeuvre précédemment (_logging_ des modèles dans `MLFlow`, récupération de données depuis `S3`, etc.)
 
 
-{{< include "./applications/_appli27.qmd" >}}
+{{< include "./applications/_appli28.qmd" >}}
 
 Nous pouvons maintenant passer à la version `Github`. Celle-ci est optionnelle car elle vient surtout démontrer l'intérêt d'avoir une chaine modulaire et la dissociation que cela permet entre l'environnement d'exécution et les autres environnements nécessaires à notre chaine (notamment le stockage code et le _logging_).
 
-{{< include "./applications/_appli27b.qmd" >}}
+{{< include "./applications/_appli28b.qmd" >}}
 
 
 
@@ -1095,7 +1173,7 @@ Gardons aussi à l'esprit que notre chaine dépend de données tabulaires simple
 
 # Applications bonus
 
-{{< include "./applications/_appli28.qmd" >}}
+{{< include "./applications/_appli29.qmd" >}}
 
 
 

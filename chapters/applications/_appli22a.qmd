@@ -4,10 +4,10 @@
 - Lancer un service `ArgoCD` sur le `SSPCloud` depuis la page `Mes services` (catalogue `Automation`). Laisser
 les configurations par défaut.
 - Sur `GitHub`, créer un dépôt `application-deployment` qui va servir de **dépôt GitOps**, c'est à dire un dépôt qui spécifie le paramétrage du déploiement de votre application.
-- Ajouter un dossier `deployment` à votre dépôt `GitOps`, dans lequel on mettra les trois fichiers de déploiement qui permettent de déployer notre application sur `Kubernetes` (`deployment.yaml`, `service.yaml`, `ingress.yaml`).
-- A la racine de votre dépôt `GitOps`, créez un fichier `application.yml` avec le contenu suivant, en prenant bien soin de modifier les lignes annotées avec des informations pertinentes :
+- Ajouter un dossier `deployment` à votre dépôt `GitOps`, dans lequel on mettra les trois fichiers de déploiement qui permettent de déployer notre application sur `Kubernetes` (`deployment.yaml`, `service.yaml`, `ingress.yaml`). Ce sont les trois fichiers écrits à l'application précédente : copiez-y le dossier `deployment` de votre dépôt applicatif.
+- A la racine de votre dépôt `GitOps`, créez un fichier `application.yaml` avec le contenu suivant, en prenant bien soin de modifier les lignes annotées avec des informations pertinentes :
 
-  ```{.python filename="application.yaml" file="application.yaml" source-line-numbers="8-9,13"}
+  ```{.yaml filename="application.yaml" source-line-numbers="8-9,13"}
   apiVersion: argoproj.io/v1alpha1
   kind: Application
   metadata:
@@ -31,9 +31,10 @@ les configurations par défaut.
   4. Votre _namespace_ `Kubernetes`. Sur le SSPCloud, cela prend la forme `user-${username}`.
 
 - Pousser sur `Github` le dépôt `GitOps`.
-- Dans `ArgoCD`, cliquez sur `New App` puis `Edit as a YAML`. Copiez-collez le contenu de `application.yml` et cliquez sur `Create`.
+- Dans `ArgoCD`, cliquez sur `New App` puis `Edit as a YAML`. Copiez-collez le contenu de `application.yaml` et cliquez sur `Create`.
 - Observez dans l'interface d'`ArgoCD` le déploiement progressif des ressources nécessaires à votre application sur le cluster. Joli non ?
-- Vérifiez que votre API est bien déployée en utilisant l’URL définie dans le fichier `ingress.yml`.
+- Vérifiez que votre API est bien déployée en utilisant l’URL définie dans le fichier `ingress.yaml`.
+- Le secret `api-jeton` créé à l'application précédente est toujours présent dans votre _namespace_. `ArgoCD` ne le gère pas : il n'est volontairement pas dans le dépôt `GitOps`, puisqu'il contient votre jeton. Vous n'avez rien à faire. Si vous l'avez supprimé, recréez-le avec la commande `kubectl create secret` de l'application précédente.
 - Supprimer du code applicatif le dossier `deployment` puisque c'est maintenant votre dépôt de déploiement qui le contrôle.
 - Indiquer dans le `README.md` que le déploiement de votre application (dont vous pouvez mettre l'URL dans le README) est contrôlé par un autre dépôt.
 
