@@ -42,7 +42,7 @@ Le fichier `dvf.parquet` compte deux « row groups », deux blocs de lignes. Pou
     uv run partitionner_dvf.py s3://<votre_bucket>/diffusion/dvf
     ```
 
-- Dans `js/donnees.js`, remplacer `URL_DVF` par `https://minio.lab.sspcloud.fr/<votre_bucket>/diffusion/dvf`. La page ne lit que quatre fichiers (`code_departement=75`, `92`, `93` et `94`, chacun dans son `dvf_0.parquet`), nommés explicitement car DuckDB-WASM ne peut pas lister un dossier en HTTP. Recharger la page et comparer l'onglet `Réseau` : quelques Mo au lieu de 40.
+- Faire lire à votre site ces partitions plutôt que le fichier brut, à l'adresse `https://minio.lab.sspcloud.fr/<votre_bucket>/diffusion/dvf` (dans la version proposée, c'est la constante `URL_DVF` de `js/donnees.js`). La page ne lit alors que quatre fichiers (`code_departement=75`, `92`, `93` et `94`, chacun dans son `dvf_0.parquet`), nommés explicitement car DuckDB-WASM ne peut pas lister un dossier en HTTP. Recharger la page et comparer l'onglet `Réseau` : quelques Mo au lieu de 40.
 
 Ce script ne s'exécute qu'une fois, à la main : le fichier brut reste la référence, celle qu'utilise `train.py`.
 
