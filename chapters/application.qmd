@@ -958,7 +958,7 @@ Il y a donc un élément qui fait la liaison entre ces deux pipelines et qui nou
 {{< include "./applications/_appli22b.qmd" >}}
 
 
-## Etape 4: construire un site web
+# Partie 6 : construire un produit utilisant notre modèle
 
 ::: {.callout-caution collapse="true"}
 ## Si vous prenez ce projet fil rouge en cours de route
@@ -977,15 +977,19 @@ On va proposer un nouveau livrable pour parler à un public plus large.
 Pour faire ce site web,
 on va utiliser `Quarto` et déployer sur `Github Pages`.
 
-{{< include "./applications/_appli23a.qmd" >}}
+## Étape 1 : intégrer l'API dans un site statique
 
-{{< include "./applications/_appli23b.qmd" >}}
+{{< include "./applications/_appli23.qmd" >}}
+
+## Étape 2 : une application interactive pour les clients du modèle
+
+{{< include "./applications/_appli24.qmd" >}}
 
 
-# Partie 6: adopter une approche MLOps pour améliorer notre modèle
+# Partie 7 : adopter une approche MLOps pour améliorer notre modèle
 
 
-{{< checkpoint appli23b "Reprendre à partir d'ici" "true" "pre-appli24" >}}
+{{< checkpoint appli24 "Reprendre à partir d'ici" "true" "pre-appli25" >}}
 
 
 Maintenant que nous avons tout préparé pour mettre à disposition rapidement un modèle,
@@ -997,17 +1001,17 @@ Le problème que nous allons rencontrer va être que nous voudrions facilement t
 
 Pour pouvoir faire ceci, il va falloir changer un tout petit peu notre code applicatif dans sa phase d'entraînement.
 
-{{< include "./applications/_appli24.qmd" >}}
+{{< include "./applications/_appli25.qmd" >}}
 
 
 ## Garder une trace des entraînements de notre modèle grâce au _register_ de `MLFlow`
 
-{{< checkpoint appli24 "Reprendre à partir d'ici" "true" "pre-appli25" >}}
+{{< checkpoint appli25 "Reprendre à partir d'ici" "true" "pre-appli26" >}}
 
 
 ## Enregistrer nos premiers entraînements
 
-{{< include "./applications/_appli25.qmd" >}}
+{{< include "./applications/_appli26.qmd" >}}
 
 Cette appplication illustre l'un des premiers apports de `MLFlow`: on garde
 une trace de nos expérimentations: le modèle est archivé avec les paramètres et des métriques de performance. On peut donc retrouver de plusieurs manières un modèle qui nous avait tapé dans l'oeil.
@@ -1023,14 +1027,14 @@ Les prochaines applications permettront d'améliorer ceci.
 
 A l'heure actuelle, notre _pipeline_ est linéaire:
 
-![](/chapters/applications/figures/pipeline_avant_appli24.png)
+![](/chapters/applications/figures/pipeline_avant_appli25.png)
 
 Ceci nous gêne pour faire évoluer notre modèle: on ne dissocie pas ce qui relève de l'entraînement du modèle de son utilisation. Un _pipeline_ plus cyclique permettra de mieux dissocier l'expérimentation de la production:
 
-![](/chapters/applications/figures/pipeline_apres_appli24.png)
+![](/chapters/applications/figures/pipeline_apres_appli25.png)
 
 
-{{< include "./applications/_appli26.qmd" >}}
+{{< include "./applications/_appli27.qmd" >}}
 
 
 A ce stade, nous avons amélioré la fiabilité de notre application car
@@ -1077,11 +1081,11 @@ _Pipeline_ d'entraînement de nos modèles avec deux outils d'automatisation dif
 L'outil permettant une intégration native de notre _pipeline_ dans l'infrastructure _cloud_ (`SSPCloud`) que nous avons utilisée jusqu'à présent est `Argo Workflows`. Néanmoins, pour illustrer la modularité de notre chaîne, permise par l'adoption de `Docker`, nous allons montrer que les serveurs d'intégration continue de `Github` peuvent très bien servir d'environnement d'exécution, sans rien perdre de ce que nous avons mis en oeuvre précédemment (_logging_ des modèles dans `MLFlow`, récupération de données depuis `S3`, etc.)
 
 
-{{< include "./applications/_appli27.qmd" >}}
+{{< include "./applications/_appli28.qmd" >}}
 
 Nous pouvons maintenant passer à la version `Github`. Celle-ci est optionnelle car elle vient surtout démontrer l'intérêt d'avoir une chaine modulaire et la dissociation que cela permet entre l'environnement d'exécution et les autres environnements nécessaires à notre chaine (notamment le stockage code et le _logging_).
 
-{{< include "./applications/_appli27b.qmd" >}}
+{{< include "./applications/_appli28b.qmd" >}}
 
 
 
@@ -1097,7 +1101,7 @@ Gardons aussi à l'esprit que notre chaine dépend de données tabulaires simple
 
 # Applications bonus
 
-{{< include "./applications/_appli28.qmd" >}}
+{{< include "./applications/_appli29.qmd" >}}
 
 
 

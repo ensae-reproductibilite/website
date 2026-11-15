@@ -1,214 +1,56 @@
+Le site de l'étape précédente se contente d'afficher une estimation. Avec un assistant IA intégré à VSCode, on peut aller beaucoup plus loin en faisant du **vibecoding** : on décrit ce que l'on veut à une IA qui écrit le code, puis on itère sur le résultat en corrigeant et en précisant la demande. Vous êtes invités à le faire ici.
+
+**Penser le produit avant de coder.** Les clients de ce modèle voudront une application interactive qui leur permette à la fois de parcourir la carte des prix et d'obtenir une prédiction pour un bien donné.
+
+- Avant d'écrire la moindre ligne, prenez quelques minutes pour décrire ce produit : qui l'utilise, que voit-il en arrivant, quelles actions doit-il pouvoir faire ? Cette description est le premier message à donner à votre assistant.
+
+**Le dogfooding.** Il consiste à utiliser soi-même son propre produit pour en trouver les défauts. Ajoutons à l'application des informations qui nourrissent l'amélioration continue du modèle : comparer le prix prédit au prix observé lors de ventes passées. Les biens pour lesquels l'écart est systématique révèlent les faiblesses du modèle, et donc ce qu'il faut corriger à la prochaine itération de son cycle de vie.
+
+::: {.callout-warning}
+## Un second pipeline dans le projet
+
+Ce site est un second pipeline, parallèle au premier (données, modèle, API), avec un cycle de vie un peu différent (nous y reviendrons plus loin dans le cours). Les bonnes pratiques vues pour Python s'appliquent aussi ici, même si l'usage de JavaScript reste très limité :
+
+- **structurer le code** du site en modules séparés (données, rendu de la carte, prédiction, visualisation, comme dans le dossier `js/` proposé) pour faciliter la maintenance et les évolutions ;
+- **organiser la donnée** pour celui qui la consomme : c'est l'objet de la partie sur le partitionnement du fichier Parquet, un format et une organisation adaptés à un navigateur.
+:::
+
+**Vous êtes libres.** Les possibilités d'un frontend sont nombreuses. La version proposée (tag `appli24`) n'est qu'un exemple : prenez-la comme point de départ (notamment pour les appels à l'API) ou comme source d'inspiration.
+
+Elle fonctionne ainsi. La page d'accueil est une carte plein écran : fond Plan IGN, sections cadastrales, puis parcelles colorées selon le prix médian au m². Un clic sur une parcelle ouvre un bandeau latéral qui liste ses ventes. On peut y ajuster les caractéristiques du bien (type, surface, nombre de pièces) : l'API réestime alors le prix, après une attente de 400 ms (anti-rebond) pour ne pas envoyer une requête par position du curseur. Le bandeau compare l'estimation au prix de vente et affiche deux histogrammes des prix au m², pour la commune et pour la section. Le site propose un thème clair ou sombre et une page « À propos ». Le navigateur lit lui-même les ventes DVF avec DuckDB-WASM (une base de données compilée en WebAssembly, exécutable par le navigateur) et dessine la carte avec MapLibre ; il ne sollicite l'API que pour ce qui nécessite le modèle. Le modèle et les secrets (`JETON_API`) restent ainsi sur le serveur, et CORS, déjà activé dans l'`ingress`, autorise le navigateur à appeler une API située sur un autre domaine.
+
 ::: {.application}
-## Application 24 _(optionnelle)_: restructuration de la chaîne
 
-1. Faire les modifications suivantes pour restructurer notre _pipeline_
-afin de mieux distinguer les étapes d'estimation et d'évaluation
+## Application 24: Une carte interactive pour explorer les prix
 
+**Partie 1 : une carte interactive à partir de notre parquet**
 
+- Avec votre assistant IA, et en partant de la description du produit que vous avez rédigée, construisez un site Quarto avec des cellules OJS, comme à l'application 23. La carte des ventes et des prix lit directement le fichier `https://minio.lab.sspcloud.fr/lgaliana/ensae-reproductibilite/data/raw/dvf.parquet` dans le navigateur, avec DuckDB-WASM. Pour un bien choisi, elle demande son estimation à votre API et la compare au prix observé. Gardez le code structuré (données, carte, prédiction, visualisation dans des fichiers séparés, comme le rappelle l'encadré ci-dessus).
+- La version proposée est consultable sous le tag `appli24` du [dépôt de l'application](https://github.com/ensae-reproductibilite/application/tree/appli24) et illustrée par la vidéo ci-dessous. Vous pouvez partir de cette version si vous préférez.
+- Prévisualisez le site avec `quarto preview`, puis publiez-le en poussant vos modifications : le workflow de l'application 23 le republie automatiquement.
 
-<details>
-<summary>
-Modification de `train.py` pour faire une _grid search_
-</summary>
+**Partie 2 : une donnée mal organisée pour cet usage**
 
-```{.python filename="train.py"}
-"""
-Prediction de la survie d'un individu sur le Titanic
-(avec GridSearchCV + cross-validation)
-"""
+- Ouvrez les outils de développement du navigateur (touche `F12`, onglet `Réseau`) sur votre site. Les requêtes vers `dvf.parquet` renvoient `206 Partial Content`, pourtant environ 40 Mo sont téléchargés et la carte met du temps à se charger. Relevez ces deux chiffres.
 
-import os
-import argparse
-import logging
-from dotenv import load_dotenv
+Le fichier `dvf.parquet` compte deux « row groups », deux blocs de lignes. Pour chaque bloc et chaque colonne, Parquet stocke le minimum et le maximum des valeurs, et DuckDB s'en sert pour sauter les blocs qui ne peuvent pas répondre à un `WHERE`. Ici, cela ne marche pas : `code_departement` n'a pas ces statistiques, et les ventes de Paris sont mêlées au reste de la France dans un seul gros bloc. Le filtre ne saute donc rien, et DuckDB lit les 13 colonnes utiles pour toute la France. Les requêtes par plage n'évitent que les colonnes inutiles, pas les lignes. Mieux vaut réorganiser le fichier : le découper par département, trier les lignes et écrire des blocs plus petits.
 
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.model_selection import train_test_split, GridSearchCV, StratifiedKFold
-from sklearn.pipeline import Pipeline
-from sklearn.compose import ColumnTransformer
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import confusion_matrix
-import skops.io as sio
+- Récupérer le script [`partitionner_dvf.py`](https://raw.githubusercontent.com/ensae-reproductibilite/application/refs/tags/appli24/partitionner_dvf.py) à la racine du projet.
+- Le lancer une fois, en remplaçant `<votre_bucket>` par le nom de votre bucket. Il écrit un dossier par département (`code_departement=75/`, etc.) dans `diffusion/`, le dossier de votre bucket lisible publiquement sur SSP Cloud :
 
-import duckdb
+    ```{.bash filename="terminal"}
+    uv run partitionner_dvf.py s3://<votre_bucket>/diffusion/dvf
+    ```
 
-from src.validation.check import (
-    check_name_formatting,
-    check_missing_values,
-    check_unseen_categories,
-)
+- Faire lire à votre site ces partitions plutôt que le fichier brut, à l'adresse `https://minio.lab.sspcloud.fr/<votre_bucket>/diffusion/dvf` (dans la version proposée, c'est la constante `URL_DVF` de `js/donnees.js`). La page ne lit alors que quatre fichiers (`code_departement=75`, `92`, `93` et `94`, chacun dans son `dvf_0.parquet`), nommés explicitement car DuckDB-WASM ne peut pas lister un dossier en HTTP. Recharger la page et comparer l'onglet `Réseau` : quelques Mo au lieu de 40.
 
-load_dotenv()
-con = duckdb.connect(database=":memory:")
-
-logging.basicConfig(
-    format="{asctime} - {levelname} - {message}",
-    style="{",
-    datefmt="%Y-%m-%d %H:%M",
-    level=logging.DEBUG,
-    handlers=[logging.FileHandler("recording.log"), logging.StreamHandler()],
-)
-
-# PARAMETERS ---------------------------------------
-
-NUMERIC_FEATURES = ["Age", "Fare"]
-CATEGORICAL_FEATURES = ["Embarked", "Sex"]
-URL_RAW = "https://minio.lab.sspcloud.fr/compte_sspcloud/ensae-reproductibilite/data/raw/data.parquet"
-
-jeton_api = os.environ["JETON_API"]
-
-# ENVIRONMENT CONFIGURATION ---------------------------
-
-parser = argparse.ArgumentParser(
-    description="Paramètres du random forest + grid search"
-)
-parser.add_argument(
-    "--n_trees",
-    type=int,
-    default=20,
-    help="Valeur par défaut pour n_estimators dans la grille",
-)
-parser.add_argument(
-    "--cv", type=int, default=5, help="Nombre de folds pour la cross-validation"
-)
-args = parser.parse_args()
-
-n_trees_default = args.n_trees
-cv_folds = args.cv
-
-logging.debug(f"Valeur de l'argument n_trees: {n_trees_default}")
-logging.debug(f"Valeur de l'argument cv: {cv_folds}")
-
-# QUALITY DIAGNOSTICS  ---------------------------------------
-
-logging.debug(f"\n{80 * '-'}\nStarting data validation step\n{80 * '-'}")
-
-query_definition = (
-    f"CREATE TEMP TABLE titanic AS (SELECT * FROM read_parquet('{URL_RAW}'))"
-)
-con.sql(query_definition)
-
-column_names = con.sql("SELECT column_name FROM (DESCRIBE titanic)").to_df()[
-    "column_name"
-]
-
-check_name_formatting(connection=con)
-
-for var in column_names:
-    check_missing_values(connection=con, variable=var)
-
-# FEATURE ENGINEERING    -----------------------------------------
-
-logging.debug(f"\n{80 * '-'}\nStarting feature engineering phase\n{80 * '-'}")
-
-titanic = con.sql(
-    f"SELECT Survived, {', '.join(CATEGORICAL_FEATURES + NUMERIC_FEATURES)} FROM titanic"
-).to_df()
-
-y = titanic["Survived"]
-X = titanic.drop("Survived", axis="columns")
-
-# Stratify: utile sur Titanic car classes pas parfaitement équilibrées
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.1, random_state=42, stratify=y
-)
-
-for string_var in CATEGORICAL_FEATURES:
-    check_unseen_categories(X_train, X_test, string_var)
-
-# MODEL DEFINITION -----------------------------------------
-
-numeric_transformer = Pipeline(
-    steps=[
-        ("imputer", SimpleImputer(strategy="median")),
-        ("scaler", MinMaxScaler()),
-    ]
-)
-
-categorical_transformer = Pipeline(
-    steps=[
-        ("imputer", SimpleImputer(strategy="most_frequent")),
-        ("onehot", OneHotEncoder(handle_unknown="ignore")),
-    ]
-)
-
-preprocessor = ColumnTransformer(
-    transformers=[
-        ("Preprocessing numerical", numeric_transformer, NUMERIC_FEATURES),
-        ("Preprocessing categorical", categorical_transformer, CATEGORICAL_FEATURES),
-    ]
-)
-
-pipe = Pipeline(
-    steps=[
-        ("preprocessor", preprocessor),
-        ("classifier", RandomForestClassifier(random_state=42)),
-    ]
-)
-
-# GRID SEARCH + CV --------------------------------------------
-
-# Grille d'hyperparamètres (tu peux l'élargir/réduire selon le temps de calcul)
-param_grid = {
-    "classifier__n_estimators": [
-        n_trees_default,
-    ],
-    "classifier__max_depth": [3, 5],
-    "classifier__max_features": ["sqrt", "log2"],
-    "classifier__min_samples_split": [2, 5]
-}
-
-cv = StratifiedKFold(n_splits=cv_folds, shuffle=True, random_state=42)
-
-search = GridSearchCV(
-    estimator=pipe,
-    param_grid=param_grid,
-    scoring="accuracy",
-    cv=cv,
-    verbose=1,
-    refit=True,
-)
-
-# TRAINING AND EVALUATION --------------------------------------------
-
-logging.debug(f"\n{80 * '-'}\nStarting grid search fitting phase\n{80 * '-'}")
-
-search.fit(X_train, y_train)
-
-logging.info(f"Best CV score: {search.best_score_:.3f}")
-logging.info(f"Best params: {search.best_params_}")
-
-best_model = search.best_estimator_
-
-# Sauvegarde du meilleur pipeline complet
-sio.dump(best_model, "model.skops")
-
-test_score = best_model.score(X_test, y_test)
-train_score = best_model.score(X_train, y_train)
-
-logging.info(
-    f"{test_score:.1%} de bonnes réponses sur les données de test (best model)"
-)
-logging.info(
-    f"{train_score:.1%} de bonnes réponses sur les données de train (best model)"
-)
-
-logging.info("Matrice de confusion (test):")
-logging.info(confusion_matrix(y_test, best_model.predict(X_test)))
-
-logging.debug(f"\n{80 * '-'}\nFILE ENDED SUCCESSFULLY!\n{80 * '-'}")
-```
-
-</details>
-
-2. Dans le code de l'API (`app/api.py`), changer la version du modèle mis en oeuvre en _"0.2"_ (dans la fonction `show_welcome_page`)
-2. Après avoir committé cette nouvelle version du code applicatif, tagguer ce dépôt avec le tag `v0.0.2`
-3. Modifier `deployment/deployment.yaml` dans le code `GitOps` pour utiliser ce _tag_.
+Ce script ne s'exécute qu'une fois, à la main : le fichier brut reste la référence, celle qu'utilise `train.py`.
 
 :::
 
 
+{{< video /chapters/applications/figures/appli24_demo.mp4 >}}
+
+*Illustration du frontend proposé (thème sombre), pour s'inspirer.*
 
 {{< checkpoint appli24 >}}
