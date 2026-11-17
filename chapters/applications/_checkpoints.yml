@@ -1,0 +1,64 @@
+# Données des boîtes de checkpoint, lues par _extensions/checkpoint/checkpoint.lua.
+#
+# - steps : les étapes ayant un checkpoint, dans l'ordre du cours. Les noms sont ceux
+#   utilisés dans {{< checkpoint appliN >}}. Les étapes 1 et 2 n'ont rien à faire et
+#   sont omises.
+# - gitops_from : à partir de cette étape, la boîte ajoute au bloc de commandes la même
+#   commande, à relancer dans le clone du dépôt application-deployment. Le script détecte
+#   le dépôt à partir de `origin`.
+# - placeholders_from : à partir de cette étape, la boîte rappelle que le script liste
+#   les valeurs à remplacer dans les fichiers.
+# - todo : ce que l'élève doit avoir mis en place de son côté (comptes, secrets, services
+#   à lancer, réglages à cliquer). Ces éléments ne peuvent pas être dans le dépôt. Chaque
+#   élément n'est écrit qu'une fois : il apparaît dans la boîte de l'étape `from` et dans
+#   celle de toutes les étapes suivantes, jusqu'à `to` si ce champ est donné (élément
+#   propre à une étape). Chaque élément est un texte court en Markdown, en français (fr)
+#   et en anglais (en).
+
+steps: [appli3, appli4, appli5, appli6, appli7, appli8, appli9, appli10, appli11, appli11a, appli12, appli13, appli14, appli15, appli16, appli17, appli18, appli19, appli20, appli21, appli22a, appli22b, appli23, appli24, appli25, appli26, appli27]
+gitops_from: appli22a
+placeholders_from: appli16
+todo:
+  - from: appli3
+    fr: "Créer le fichier `.env` (non versionné, à ajouter au `.gitignore`) et y renseigner `JETON_API`. Une valeur fictive suffit : l'API Melodi ne vérifie pas le jeton."
+    en: "Create the `.env` file (not versioned, listed in `.gitignore`) and set `JETON_API` in it. A dummy value is enough: the Melodi API does not check the token."
+  - from: appli8
+    to: appli8
+    fr: "Copier les données brutes (`dvf.parquet` et `filosofi_carreaux_200m_2021.parquet`) dans votre bucket S3, puis rendre lisible en anonyme le dossier `ensae-reproductibilite/data/raw/` (`mc anonymous set download`)."
+    en: "Copy the raw data (`dvf.parquet` and `filosofi_carreaux_200m_2021.parquet`) to your S3 bucket, then make the folder `ensae-reproductibilite/data/raw/` anonymously readable (`mc anonymous set download`)."
+  - from: appli14
+    fr: "Dans le dépôt `application` de GitHub, créer le secret `JETON_API` (`Settings` > `Secrets and variables` > `Actions`)."
+    en: "In the `application` GitHub repository, create the `JETON_API` secret (`Settings` > `Secrets and variables` > `Actions`)."
+  - from: appli16
+    fr: "Créer un compte DockerHub, un dépôt public `application`, puis un jeton d'accès personnel (sa valeur ne s'affiche qu'une fois)."
+    en: "Create a DockerHub account, a public `application` repository, then a personal access token (its value is shown only once)."
+  - from: appli16
+    fr: "Dans le dépôt `application` de GitHub, enregistrer `DOCKERHUB_USERNAME` et `DOCKERHUB_TOKEN` (`Settings` > `Secrets and variables` > `Actions`)."
+    en: "In the `application` GitHub repository, save `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` (`Settings` > `Secrets and variables` > `Actions`)."
+  - from: appli21
+    fr: "Sur le cluster Kubernetes, créer le secret `api-jeton` : `kubectl create secret generic api-jeton --from-literal=JETON_API='...'`."
+    en: "On the Kubernetes cluster, create the `api-jeton` secret: `kubectl create secret generic api-jeton --from-literal=JETON_API='...'`."
+  - from: appli22a
+    fr: "Lancer un service `ArgoCD` depuis « Mes services » (catalogue `Automation`), avec la configuration par défaut."
+    en: "Launch an `ArgoCD` service from « My services » (`Automation` catalog), with the default configuration."
+  - from: appli22a
+    fr: "Forker sur GitHub le dépôt [`ensae-reproductibilite/application-deployment`](https://github.com/ensae-reproductibilite/application-deployment) (dépôt GitOps), puis le cloner."
+    en: "Fork the [`ensae-reproductibilite/application-deployment`](https://github.com/ensae-reproductibilite/application-deployment) repository on GitHub (GitOps repository), then clone it."
+  - from: appli22a
+    fr: "Dans ArgoCD, créer l'application à partir de `application.yaml` (`New App` > `Edit as a YAML` > `Create`), une fois ce fichier poussé sur GitHub."
+    en: "In ArgoCD, create the application from `application.yaml` (`New App` > `Edit as a YAML` > `Create`), once this file has been pushed to GitHub."
+  - from: appli23
+    fr: "Dans les paramètres du dépôt `application` (`Settings` > `Pages` > `Build and deployment`), choisir `GitHub Actions` comme source."
+    en: "In the settings of the `application` repository (`Settings` > `Pages` > `Build and deployment`), choose `GitHub Actions` as the source."
+  - from: appli24
+    fr: "Lancer une fois `partitionner_dvf.py` pour écrire les partitions dans le dossier `diffusion/` de votre bucket S3, lisible publiquement."
+    en: "Run `partitionner_dvf.py` once to write the partitions to the `diffusion/` folder of your S3 bucket, which is publicly readable."
+  - from: appli26
+    fr: "Lancer le service `MLflow` depuis « Mes services » (catalogue `Automation`) et attendre qu'il soit démarré."
+    en: "Launch the `MLflow` service from « My services » (`Automation` catalog) and wait until it is running."
+  - from: appli27
+    fr: "Dans l'interface de `MLflow`, enregistrer le modèle retenu comme modèle de « production » (action `Register Model`, onglet `Models`)."
+    en: "In the `MLflow` interface, register the selected model as the « production » model (`Register Model` action, `Models` tab)."
+  - from: appli27
+    fr: "Récupérer les identifiants de `MLflow` (README du service, ouvert depuis « Mes services »), puis créer le secret Kubernetes `mlflow-secrets` avec `MLFLOW_TRACKING_USERNAME` et `MLFLOW_TRACKING_PASSWORD`."
+    en: "Get the `MLflow` credentials (README of the service, opened from « My services »), then create the Kubernetes secret `mlflow-secrets` with `MLFLOW_TRACKING_USERNAME` and `MLFLOW_TRACKING_PASSWORD`."
