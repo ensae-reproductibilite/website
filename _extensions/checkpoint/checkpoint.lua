@@ -145,6 +145,7 @@ function checkpoint(args, kwargs)
   -- Une étape absente du fichier de données garde une boîte sans ces ajouts.
   local gitops_block = ""
   local todo_block = ""
+  local hint_block = ""
   local data = checkpoints_data()
   local names = {}
   for i, s in ipairs(data and data.steps or {}) do names[i] = text(s) end
@@ -170,11 +171,13 @@ function checkpoint(args, kwargs)
       end
     end
     local hint = placeholders_from and pos >= placeholders_from
-    if #items > 0 or hint then
+    if hint then
+      hint_block = '<p class="checkpoint-hint">' .. S.todo_hint .. '</p>\n'
+    end
+    if #items > 0 then
       todo_block = '<details class="checkpoint-todo">\n' ..
         '<summary>' .. S.todo_title .. '</summary>\n' ..
-        (hint and ('<p>' .. S.todo_hint .. '</p>\n') or '') ..
-        (#items > 0 and ('<ul>\n' .. table.concat(items, '\n') .. '\n</ul>\n') or '') ..
+        '<ul>\n' .. table.concat(items, '\n') .. '\n</ul>\n' ..
         '</details>\n'
     end
   end
@@ -197,7 +200,7 @@ function checkpoint(args, kwargs)
 
 ]] .. terminal_block(appli, appli, annot) .. [[
 
-]] .. gitops_block .. todo_block .. [[
+]] .. hint_block .. gitops_block .. todo_block .. [[
 
         <div class="quarto-figure quarto-figure-center">
           <figure class="figure">
