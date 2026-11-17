@@ -7,6 +7,7 @@ href: chapters/application.html
 image: https://minio.lab.sspcloud.fr/lgaliana/generative-art/mise-en-prod/rocket_compressed.png
 ---
 
+
 # Introduction
 
 L'objectif de cette mise en application est d'**illustrer les différentes étapes qui séparent la phase de développement d'un projet de celle de la mise en production**. Elle permettra de mettre en pratique les différents concepts présentés tout au long du cours.
@@ -1064,12 +1065,16 @@ Les choix techniques qui en découlent:
 {{< checkpoint appli24 "Reprendre à partir d'ici" "true" "pre-appli25" >}}
 
 
-Maintenant que nous avons tout préparé pour mettre à disposition rapidement un modèle,
-nous pouvons revenir en arrière pour améliorer ce modèle. Pour cela, nous allons mettre en oeuvre une validation croisée.
+Maintenant que nous avons tout préparé pour mettre à disposition rapidement un modèle, nous pouvons revenir en arrière pour améliorer ce modèle. Pour cela, nous allons mettre en oeuvre une validation croisée.
 
-Le problème que nous allons rencontrer va être que nous voudrions facilement tracer les évolutions de notre modèle, la qualité prédictive de celui-ci dans différentes situations. Il s'agira d'à nouveau mettre en place du _logging_ mais, cette fois, de suivre la qualité du modèle et pas seulement s'il fonctionne. L'outil `MLFlow` va répondre à ce problème et va, au passage, fluidifier la mise à disposition du modèle de production, c'est-à-dire de celui qu'on désire mettre à disposition du public.
+Le problème que nous allons rencontrer va être que nous voudrions facilement tracer les évolutions de notre modèle, la qualité prédictive de celui-ci dans différentes situations. Il s'agira d'à nouveau mettre en place du _logging_ mais, cette fois, de suivre la qualité du modèle et pas seulement s'il fonctionne. 
+
+L'outil `MLFlow` va répondre à ce problème et va, au passage, fluidifier la mise à disposition du modèle de production, c'est-à-dire de celui qu'on désire mettre à disposition du public.
 
 ## Revenir sur le code d'entraînement du modèle pour faire de la validation croisée
+
+Jusqu'ici, les hyperparamètres de LightGBM (`learning_rate`, `num_leaves`) ont été fixés à la main. Nous allons maintenant les choisir par une recherche sur grille (_grid search_) avec validation croisée, uniquement sur le jeu d'entraînement : le jeu de test reste intact jusqu'à l'évaluation finale du modèle choisi.
+
 
 Pour pouvoir faire ceci, il va falloir changer un tout petit peu notre code applicatif dans sa phase d'entraînement.
 
@@ -1085,7 +1090,7 @@ Pour pouvoir faire ceci, il va falloir changer un tout petit peu notre code appl
 
 {{< include "./applications/_appli26.qmd" >}}
 
-Cette appplication illustre l'un des premiers apports de `MLFlow`: on garde
+Cette application illustre l'un des premiers apports de `MLFlow`: on garde
 une trace de nos expérimentations: le modèle est archivé avec les paramètres et des métriques de performance. On peut donc retrouver de plusieurs manières un modèle qui nous avait tapé dans l'oeil.
 
 Néanmoins, persistent un certain nombre de voies d'amélioration dans notre _pipeline_.
