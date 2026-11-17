@@ -75,7 +75,8 @@ local STR = {
       "Avancer à l’état à l’issue de l’application ",
       "Nettoyer derrière nous",
     },
-    gitops = "Puis, dans votre clone du dépôt <code>application-deployment</code>, lancez les mêmes commandes :",
+    gitops_title = "Pour mettre à jour le dépôt GitOps",
+    gitops = "Dans votre clone du dépôt <code>application-deployment</code>, lancez les mêmes commandes :",
     todo_title = "Avant de continuer, à faire de votre côté",
     todo_hint = "Le script liste dans la console les valeurs à remplacer dans les fichiers (<code>&lt;GITHUB_USERNAME&gt;</code>, <code>&lt;DOCKERHUB_USERNAME&gt;</code>, <code>&lt;SSPCLOUD_USERNAME&gt;</code>, <code>&lt;APP_NAME&gt;</code>).",
   },
@@ -87,7 +88,8 @@ local STR = {
       "Move to the state at the end of application ",
       "Clean up after us",
     },
-    gitops = "Then, in your clone of the <code>application-deployment</code> repository, run the same commands:",
+    gitops_title = "To update the GitOps repository",
+    gitops = "In your clone of the <code>application-deployment</code> repository, run the same commands:",
     todo_title = "Before continuing, to do on your side",
     todo_hint = "The script lists in the console the values to replace in the files (<code>&lt;GITHUB_USERNAME&gt;</code>, <code>&lt;DOCKERHUB_USERNAME&gt;</code>, <code>&lt;SSPCLOUD_USERNAME&gt;</code>, <code>&lt;APP_NAME&gt;</code>).",
   },
@@ -151,8 +153,11 @@ function checkpoint(args, kwargs)
     local gitops_from = position(names, text(data.gitops_from))
     local placeholders_from = position(names, text(data.placeholders_from))
     if gitops_from and pos >= gitops_from then
-      gitops_block = "<p>" .. S.gitops .. "</p>\n" ..
-        terminal_block(appli, appli .. "-gitops", annot)
+      gitops_block = '<details class="checkpoint-gitops">\n' ..
+        '<summary>' .. S.gitops_title .. '</summary>\n' ..
+        "<p>" .. S.gitops .. "</p>\n" ..
+        terminal_block(appli, appli .. "-gitops", annot) ..
+        '</details>\n'
     end
     local items = {}
     for _, item in ipairs(data.todo or {}) do
@@ -166,11 +171,11 @@ function checkpoint(args, kwargs)
     end
     local hint = placeholders_from and pos >= placeholders_from
     if #items > 0 or hint then
-      todo_block = '<div class="checkpoint-todo">\n' ..
-        '<p><strong>' .. S.todo_title .. '</strong></p>\n' ..
+      todo_block = '<details class="checkpoint-todo">\n' ..
+        '<summary>' .. S.todo_title .. '</summary>\n' ..
         (hint and ('<p>' .. S.todo_hint .. '</p>\n') or '') ..
         (#items > 0 and ('<ul>\n' .. table.concat(items, '\n') .. '\n</ul>\n') or '') ..
-        '</div>\n'
+        '</details>\n'
     end
   end
 
