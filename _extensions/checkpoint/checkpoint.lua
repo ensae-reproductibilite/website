@@ -1,7 +1,7 @@
 -- _extensions/shortcodes/checkpoint.lua
 
--- Données de chaque étape (commandes GitOps, mise en place externe) :
--- chapters/applications/_checkpoints.yml. Lu une seule fois, par pandoc.
+-- Données des étapes (ordre des étapes, commandes GitOps, mise en place externe
+-- cumulée) : chapters/applications/_checkpoints.yml. Lu une seule fois, par pandoc.
 local CHECKPOINTS_FILE = 'chapters/applications/_checkpoints.yml'
 local checkpoints_meta = nil -- nil: pas encore lu ; false: absent ou illisible
 
@@ -49,6 +49,21 @@ local function inlines_html(v)
   if v == nil then return '' end
   local html = pandoc.write(pandoc.Pandoc({ pandoc.Plain(v) }), 'html')
   return (html:gsub('^%s+', ''):gsub('%s+$', ''))
+end
+
+-- Texte d'une métadonnée pandoc (valeur ou élément de liste).
+local function text(v)
+  if v == nil then return nil end
+  return pandoc.utils.stringify(v)
+end
+
+-- Position (1, 2, ...) d'une étape dans la liste ordonnée `names` ; nil si absente.
+local function position(names, name)
+  if name == nil then return nil end
+  for i, s in ipairs(names) do
+    if s == name then return i end
+  end
+  return nil
 end
 
 local STR = {
@@ -124,27 +139,37 @@ function checkpoint(args, kwargs)
 
   local annot = { S.annot[1], S.annot[2], S.annot[3] }
 
-  -- Étape GitOps (à partir de l'application 22a) et mise en place externe.
+  -- Étape GitOps, mise en place externe cumulée et rappel des placeholders.
+  -- Une étape absente du fichier de données garde une boîte sans ces ajouts.
   local gitops_block = ""
   local todo_block = ""
   local data = checkpoints_data()
-  local entry = data and data[appli]
-  if entry and entry.gitops == true then
-    gitops_block = "<p>" .. S.gitops .. "</p>\n" ..
-      terminal_block(appli, appli .. "-gitops", annot)
-  end
-  if entry and entry.todo then
-    local items = {}
-    for _, item in ipairs(entry.todo) do
-      local txt = item.fr
-      if en and item.en ~= nil then txt = item.en end
-      table.insert(items, '<li>' .. inlines_html(txt) .. '</li>')
+  local names = {}
+  for i, s in ipairs(data and data.steps or {}) do names[i] = text(s) end
+  local pos = position(names, appli)
+  if pos then
+    local gitops_from = position(names, text(data.gitops_from))
+    local placeholders_from = position(names, text(data.placeholders_from))
+    if gitops_from and pos >= gitops_from then
+      gitops_block = "<p>" .. S.gitops .. "</p>\n" ..
+        terminal_block(appli, appli .. "-gitops", annot)
     end
-    if #items > 0 then
+    local items = {}
+    for _, item in ipairs(data.todo or {}) do
+      local from = position(names, text(item.from))
+      local to = position(names, text(item.to)) or math.huge
+      if from and from <= pos and pos <= to then
+        local txt = item.fr
+        if en and item.en ~= nil then txt = item.en end
+        table.insert(items, '<li>' .. inlines_html(txt) .. '</li>')
+      end
+    end
+    local hint = placeholders_from and pos >= placeholders_from
+    if #items > 0 or hint then
       todo_block = '<div class="checkpoint-todo">\n' ..
         '<p><strong>' .. S.todo_title .. '</strong></p>\n' ..
-        '<p>' .. S.todo_hint .. '</p>\n' ..
-        '<ul>\n' .. table.concat(items, '\n') .. '\n</ul>\n' ..
+        (hint and ('<p>' .. S.todo_hint .. '</p>\n') or '') ..
+        (#items > 0 and ('<ul>\n' .. table.concat(items, '\n') .. '\n</ul>\n') or '') ..
         '</div>\n'
     end
   end
