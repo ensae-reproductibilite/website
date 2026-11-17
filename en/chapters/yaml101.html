@@ -79,10 +79,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark-447e42e69aaa9833c0ba1b986f430b20.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-018b3a0dfd0c85d2214bd2aa6e797fef.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-0c72191f2bba49b536c236b85389eefd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-e7ef20c6141a54a7f449c2a53f24d3c6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-0c72191f2bba49b536c236b85389eefd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <link href="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.css" rel="stylesheet">
 <link href="../site_libs/quarto-contrib/fontawesome6-1.2.0/all.min.css" rel="stylesheet">
 <link href="../site_libs/quarto-contrib/fontawesome6-1.2.0/latex-fontsize.css" rel="stylesheet">
@@ -131,7 +135,187 @@ div.callout-application.callout-style-default .callout-icon::before, div.callout
 <link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a>
+<body class="nav-fixed quarto-light"><a id="quarto-skip-link" class="visually-hidden-focusable" href="#quarto-document-content">Skip to main content</a><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          toggle.setAttribute("aria-checked", alternate ? "true" : "false");
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455).
+    // Not run on load: stylesheets are set before first paint there, and
+    // scrolling would undo the scroll to a URL fragment (#14973).
+    // The one pixel nudge keeps the reader where they were.
+    const refreshSafariScrollbar = () => {
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        const scrollY = window.scrollY;
+        window.scrollTo(0, scrollY > 0 ? scrollY - 1 : 1);
+        setTimeout(() => {
+          window.scrollTo(0, scrollY);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      refreshSafariScrollbar();
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      refreshSafariScrollbar();
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -250,6 +434,7 @@ div.callout-application.callout-style-default .callout-icon::before, div.callout
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
+  <button type="button" role="switch" aria-checked="false" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode" aria-label="Toggle dark mode"><i class="bi"></i></button>
 </div>
             <div id="quarto-search" class="" title="Search"></div>
       </div> <!-- /container-fluid -->
@@ -311,6 +496,7 @@ div.callout-application.callout-style-default .callout-icon::before, div.callout
   if (main) main.insertAdjacentElement("afterbegin", langButton);
 </script>
     
+
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -507,12 +693,12 @@ Note&nbsp;1: YAML n’est pas le premier langage déclaratif que vous avez appri
 <h2 class="anchored" data-anchor-id="utilisation-programmatique">Utilisation programmatique</h2>
 <p>Comme on l’a vu, le langage <code>YAML</code> est pensé avant tout pour être écrit et lus par des humains. Cela dit, on peut vouloir parfois générer par exemple de nombreux fichiers <code>YAML</code> à partir d’un même template, ou bien récupérer de manière automatisée des informations dans un fichier de configuration <code>YAML</code>. De la même manière qu’un fichier <code>JSON</code> par exemple, il est tout à fait possible d’interagir avec un fichier <code>YAML</code> de manière programmatique.</p>
 <p>En <code>Python</code>, le <em>package</em> de référence pour manipuler du <code>YAML</code> est <a href="https://pypi.org/project/PyYAML/">PyYAML</a>. Illustrons quelques commandes de base.</p>
-<div id="7aab44ec" class="cell" data-execution_count="1">
+<div id="48ec1123" class="cell" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> yaml</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>Supposons que le fichier de déploiement <code>Kubernetes</code> qu’on a utilisé tout a long de ce tutoriel soit écrit dans un fichier <code>api-deployment.yaml</code>. Commençons par l’importer et récupérer quelques informations.</p>
 <p>La syntaxe pour importer le contenu d’un fichier <code>YAML</code> est semblable à celle pour n’importe quel fichier. On utilise la fonction <code>safe_load</code> du <em>package</em> <code>PyYAML</code>.</p>
-<div id="67b888eb" class="cell" data-execution_count="3">
+<div id="9f14c986" class="cell" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">"api-deployment.yaml"</span>, <span class="st">"r"</span>) <span class="im">as</span> file_in:</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  manifest <span class="op">=</span> yaml.safe_load(file_in)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -522,7 +708,7 @@ Note&nbsp;1: YAML n’est pas le premier langage déclaratif que vous avez appri
 </div>
 </div>
 <p>Le contenu est chargé en <code>Python</code> sous la forme d’un dictionnaire, qui est la manière naturelle en <code>Python</code> de représenter de l’information hiérarchique. A partir de là, on peut requêter le contenu du fichier <code>YAML</code> à la manière de n’importe quel dictionnaire <code>Python</code>. Récupérons par exemple le nom du modèle déployé.</p>
-<div id="1a9aeedf" class="cell" data-execution_count="4">
+<div id="cb455794" class="cell" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  manifest</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  .get(<span class="st">"spec"</span>)</span>
@@ -538,7 +724,7 @@ Note&nbsp;1: YAML n’est pas le premier langage déclaratif que vous avez appri
 </div>
 <p>Le chemin dans le dictionnaire reflète les différents objets qui structurent un fichier <code>YAML</code>. Les clés (“spec”, “containers”) correspondent aux dictionnaires en <code>YAML</code>, et les index numériques (“0” ici) correspondent à la sélection d’un élément par position dans une liste. Ici, on récupère la spécification du premier conteneur — et le seul en l’occurrence, mais le <code>Pod</code> pourrait héberger plusieurs conteneurs — et, pour ce conteneur, on récupère la première variable d’environnement (<code>MODEL</code>) dont on extrait la valeur (le nom du modèle).</p>
 <p>A présent, intéressons-nous au cas où l’on voudrait modifier une information du fichier <code>YAML</code> et exporter un manifeste actualisé. On va changer la valeur de la variable d’environnement <code>DEBUG</code> de <code>true</code> à <code>false</code>. En pratique, on fait la modification sur le dictionnaire en <code>Python</code>, puis on exporte le dictionnaire au format <code>YAML</code>.</p>
-<div id="b8332195" class="cell" data-execution_count="5">
+<div id="acc76080" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Vérification du contenu actuel</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(manifest[<span class="st">"spec"</span>][<span class="st">"containers"</span>][<span class="dv">0</span>][<span class="st">"env"</span>][<span class="dv">1</span>])</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -551,7 +737,7 @@ Note&nbsp;1: YAML n’est pas le premier langage déclaratif que vous avez appri
 </div>
 </div>
 <p>L’opération a fonctionné sur l’objet en mémoire dans <code>Python</code>. On exporte finalement le dictionnaire au format <code>YAML</code>.</p>
-<div id="3253a1f6" class="cell" data-execution_count="6">
+<div id="cc38d683" class="cell" data-execution_count="6">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13" data-source-line-numbers="nil" data-code-line-numbers="nil"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="st">'api-deployment-modifie.yaml'</span>, <span class="st">'w'</span>) <span class="im">as</span> file_out:</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    yaml.dump(manifest, file_out)</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -592,8 +778,179 @@ spec:
 <li id="fn2"><p>Dans le cadre de l’<a href="../chapters/application.html">application fil rouge</a>, si vous créez votre <code>VSCode</code> à partir de la configuration proposée, celle-ci est installée par défaut pour vous.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section><section class="quarto-appendix-contents" id="quarto-reuse"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div class="quarto-appendix-contents"><div><a rel="license" href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a></div></div></section></div></main> <!-- /main -->
+<style>
+.toc-progress {
+  font-family: var(--bs-font-monospace);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-top: 1.2rem;
+  color: var(--bs-tertiary-color, #adb5bd);
+  line-height: 1.4;
+}
+.toc-progress-bar {
+  letter-spacing: -0.05em;
+}
+.toc-progress b {
+  color: var(--bs-body-color);
+  font-weight: 400;
+}
+.toc-progress-pct {
+  color: var(--bs-secondary-color);
+  margin-left: 0.5em;
+  letter-spacing: 0;
+}
+.toc-progress-time {
+  font-family: var(--bs-font-monospace);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bs-secondary-color);
+  margin-top: 0.4rem;
+}
+@media print {
+  .toc-progress,
+  .toc-progress-time {
+    display: none;
+  }
+}
+</style>
+<script>
+(function () {
+  var CELLS = 28;
+  var WORDS_PER_MINUTE = 200;
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var toc = document.querySelector("nav#TOC");
+    if (!toc) return;
+
+    var main =
+      document.querySelector("main#quarto-document-content") ||
+      document.querySelector("main");
+    if (!main) return;
+
+    var isFr = (document.documentElement.lang || "").indexOf("fr") === 0;
+    var labels = isFr
+      ? { aria: "Progression de la lecture", time: "DE LECTURE" }
+      : { aria: "Reading progress", time: "READ" };
+
+    var words = main.innerText.trim().split(/\s+/).length;
+    var minutes = Math.max(1, Math.round(words / WORDS_PER_MINUTE));
+
+    var wrap = document.createElement("div");
+    wrap.className = "toc-progress";
+    wrap.setAttribute("role", "progressbar");
+    wrap.setAttribute("aria-valuemin", "0");
+    wrap.setAttribute("aria-valuemax", "100");
+    wrap.setAttribute("aria-valuenow", "0");
+    wrap.setAttribute("aria-label", labels.aria);
+
+    var bar = document.createElement("span");
+    bar.className = "toc-progress-bar";
+    bar.setAttribute("aria-hidden", "true");
+    var filled = document.createElement("b");
+    bar.appendChild(filled);
+    bar.appendChild(document.createTextNode(""));
+    var emptyNode = bar.lastChild;
+
+    var pct = document.createElement("span");
+    pct.className = "toc-progress-pct";
+    pct.textContent = "00%";
+
+    var time = document.createElement("div");
+    time.className = "toc-progress-time";
+    time.textContent = minutes + " MIN " + labels.time;
+
+    wrap.appendChild(bar);
+    wrap.appendChild(pct);
+    wrap.appendChild(time);
+    toc.appendChild(wrap);
+
+    var lastCells = -1;
+
+    function update() {
+      var mainTop = main.getBoundingClientRect().top + window.scrollY;
+      var denom = main.offsetHeight - window.innerHeight;
+      var ratio = denom <= 0 ? 1 : (window.scrollY - mainTop) / denom;
+      ratio = Math.min(1, Math.max(0, ratio));
+
+      var n = Math.round(ratio * CELLS);
+      var p = Math.round(ratio * 100);
+      if (n !== lastCells) {
+        filled.textContent = "█".repeat(n);
+        emptyNode.textContent = "░".repeat(CELLS - n);
+        lastCells = n;
+      }
+      pct.textContent = String(p).padStart(2, "0") + "%";
+      wrap.setAttribute("aria-valuenow", String(p));
+    }
+
+    var scheduled = false;
+    function schedule() {
+      if (scheduled) return;
+      scheduled = true;
+      window.requestAnimationFrame(function () {
+        scheduled = false;
+        update();
+      });
+    }
+
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    update();
+  });
+})();
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const toggle = window.document.createElement('button');
+      toggle.type = "button";
+      toggle.setAttribute("role", "switch");
+      toggle.setAttribute("aria-checked", "false");
+      toggle.classList.add('top-right');
+      toggle.classList.add('quarto-color-scheme-toggle');
+      toggle.setAttribute("aria-label", "Toggle dark mode");
+      toggle.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      toggle.appendChild(i);
+      // Put the toggle in a landmark of its own, so that landmark navigation
+      // can reach it.
+      //
+      // The container is always a fresh direct child of body, and the toggle is
+      // never moved into page furniture that the theme or the author controls.
+      // The toggle is positioned against the page, so any ancestor that
+      // establishes a containing block captures it: a positioned element or a
+      // grid for position: absolute, and transform, filter, will-change or
+      // contain for position: fixed. A direct child of body has none of these
+      // to inherit, and the shift when one appears is silent and visual.
+      //
+      // ARIA says a document should have at most one banner, and axe reports a
+      // duplicate whether or not the banners carry distinct labels. So use a
+      // header when the page has no banner yet, and a named region otherwise.
+      //
+      // A header is a banner wherever it sits, unless it is inside sectioning
+      // content, so this cannot just look at the children of body: a custom
+      // page layout wraps the title block header in a plain div. An explicit
+      // role="banner" always counts.
+      const sectioning = 'article, aside, main, nav, section, [role="article"], [role="complementary"], [role="main"], [role="navigation"], [role="region"]';
+      const hasBanner = Array.from(
+        window.document.querySelectorAll('header:not([role]), [role="banner"]')
+      ).some(function(el) {
+        return el.hasAttribute("role") || el.closest(sectioning) === null;
+      });
+      const container = window.document.createElement(hasBanner ? "div" : "header");
+      if (hasBanner) {
+        container.setAttribute("role", "region");
+        container.setAttribute("aria-label", "Toggle dark mode");
+      }
+      container.classList.add('quarto-color-scheme-toggle-container');
+      container.appendChild(toggle);
+      window.document.body.appendChild(container);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
