@@ -1,0 +1,123 @@
+<style>
+.toc-progress {
+  font-family: var(--bs-font-monospace);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-top: 1.2rem;
+  color: var(--bs-tertiary-color, #adb5bd);
+  line-height: 1.4;
+}
+.toc-progress-bar {
+  letter-spacing: -0.05em;
+}
+.toc-progress b {
+  color: var(--bs-body-color);
+  font-weight: 400;
+}
+.toc-progress-pct {
+  color: var(--bs-secondary-color);
+  margin-left: 0.5em;
+  letter-spacing: 0;
+}
+.toc-progress-time {
+  font-family: var(--bs-font-monospace);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bs-secondary-color);
+  margin-top: 0.4rem;
+}
+@media print {
+  .toc-progress,
+  .toc-progress-time {
+    display: none;
+  }
+}
+</style>
+<script>
+(function () {
+  var CELLS = 28;
+  var WORDS_PER_MINUTE = 200;
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var toc = document.querySelector("nav#TOC");
+    if (!toc) return;
+
+    var main =
+      document.querySelector("main#quarto-document-content") ||
+      document.querySelector("main");
+    if (!main) return;
+
+    var isFr = (document.documentElement.lang || "").indexOf("fr") === 0;
+    var labels = isFr
+      ? { aria: "Progression de la lecture", time: "DE LECTURE" }
+      : { aria: "Reading progress", time: "READ" };
+
+    var words = main.innerText.trim().split(/\s+/).length;
+    var minutes = Math.max(1, Math.round(words / WORDS_PER_MINUTE));
+
+    var wrap = document.createElement("div");
+    wrap.className = "toc-progress";
+    wrap.setAttribute("role", "progressbar");
+    wrap.setAttribute("aria-valuemin", "0");
+    wrap.setAttribute("aria-valuemax", "100");
+    wrap.setAttribute("aria-valuenow", "0");
+    wrap.setAttribute("aria-label", labels.aria);
+
+    var bar = document.createElement("span");
+    bar.className = "toc-progress-bar";
+    bar.setAttribute("aria-hidden", "true");
+    var filled = document.createElement("b");
+    bar.appendChild(filled);
+    bar.appendChild(document.createTextNode(""));
+    var emptyNode = bar.lastChild;
+
+    var pct = document.createElement("span");
+    pct.className = "toc-progress-pct";
+    pct.textContent = "00%";
+
+    var time = document.createElement("div");
+    time.className = "toc-progress-time";
+    time.textContent = minutes + " MIN " + labels.time;
+
+    wrap.appendChild(bar);
+    wrap.appendChild(pct);
+    wrap.appendChild(time);
+    toc.appendChild(wrap);
+
+    var lastCells = -1;
+
+    function update() {
+      var mainTop = main.getBoundingClientRect().top + window.scrollY;
+      var denom = main.offsetHeight - window.innerHeight;
+      var ratio = denom <= 0 ? 1 : (window.scrollY - mainTop) / denom;
+      ratio = Math.min(1, Math.max(0, ratio));
+
+      var n = Math.round(ratio * CELLS);
+      var p = Math.round(ratio * 100);
+      if (n !== lastCells) {
+        filled.textContent = "█".repeat(n);
+        emptyNode.textContent = "░".repeat(CELLS - n);
+        lastCells = n;
+      }
+      pct.textContent = String(p).padStart(2, "0") + "%";
+      wrap.setAttribute("aria-valuenow", String(p));
+    }
+
+    var scheduled = false;
+    function schedule() {
+      if (scheduled) return;
+      scheduled = true;
+      window.requestAnimationFrame(function () {
+        scheduled = false;
+        update();
+      });
+    }
+
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    update();
+  });
+})();
+</script>
