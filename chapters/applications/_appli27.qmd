@@ -5,11 +5,11 @@ Jusqu'ici, l'API lisait le fichier `model.skops` produit par `train.py`, que le 
 
 1. Dans `MLFlow`, ouvrir l'expérimentation `dvf` et comparer les _runs_ entraînés avec des `n_trees` différents, en regardant `rmse_test` et `rmse_cv`. Cliquer sur le meilleur _run_ puis sur le bouton _"Register model"_. Créer un nouveau modèle nommé `dvf` : cela crée la version 1 de ce modèle.
 
-2. Rendez-vous sur l'onglet `Models`, ouvrir le modèle `dvf`, puis sa version 1, et lui ajouter l'alias `production`.
+2. Rendez-vous sur l'onglet `Models`, ouvrir le modèle `dvf`, puis sa version 1, et lui ajouter l'alias `production`[^alias].
 
-Un alias est une étiquette qui pointe vers une version d'un modèle, et qui peut être déplacée d'une version à une autre. L'API ne demandera pas « la version 1 », mais « la version qui porte l'alias `production` ». Pour mettre en production un autre modèle plus tard, il suffira de déplacer l'alias, sans modifier le code. Observez que l'entrepôt conserve l'historique des versions, et pour chacune le _run_ dont elle est issue.
+[^alias]: Un alias est une étiquette qui pointe vers une version d'un modèle, et qui peut être déplacée d'une version à une autre. L'API ne demandera pas "la version avec le sha 2aby45...", mais "la version qui porte l'alias `production`". Pour mettre en production un autre modèle plus tard, il suffira de changer le modèle exposé derrière l'alias, sans modifier le code. Observez que l'entrepôt conserve l'historique des versions, et pour chacune le _run_ dont elle est issue.
 
-3. Ouvrir un notebook temporaire **à la racine du projet** et charger le modèle de production. Le notebook doit être à la racine, car charger le modèle importe `src.models.model`, qui définit la fonction `as_category`. Le code reprend celui de l'application précédente : seule l'URI du modèle change.
+1. Ouvrir un notebook temporaire **à la racine du projet** et charger le modèle de production. Le notebook doit être à la racine car charger le modèle importe `src.models.model`. Le code reprend celui de l'application précédente : seule l'URI du modèle change.
 
 <details>
 <summary>
