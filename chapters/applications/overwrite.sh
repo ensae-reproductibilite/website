@@ -13,8 +13,38 @@
 # les valeurs à remplacer.
 set -e
 
+# Couleurs ANSI. Activées seulement si NO_COLOR est absent (ou vide) et si
+# TERM n'est pas "dumb". Sinon, toutes les variables sont vides.
+# Le flux stdout et le flux stderr (prompts, erreurs) sont testés séparément.
+COLOR_OK=0
+if [ -z "${NO_COLOR:-}" ] && [ "${TERM:-}" != dumb ]; then
+  COLOR_OK=1
+fi
+
+# Couleurs pour stdout
+if [ "$COLOR_OK" = 1 ] && [ -t 1 ]; then
+  BOLD=$'\e[1m'; DIM=$'\e[2m'; GREEN=$'\e[32m'; YELLOW=$'\e[33m'
+  BLUE=$'\e[34m'; CYAN=$'\e[36m'; RESET=$'\e[0m'
+else
+  BOLD=''; DIM=''; GREEN=''; YELLOW=''; BLUE=''; CYAN=''; RESET=''
+fi
+
+# Couleurs pour stderr (prompts, erreurs)
+if [ "$COLOR_OK" = 1 ] && [ -t 2 ]; then
+  EBOLD=$'\e[1m'; EDIM=$'\e[2m'; ERED=$'\e[31m'; EGREEN=$'\e[32m'
+  EYELLOW=$'\e[33m'; ERESET=$'\e[0m'
+else
+  EBOLD=''; EDIM=''; ERED=''; EGREEN=''; EYELLOW=''; ERESET=''
+fi
+
+# Titre d'une étape du script
+step() { printf '%s\n' "${BOLD}${BLUE}==> $*${RESET}"; }
+
 TAG=$1
-[ -z "$TAG" ] && { echo "Usage: $0 <tag> [application|application-deployment]"; exit 1; }
+if [ -z "$TAG" ]; then
+  printf '%s\n' "${EBOLD}${ERED}✖ Usage: $0 <tag> [application|application-deployment]${ERESET}" >&2
+  exit 1
+fi
 
 # Nom du dépôt local : basename de l'URL origin, sans .git ni /
 ORIGIN=$(git remote get-url origin 2>/dev/null || true)
@@ -29,32 +59,40 @@ else
   UPSTREAM=$BASE/application.git
 fi
 UPSTREAM=${CHECKPOINT_UPSTREAM:-$UPSTREAM}
-echo "Correction utilisée : $UPSTREAM"
+step "Correction utilisée : ${CYAN}$UPSTREAM${RESET}"
 
 REMOTE_TMP=upstream
 
 # Stash local changes (including untracked)
-git stash push -u
+step "Sauvegarde de vos modifications locales (git stash)"
+STASH_BEFORE=$(git stash list | wc -l)
+git stash push -u -q
+if [ "$(git stash list | wc -l)" -gt "$STASH_BEFORE" ]; then
+  printf '%s\n' "${YELLOW}⚠ Vos modifications locales sont mises de côté (git stash pop pour les récupérer).${RESET}"
+fi
 
 # Fetch correction tags (l'URL de la remote upstream est mise à jour si besoin)
+step "Récupération de la correction"
 CURRENT=$(git remote get-url $REMOTE_TMP 2>/dev/null || true)
 if [ -z "$CURRENT" ]; then
   git remote add $REMOTE_TMP "$UPSTREAM"
 elif [ "$CURRENT" != "$UPSTREAM" ]; then
   git remote set-url $REMOTE_TMP "$UPSTREAM"
 fi
-git fetch $REMOTE_TMP --tags --force
+git fetch -q $REMOTE_TMP --tags --force
 
 # Vérifie que le tag existe dans la correction (et pas seulement en local)
 if ! git ls-remote --exit-code --tags $REMOTE_TMP "refs/tags/$TAG" >/dev/null 2>&1; then
-  echo "Le tag '$TAG' n'existe pas dans $UPSTREAM."
-  echo "Cette étape n'a peut-être pas de checkpoint pour ce dépôt."
+  printf '%s\n' "${EBOLD}${ERED}✖ Le tag '$TAG' n'existe pas dans $UPSTREAM.${ERESET}" >&2
+  printf '%s\n' "${ERED}Cette étape n'a peut-être pas de checkpoint pour ce dépôt.${ERESET}" >&2
   exit 1
 fi
 
 # Reset main safely
-git checkout -B main
-git reset --hard "$TAG"
+step "Passage à l'état $TAG"
+git checkout -q -B main
+git reset -q --hard "$TAG"
+printf '%s\n' "${DIM}HEAD est maintenant sur $TAG ($(git log -1 --format='%h %s'))${RESET}"
 
 PLACEHOLDERS='<(GITHUB_USERNAME|DOCKERHUB_USERNAME|SSPCLOUD_USERNAME|APP_NAME)>'
 PLACEHOLDER_NAMES="GITHUB_USERNAME DOCKERHUB_USERNAME SSPCLOUD_USERNAME APP_NAME"
@@ -103,7 +141,7 @@ replace_placeholder() {
     sed -i "s|<$name>|$value|g" -- "$file"
     count=$((count + 1))
   done <<< "$files"
-  echo "✔ <$name> remplacé par $value dans $count fichier(s)"
+  printf '%s\n' "${GREEN}✔ <$name> remplacé par $value dans $count fichier(s)${RESET}"
   REPLACED=1
 }
 
@@ -111,11 +149,11 @@ replace_placeholder() {
 ask_value() {
   local name=$1 default answer prompt
   default=$(guess_default "$name")
-  prompt="Valeur pour <$name>"
+  prompt="Valeur pour ${EBOLD}${EYELLOW}<$name>${ERESET}"
   if [ -n "$default" ]; then
-    prompt+=" [$default] (Entrée pour accepter) : "
+    prompt+=" ${EGREEN}[$default]${ERESET} ${EDIM}(Entrée pour accepter)${ERESET} : "
   else
-    prompt+=" (Entrée pour passer) : "
+    prompt+=" ${EDIM}(Entrée pour passer)${ERESET} : "
   fi
   while :; do
     printf '%s' "$prompt" >&2
@@ -131,7 +169,7 @@ ask_value() {
       replace_placeholder "$name" "$answer"
       return 0
     fi
-    echo "Valeur invalide : '$answer'. Seuls les lettres, chiffres, '.', '_' et '-' sont autorisés." >&2
+    printf '%s\n' "${ERED}Valeur invalide : '$answer'. Seuls les lettres, chiffres, '.', '_' et '-' sont autorisés.${ERESET}" >&2
   done
 }
 
@@ -143,14 +181,20 @@ if [ -r /dev/tty ] && (exec 3</dev/tty) 2>/dev/null; then
 fi
 
 if [ "$TTY_OK" = 1 ]; then
+  ASKED=0
   for name in $PLACEHOLDER_NAMES; do
     files=$(git grep -lF "<$name>" -- ':!*.ipynb' || true)
     [ -n "$files" ] || continue
+    # Titre de section affiché une seule fois, avant la première question
+    if [ "$ASKED" = 0 ]; then
+      step "Valeurs à personnaliser"
+      ASKED=1
+    fi
     nfiles=$(printf '%s\n' "$files" | wc -l)
     noccur=$(git grep -hoF "<$name>" -- ':!*.ipynb' | wc -l)
     echo
-    echo "<$name> : $(legend "$name")"
-    echo "  $noccur occurrence(s) dans $nfiles fichier(s)"
+    printf '%s\n' "${BOLD}${YELLOW}<$name>${RESET} : $(legend "$name")"
+    printf '%s\n' "${DIM}  $noccur occurrence(s) dans $nfiles fichier(s)${RESET}"
     ask_value "$name"
   done
   echo
@@ -160,7 +204,7 @@ fi
 MATCHES=$(git grep -nE "$PLACEHOLDERS" -- ':!*.ipynb' || true)
 
 if [ -n "$MATCHES" ]; then
-  echo "⚠ Valeurs à personnaliser avant de pousser :"
+  printf '%s\n' "${BOLD}${YELLOW}⚠ Valeurs à personnaliser avant de pousser :${RESET}"
   while IFS= read -r line; do
     file=${line%%:*}
     rest=${line#*:}
@@ -169,22 +213,25 @@ if [ -n "$MATCHES" ]; then
     markers=$(printf '%s\n' "$content" | grep -oE "$PLACEHOLDERS" | sort -u | paste -sd' ' -)
     text=$(printf '%s' "$content" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
     [ ${#text} -gt 100 ] && text="${text:0:100}…"
-    echo "  $file:$num  $markers  $text"
+    printf '  %s%s:%s%s  %s%s%s  %s%s%s\n' \
+      "$CYAN" "$file" "$num" "$RESET" \
+      "$BOLD$YELLOW" "$markers" "$RESET" \
+      "$DIM" "$text" "$RESET"
   done <<< "$MATCHES"
 
   echo
-  echo "Légende :"
+  printf '%s\n' "${BOLD}Légende :${RESET}"
   FOUND=$(printf '%s\n' "$MATCHES" | grep -oE "$PLACEHOLDERS" | sort -u)
   while IFS= read -r m; do
     name=${m#<}
     name=${name%>}
-    echo "  $m : $(legend "$name")"
+    printf '%s\n' "  ${BOLD}${YELLOW}$m${RESET} : $(legend "$name")"
   done <<< "$FOUND"
   echo
 fi
 
-echo "Checkpoint '$TAG' appliqué."
+printf '%s\n' "${BOLD}${GREEN}✔ Checkpoint '$TAG' appliqué.${RESET}"
 
 if [ "$REPLACED" = 1 ]; then
-  echo "⚠ Des fichiers ont été modifiés par vos réponses : validez-les (git add / git commit) avant de pousser."
+  printf '%s\n' "${YELLOW}⚠ Des fichiers ont été modifiés par vos réponses : validez-les (git add / git commit) avant de pousser.${RESET}"
 fi
