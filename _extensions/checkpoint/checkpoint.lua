@@ -76,7 +76,12 @@ local STR = {
       "Nettoyer derrière nous",
     },
     gitops_title = "Pour mettre à jour le dépôt GitOps",
-    gitops = "Dans votre clone du dépôt <code>application-deployment</code>, lancez les mêmes commandes :",
+    annot_gitops = {
+      "Récupérer le script de <em>checkpoint</em>",
+      "Avancer le dépôt GitOps (<code>application-deployment</code>) à l’état à l’issue de l’application ",
+      "Nettoyer derrière nous",
+    },
+    gitops = "Dans votre clone du dépôt <code>application-deployment</code>, lancez ces commandes. Le second argument <code>application-deployment</code> indique au script d’utiliser la correction du dépôt GitOps :",
     todo_title = "Avant de continuer, à faire de votre côté",
     todo_hint = "Le script vous demande dans la console les valeurs à remplacer dans les fichiers (Entrée pour en passer une), puis liste celles qui restent à remplacer (<code>&lt;GITHUB_USERNAME&gt;</code>, <code>&lt;DOCKERHUB_USERNAME&gt;</code>, <code>&lt;SSPCLOUD_USERNAME&gt;</code>, <code>&lt;APP_NAME&gt;</code>).",
   },
@@ -89,14 +94,21 @@ local STR = {
       "Clean up after us",
     },
     gitops_title = "To update the GitOps repository",
-    gitops = "In your clone of the <code>application-deployment</code> repository, run the same commands:",
+    annot_gitops = {
+      "Get the <em>checkpoint</em> script",
+      "Move the GitOps repository (<code>application-deployment</code>) to the state at the end of application ",
+      "Clean up after us",
+    },
+    gitops = "In your clone of the <code>application-deployment</code> repository, run these commands. The second argument <code>application-deployment</code> tells the script to use the correction of the GitOps repository:",
     todo_title = "Before continuing, to do on your side",
     todo_hint = "The script asks you in the console for the values to replace in the files (Enter to skip one), then lists those still to replace (<code>&lt;GITHUB_USERNAME&gt;</code>, <code>&lt;DOCKERHUB_USERNAME&gt;</code>, <code>&lt;SSPCLOUD_USERNAME&gt;</code>, <code>&lt;APP_NAME&gt;</code>).",
   },
 }
 
 -- Bloc de commandes avec ses annotations. `cell` rend les ids d'annotation uniques.
-local function terminal_block(appli, cell, labels)
+-- `repo` (optionnel) : second argument de update.sh, qui choisit le dépôt de correction.
+local function terminal_block(appli, cell, labels, repo)
+  local repo_arg = repo and (' ' .. repo) or ''
   return [==[
         <div class="code-with-filename">
           <div class="code-with-filename-file">
@@ -104,7 +116,7 @@ local function terminal_block(appli, cell, labels)
           </div>
           <div class="sourceCode" data-filename="terminal">
             <pre class="sourceCode python code-annotated"><code class="sourceCode python">curl -sSL https://raw.githubusercontent.com/ensae-reproductibilite/website/refs/heads/main/chapters/applications/overwrite.sh -o update.sh && chmod +x update.sh
-./update.sh ]==] .. appli .. [==[<a class="code-annotation-anchor" data-target-cell="annotated-cell-]==] .. cell .. [==[" data-target-annotation="2" onclick="event.preventDefault();">2</a>
+./update.sh ]==] .. appli .. repo_arg .. [==[<a class="code-annotation-anchor" data-target-cell="annotated-cell-]==] .. cell .. [==[" data-target-annotation="2" onclick="event.preventDefault();">2</a>
 rm -f update.sh</code></pre>
           </div>
         </div>
@@ -157,7 +169,7 @@ function checkpoint(args, kwargs)
       gitops_block = '<details class="checkpoint-gitops">\n' ..
         '<summary>' .. S.gitops_title .. '</summary>\n' ..
         "<p>" .. S.gitops .. "</p>\n" ..
-        terminal_block(appli, appli .. "-gitops", annot) ..
+        terminal_block(appli, appli .. "-gitops", S.annot_gitops, "application-deployment") ..
         '</details>\n'
     end
     local items = {}
