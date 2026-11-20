@@ -5,6 +5,12 @@
 # Le dépôt de correction est choisi d'après le nom de votre dépôt local
 # (application ou application-deployment), sauf si vous le précisez en 2e argument.
 # Pour les tests, CHECKPOINT_UPSTREAM remplace l'URL de la correction.
+#
+# Si un terminal est disponible, le script vous demande les valeurs à remplacer
+# (<GITHUB_USERNAME>, <DOCKERHUB_USERNAME>, <SSPCLOUD_USERNAME>, <APP_NAME>) :
+# Entrée accepte la valeur proposée entre crochets, ou passe la valeur.
+# Sans terminal (CI, entrée non interactive), le script se contente de lister
+# les valeurs à remplacer.
 set -e
 
 TAG=$1
@@ -50,8 +56,107 @@ fi
 git checkout -B main
 git reset --hard "$TAG"
 
-# Valeurs à personnaliser (on affiche seulement, on ne modifie rien)
 PLACEHOLDERS='<(GITHUB_USERNAME|DOCKERHUB_USERNAME|SSPCLOUD_USERNAME|APP_NAME)>'
+PLACEHOLDER_NAMES="GITHUB_USERNAME DOCKERHUB_USERNAME SSPCLOUD_USERNAME APP_NAME"
+REPLACED=0
+
+# Légende d'une valeur à personnaliser
+legend() {
+  case $1 in
+    GITHUB_USERNAME) echo "votre compte GitHub" ;;
+    DOCKERHUB_USERNAME) echo "votre compte DockerHub" ;;
+    SSPCLOUD_USERNAME) echo "votre identifiant SSP Cloud, sans le préfixe user- (ex. prenom-nom)" ;;
+    APP_NAME) echo "un nom unique pour l'URL de votre API, ex. dvf-<prenom>" ;;
+  esac
+}
+
+# Valeur proposée par défaut, si on peut la deviner (sinon rien)
+guess_default() {
+  local ns re
+  case $1 in
+    GITHUB_USERNAME)
+      # Propriétaire du dépôt, si l'origine est sur github.com (https ou ssh)
+      re='^(https?://([^@/]+@)?github\.com/|git@github\.com:)([^/:]+)/'
+      # (sauf le dépôt du cours, cloné sans fork)
+      if [[ $ORIGIN =~ $re ]] && [ "${BASH_REMATCH[3]}" != "ensae-reproductibilite" ]; then
+        echo "${BASH_REMATCH[3]}"
+      fi
+      ;;
+    SSPCLOUD_USERNAME)
+      # Namespace Kubernetes personnel (user-prenom-nom), sans le préfixe user-.
+      # Un namespace de projet (projet-...) ne donne pas d'identifiant.
+      ns=${KUBERNETES_NAMESPACE:-}
+      if [ -z "$ns" ] && [ -r /var/run/secrets/kubernetes.io/serviceaccount/namespace ]; then
+        ns=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace 2>/dev/null || true)
+      fi
+      if [[ $ns =~ ^user-([A-Za-z0-9._-]+)$ ]]; then echo "${BASH_REMATCH[1]}"; fi
+      ;;
+  esac
+}
+
+# Remplace <NAME> par la valeur dans les fichiers suivis (hors notebooks)
+replace_placeholder() {
+  local name=$1 value=$2 files file count=0
+  files=$(git grep -lF "<$name>" -- ':!*.ipynb' || true)
+  while IFS= read -r file; do
+    [ -n "$file" ] || continue
+    sed -i "s|<$name>|$value|g" -- "$file"
+    count=$((count + 1))
+  done <<< "$files"
+  echo "✔ <$name> remplacé par $value dans $count fichier(s)"
+  REPLACED=1
+}
+
+# Demande une valeur à l'étudiant (lue sur le terminal, fd 3) ; Entrée = passer
+ask_value() {
+  local name=$1 default answer prompt
+  default=$(guess_default "$name")
+  prompt="Valeur pour <$name>"
+  if [ -n "$default" ]; then
+    prompt+=" [$default] (Entrée pour accepter) : "
+  else
+    prompt+=" (Entrée pour passer) : "
+  fi
+  while :; do
+    printf '%s' "$prompt" >&2
+    if ! IFS= read -r -u 3 answer; then
+      echo >&2
+      return 0
+    fi
+    answer=${answer:-$default}
+    if [ -z "$answer" ]; then
+      return 0
+    fi
+    if [[ $answer =~ ^[A-Za-z0-9._-]+$ ]]; then
+      replace_placeholder "$name" "$answer"
+      return 0
+    fi
+    echo "Valeur invalide : '$answer'. Seuls les lettres, chiffres, '.', '_' et '-' sont autorisés." >&2
+  done
+}
+
+# Ouverture du terminal (absent en CI ou hors terminal : pas de question posée)
+TTY_OK=0
+if [ -r /dev/tty ] && (exec 3</dev/tty) 2>/dev/null; then
+  exec 3</dev/tty
+  TTY_OK=1
+fi
+
+if [ "$TTY_OK" = 1 ]; then
+  for name in $PLACEHOLDER_NAMES; do
+    files=$(git grep -lF "<$name>" -- ':!*.ipynb' || true)
+    [ -n "$files" ] || continue
+    nfiles=$(printf '%s\n' "$files" | wc -l)
+    noccur=$(git grep -hoF "<$name>" -- ':!*.ipynb' | wc -l)
+    echo
+    echo "<$name> : $(legend "$name")"
+    echo "  $noccur occurrence(s) dans $nfiles fichier(s)"
+    ask_value "$name"
+  done
+  echo
+fi
+
+# Valeurs restant à personnaliser (on affiche seulement, on ne modifie rien)
 MATCHES=$(git grep -nE "$PLACEHOLDERS" -- ':!*.ipynb' || true)
 
 if [ -n "$MATCHES" ]; then
@@ -71,14 +176,15 @@ if [ -n "$MATCHES" ]; then
   echo "Légende :"
   FOUND=$(printf '%s\n' "$MATCHES" | grep -oE "$PLACEHOLDERS" | sort -u)
   while IFS= read -r m; do
-    case $m in
-      '<GITHUB_USERNAME>') echo "  <GITHUB_USERNAME> : votre compte GitHub" ;;
-      '<DOCKERHUB_USERNAME>') echo "  <DOCKERHUB_USERNAME> : votre compte DockerHub" ;;
-      '<SSPCLOUD_USERNAME>') echo "  <SSPCLOUD_USERNAME> : votre identifiant SSP Cloud (namespace user-..., bucket S3)" ;;
-      '<APP_NAME>') echo "  <APP_NAME> : un nom unique pour l'URL de votre API, ex. dvf-<prenom>" ;;
-    esac
+    name=${m#<}
+    name=${name%>}
+    echo "  $m : $(legend "$name")"
   done <<< "$FOUND"
   echo
 fi
 
 echo "Checkpoint '$TAG' appliqué."
+
+if [ "$REPLACED" = 1 ]; then
+  echo "⚠ Des fichiers ont été modifiés par vos réponses : validez-les (git add / git commit) avant de pousser."
+fi

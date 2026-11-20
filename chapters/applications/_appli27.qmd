@@ -1,247 +1,296 @@
 ::: {.application}
-## Application 27 : passer en production un modèle avec MLFlow
+## Application 27 : passer en production un modèle avec `MLFlow`
 
-1. Si vous avez entraîné plusieurs modèles avec des `n_trees` différents, utiliser l'interface de `MLFlow` pour sélectionner le "meilleur". Cliquer sur le modèle en question et faire l'action _"Register Model"_. L'enregistrer comme le modèle de _"production"_
+Jusqu'ici, l'API lisait le fichier `model.skops` produit par `train.py`, que le conteneur relançait à chaque démarrage. Nous allons maintenant charger le modèle depuis le registre de modèles de `MLFlow`, et plus précisément celui qui a été choisi pour la production.
 
-2. Rendez-vous sur l'onglet `Models` et observez cet entrepôt de modèles. Cliquez sur le modèle de production. Vous pourrez par ce biais suivre ses différentes versions.
+1. Dans `MLFlow`, ouvrir l'expérimentation `dvf` et comparer les _runs_ entraînés avec des `n_trees` différents, en regardant `rmse_test` et `rmse_cv`. Cliquer sur le meilleur _run_ puis sur le bouton _"Register model"_. Créer un nouveau modèle nommé `dvf` : cela crée la version 1 de ce modèle.
 
-3. Ouvrir un notebook temporaire et observer le résultat.
+2. Rendez-vous sur l'onglet `Models`, ouvrir le modèle `dvf`, puis cliquer sur _"Version 1"_ pour afficher la page de cette version et lui ajouter l'alias `production`[^alias].
 
 <details>
 <summary>
-Exemple de code à tester
+Où ajouter l'alias dans l'interface de `MLFlow` ?
 </summary>
 
+L'alias s'ajoute depuis l'en-tête de la page de la version :
 
-```{.python file="Dans une cellule de notebook"}
+![En-tête de la page d'une version de modèle dans `MLFlow`](/chapters/applications/figures/mlflow_alias_appli27.png){fig-alt="En-tête de la page de la version 1 du modèle dvf dans MLFlow : date d'enregistrement, date de modification, lien Source Run vers le run d'origine et, à droite, le champ Aliases et son lien Add, encadrés en rouge."}
+
+Cliquer sur _"Add"_ à côté de _"Aliases"_ (encadré en rouge). Dans la fenêtre qui s'ouvre, taper `production`, valider avec la touche Entrée pour que l'alias apparaisse sous forme d'étiquette, puis cliquer sur _"Save"_. L'en-tête affiche alors l'alias `@ production`.
+
+Le lien _"Source Run"_ renvoie au _run_ dont est issue cette version : on y retrouve les hyperparamètres, les métriques et les artefacts du modèle qu'on s'apprête à mettre en production.
+
+</details>
+
+[^alias]: Un alias est une étiquette qui pointe vers une version d'un modèle, et qui peut être déplacée d'une version à une autre. L'API ne demandera pas "la version avec le sha 2aby45...", mais "la version qui porte l'alias `production`". Pour mettre en production un autre modèle plus tard, il suffira de changer le modèle exposé derrière l'alias, sans modifier le code. Observez que l'entrepôt conserve l'historique des versions, et pour chacune le _run_ dont elle est issue.
+
+3. Ouvrir un notebook temporaire **à la racine du projet** et charger le modèle de production. Le notebook doit être à la racine car charger le modèle importe `src.models.model`. Le code reprend celui de l'application précédente : seule l'URI du modèle change.
+
+<details>
+<summary>
+Exemple de code dans le _notebook_
+</summary>
+
+```{.python filename="notebook.ipynb"}
 import mlflow
 import pandas as pd
 
-model_name = "production"
-model_version = "latest"
+# Version de production du modèle `dvf`, lue dans le registre
+model_uri = "models:/dvf@production"
+model = mlflow.sklearn.load_model(model_uri)
 
-# Load the model from the Model Registry
-model_uri = f"models:/{model_name}/{model_version}"
-logged_model = mlflow.sklearn.load_model(model_uri)
+# Les codes commune sont lus comme des chaînes de caractères : sinon,
+# ils seraient lus comme des entiers et le modèle ne les reconnaîtrait pas
+test = pd.read_csv("data/derived/test.csv", index_col=0, dtype={"code_commune": str})
+X_test = test.drop(columns="prix_m2")
+y_test = test["prix_m2"]
 
-# GENERATE PREDICTION DATA ---------------------
-
-def create_data(
-    sex: str = "female",
-    age: float = 29.0,
-    fare: float = 16.5,
-    embarked: str = "S",
-) -> str:
-    """
-    """
-
-    df = pd.DataFrame(
-        {
-            "Sex": [sex],
-            "Age": [age],
-            "Fare": [fare],
-            "Embarked": [embarked],
-        }
-    )
-
-    return df
-
-
-data = pd.concat(
-    [create_data(age=40), create_data(sex="male")]
-)
-
-# PREDICTION ---------------------
-
-logged_model.predict(pd.DataFrame(data))
+predictions = pd.DataFrame({"prix_m2": y_test, "prix_predit": model.predict(X_test)})
+predictions.head()
 ```
 
 </details>
 
-4. On va adapter le code applicatif de notre API pour tenir compte de ce modèle de production.
+4. Adapter le code de l'API (`app/api.py`) pour utiliser ce modèle de production. Le fichier complet est ci-dessous.
 
 <details>
 <summary>
 Voir le script `app/api.py` proposé
 </summary>
 
-```{.python file="app/api.py"}
-"""A simple API to expose our trained RandomForest model for Tutanic survival."""
+```{.python filename="app/api.py"}
+"""
+API estimating the price per m² of a property from its address
+
+L'API charge le modèle de production depuis le registre de modèles de MLflow
+(modèle `dvf`, alias `production`). Pour la lancer en local, la variable
+d'environnement `MLFLOW_TRACKING_URI` doit être définie (ainsi que
+`MLFLOW_TRACKING_USERNAME` et `MLFLOW_TRACKING_PASSWORD` si le serveur demande
+une authentification), et un modèle `dvf` avec l'alias `production` doit exister.
+Lancer l'API depuis le dossier du projet :
+
+    uv run uvicorn app.api:app
+"""
 
 import logging
-from fastapi import FastAPI
-import pandas as pd
-import mlflow
+import os
 
+import duckdb
+import mlflow
+from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException
+
+from src.models.predict import build_inference_features, predict_prix_m2
+
+load_dotenv()
+JETON_API = os.environ.get("JETON_API", "")
 
 logging.basicConfig(
     format="{asctime} - {levelname} - {message}",
     style="{",
     datefmt="%Y-%m-%d %H:%M",
-    level=logging.DEBUG,
+    level=logging.INFO,
     handlers=[logging.FileHandler("api.log"), logging.StreamHandler()],
 )
+logger = logging.getLogger(__name__)
 
-# Preload model -------------------
+URL_RAW = "https://minio.lab.sspcloud.fr/lgaliana/ensae-reproductibilite/data/raw"
+URL_FILOSOFI = f"{URL_RAW}/filosofi_carreaux_200m_2021.parquet"
 
-logging.info(
-    "Getting model from MLFlow"
+MODEL_NAME = "dvf"
+MODEL_ALIAS = "production"
+MODEL_URI = f"models:/{MODEL_NAME}@{MODEL_ALIAS}"
+
+con = duckdb.connect(database=":memory:")
+
+# MLflow reads the tracking server address from the MLFLOW_TRACKING_URI
+# environment variable. The types trusted by skops were saved with the model
+# at training time, so no trusted list is needed here.
+logger.info(f"Chargement du modèle {MODEL_URI} depuis {mlflow.get_tracking_uri()}")
+model = mlflow.sklearn.load_model(MODEL_URI)
+version_production = (
+    mlflow.MlflowClient().get_model_version_by_alias(MODEL_NAME, MODEL_ALIAS).version
 )
-
-model_name = "production"
-model_version = "latest"
-
-# Load the model from the Model Registry
-model_uri = f"models:/{model_name}/{model_version}"
-model = mlflow.sklearn.load_model(model_uri)
-
-# Define app -------------------------
-
+logger.info(f"Version {version_production} du modèle {MODEL_NAME} chargée")
 
 app = FastAPI(
-    title="Prédiction de survie sur le Titanic",
-    description=
-    "Application de prédiction de survie sur le Titanic 🚢 <br>Une version par API pour faciliter la réutilisation du modèle 🚀" +\
-        "<br><br><img src=\"https://media.vogue.fr/photos/5faac06d39c5194ff9752ec9/1:1/w_2404,h_2404,c_limit/076_CHL_126884.jpg\" width=\"200\">"
-    )
+    title="Démonstration du modèle de prix au m² en petite couronne",
+    description=(
+        "<b>Estimation du prix au m² des logements</b> à Paris et dans les "
+        "départements 92, 93 et 94, à partir des transactions DVF enrichies "
+        "par des données socio-économiques Filosofi 🏠<br>"
+        "Une version par API pour faciliter la réutilisation du modèle 🚀"
+    ),
+)
 
 
-@app.get("/", tags=["Welcome"])
-def show_welcome_page():
-    """
-    Show welcome page with model name and version.
-    """
-
+@app.get("/")
+def accueil():
+    """Présentation de l'API"""
     return {
-        "Message": "API de prédiction de survie sur le Titanic",
-        "Model_name": 'Titanic ML',
+        "Message": "Bienvenue sur l'API d'estimation du prix au m²",
+        "Model_name": "Prix au m² DVF (LightGBM)",
         "Model_version": "0.3",
+        "Model_registry": f"{MODEL_NAME} (alias {MODEL_ALIAS}, version {version_production})",
     }
 
 
-@app.get("/predict", tags=["Predict"])
-async def predict(
-    sex: str = "female",
-    age: float = 29.0,
-    fare: float = 16.5,
-    embarked: str = "S"
-) -> str:
+@app.get("/predict")
+def predire(
+    adresse: str = "20 avenue de Ségur 75007 Paris",
+    type_local: str = "Appartement",
+    surface: float = 45.0,
+    nombre_pieces: int = 2,
+):
+    """Estimer le prix d'un logement à partir de son adresse
+
+    - `type_local` : `Appartement` ou `Maison`
+    - `surface` : surface réelle du bâti, en m²
+    - `nombre_pieces` : nombre de pièces principales
+
+    Seules les adresses de Paris et des départements 92, 93 et 94 sont acceptées.
     """
-    """
+    try:
+        features = build_inference_features(
+            adresse=adresse,
+            type_local=type_local,
+            surface_reelle_bati=surface,
+            nombre_pieces_principales=nombre_pieces,
+            connection=con,
+            url_filosofi=URL_FILOSOFI,
+            jeton_api=JETON_API,
+        )
+    except ValueError as erreur:
+        logger.warning(f"Adresse refusée : {erreur}")
+        raise HTTPException(status_code=400, detail=str(erreur))
 
-    df = pd.DataFrame(
-        {
-            "Sex": [sex],
-            "Age": [age],
-            "Fare": [fare],
-            "Embarked": [embarked],
-        }
-    )
-
-    prediction = int(model.predict(df)[0])
-
-    logging.debug(f"Predicting {prediction} for {df.to_dict()}")
-
-    prediction = "Survived 🎉" if prediction == 1 else "Dead ⚰️"
-
-    return prediction
+    prix_m2 = predict_prix_m2(model, features)
+    logger.info(f"Prédiction de {round(prix_m2)} €/m² pour {features.loc[0, 'label']}")
+    return {
+        "adresse": features.loc[0, "label"],
+        "code_commune": features.loc[0, "code_commune"],
+        "prix_m2": round(prix_m2),
+        "prix_estime": round(prix_m2 * surface),
+    }
 ```
 
 </details>
 
-Les changements principaux de ce code sont:
+Les changements principaux de ce code sont :
 
-* on va chercher le modèle de production
-* on met à jour la version de notre API pour signaler à nos clients que celle-ci a évolué
-* on utilise un peu plus le _logging_ pour mieux comprendre ce qu'il se passe
+* le modèle est chargé depuis le registre de `MLFlow`, via l'alias `production`, au lieu du fichier `model.skops`. Les types de confiance de `skops` ont été enregistrés avec le modèle lors de l'entraînement : il n'y a plus de liste à fournir ;
+* l'adresse du serveur `MLFlow` vient de la variable d'environnement `MLFLOW_TRACKING_URI`, définie hors du code ;
+* la page d'accueil affiche la version `0.3` de l'API et, dans `Model_registry`, la version du registre réellement servie ;
+* on enregistre davantage de messages dans le journal (chargement du modèle, chaque prédiction, adresses refusées), écrits dans `api.log`.
 
-5. On va retirer l'entraînement de la séquence d'opération du `api/run.sh`. En supprimant la ligne relative à l'entraînement du modèle, vous devriez avoir
+5. Retirer l'entraînement de `app/run.sh` : le conteneur ne relance plus `train.py` au démarrage, il se contente de lancer l'API.
 
-```{.python}
-#/bin/bash
-uvicorn app.api:app --host "0.0.0.0"
+```{.bash filename="app/run.sh"}
+#!/bin/bash
+
+uv run uvicorn app.api:app --host "0.0.0.0"
 ```
 
-Mettons en production cette nouvelle version. Cela implique de faire les gestes suivants:
+Le conteneur démarre donc beaucoup plus vite, et il sert toujours le modèle choisi dans le registre. L'entraînement (l'expérimentation) et la mise à disposition (la production) sont désormais découplés : on peut entraîner autant de modèles que l'on veut sans toucher à l'API, et ne mettre en production que celui que l'on a retenu. `train.py` reste dans l'image `Docker`, car une application ultérieure s'en servira.
 
-6. _Commit_ de ce changement dans `main`
+6. Tester avant de publier. Dans le `VSCode` du SSPCloud, les variables `MLFLOW_TRACKING_URI`, `MLFLOW_TRACKING_USERNAME` et `MLFLOW_TRACKING_PASSWORD` sont injectées automatiquement : l'API peut donc joindre `MLFlow` sans configuration supplémentaire. Lancer l'API depuis le terminal :
 
-7. Publier un tag `v0.0.3` pour le code applicatif
+```{.bash filename="terminal"}
+uv run uvicorn app.api:app
+```
 
-8. Mettre à jour notre manifeste dans le dépôt `GitOps`.
-   * En premier lieu, il faut changer la version de référence pour utiliser le tag `v0.0.3`.
-   * De plus, il faut déclarer la variable d'environnement `MLFLOW_TRACKING_URI` qui indique à `Python` l'entrepôt de modèles où aller chercher celui en production. La bonne pratique est de définir ceci hors du code, dans un fichier de configuration donc, ce qui est l'objet de notre manifeste `deployment.yaml`.
-   * Indiquer au _pod_ qui va se lancer comment s'authentifier à `MLFlow` pour récupérer le modèle de production. On ne va pas mettre en brut nos informations d'authentification dans `deployment.yaml` (n'oublions pas les bonnes pratiques!). On va utiliser un secret *Kubernetes* pour cela, comme on a fait pour notre variable d'environnement précédente (le jeton d'API).
+Dans les journaux, repérer les lignes `Chargement du modèle models:/dvf@production ...` puis `Version 1 du modèle dvf chargée`. Ouvrir ensuite la page d'accueil de l'API, puis la page `/docs` pour tester `/predict`. Chaque prédiction est aussi écrite dans les journaux.
 
-Pour créer le secret Kubernetes:
+7. _Committer_ ce changement dans `main`, puis publier un tag `v0.0.3` pour le code applicatif, comme à l'application 25 :
 
-```{.python}
+```{.bash filename="terminal"}
+git tag -a v0.0.3 -m "Modèle de production chargé depuis MLFlow"
+git push --tags
+```
+
+Vérifier sur le dépôt `GitHub` de l'application que le pipeline de CI est bien lancé **pour le tag `v0.0.3`**, puis que l'image `v0.0.3` existe sur le `DockerHub`.
+
+8. Mettre à jour le manifeste dans le dépôt `GitOps`. Trois changements sont nécessaires :
+
+* la version de l'image passe au tag `v0.0.3` ;
+* la variable d'environnement `MLFLOW_TRACKING_URI` est déclarée dans le manifeste : l'adresse du serveur `MLFlow` est ainsi définie hors du code, dans la configuration du déploiement. Pour la lire, faire `echo $MLFLOW_TRACKING_URI` dans le terminal du `VSCode` ;
+* les identifiants de `MLFlow` ne sont pas écrits en clair dans `deployment.yaml`. Ils sont lus dans un secret `Kubernetes`, comme le jeton de l'API l'est dans le secret `api-jeton`. Ce secret se crée une seule fois, dans le namespace :
+
+```{.bash filename="terminal"}
 kubectl create secret generic mlflow-secrets \
   --from-literal=MLFLOW_TRACKING_USERNAME="$MLFLOW_TRACKING_USERNAME" \
   --from-literal=MLFLOW_TRACKING_PASSWORD="$MLFLOW_TRACKING_PASSWORD"
 ```
-   
-Changer le `deployment.yaml` de votre dépôt `GitOps`
+
+Mettre à jour `deployment/deployment.yaml` dans votre dépôt `GitOps` :
 
 <details>
 <summary>
-Le modèle `deployment.yaml` proposé
+Le manifeste `deployment/deployment.yaml` proposé
 </summary>
 
-```{.python}
+```{.yaml filename="deployment/deployment.yaml"}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: titanic-deployment
+  name: dvf-deployment
   labels:
-    app: titanic
+    app: dvf
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: titanic
+      app: dvf
   template:
     metadata:
       labels:
-        app: titanic
+        app: dvf
     spec:
       containers:
-        - name: titanic
-          image: compte_docker/application:v0.0.3 #<1>
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 8000
-          env:
-            - name: JETON_API
-              valueFrom:
-                secretKeyRef:
-                  name: api-jeton
-                  key: JETON_API
-            - name: MLFLOW_TRACKING_URI
-              value: "https://user-${USERNAME}-mlflow.user.lab.sspcloud.fr" #<2>
-            - name: MLFLOW_TRACKING_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: mlflow-secrets
-                  key: MLFLOW_TRACKING_USERNAME
-            - name: MLFLOW_TRACKING_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mlflow-secrets
-                  key: MLFLOW_TRACKING_PASSWORD
-          resources:
-            limits:
-              memory: "2Gi"
-              cpu: "1000m"
+      - name: dvf
+        image: <DOCKERHUB_USERNAME>/application:v0.0.3 #<1>
+        ports:
+        - containerPort: 8000
+        env:
+        - name: JETON_API
+          valueFrom:
+            secretKeyRef:
+              name: api-jeton
+              key: JETON_API
+        - name: MLFLOW_TRACKING_URI
+          value: "https://user-<SSPCLOUD_USERNAME>-mlflow.user.lab.sspcloud.fr" #<2>
+        - name: MLFLOW_TRACKING_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mlflow-secrets
+              key: MLFLOW_TRACKING_USERNAME
+        - name: MLFLOW_TRACKING_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mlflow-secrets
+              key: MLFLOW_TRACKING_PASSWORD
+        resources:
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
 ```
-1. Le _tag_ de notre code applicatif
-2. La variable d'environnement à adapter en fonction de l'adresse du dépôt demodèles utilisé. Remplacer par votre URL `MLFlow`.
+
+1. Le _tag_ de l'image : remplacer `<DOCKERHUB_USERNAME>` par votre nom d'utilisateur `DockerHub`.
+2. L'adresse de votre serveur `MLFlow` : remplacer `<SSPCLOUD_USERNAME>` par votre identifiant SSPCloud.
 
 </details>
 
-10. _Committer_ vos dépôts applicatifs puis GitOps. 
+9. _Committer_ et _pousser_ ce changement dans le dépôt `GitOps`. Dans `ArgoCD`, vérifier que la nouvelle version est déployée (ou cliquer sur `Sync` si la synchronisation automatique n'a pas encore eu lieu).
 
-11.  Pour s'assurer que l'application fonctionne bien, on peut aller voir les _logs_ de la machine qui fait tourner notre code. Pour ça, faire `kubectl get pods` et, en supposant que votre service soit nommé `titanic` dans vos fichiers YAML de configuration, récupérer le nom commençant par `titanic-deployment-*` et faire `kubectl logs titanic-deployment-*`
+10. Vérifier les _logs_ de l'API déployée. Faire `kubectl get pods`, repérer le _pod_ dont le nom commence par `dvf-deployment-`, puis faire `kubectl logs <nom du pod>`. Les lignes `Chargement du modèle models:/dvf@production ...` et `Version 1 du modèle dvf chargée` doivent apparaître. La page d'accueil de l'API déployée affiche la version `0.3` et, dans `Model_registry`, la version 1 du registre.
+
+11. _(optionnel)_ Mettre en production un autre modèle sans nouvelle image. Enregistrer un autre _run_ comme version 2 de `dvf`, puis déplacer l'alias `production` vers cette version 2 dans l'onglet `Models`. Redémarrer ensuite le déploiement :
+
+```{.bash filename="terminal"}
+kubectl rollout restart deployment dvf-deployment
+```
+
+La page d'accueil affiche alors la version 2 dans `Model_registry`, alors que la version de l'API reste `0.3`. Le modèle n'étant chargé qu'au démarrage du _pod_, il faut le redémarrer pour qu'il prenne en compte le nouvel alias.
 
 :::
 
