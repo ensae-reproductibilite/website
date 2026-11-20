@@ -5,11 +5,16 @@ Jusqu'ici, l'API lisait le fichier `model.skops` produit par `train.py`, que le 
 
 1. Dans `MLFlow`, ouvrir l'expérimentation `dvf` et comparer les _runs_ entraînés avec des `n_trees` différents, en regardant `rmse_test` et `rmse_cv`. Cliquer sur le meilleur _run_ puis sur le bouton _"Register model"_. Créer un nouveau modèle nommé `dvf` : cela crée la version 1 de ce modèle.
 
-2. Rendez-vous sur l'onglet `Models`, ouvrir le modèle `dvf`, puis sa version 1, et lui ajouter l'alias `production`[^alias].
+2. Rendez-vous sur l'onglet `Models`, ouvrir le modèle `dvf`, puis cliquer sur _"Version 1"_ pour afficher la page de cette version et lui ajouter l'alias `production`[^alias]. Son en-tête ressemble à ceci :
+
+![En-tête de la page d'une version de modèle dans `MLFlow`](/chapters/applications/figures/mlflow_alias_appli27.png){fig-alt="En-tête de la page de la version 1 du modèle dvf dans MLFlow : date d'enregistrement, date de modification, lien Source Run vers le run d'origine (encadré en rouge) et, à droite, le lien Add du champ Aliases."}
+
+* le lien _"Source Run"_ (encadré en rouge) renvoie au _run_ dont est issue cette version : on retrouve ainsi les hyperparamètres, les métriques et les artefacts du modèle qu'on s'apprête à mettre en production ;
+* à droite, cliquer sur _"Add"_ à côté de _"Aliases"_. Dans la fenêtre qui s'ouvre, taper `production`, valider avec la touche Entrée pour que l'alias apparaisse sous forme d'étiquette, puis cliquer sur _"Save"_. L'en-tête affiche alors l'alias `@ production`.
 
 [^alias]: Un alias est une étiquette qui pointe vers une version d'un modèle, et qui peut être déplacée d'une version à une autre. L'API ne demandera pas "la version avec le sha 2aby45...", mais "la version qui porte l'alias `production`". Pour mettre en production un autre modèle plus tard, il suffira de changer le modèle exposé derrière l'alias, sans modifier le code. Observez que l'entrepôt conserve l'historique des versions, et pour chacune le _run_ dont elle est issue.
 
-1. Ouvrir un notebook temporaire **à la racine du projet** et charger le modèle de production. Le notebook doit être à la racine car charger le modèle importe `src.models.model`. Le code reprend celui de l'application précédente : seule l'URI du modèle change.
+3. Ouvrir un notebook temporaire **à la racine du projet** et charger le modèle de production. Le notebook doit être à la racine car charger le modèle importe `src.models.model`. Le code reprend celui de l'application précédente : seule l'URI du modèle change.
 
 <details>
 <summary>
