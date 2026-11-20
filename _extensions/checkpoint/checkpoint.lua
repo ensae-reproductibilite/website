@@ -78,7 +78,7 @@ local STR = {
     gitops_title = "Pour mettre à jour le dépôt GitOps",
     gitops = "Dans votre clone du dépôt <code>application-deployment</code>, lancez les mêmes commandes :",
     todo_title = "Avant de continuer, à faire de votre côté",
-    todo_hint = "Le script liste dans la console les valeurs à remplacer dans les fichiers (<code>&lt;GITHUB_USERNAME&gt;</code>, <code>&lt;DOCKERHUB_USERNAME&gt;</code>, <code>&lt;SSPCLOUD_USERNAME&gt;</code>, <code>&lt;APP_NAME&gt;</code>).",
+    todo_hint = "Le script vous demande dans la console les valeurs à remplacer dans les fichiers (Entrée pour en passer une), puis liste celles qui restent à remplacer (<code>&lt;GITHUB_USERNAME&gt;</code>, <code>&lt;DOCKERHUB_USERNAME&gt;</code>, <code>&lt;SSPCLOUD_USERNAME&gt;</code>, <code>&lt;APP_NAME&gt;</code>).",
   },
   en = {
     vscode_intro = "<b>If you no longer have an active <code>VSCode</code> with the configuration proposed in the preliminary application</b>, you can restart from this service:<br>",
@@ -91,7 +91,7 @@ local STR = {
     gitops_title = "To update the GitOps repository",
     gitops = "In your clone of the <code>application-deployment</code> repository, run the same commands:",
     todo_title = "Before continuing, to do on your side",
-    todo_hint = "The script lists in the console the values to replace in the files (<code>&lt;GITHUB_USERNAME&gt;</code>, <code>&lt;DOCKERHUB_USERNAME&gt;</code>, <code>&lt;SSPCLOUD_USERNAME&gt;</code>, <code>&lt;APP_NAME&gt;</code>).",
+    todo_hint = "The script asks you in the console for the values to replace in the files (Enter to skip one), then lists those still to replace (<code>&lt;GITHUB_USERNAME&gt;</code>, <code>&lt;DOCKERHUB_USERNAME&gt;</code>, <code>&lt;SSPCLOUD_USERNAME&gt;</code>, <code>&lt;APP_NAME&gt;</code>).",
   },
 }
 
