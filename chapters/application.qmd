@@ -1125,13 +1125,13 @@ nous utilisons le meilleur modèle. Néanmoins, nos entraînements sont encore m
 
 Pour industrialiser nos entraînements, nous allons créer des processus parallèles indépendants pour chaque combinaison de nos hyperparamètres.
 
-Ce travail nous amène de l'approche _pipeline_ à mi chemin entre _data science_ et _data engineering_. Il existe plusieurs outils pour faire ceci, généralement issus de la sphère du _data engineering_. L'outil le plus complet sur le `SSPCloud`, bien intégré à l'écosystème `Kubernetes`, est [`Argo Workflows`](https://argoproj.github.io/workflows/)[^airflow].
+Ce travail nous amène de l'approche _pipeline_ à mi-chemin entre _data science_ et _data engineering_. Il existe plusieurs outils pour faire ceci, généralement issus de la sphère du _data engineering_. L'outil le plus complet sur le `SSPCloud`, bien intégré à l'écosystème `Kubernetes`, est [`Argo Workflows`](https://argoproj.github.io/workflows/)[^airflow].
 
 [^airflow]: Il existe d'autres outils d'ordonnancement de _pipelines_ très utilisés dans l'industrie, notamment [`Airflow`](https://airflow.apache.org/).
 
     Ce dernier est plus utilisé, en pratique, qu'`Argo Workflow` mais, même s'il est disponible sur le `SSPCloud` aussi, est moins pensé autour de `Kubernetes` que l'est `Argo`.
 
-    Pour mieux comprendre la différence entre `Argo` et `Airflow`, la philosphie différente de ces deux outils et leurs avantages comparatifs, cette courte vidéo est intéressante:
+    Pour mieux comprendre la différence entre `Argo` et `Airflow`, la philosophie différente de ces deux outils et leurs avantages comparatifs, cette courte vidéo est intéressante:
 
       {{< video https://www.youtube.com/watch?v=w98X_0LwKWw >}}
 
@@ -1155,12 +1155,14 @@ _Pipeline_ d'entraînement de nos modèles avec deux outils d'automatisation dif
 
     ![](https://inseefrlab.github.io/formation-mlops/slides/img/pokemon_workflow.png)
 
-    Néanmoins, ici, nous utilisons `Scikit` qui permet d'intégrer le _preprocessing_ comme une étape de modélisation. Nous n'avons donc pas d'intérêt à définir ceci comme une tâche autonome, raison pour laquelle notre _pipeline_ apparaît plus simple.
+    Néanmoins, ici, nous utilisons un _pipeline_ `Scikit-Learn`, qui permet d'intégrer le _preprocessing_ comme une étape de modélisation. Nous n'avons donc pas d'intérêt à définir ceci comme une tâche autonome, raison pour laquelle notre _pipeline_ apparaît plus simple.
 
 L'outil permettant une intégration native de notre _pipeline_ dans l'infrastructure _cloud_ (`SSPCloud`) que nous avons utilisée jusqu'à présent est `Argo Workflows`. Néanmoins, pour illustrer la modularité de notre chaîne, permise par l'adoption de `Docker`, nous allons montrer que les serveurs d'intégration continue de `Github` peuvent très bien servir d'environnement d'exécution, sans rien perdre de ce que nous avons mis en oeuvre précédemment (_logging_ des modèles dans `MLFlow`, récupération de données depuis `S3`, etc.)
 
 
 {{< include "./applications/_appli28.qmd" >}}
+
+{{< checkpoint appli28 >}}
 
 Nous pouvons maintenant passer à la version `Github`. Celle-ci est optionnelle car elle vient surtout démontrer l'intérêt d'avoir une chaine modulaire et la dissociation que cela permet entre l'environnement d'exécution et les autres environnements nécessaires à notre chaine (notamment le stockage code et le _logging_).
 

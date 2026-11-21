@@ -1,35 +1,35 @@
 ::: {.application}
-## Application 28b (optionnelle) : `Github Actions` comme ordonnanceur
+## Application 28b (optionnelle) : `GitHub Actions` comme ordonnanceur
 
-Pour que `Github` sache où aller écrire les _logs_ et les artefacts des entraînements, on va devoir lui indiquer où se trouve `MLFlow` et comment s'y identifier. Il va donc falloir lui donner un certain nombre de variables d'environnement. Il est __hors de question de mettre celles-ci dans le code__. Heureusement, `Github` propose la possibilité de renseigner des _secrets_: nous allons utiliser ceux-ci.
+Pour que `GitHub` sache où écrire les _logs_ et les artefacts des entraînements, il faut lui indiquer où se trouve `MLFlow` et comment s'y identifier. Il faut donc lui donner plusieurs variables d'environnement. Il est __hors de question de mettre ces valeurs dans le code__. Heureusement, `GitHub` permet de renseigner des _secrets_ : nous allons les utiliser.
 
-1. Aller dans les paramètres de votre projet `GitOps` et dans la section `Secrets and variables`
+1. Aller dans les paramètres de votre projet `GitOps` et dans la section `Secrets and variables`, puis `Actions`.
 
-2. Vous allez avoir besoin de créer les secrets suivants:
+2. Créer les secrets suivants :
     * `MLFLOW_TRACKING_URI`
     * `MLFLOW_TRACKING_USERNAME`
     * `MLFLOW_TRACKING_PASSWORD`
     * `JETON_API`
 
-Les valeurs à renseigner sont à récupérer à dans le `README` de votre service `MLFlow`, qui s'affiche quand vous cliquez sur le bouton `Ouvrir` depuis la page [Mes services](https://datalab.sspcloud.fr/my-services)
+Les valeurs se trouvent dans le terminal du `VSCode` : `echo $MLFLOW_TRACKING_URI`, `echo $MLFLOW_TRACKING_USERNAME`, etc. Ces variables sont injectées automatiquement par le `SSPCloud`. Elles figurent aussi dans le `README` de votre service `MLFlow`, qui s'affiche quand vous cliquez sur le bouton `Ouvrir` depuis la page [Mes services](https://datalab.sspcloud.fr/my-services). Enfin, `JETON_API` est la même valeur que dans votre fichier `.env`.
 
-
-3. Reprendre ce modèle d'action à mettre dans votre dépôt `GitOps` (`.github/workflows/train.yaml` par exemple).
+3. Reprendre ce modèle d'action dans votre dépôt `GitOps`, dans le fichier `.github/workflows/train.yaml`.
 
 <details>
 <summary>
-Modèle d'action `Github`
+Modèle d'action `GitHub`
 </summary>
 
-
-```{.python}
-name: Titanic Model Training
+```{.yaml filename=".github/workflows/train.yaml"}
+name: Entraînement du modèle DVF
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
-  workflow_dispatch:
+    paths:
+      - .github/workflows/train.yaml
 
 jobs:
   start-pipeline:
@@ -44,36 +44,37 @@ jobs:
     strategy:
       matrix:
         model-config:
-          - { n_trees: 10, max_features: "log2" }
-          - { n_trees: 20, max_features: "sqrt" }
-          - { n_trees: 20, max_features: "log2" }
-          - { n_trees: 50, max_features: "sqrt" }
+          - { n_trees: 500, learning_rate: 0.1 }
+          - { n_trees: 1500, learning_rate: 0.03 }
+          - { n_trees: 1500, learning_rate: 0.1 }
+          - { n_trees: 3000, learning_rate: 0.03 }
     container:
-      image: compte_github/application:v0.0.4 #<1>
+      image: <DOCKERHUB_USERNAME>/application:v0.0.4 #<1>
     env:
-      MLFLOW_TRACKING_URI: "${{ secrets.MLFLOW_TRACKING_URI }}"
-      MLFLOW_TRACKING_USERNAME: "${{ secrets.MLFLOW_TRACKING_USERNAME }}"
-      MLFLOW_TRACKING_PASSWORD: "${{ secrets.MLFLOW_TRACKING_PASSWORD }}"
-      MLFLOW_EXPERIMENT_NAME: "titanicml"
-      JETON_API: "${{ secrets.JETON_API }}"
+      MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+      MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+      MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+      JETON_API: ${{ secrets.JETON_API }}
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-            repository: 'compte_github/application' #<2>
-
       - name: Train Model
-        run: |
-          uv run train.py --n_trees=${{ matrix.model-config.n_trees }} --max_features=${{ matrix.model-config.max_features }}
+        run: | #<2>
+          cd /
+          uv run train.py --n_trees=${{ matrix.model-config.n_trees }} --learning_rate=${{ matrix.model-config.learning_rate }} --experiment_name=dvf
 ```
-1. Mettre votre image ici, issue de l'application précédente. Si vous n'en avez pas, vous pouvez mettre `linogaliana/application:v0.0.4`
-2. On reprend le code applicatif de l'application précédente. Vous pouvez remplacer par votre dépôt et une référence adaptée si vous préférez
+
+1. Mettre ici votre image, issue de l'application précédente, en remplaçant `<DOCKERHUB_USERNAME>`. Si vous n'en avez pas, vous pouvez mettre `linogaliana/application:v0.0.4`.
+2. Le code et l'environnement d'exécution sont ceux de l'image, installée à sa racine (`cd /`). Il n'est donc pas nécessaire de récupérer le dépôt de l'application : ce job exécute exactement la même chose qu'`Argo Workflows`.
 
 </details>
 
-4. _Pusher_ et observer l'UI de `Github` depuis l'onglet `Actions`. Vous devriez retrouver @fig-pipeline-github dans celle-ci. Cliquer sur l'un des services et observer les _logs_ obtenus.
+Les déclencheurs (`on:`) méritent une explication :
 
-5. Retourner voir sur l'UI de MLFlow les nouveaux entraînements. 
+* `workflow_dispatch` permet de relancer les entraînements à la main, depuis l'onglet `Actions`, avec le bouton `Run workflow` ;
+* le déclencheur `push` ne porte que sur ce fichier. Ainsi, modifier le déploiement de l'API dans le même dépôt ne relance pas quatre entraînements.
+
+4. _Pusher_ ce fichier et observer l'interface de `GitHub` depuis l'onglet `Actions`. Vous devriez retrouver @fig-pipeline-github. Cliquer sur l'un des _jobs_ pour lire ses _logs_.
+
+5. Retourner dans l'interface de `MLFlow` : quatre nouveaux _runs_ sont apparus dans l'expérimentation `dvf`. Ils ont été entraînés sur les serveurs de `GitHub`, mais enregistrés au même endroit que ceux d'`Argo Workflows` : seul l'environnement d'exécution a changé, le reste est identique.
 
 :::
