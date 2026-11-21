@@ -1,67 +1,85 @@
 ::: {.application}
-## Application 28 : industrialisation des entraînements avec `Argo Workflow`
+## Application 28 : industrialisation des entraînements avec `Argo Workflows`
 
-A l'heure actuelle, notre entraînement ne dépend que d'un hyperparamètre fixé à partir de la ligne de commande: `n_trees`. Nous allons commencer par ajouter un argument à notre chaine de production (code applicatif):
+Jusqu'ici, chaque exécution de `train.py` explore une grille d'hyperparamètres par validation croisée, avec un nombre d'arbres (`n_trees`) fixé en ligne de commande. Nous allons maintenant laisser un orchestrateur lancer plusieurs entraînements en parallèle, un par combinaison de `n_trees` et de taux d'apprentissage. Pour cela, le taux d'apprentissage doit devenir un argument de la ligne de commande : c'est la première modification du code applicatif.
 
-1. Dans `train.py`, dans la section relative au _parsing_ de nos arguments, ajouter ce bout de code
+1. Dans `train.py`, ajouter après l'argument `--n_trees` ce bout de code :
 
-```{.python}
+```{.python filename="train.py"}
 parser.add_argument(
-    "--max_features",
-    type=str, default="sqrt",
-    choices=['sqrt', 'log2'],
-    help="Number of features to consider when looking for the best split"
+    "--learning_rate",
+    type=float,
+    default=0.1,
+    help="Taux d'apprentissage de LightGBM",
 )
 ```
 
-et remplacer, dans `train.py`, la définition de l'hyperparamètre adéquat
+Puis déplacer la définition de `PARAM_GRID` après le _parsing_ des arguments, et la remplacer par :
 
-```{.python}
-param_grid = {
-    "classifier__n_estimators": [
-        n_trees_default,
-    ],
-    "classifier__max_depth": [3, 5],
-    "classifier__max_features": [args.max_features],
-    "classifier__min_samples_split": [2, 5]
+```{.python filename="train.py"}
+# The learning rate is set from the command line: each run explores only
+# the number of leaves.
+PARAM_GRID = {
+    "regressor__regressor__learning_rate": [args.learning_rate],
+    "regressor__regressor__num_leaves": [31, 63],
 }
 ```
 
+La validation croisée choisit toujours `num_leaves` à l'intérieur de chaque exécution. En revanche, `learning_rate` est désormais fixé par l'orchestrateur : chaque exécution n'explore plus qu'une valeur de ce paramètre. Il reste enregistré dans `MLFlow` avec les meilleurs hyperparamètres, comme avant.
 
-2. Faire un _commit_, taguer cette version (`v0.0.4`) et _pusher_ le _tag_
+Vous pouvez tester localement, depuis le terminal de `VSCode` :
 
-3. Maintenant, dans le dépôt `GitOps`, créer un fichier `argo-workflow/manifest.yaml`
+```{.bash filename="terminal"}
+uv run train.py --n_trees=500 --learning_rate=0.1
+```
+
+2. _Committer_ ce changement dans `main`, puis publier un tag `v0.0.4` pour le code applicatif :
+
+```{.bash filename="terminal"}
+git tag -a v0.0.4 -m "Taux d'apprentissage en argument de train.py"
+git push --tags
+```
+
+Vérifier sur le dépôt `GitHub` de l'application que le pipeline de CI est bien lancé **pour le tag `v0.0.4`**, puis que l'image `v0.0.4` existe sur le `DockerHub`.
+
+Le déploiement de l'API reste sur l'image `v0.0.3` : cette nouvelle image ne sert qu'à lancer les entraînements, et le code de l'API n'a pas changé.
+
+3. Lancer un service `Argo Workflows` depuis « Mes services » (catalogue `Automation`), avec la configuration par défaut.
+
+Jusqu'ici, nos entraînements étaient lancés à la main. `Argo Workflows` est un orchestrateur : il lance des tâches dans le cluster `Kubernetes` du `SSPCloud`, et peut les exécuter en parallèle. C'est lui qui va lancer nos entraînements.
+
+4. Dans le dépôt `GitOps`, créer le fichier `argo-workflow/manifest.yaml`. Ce fichier décrit le _workflow_ : une étape de démarrage, puis un entraînement par combinaison de paramètres, lancés en parallèle.
 
 <details>
-
 <summary>
-Le modèle proposé
+Le manifeste `argo-workflow/manifest.yaml` proposé
 </summary>
 
-```{.python}
+```{.yaml filename="argo-workflow/manifest.yaml"}
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
-  generateName: titanic-training-workflow-
-  namespace: user-${SSPCLOUD_USERNAME}
+  generateName: dvf-training-workflow-
+  namespace: user-<SSPCLOUD_USERNAME>
 spec:
   entrypoint: main
   serviceAccountName: workflow
 
   arguments:
     parameters:
-      # The MLflow tracking server is responsible to log the hyper-parameter and model metrics.
+      # MLflow server where the runs (hyperparameters, metrics, models) are logged
       - name: mlflow-tracking-uri
-        value: "https://user-${SSPCLOUD_USERNAME}-mlflow.user.lab.sspcloud.fr/" #<1>
+        value: "https://user-<SSPCLOUD_USERNAME>-mlflow.user.lab.sspcloud.fr" #<1>
       - name: mlflow-experiment-name
-        value: "titanicml" #<2>
+        value: "dvf" #<2>
+      # One training per combination, run in parallel
       - name: model-training-conf-list
         value: |
           [
-            { "n_trees": 10, "max_features": "log2" },
-            { "n_trees": 20, "max_features": "sqrt" },
-            { "n_trees": 20, "max_features": "log2" },
-            { "n_trees": 50, "max_features": "sqrt" }
+            { "n_trees": 500, "learning_rate": 0.1 },
+            { "n_trees": 1500, "learning_rate": 0.03 },
+            { "n_trees": 1500, "learning_rate": 0.1 },
+            { "n_trees": 3000, "learning_rate": 0.03 }
           ]
 
   templates:
@@ -69,50 +87,48 @@ spec:
     - name: main
       dag:
         tasks:
-          # Task 0: Start pipeline
+          # Task 0: start the pipeline
           - name: start-pipeline
             template: start-pipeline-wt
 
-          # Task 1: Train model with given params
+          # Task 1: train one model per combination of hyperparameters
           - name: train-model-with-params
             dependencies: [start-pipeline]
             template: run-model-training-wt
             arguments:
               parameters:
-                - name: max_features
-                  value: "{{item.max_features}}"
                 - name: n_trees
                   value: "{{item.n_trees}}"
-            # Pass the inputs to the task using "withParam"
+                - name: learning_rate
+                  value: "{{item.learning_rate}}"
             withParam: "{{workflow.parameters.model-training-conf-list}}"
 
-    # Worker template for task 0 : start-pipeline
+    # Worker template for task 0: start-pipeline
     - name: start-pipeline-wt
       container:
         image: busybox
         command: ["sh", "-c"]
         args: ["echo Starting pipeline"]
 
-    # Worker template for task 1 : train model with params
+    # Worker template for task 1: train the model with the given hyperparameters
     - name: run-model-training-wt
       inputs:
         parameters:
           - name: n_trees
-          - name: max_features
+          - name: learning_rate
       container:
-        image: "compte_github/application:v0.0.4" #<3>
+        image: <DOCKERHUB_USERNAME>/application:v0.0.4 #<3>
         imagePullPolicy: Always
         command: ["sh", "-c"]
         args:
           - >-
             uv run train.py
             --n_trees={{inputs.parameters.n_trees}}
-            --max_features={{inputs.parameters.max_features}}
+            --learning_rate={{inputs.parameters.learning_rate}}
+            --experiment_name={{workflow.parameters.mlflow-experiment-name}}
         env:
           - name: MLFLOW_TRACKING_URI
             value: "{{workflow.parameters.mlflow-tracking-uri}}"
-          - name: MLFLOW_EXPERIMENT_NAME
-            value: "{{workflow.parameters.mlflow-experiment-name}}"
           - name: MLFLOW_TRACKING_USERNAME
             valueFrom:
               secretKeyRef:
@@ -123,22 +139,49 @@ spec:
               secretKeyRef:
                 name: mlflow-secrets
                 key: MLFLOW_TRACKING_PASSWORD
-          - name: AWS_DEFAULT_REGION
-            value: "us-east-1"
-          - name: AWS_S3_ENDPOINT
-            value: "minio.lab.sspcloud.fr"
           - name: JETON_API
             valueFrom:
               secretKeyRef:
                 name: api-jeton
                 key: JETON_API
+        resources: #<4>
+          requests:
+            memory: "2Gi"
+            cpu: "1000m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
 ```
-1. Changer pour votre entrepot de modèle
-2. Le nom de l'expérimentation `MLFLow` dont nous allons avoir besoin (on propose de continuer sur `titanicml`)
-3. Changer l'image `Docker` {{< fa brands docker >}} ici
+
+1. L'adresse de votre serveur `MLFlow` : remplacer `<SSPCLOUD_USERNAME>` par votre identifiant SSPCloud, comme dans `deployment.yaml`.
+2. Les entraînements sont enregistrés dans l'expérimentation `dvf`, à côté de ceux de l'application 26. Vous pourrez ainsi les comparer.
+3. Remplacer `<DOCKERHUB_USERNAME>` par votre nom d'utilisateur `DockerHub`. L'image est celle de l'étape précédente, en version `v0.0.4`.
+4. Chaque entraînement charge les données et lance une validation croisée : il a besoin de plus de mémoire que l'API.
 
 </details>
 
-4. Observer l'UI d'`Argo Workflow` dans vos services ouverts du _SSPCloud_. Vous devriez retrouver @fig-pipeline-argo dans celle-ci.
+Ces identifiants ne sont pas écrits en clair dans le manifeste : les secrets `mlflow-secrets` et `api-jeton` sont ceux créés aux applications 27 et 21.
+
+Il faut noter que `ArgoCD` ne surveille que le dossier `deployment/` : ce fichier n'est donc **pas** déployé par `ArgoCD`. C'est volontaire. L'API doit tourner en permanence, alors qu'un _workflow_ est un travail ponctuel, qu'on soumet à la demande et qui se termine une fois les entraînements finis.
+
+5. _Committer_ et _pousser_ ce fichier dans le dépôt `GitOps`, puis le soumettre depuis le terminal du `VSCode`, dans le clone du dépôt `GitOps` :
+
+```{.bash filename="terminal"}
+kubectl create -f argo-workflow/manifest.yaml
+```
+
+Attention à la commande : on utilise `create` et non `apply`. Grâce à `generateName`, chaque soumission reçoit un nouveau nom. Chaque `create` lance donc une nouvelle exécution du _pipeline_. `apply`, lui, sert à mettre à jour un objet dont le nom est connu à l'avance : il refuse un manifeste qui n'a qu'un `generateName`.
+
+6. Ouvrir l'interface d'`Argo Workflows`. Vous devriez voir @fig-pipeline-argo : l'étape `start-pipeline`, suivie de quatre entraînements lancés en parallèle. Cliquer sur l'un des entraînements pour lire ses _logs_ : on y retrouve les mêmes messages que lors d'un lancement de `train.py` en local.
+
+7. Dans `MLFlow`, ouvrir l'expérimentation `dvf` : quatre nouveaux _runs_ sont apparus. Sélectionner ces _runs_ puis cliquer sur _"Compare"_ pour comparer `rmse_cv` et `rmse_test` selon `n_trees` et `learning_rate`.
+
+8. _(optionnel)_ Si l'un de ces _runs_ fait mieux que le modèle en production, l'enregistrer comme nouvelle version du modèle `dvf`, puis déplacer l'alias `production` vers cette version, comme à l'application 27. Redémarrer ensuite le déploiement, comme à l'étape 11 de l'application 27 :
+
+```{.bash filename="terminal"}
+kubectl rollout restart deployment dvf-deployment
+```
+
+L'API sert alors le nouveau modèle, sans qu'il soit nécessaire de construire une nouvelle image.
 
 :::

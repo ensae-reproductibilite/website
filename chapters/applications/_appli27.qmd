@@ -104,9 +104,20 @@ MODEL_URI = f"models:/{MODEL_NAME}@{MODEL_ALIAS}"
 con = duckdb.connect(database=":memory:")
 
 # MLflow reads the tracking server address from the MLFLOW_TRACKING_URI
-# environment variable. The types trusted by skops were saved with the model
-# at training time, so no trusted list is needed here.
-logger.info(f"Chargement du modèle {MODEL_URI} depuis {mlflow.get_tracking_uri()}")
+# environment variable. Without it, MLflow silently falls back to an empty
+# local database where the production model does not exist: better stop here
+# with a clear message.
+MLFLOW_TRACKING_URI = os.environ.get("MLFLOW_TRACKING_URI")
+if not MLFLOW_TRACKING_URI:
+    raise RuntimeError(
+        "La variable d'environnement MLFLOW_TRACKING_URI n'est pas définie : "
+        "impossible de joindre le serveur MLFlow"
+    )
+logger.info(f"Connexion au serveur MLFlow {MLFLOW_TRACKING_URI}")
+
+# The types trusted by skops were saved with the model at training time,
+# so no trusted list is needed here.
+logger.info(f"Chargement du modèle {MODEL_URI}")
 model = mlflow.sklearn.load_model(MODEL_URI)
 version_production = (
     mlflow.MlflowClient().get_model_version_by_alias(MODEL_NAME, MODEL_ALIAS).version
@@ -180,6 +191,7 @@ Les changements principaux de ce code sont :
 
 * le modèle est chargé depuis le registre de `MLFlow`, via l'alias `production`, au lieu du fichier `model.skops`. Les types de confiance de `skops` ont été enregistrés avec le modèle lors de l'entraînement : il n'y a plus de liste à fournir ;
 * l'adresse du serveur `MLFlow` vient de la variable d'environnement `MLFLOW_TRACKING_URI`, définie hors du code ;
+* si `MLFLOW_TRACKING_URI` n'est pas définie, l'API s'arrête dès son démarrage avec un message explicite. Sans cette variable, `MLFlow` ne signale rien : il chercherait le modèle dans une base locale vide (`sqlite:///mlflow.db`), et l'erreur obtenue serait beaucoup moins claire ;
 * la page d'accueil affiche la version `0.3` de l'API et, dans `Model_registry`, la version du registre réellement servie ;
 * on enregistre davantage de messages dans le journal (chargement du modèle, chaque prédiction, adresses refusées), écrits dans `api.log`.
 
@@ -199,7 +211,7 @@ Le conteneur démarre donc beaucoup plus vite, et il sert toujours le modèle ch
 uv run uvicorn app.api:app
 ```
 
-Dans les journaux, repérer les lignes `Chargement du modèle models:/dvf@production ...` puis `Version 1 du modèle dvf chargée`. Ouvrir ensuite la page d'accueil de l'API, puis la page `/docs` pour tester `/predict`. Chaque prédiction est aussi écrite dans les journaux.
+Dans les journaux, repérer dans l'ordre les lignes `Connexion au serveur MLFlow https://...`, `Chargement du modèle models:/dvf@production` puis `Version 1 du modèle dvf chargée`. Ouvrir ensuite la page d'accueil de l'API, puis la page `/docs` pour tester `/predict`. Chaque prédiction est aussi écrite dans les journaux.
 
 7. _Committer_ ce changement dans `main`, puis publier un tag `v0.0.3` pour le code applicatif, comme à l'application 25 :
 
@@ -282,7 +294,7 @@ spec:
 
 9. _Committer_ et _pousser_ ce changement dans le dépôt `GitOps`. Dans `ArgoCD`, vérifier que la nouvelle version est déployée (ou cliquer sur `Sync` si la synchronisation automatique n'a pas encore eu lieu).
 
-10. Vérifier les _logs_ de l'API déployée. Faire `kubectl get pods`, repérer le _pod_ dont le nom commence par `dvf-deployment-`, puis faire `kubectl logs <nom du pod>`. Les lignes `Chargement du modèle models:/dvf@production ...` et `Version 1 du modèle dvf chargée` doivent apparaître. La page d'accueil de l'API déployée affiche la version `0.3` et, dans `Model_registry`, la version 1 du registre.
+10. Vérifier les _logs_ de l'API déployée. Faire `kubectl get pods`, repérer le _pod_ dont le nom commence par `dvf-deployment-`, puis faire `kubectl logs <nom du pod>`. Les lignes `Connexion au serveur MLFlow https://...`, `Chargement du modèle models:/dvf@production` et `Version 1 du modèle dvf chargée` doivent apparaître, dans cet ordre. Si le _pod_ s'arrête avec une erreur mentionnant `MLFLOW_TRACKING_URI`, vérifier que la section `env` de `deployment/deployment.yaml` déclare bien cette variable, ainsi que les deux identifiants `MLFLOW_TRACKING_USERNAME` et `MLFLOW_TRACKING_PASSWORD`. La page d'accueil de l'API déployée affiche la version `0.3` et, dans `Model_registry`, la version 1 du registre.
 
 11. _(optionnel)_ Mettre en production un autre modèle sans nouvelle image. Enregistrer un autre _run_ comme version 2 de `dvf`, puis déplacer l'alias `production` vers cette version 2 dans l'onglet `Models`. Redémarrer ensuite le déploiement :
 
