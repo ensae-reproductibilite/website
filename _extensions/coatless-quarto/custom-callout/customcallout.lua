@@ -104,7 +104,7 @@ local function parseCustomCallouts(meta)
         title = v.title or k:gsub("^%l", string.upper),
         icon = v.icon == 'true' or nil,
         appearance = v.appearance or nil,
-        collapse = v.collapse or nil,
+        collapse = v.collapse,
         icon_symbol = v['icon-symbol'] or nil,
         color = v.color or nil,
         background_color = v['background-color'] or nil
