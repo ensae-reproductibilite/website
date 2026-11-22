@@ -75,7 +75,8 @@ local STR = {
       "Avancer à l’état à l’issue de l’application ",
       "Nettoyer derrière nous",
     },
-    gitops_title = "Pour mettre à jour le dépôt GitOps",
+    repo_app = "Dépôt applicatif (<code>application</code>)",
+    repo_gitops = "Dépôt GitOps (<code>application-deployment</code>)",
     annot_gitops = {
       "Récupérer le script de <em>checkpoint</em>",
       "Avancer le dépôt GitOps (<code>application-deployment</code>) à l’état à l’issue de l’application ",
@@ -93,7 +94,8 @@ local STR = {
       "Move to the state at the end of application ",
       "Clean up after us",
     },
-    gitops_title = "To update the GitOps repository",
+    repo_app = "Application repository (<code>application</code>)",
+    repo_gitops = "GitOps repository (<code>application-deployment</code>)",
     annot_gitops = {
       "Get the <em>checkpoint</em> script",
       "Move the GitOps repository (<code>application-deployment</code>) to the state at the end of application ",
@@ -131,8 +133,14 @@ rm -f update.sh</code></pre>
 ]==]
 end
 
+-- Nombre de boîtes rendues jusqu'ici : rend unique les ids des volets de commandes,
+-- car une même étape peut apparaître plusieurs fois dans une page.
+local checkpoint_count = 0
+
 function checkpoint(args, kwargs)
 
+  checkpoint_count = checkpoint_count + 1
+  local uid = checkpoint_count
   local appli = args[1]
   local title = args[2] or ('Checkpoint post ' .. appli)
   local insert_vscode = args[3] or "false"
@@ -155,7 +163,7 @@ function checkpoint(args, kwargs)
 
   -- Étape GitOps, mise en place externe cumulée et rappel des placeholders.
   -- Une étape absente du fichier de données garde une boîte sans ces ajouts.
-  local gitops_block = ""
+  local has_gitops = false
   local todo_block = ""
   local hint_block = ""
   local data = checkpoints_data()
@@ -165,13 +173,7 @@ function checkpoint(args, kwargs)
   if pos then
     local gitops_from = position(names, text(data.gitops_from))
     local placeholders_from = position(names, text(data.placeholders_from))
-    if gitops_from and pos >= gitops_from then
-      gitops_block = '<details class="checkpoint-gitops">\n' ..
-        '<summary>' .. S.gitops_title .. '</summary>\n' ..
-        "<p>" .. S.gitops .. "</p>\n" ..
-        terminal_block(appli, appli .. "-gitops", S.annot_gitops, "application-deployment") ..
-        '</details>\n'
-    end
+    if gitops_from and pos >= gitops_from then has_gitops = true end
     local items = {}
     for _, item in ipairs(data.todo or {}) do
       local from = position(names, text(item.from))
@@ -194,6 +196,28 @@ function checkpoint(args, kwargs)
     end
   end
 
+  -- Commandes : à partir de l'étape GitOps, un sélecteur choisit le dépôt mis à jour
+  -- (volets Bootstrap « pills », sans JavaScript propre).
+  local commands_block = terminal_block(appli, appli, annot)
+  if has_gitops then
+    local app_id = 'checkpoint-' .. id .. '-' .. uid .. '-app'
+    local gitops_id = 'checkpoint-' .. id .. '-' .. uid .. '-gitops'
+    commands_block =
+      '<ul class="nav nav-pills checkpoint-repo-switch" role="tablist">\n' ..
+      '<li class="nav-item" role="presentation"><button class="nav-link active" type="button" data-bs-toggle="pill" data-bs-target="#' .. app_id .. '" role="tab" aria-controls="' .. app_id .. '" aria-selected="true">' .. S.repo_app .. '</button></li>\n' ..
+      '<li class="nav-item" role="presentation"><button class="nav-link" type="button" data-bs-toggle="pill" data-bs-target="#' .. gitops_id .. '" role="tab" aria-controls="' .. gitops_id .. '" aria-selected="false">' .. S.repo_gitops .. '</button></li>\n' ..
+      '</ul>\n' ..
+      '<div class="tab-content">\n' ..
+      '<div class="tab-pane fade show active" id="' .. app_id .. '" role="tabpanel">\n' ..
+      terminal_block(appli, appli, annot) ..
+      '</div>\n' ..
+      '<div class="tab-pane fade" id="' .. gitops_id .. '" role="tabpanel">\n' ..
+      '<p>' .. S.gitops .. '</p>\n' ..
+      terminal_block(appli, appli .. "-gitops", S.annot_gitops, "application-deployment") ..
+      '</div>\n' ..
+      '</div>\n'
+  end
+
   return pandoc.RawBlock("html", [[
   <div class="callout callout-style-default callout-caution callout-titled">
     <div class="callout-header d-flex align-content-center collapse" data-bs-toggle="collapse" data-bs-target=".callout-]] .. id .. [[-contents" aria-controls="callout-]] .. appli .. [[" aria-expanded="true" aria-label="Toggle callout">
@@ -210,9 +234,9 @@ function checkpoint(args, kwargs)
 
         ]] .. vscode_link .. [[
 
-]] .. terminal_block(appli, appli, annot) .. [[
+]] .. commands_block .. [[
 
-]] .. hint_block .. gitops_block .. todo_block .. [[
+]] .. hint_block .. todo_block .. [[
 
         <div class="quarto-figure quarto-figure-center">
           <figure class="figure">
