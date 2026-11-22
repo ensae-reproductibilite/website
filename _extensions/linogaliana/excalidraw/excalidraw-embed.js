@@ -205,6 +205,8 @@ async function openEditor(view) {
     return;
   }
   if (view.editor !== pending) return; // fermé pendant le chargement
+  // Le calque est ajouté à <body> : il serait caché sous un diagramme en plein écran.
+  if (document.fullscreenElement) await document.exitFullscreen().catch(() => {});
 
   const overlay = el("div", "excalidraw-editor");
   overlay.setAttribute("role", "dialog");
