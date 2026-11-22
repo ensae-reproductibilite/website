@@ -10,6 +10,8 @@ project:
   # Vidéos insérées en HTML brut (lecture automatique) : Quarto ne les détecte pas seul
   resources:
     - chapters/applications/figures/*.mp4
+    # Images de repli des schémas Excalidraw (appelées seulement depuis du HTML brut)
+    - chapters/applications/figures/*.png
   post-render:
     - "cp -rnv static/. _site/"
 
@@ -38,6 +40,9 @@ filters:
   - custom-callout
   - _extensions/linogaliana/lang-switch/button.lua
   - _extensions/linogaliana/lang-switch/replace-title.lua
+  # Schémas Excalidraw interactifs (après les figures et références croisées de Quarto)
+  - path: _extensions/linogaliana/excalidraw/excalidraw.lua
+    at: post-quarto
 
 custom-callout:
   application:
