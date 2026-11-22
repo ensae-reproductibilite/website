@@ -1,0 +1,51 @@
+```{=html}
+<%
+// Listing template for the student-project gallery (chapters/galerie.qmd).
+// templateParams.lang is set per listing in the page front matter ("fr" or "en").
+const lang = templateParams.lang === 'en' ? 'en' : 'fr';
+const other = lang === 'fr' ? 'en' : 'fr';
+const siteLabel = lang === 'fr' ? 'Site web' : 'Website';
+const toArray = (v) => Array.isArray(v) ? v : (v ? [v] : []);
+%>
+<div class="gallery-grid">
+<% for (const item of items) { %>
+  <article class="gallery-item" <%= metadataAttrs(item) %>>
+    <h3 class="no-anchor gallery-title">
+      <% if (item.website || item.github) { %>
+        <a href="<%= item.website || item.github %>" target="_blank" rel="noopener"><%= item.title %></a>
+      <% } else { %>
+        <%= item.title %>
+      <% } %>
+    </h3>
+
+    <div class="gallery-meta">
+      <% if (item.year) { %><span><%= item.year %></span><% } %>
+      <% for (const cat of toArray(item.categories)) { %>
+        <span class="gallery-badge"><%= cat %></span>
+      <% } %>
+    </div>
+
+    <% const description = item['description-' + lang] || item['description-' + other]; %>
+    <% if (description) { %>
+      <p class="gallery-description"><%= description %></p>
+    <% } %>
+
+    <% const stack = toArray(item.stack); %>
+    <% if (stack.length > 0) { %>
+      <p class="gallery-stack">
+        <% for (const tech of stack) { %><code><%= tech %></code> <% } %>
+      </p>
+    <% } %>
+
+    <p class="gallery-links">
+      <% if (item.github) { %>
+        <a href="<%= item.github %>" target="_blank" rel="noopener"><i class="bi bi-github"></i> GitHub</a>
+      <% } %>
+      <% if (item.website) { %>
+        &middot; <a href="<%= item.website %>" target="_blank" rel="noopener"><%= siteLabel %></a>
+      <% } %>
+    </p>
+  </article>
+<% } %>
+</div>
+```

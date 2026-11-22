@@ -7,21 +7,6 @@ body.quarto-dark {
   --main-color: #8fb3d9;
 }
 
-.card-img-top {
-  width: 100%; /* Ensures all images stretch to the card width */
-  height: 300px; /* Set a uniform height for all images */
-  object-fit: cover; /* Crop images to fill the set dimensions */
-  transition: object-position 0.5s ease-in-out, transform 0.5s ease-in-out;
-}
-
-.card-img-top:hover {
-  object-fit: contain; /* Show the whole image on hover */
-  object-position: center; /* Center the image when fully visible */
-  transform: scale(1.1); /* Slight zoom to ensure visibility */
-}
-
-
-
 .colorized {
   color: var(--main-color) ;
 }
@@ -508,4 +493,55 @@ body:is(.quarto-light, .quarto-dark) #TOC a.nav-link.active:not(:has(~ ul a.nav-
   body:is(.quarto-light, .quarto-dark) #TOC a.nav-link.active:not(:has(~ ul a.nav-link.active))::after {
     animation: none;
   }
+/* ---------------------------------------------------------------
+   Galerie de projets (chapters/gallery.ejs, chapters/galerie.qmd)
+   Bootstrap CSS variables only, so light and dark themes both work.
+   --------------------------------------------------------------- */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 992px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.gallery-item {
+  border: 1px solid var(--bs-border-color);
+  border-radius: 6px;
+  padding: 1rem;
+  background: transparent;
+}
+
+.gallery-item .gallery-title {
+  margin-top: 0;
+  font-size: 1.15rem;
+}
+
+.gallery-meta {
+  font-size: 0.85rem;
+  color: var(--bs-secondary-color);
+}
+
+.gallery-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 0.1rem 0.5rem;
+  margin-left: 0.25rem;
+  border-radius: 999px;
+  background-color: var(--bs-secondary-bg);
+  color: var(--bs-body-color);
+}
+
+.gallery-stack code {
+  font-size: 0.8rem;
+  margin-right: 0.25rem;
+}
+
+.gallery-links {
+  font-size: 0.9rem;
+  margin-bottom: 0;
 }
