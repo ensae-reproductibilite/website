@@ -255,3 +255,43 @@ body.quarto-dark .navbar svg {
   font-size: .85em;
   padding: .2em .6em;
 }
+
+/* Dark mode: shell prompt as site title */
+/* The first link reads "ensae@prod:~$" instead of "Mise en production".
+   The real text stays in the DOM, visually hidden, for screen readers.
+   ::before carries "ensae" (green), ::after carries "@prod:~$" (grey);
+   a single pseudo-element cannot hold several colours. */
+body.quarto-dark .navbar .navbar-nav > .nav-item > a.nav-link[href="https://ensae-reproductibilite.github.io/"] .menu-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+body.quarto-dark .navbar .navbar-nav > .nav-item > a.nav-link[href="https://ensae-reproductibilite.github.io/"]::before {
+  content: "ensae";
+  color: #7fd4a0;
+  font-weight: 600;
+  margin-left: 0;
+  animation: none;
+}
+
+body.quarto-dark .navbar .navbar-nav > .nav-item > a.nav-link[href="https://ensae-reproductibilite.github.io/"]::after {
+  content: "@prod:~$";
+  color: #b8c0cc;
+  font-weight: 600;
+  margin-left: 0;
+  animation: none;
+}
+
+body.quarto-dark .navbar .navbar-nav > .nav-item > a.nav-link[href="https://ensae-reproductibilite.github.io/"]:hover::before,
+body.quarto-dark .navbar .navbar-nav > .nav-item > a.nav-link[href="https://ensae-reproductibilite.github.io/"]:focus::before,
+body.quarto-dark .navbar .navbar-nav > .nav-item > a.nav-link[href="https://ensae-reproductibilite.github.io/"]:hover::after,
+body.quarto-dark .navbar .navbar-nav > .nav-item > a.nav-link[href="https://ensae-reproductibilite.github.io/"]:focus::after {
+  text-shadow: 0 0 6px rgba(127,212,160,.5);
+}
