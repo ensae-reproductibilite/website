@@ -10,6 +10,12 @@ project:
   # Vidéos insérées en HTML brut (lecture automatique) : Quarto ne les détecte pas seul
   resources:
     - chapters/applications/figures/*.mp4
+    # Images de repli des schémas Excalidraw (appelées seulement depuis du HTML brut)
+    - chapters/applications/figures/*.png
+    - drawio/*.png
+  pre-render:
+    # Génère la liste de la galerie depuis chapters/galerie/projets.yml
+    - scripts/galerie.py
   post-render:
     - "cp -rnv static/. _site/"
 
@@ -21,7 +27,7 @@ profile:
 format:
   html:
     theme:
-      light: cosmo
+      light: [cosmo, theme-light.scss]
       dark: [cosmo, theme-dark.scss]
     respect-user-color-scheme: true
     css: styles.css
@@ -38,8 +44,12 @@ filters:
   - custom-callout
   - _extensions/linogaliana/lang-switch/button.lua
   - _extensions/linogaliana/lang-switch/replace-title.lua
+  # Schémas Excalidraw interactifs (après les figures et références croisées de Quarto)
+  - path: _extensions/linogaliana/excalidraw/excalidraw.lua
+    at: post-quarto
 
 custom-callout:
   application:
     icon-symbol: "🧠 "
     color: "#9c5bd9"
+    collapse: false

@@ -4,19 +4,45 @@ description: |
   Une galerie d'exemple de projets
 image: https://minio.lab.sspcloud.fr/lgaliana/generative-art/mise-en-prod/galerie_compressed.jfif
 href: chapters/galerie.html
+page-layout: full
+toc: false
 listing:
-    id: sample-listings
-    contents: "galerie/2024/*.qmd"
-    type: grid
-    sort: "number"
+  - id: gallery-fr
+    contents: galerie/projets-listing.yml
+    template: gallery.ejs
+    template-params:
+      lang: fr
+    sort: ["year desc", "title"]
     categories: true
-    template: cards.ejs
+    fields: [title, year, categories, stack, description-fr, description-en, github, website]
+  - id: gallery-en
+    contents: galerie/projets-listing.yml
+    template: gallery.ejs
+    template-params:
+      lang: en
+    sort: ["year desc", "title"]
+    categories: true
+    fields: [title, year, categories, stack, description-fr, description-en, github, website]
 ---
 
+::: {.content-visible when-profile="fr"}
+Projets réalisés par des étudiants lors des éditions précédentes du cours, regroupés par parcours (MLOps, dashboard / application, big data). Chaque entrée renvoie vers le code du projet.
 
+::: {#gallery-fr}
+:::
 
-Une galerie d'exemple de projets à venir
+```{=html}
+<style>#listing-gallery-en { display: none; }</style>
+```
+:::
 
+::: {.content-visible when-profile="en"}
+Past student projects from previous editions of the course, grouped by track (MLOps, dashboard / application, big data). Each entry links to the project code.
 
-::: {#sample-listings}
+::: {#gallery-en}
+:::
+
+```{=html}
+<style>#listing-gallery-fr { display: none; }</style>
+```
 :::

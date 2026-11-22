@@ -4,7 +4,7 @@ These rules apply to every coding agent working in this repository, Claude and o
 
 ## Merge to dev, not main
 
-Never merge to `main` until a new release is minted. Work happens in branches. When a line of work is complete, merge its branch into `dev`. 
+Never merge to `main` until a new release is minted. Work happens in branches. When a line of work is complete, merge its branch into `dev`. Release `dev` from worktree when finished: humain should be able to swith to dev if needed.
 
 ## Do not co-sign commits
 
