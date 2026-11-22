@@ -244,3 +244,56 @@ body.quarto-dark .navbar .bi,
 body.quarto-dark .navbar svg {
   color: #b8c0cc;
 }
+
+/* Dark mode: code blocks as terminal windows */
+body.quarto-dark div.sourceCode:not(:has(> iframe)) {
+  position: relative;
+  border: 1px solid #2a2f36;
+  border-radius: 8px;
+  background: #0d0f12;
+  padding-top: 28px; /* title bar height */
+  overflow: hidden;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, .35);
+}
+
+/* Title bar with the three window dots */
+body.quarto-dark div.sourceCode:not(:has(> iframe))::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 28px;
+  box-sizing: border-box;
+  background-color: #1a1d22;
+  border-bottom: 1px solid #2a2f36;
+  background-image:
+    radial-gradient(circle closest-side, #ff5f57 98%, transparent),
+    radial-gradient(circle closest-side, #febc2e 98%, transparent),
+    radial-gradient(circle closest-side, #28c840 98%, transparent);
+  background-size: 11px 11px;
+  background-repeat: no-repeat;
+  background-position: 12px 8.5px, 30px 8.5px, 48px 8.5px;
+}
+
+body.quarto-dark div.sourceCode pre.sourceCode {
+  background-color: transparent;
+  border: none;
+  margin: 0;
+}
+
+/* Copy button stays above the title bar (it is a sibling of div.sourceCode, inside a positioned scaffold) */
+body.quarto-dark div.code-copy-outer-scaffold > .code-copy-button {
+  z-index: 3;
+}
+
+/* Code with a filename: Quarto already draws a header, so no second title bar */
+body.quarto-dark .code-with-filename div.sourceCode {
+  padding-top: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+body.quarto-dark .code-with-filename div.sourceCode::before {
+  content: none;
+}
