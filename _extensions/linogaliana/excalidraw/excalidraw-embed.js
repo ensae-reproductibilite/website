@@ -94,6 +94,7 @@ async function render(root) {
       elements: scene.elements,
       appState: { ...(scene.appState || {}), exportBackground: false, exportWithDarkMode: false },
       files: scene.files || {},
+      exportPadding: 24, // marge autour du schéma une fois recentré
       skipInliningFonts: true, // les polices viennent de excalidraw-fonts.css
     });
     svg.setAttribute("width", "100%");
