@@ -23,7 +23,8 @@ const panZoomOut = join(vendor, "svg-pan-zoom");
 const prodDir = join(here, "node_modules", "@excalidraw", "excalidraw", "dist", "prod");
 
 // Familles de polices retenues : dossier source -> nom de famille CSS.
-// Xiaolai (CJK, 13 Mo), Assistant, Nunito et Lilita ne sont pas embarquées.
+// Xiaolai (CJK, 13 Mo) n'est pas embarquée. Assistant (interface de l'éditeur) l'est, à part.
+// Les locales fr-FR et en (et percentages) sont gardées pour l'éditeur, voir plus bas.
 const FAMILIES = {
   Excalifont: "Excalifont",
   Virgil: "Virgil",
@@ -32,13 +33,16 @@ const FAMILIES = {
   ComicShanns: "Comic Shanns",
 };
 
-// Stubs : imports dynamiques jamais exécutés pour l'export SVG.
+// Stubs : imports dynamiques jamais exécutés. Les locales fr-FR et en, ainsi que
+// percentages (utilisées par l'éditeur), sont conservées ; les autres locales sont stubées.
+const KEEP_LOCALE = /\/locales\/(fr-FR|en|percentages)-[^/]*\.js$/;
 const STUB = /^(@excalidraw\/mermaid-to-excalidraw|image-blob-reduce|pica|canvas-roundrect-polyfill)$|subset-(worker|shared)\.chunk\.js$|\/locales\/|\/data\/image-/;
+const isStubbed = (path) => STUB.test(path) && !KEEP_LOCALE.test(path);
 const stubPlugin = {
   name: "stub",
   setup(build) {
     build.onResolve({ filter: STUB }, (args) =>
-      args.kind === "dynamic-import" ? { path: "stub", namespace: "stub" } : null);
+      args.kind === "dynamic-import" && isStubbed(args.path) ? { path: "stub", namespace: "stub" } : null);
     build.onLoad({ filter: /.*/, namespace: "stub" }, () => ({ contents: "export default {};", loader: "js" }));
   },
 };
@@ -124,6 +128,16 @@ for (const [src, dst] of usedFiles) {
   copyFileSync(src, dst);
 }
 
+// Assistant (police de l'interface de l'éditeur) : chargée par l'éditeur depuis
+// EXCALIDRAW_ASSET_PATH, pas de règle @font-face dans le bundle : on copie les fichiers.
+const assistantSrc = join(prodDir, "fonts", "Assistant");
+if (!existsSync(assistantSrc)) fail(`police Assistant introuvable : ${assistantSrc}`);
+const assistantOut = join(excalidrawOut, "fonts", "Assistant");
+mkdirSync(assistantOut, { recursive: true });
+for (const f of readdirSync(assistantSrc).filter((n) => n.endsWith(".woff2"))) {
+  copyFileSync(join(assistantSrc, f), join(assistantOut, f));
+}
+
 const css = [];
 css.push("/* Généré par build/build.mjs : ne pas éditer à la main. */");
 for (const [folder, list] of Object.entries(rules)) {
@@ -141,5 +155,10 @@ const panZoomSrc = join(here, "node_modules", "svg-pan-zoom", "dist", "svg-pan-z
 if (!existsSync(panZoomSrc)) fail(`svg-pan-zoom introuvable : ${panZoomSrc}`);
 mkdirSync(panZoomOut, { recursive: true });
 copyFileSync(panZoomSrc, join(panZoomOut, "svg-pan-zoom.min.js"));
+
+// 5. CSS de l'éditeur (interface), chargée à l'ouverture de l'éditeur.
+const editorCss = join(here, "node_modules", "@excalidraw", "excalidraw", "dist", "prod", "index.css");
+if (!existsSync(editorCss)) fail(`CSS de l'éditeur introuvable : ${editorCss}`);
+copyFileSync(editorCss, join(excalidrawOut, "excalidraw.css"));
 
 console.log("Build excalidraw terminé :", vendor);
