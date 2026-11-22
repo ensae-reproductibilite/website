@@ -64,7 +64,7 @@ In light of these realities, the developer community has conventionally agreed o
 :::: {.callout-note collapse="true"}
 ## The [`12 Factor App`](https://12factor.net/)
 
-Recently, as software has evolved toward cloud-based web applications, many of these best practices were formalized in a manifesto known as the [`12 Factor App`](https://12factor.net/). The rise of the *cloud*—i.e., standardized infrastructures external to traditional in-house data systems—makes adopting good practices more crucial than ever.
+As software has evolved toward cloud-based web applications, many of these best practices were formalized in a manifesto known as the [`12 Factor App`](https://12factor.net/). The rise of the *cloud*—i.e., standardized infrastructures external to traditional in-house data systems—makes adopting good practices more crucial than ever.
 ::::
 
 ## Why Care About Best Practices?
@@ -79,6 +79,19 @@ Due to the rapid growth of *data science* and the increasing size of typical pro
 - The *data scientist* must __collaborate with technical roles__ to deploy models and make them accessible to users.
 
 Thus, it makes sense for modern *data scientists* to take interest in the best practices adopted by developers. Naturally, these need to be tailored to data-centered projects. The upside is significant: projects that adopt best practices are much cheaper to evolve—making them more competitive in the ever-changing data science ecosystem, where tools, data, and user expectations constantly shift.
+
+## Best Practices in the Age of Generative AI
+
+Coding assistants built on large language models (LLMs), from in-editor completion to agents able to modify an entire project from a natural-language instruction, have profoundly changed the way code is written. Producing a function, a data-cleaning script or the skeleton of an application now takes seconds. Does this mean the skills taught in this course have become secondary? We believe the opposite.
+
+AI __shifts the cursor__: code generation, which used to take up much of a data scientist's time, is largely automated. What is not automated is the ability to decide what to build and to judge whether the result is any good.
+
+- __Code is produced faster than it is read.__ Guido van Rossum's observation takes on new weight: reviewing, understanding and maintaining code become the bottleneck. Readable, well-structured, versioned and tested code is what makes it possible to trust code you did not write yourself, including code an agent has just proposed.
+- __Assistants amplify the existing structure.__ A well-organised project (standard layout, declared dependencies, explicit conventions, continuous integration) gives an agent a frame in which it works efficiently and where its mistakes are caught automatically. In a monolithic notebook with no reproducible environment, it only speeds up the mess.
+- __Architecture choices remain ours.__ Where to store data, how to separate code, configuration and secrets, which output format to choose, how to monitor a model in production: these decisions commit a project for the long run and depend on a context the tool does not know.
+- __Ambition can grow.__ By lowering the cost of writing code, AI lets a single data scientist or a small team aim for complete systems, from raw data to a deployed and monitored application. This is exactly the value chain this course walks through, provided one knows what such a system looks like and which building blocks it is made of.
+
+The interface role described above is strengthened: AI becomes one more party to whom a technical need must be stated precisely, and whose proposals must be assessed. This course therefore does not try to compete with these tools but to provide the landmarks needed to use them wisely. You may use them for the exercises, keeping in mind that you remain responsible for the code produced: if you cannot explain it, it does not belong in your project.
 
 ## A Continuum of Best Practices
 
@@ -97,11 +110,10 @@ In particular, we believe it’s possible to define a core set—i.e., a **minim
 
 - Use dedicated tools to check code quality (see [Code Quality](/chapters/code-quality.qmd));
 - Use a standardized project structure with ready-made templates (see [Project Architecture](/chapters/projects-architecture.qmd));
-- Use `Git` to version your code, whether or not you're working with others (see [Version Control and Collaboration with Git](/chapters/git.html));
-- Manage project dependencies with virtual environments (see [Portability](/chapters/portability.html)).
+- Use `Git` to version your code, whether or not you're working with others (see [Version Control and Collaboration with Git](/chapters/git.qmd));
+- Manage project dependencies with virtual environments (see [Portability](/chapters/portability.qmd)).
 
-Beyond this minimal baseline, decisions should weigh costs and benefits.
-But adopting this foundational level of reproducibility will make further progress much easier as your project grows.
+Beyond this minimal baseline, decisions should weigh costs and benefits. But adopting this foundational level of reproducibility will make further progress much easier as your project grows.
 
 Let’s now look at the core principles promoted by this course and how the content is logically structured.
 
@@ -111,15 +123,15 @@ Let’s now look at the core principles promoted by this course and how the cont
 
 The first best practice to adopt is to view code as a __communication tool__, not just a functional one. Code doesn’t exist solely to perform a task—it’s meant to be shared, reused, and maintained, whether in a team or an *open-source* context.
 
-To support this communication, conventions have been developed regarding code quality and project structure. These are covered in the chapters [Code Quality](/chapters/code-quality.html) and [Project Architecture](/chapters/projects-architecture.html).
+To support this communication, conventions have been developed regarding code quality and project structure. These are covered in the chapters [Code Quality](/chapters/code-quality.qmd) and [Project Architecture](/chapters/projects-architecture.qmd).
 
-For the same reasons, applying __version control__ principles is essential. These provide continuous documentation of the project, which greatly improves its reusability and maintainability. We revisit the use of `Git` in the chapter [Version Control and Collaborative Work with Git](/chapters/git.html).
+For the same reasons, applying __version control__ principles is essential. These provide continuous documentation of the project, which greatly improves its reusability and maintainability. We revisit the use of `Git` in the chapter [Version Control and Collaborative Work with Git](/chapters/git.qmd).
 
 ## Working Collaboratively
 
 Regardless of context, *data scientists* typically work in team-based projects. This requires defining a work organization and using tools that enable secure, efficient collaboration.
 
-We present a modern way to collaborate using `Git` and `GitHub` in the reminder chapter [Version Control and Collaborative Work with Git](/chapters/git.html). Later chapters will build on this collaborative approach and refine it using the `DevOps` methodology[^devops].
+We present a modern way to collaborate using `Git` and `GitHub` in the reminder chapter [Version Control and Collaborative Work with Git](/chapters/git.qmd). Later chapters will build on this collaborative approach and refine it using the `DevOps` methodology[^devops].
 
 [^devops]: A methodology focused on automating and integrating design and delivery workflows prior to deployment. Like best practices, this approach originated in software development but has become essential for *data scientists*.
 
@@ -131,7 +143,7 @@ A project is reproducible when **the same code and data can be used to reproduce
 
 **Reproducibility is the guiding theme of this course**: all concepts covered in the chapters contribute to it. Producing code and projects that follow community conventions and using version control contribute to making code more readable and documented—and therefore reproducible.
 
-However, achieving full reproducibility requires going further—by considering the concept of an **execution environment**. Code doesn’t run in a vacuum; it runs in an environment (e.g., personal computer, server), and those environments can differ greatly (OS, installed libraries, security policies, etc.). That’s why we must consider **code portability—i.e., its ability to run as expected across different environments**, which we explore in the dedicated [chapter](/chapters/portability.html).
+However, achieving full reproducibility requires going further—by considering the concept of an **execution environment**. Code doesn’t run in a vacuum; it runs in an environment (e.g., personal computer, server), and those environments can differ greatly (OS, installed libraries, security policies, etc.). That’s why we must consider **code portability—i.e., its ability to run as expected across different environments**, which we explore in the dedicated [chapter](/chapters/portability.qmd).
 
 ## Facilitating Production Deployment
 
@@ -140,7 +152,7 @@ For a *data science* project to ultimately create value, it must be deployed in 
 - Choosing the right __distribution format__, i.e., one that best highlights the results to the intended users;
 - Transitioning the project from its development environment to a __production infrastructure__, i.e., one that allows the project output to be robustly deployed and accessible on demand.
 
-In the chapter [Deploy and Showcase Your Data Science Project](/chapters/deployment.html), we propose ways to address both needs. We present common output formats (API, app, automated report, website) that help make *data science* projects accessible, and the modern tools used to produce them.
+In the chapter [Deploy and Showcase Your Data Science Project](/chapters/deployment.qmd), we propose ways to address both needs. We present common output formats (API, app, automated report, website) that help make *data science* projects accessible, and the modern tools used to produce them.
 
 We then explain the essential concepts of production infrastructure and demonstrate them with examples of deployments in a modern *cloud* environment.
 
@@ -150,11 +162,13 @@ This is, in a way, the reward for following best practices: once you’ve put in
 
 By simplifying a project’s structure, you make it easier to scale. In *data science*, this may take the form of industrializing model training to select the “best” model from a much broader set—far beyond what an ad hoc approach would allow.
 
-However, every model learns from past data, and a model that works today may no longer be valid tomorrow. To account for this ever-changing reality, we will explore key principles of _MLOps_. Though the term is a buzzword, it represents a meaningful set of practices for *data scientists*, covered in the [dedicated chapter](/chapters/mlops.qmd).
+Industrializing also means changing the scale of the data. The chapter [Processing Large Datasets](/chapters/big-data.qmd) presents the infrastructures, formats and tools that make it possible to handle large volumes without giving up the principles presented in this course.
+
+However, every model learns from past data, and a model that works today may no longer be valid tomorrow. To account for this ever-changing reality, we will explore key principles of _MLOps_. Though the term is a buzzword, it represents a meaningful set of practices for *data scientists*, covered in the [dedicated chapter](/chapters/mlops.qmd). Finally, bonus exercises of the [running example](/chapters/application.qmd) show how to integrate an LLM, called through an API, as one building block among others in a production pipeline.
 
 ## Supplementary Chapters
 
-Several tools presented in this course, such as `Git` and `Docker`, require terminal usage and a basic understanding of how `Linux` systems work. In the chapter [Demystifying the Linux Terminal for Autonomy](/chapters/linux101.html), we cover the essential Linux knowledge a *data scientist* needs to deploy projects independently and apply development best practices.
+Several tools presented in this course, such as `Git` and `Docker`, require terminal usage and a basic understanding of how `Linux` systems work. In the chapter [Demystifying the Linux Terminal for Autonomy](/chapters/linux101.qmd), we cover the essential Linux knowledge a *data scientist* needs to deploy projects independently and apply development best practices.
 
 # Practical Information
 
@@ -162,7 +176,7 @@ Several tools presented in this course, such as `Git` and `Docker`, require term
 
 The guiding principle of this course is that only practice—especially hands-on experience with real-world problems—can effectively develop understanding of computing concepts. As such, a large part of the course will consist of **applying key ideas to concrete use cases**. Each chapter will conclude with applications rooted in realistic *data science* problems.
 
-A [running example](/chapters/) illustrates how a reproducible project evolves by progressively applying the practices discussed throughout the course.
+A [running example](/chapters/application.qmd) illustrates how a reproducible project evolves by progressively applying the practices discussed throughout the course.
 
 For the course evaluation, students will be asked to take a personal project—ideally already completed—and apply as many of the best practices introduced here as possible.
 
@@ -170,7 +184,7 @@ For the course evaluation, students will be asked to take a personal project—i
 
 The principles presented in this course are mostly **language-agnostic**.
 
-This is not just an editorial decision—we believe it's central to the topic of best practices. Too often, language differences between development phases (e.g., `R` or `Python`) and production phases (e.g., `Java`) create artificial barriers that limit a *data science* project’s potential impact.
+This is not just an editorial decision—we believe it's central to the topic of best practices. The barriers that hold back *data science* projects rarely come from the language itself: they come from the lack of shared conventions between the teams that develop a project and those that put it into production.
 
 By contrast, when the different teams involved in a project’s lifecycle adopt a shared set of best practices, they also develop a shared vocabulary—greatly easing the deployment process.
 
@@ -186,7 +200,7 @@ Like programming language, the principles in this course are **agnostic to the i
 
 That said, we have chosen the [`SSP Cloud`](https://datalab.sspcloud.fr/home) platform as our reference environment throughout the course. Developed at Insee and available to students at statistical schools, it offers several advantages:
 
-- **Standardized development environment**: SSP Cloud servers use a uniform configuration—specifically, the Debian Linux distribution—which ensures reproducibility across course examples;
+- **Standardized development environment**: SSP Cloud servers use a uniform configuration—specifically, the same Ubuntu Linux distribution—which ensures reproducibility across course examples;
 - Built on a Kubernetes cluster, SSP Cloud offers robust infrastructure for automated deployment of potentially data-intensive applications—making it possible to **simulate a true production environment**;
 - SSP Cloud follows modern *data science* infrastructure standards, enabling learners to **internalize best practices organically**:
   - Services are run in containers configured via *Docker* images, which ensures strong **reproducibility** of deployments—at the cost of some initial complexity during development;
