@@ -73,6 +73,23 @@ local function html_attr(s)
   return s
 end
 
+-- Chemin de l'image de repli, relatif à la page produite. Un chemin "/..." part de
+-- la racine du projet, mais le site est publié sous un sous-dossier : on le ramène
+-- à un chemin relatif, comme Quarto le fait pour les images ordinaires.
+-- Profondeur = nombre de dossiers de la page source (relative au projet).
+local function fallback_src(src)
+  if src:sub(1, 1) ~= "/" then return src end
+  local root = (quarto.project and quarto.project.directory) or "."
+  local input = quarto.doc.input_file or ""
+  if root ~= "." and input:sub(1, #root + 1) == root .. "/" then
+    input = input:sub(#root + 2)
+  end
+  local dir = input:match("^(.*)[/\\][^/\\]*$") or ""
+  local depth = 0
+  for _ in dir:gmatch("[^/\\]+") do depth = depth + 1 end
+  return string.rep("../", depth) .. src:sub(2)
+end
+
 -- Lit le JSON Excalidraw ; nil si illisible ou manifestement pas du JSON.
 local function read_scene(src)
   local path
@@ -166,7 +183,7 @@ local function excalidraw_image(img)
 
   local fallback = img.attributes["fallback"]
   if fallback ~= nil and fallback ~= "" then
-    html = html .. '<noscript><img src="' .. html_attr(fallback) ..
+    html = html .. '<noscript><img src="' .. html_attr(fallback_src(fallback)) ..
       '" alt="' .. html_attr(label) .. '"></noscript>'
   end
   html = html .. '</span>'

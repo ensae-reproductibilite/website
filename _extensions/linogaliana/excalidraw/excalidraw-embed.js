@@ -178,13 +178,25 @@ async function render(root) {
       if (action) { e.preventDefault(); action(); }
     });
 
-    // Plein écran et redimensionnement : il faut recalculer la taille du SVG.
-    document.addEventListener("fullscreenchange", recenter);
-    let resizeTimer = null;
-    window.addEventListener("resize", () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(recenter, 200);
+    // Plein écran : seul le diagramme concerné est recentré, pas tous les autres.
+    let wasFullscreen = false;
+    document.addEventListener("fullscreenchange", () => {
+      const isFullscreen = document.fullscreenElement === root;
+      if (isFullscreen || wasFullscreen) recenter();
+      wasFullscreen = isFullscreen;
     });
+    // Redimensionnement : seul un changement de largeur recentre. Sur mobile, masquer la
+    // barre d'adresse déclenche un resize pendant le défilement, ce qui réinitialisait le zoom.
+    let resizeTimer = null;
+    let lastWidth = null;
+    new ResizeObserver(entries => {
+      const width = entries[0].contentRect.width;
+      if (lastWidth !== null && width !== lastWidth) {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(recenter, 200);
+      }
+      lastWidth = width;
+    }).observe(root);
 
     root.dataset.state = "done";
   } catch (err) {
