@@ -58,6 +58,9 @@ def build(data):
                 "description-en": entry["description"]["en"],
                 "github": f"https://github.com/{entry['repo']}",
             }
+            # Projet rendu sur une autre branche que celle par défaut
+            if entry.get("branch"):
+                item["github"] += f"/tree/{entry['branch']}"
             if entry.get("website"):
                 item["website"] = entry["website"]
             items.append(item)
