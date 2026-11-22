@@ -144,65 +144,107 @@ body.quarto-dark pre code.bash::before {
   color: #9aa1ab;
 }
 
-/* Dark mode: old-school terminal navbar */
-body.quarto-dark .navbar,
-body.quarto-dark #quarto-header {
-  background-color: #0d0f12 !important;
+/* Terminal theme: palette per color scheme */
+/* One set of rules (below) serves both schemes; only these variables change. */
+body.quarto-dark {
+  --term-bg: #0d0f12;
+  --term-line: #447099;
+  --term-glow: 0 1px 12px rgba(68,112,153,.35);
+  --term-fg: #b8c0cc;
+  --term-accent: #7fd4a0;
+  --term-accent-soft: rgba(127,212,160,.08);
+  --term-prompt: #8fb3d9;
+  --term-dim: #5c6773;
+  --term-heading: #e6e9ee;
+  --term-h2: #dfe2e7;
+  --term-h3: #c9ced6;
+  --term-rule: #3a3f47;
+  --term-border: #2a2f36;
+  --term-bar: #1a1d22;
+  --term-window-shadow: 0 4px 18px rgba(0,0,0,.35);
+  --term-glow-text: rgba(127,212,160,.25);
+  --term-glow-strong: rgba(127,212,160,.5);
+}
+
+body.quarto-light {
+  --term-bg: #f0eee6;
+  --term-line: #447099;
+  --term-glow: 0 1px 8px rgba(68,112,153,.15);
+  --term-fg: #3d3d3a;
+  --term-accent: #b5553a;
+  --term-accent-soft: rgba(181,85,58,.08);
+  --term-prompt: #447099;
+  --term-dim: #a8a59b;
+  --term-heading: #141413;
+  --term-h2: #1f1e1d;
+  --term-h3: #3d3d3a;
+  --term-rule: #d9d6cb;
+  --term-border: #dedcd1;
+  --term-bar: #e8e6dc;
+  --term-window-shadow: 0 2px 10px rgba(20,20,19,.08);
+  --term-glow-text: transparent;
+  --term-glow-strong: transparent;
+}
+
+/* Terminal theme: old-school terminal navbar */
+body:is(.quarto-light, .quarto-dark) .navbar,
+body:is(.quarto-light, .quarto-dark) #quarto-header {
+  background-color: var(--term-bg) !important;
   box-shadow: none;
 }
 
 /* The only blue: one line under the header, with a faint glow */
-body.quarto-dark #quarto-header {
-  border-bottom: 2px solid #447099;
-  box-shadow: 0 1px 12px rgba(68,112,153,.35);
+body:is(.quarto-light, .quarto-dark) #quarto-header {
+  border-bottom: 2px solid var(--term-line);
+  box-shadow: var(--term-glow);
 }
 
-body.quarto-dark .navbar .nav-link,
-body.quarto-dark .navbar .dropdown-item,
-body.quarto-dark .navbar-brand,
-body.quarto-dark .navbar-title {
+body:is(.quarto-light, .quarto-dark) .navbar .nav-link,
+body:is(.quarto-light, .quarto-dark) .navbar .dropdown-item,
+body:is(.quarto-light, .quarto-dark) .navbar-brand,
+body:is(.quarto-light, .quarto-dark) .navbar-title {
   font-family: "JetBrains Mono", "Fira Code", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: .9rem;
   letter-spacing: .02em;
 }
 
-body.quarto-dark .navbar a.nav-link:link,
-body.quarto-dark .navbar a.nav-link:visited,
-body.quarto-dark a.navbar-title:link,
-body.quarto-dark a.navbar-title:visited,
-body.quarto-dark a.navbar-brand:link,
-body.quarto-dark a.navbar-brand:visited {
-  color: #b8c0cc;
+body:is(.quarto-light, .quarto-dark) .navbar a.nav-link:link,
+body:is(.quarto-light, .quarto-dark) .navbar a.nav-link:visited,
+body:is(.quarto-light, .quarto-dark) a.navbar-title:link,
+body:is(.quarto-light, .quarto-dark) a.navbar-title:visited,
+body:is(.quarto-light, .quarto-dark) a.navbar-brand:link,
+body:is(.quarto-light, .quarto-dark) a.navbar-brand:visited {
+  color: var(--term-fg);
 }
 
-body.quarto-dark .navbar a.nav-link:hover,
-body.quarto-dark .navbar a.nav-link:focus,
-body.quarto-dark .navbar a.nav-link.active,
-body.quarto-dark a.navbar-title:hover,
-body.quarto-dark a.navbar-title:focus,
-body.quarto-dark a.navbar-brand:hover,
-body.quarto-dark a.navbar-brand:focus {
-  color: #7fd4a0;
+body:is(.quarto-light, .quarto-dark) .navbar a.nav-link:hover,
+body:is(.quarto-light, .quarto-dark) .navbar a.nav-link:focus,
+body:is(.quarto-light, .quarto-dark) .navbar a.nav-link.active,
+body:is(.quarto-light, .quarto-dark) a.navbar-title:hover,
+body:is(.quarto-light, .quarto-dark) a.navbar-title:focus,
+body:is(.quarto-light, .quarto-dark) a.navbar-brand:hover,
+body:is(.quarto-light, .quarto-dark) a.navbar-brand:focus {
+  color: var(--term-accent);
   background-color: transparent;
 }
 
 /* Terminal prompt before each top-level link (transparent, so no layout shift) */
-body.quarto-dark .navbar .navbar-nav > .nav-item > .nav-link::before {
+body:is(.quarto-light, .quarto-dark) .navbar .navbar-nav > .nav-item > .nav-link::before {
   content: "> ";
   color: transparent;
 }
 
-body.quarto-dark .navbar .navbar-nav > .nav-item > .nav-link:hover::before,
-body.quarto-dark .navbar .navbar-nav > .nav-item > .nav-link:focus::before,
-body.quarto-dark .navbar .navbar-nav > .nav-item > .nav-link.active::before {
-  color: #8fb3d9;
+body:is(.quarto-light, .quarto-dark) .navbar .navbar-nav > .nav-item > .nav-link:hover::before,
+body:is(.quarto-light, .quarto-dark) .navbar .navbar-nav > .nav-item > .nav-link:focus::before,
+body:is(.quarto-light, .quarto-dark) .navbar .navbar-nav > .nav-item > .nav-link.active::before {
+  color: var(--term-prompt);
 }
 
 /* Blinking block cursor after the active link (never on dropdown toggles, which use ::after for the caret) */
-body.quarto-dark .navbar .nav-link.active:not(.dropdown-toggle)::after {
+body:is(.quarto-light, .quarto-dark) .navbar .nav-link.active:not(.dropdown-toggle)::after {
   content: "▋";
   margin-left: .15em;
-  color: #7fd4a0;
+  color: var(--term-accent);
   animation: term-blink 1.06s steps(1) infinite;
 }
 
@@ -211,38 +253,52 @@ body.quarto-dark .navbar .nav-link.active:not(.dropdown-toggle)::after {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body.quarto-dark .navbar .nav-link.active:not(.dropdown-toggle)::after {
+  body:is(.quarto-light, .quarto-dark) .navbar .nav-link.active:not(.dropdown-toggle)::after {
     animation: none;
   }
 }
 
 /* Dropdown menus */
-body.quarto-dark .navbar .dropdown-menu {
-  background-color: #0d0f12;
-  border: 1px solid #2a2f36;
+body:is(.quarto-light, .quarto-dark) .navbar .dropdown-menu {
+  background-color: var(--term-bg);
+  border: 1px solid var(--term-border);
   border-radius: 0;
   font-family: "JetBrains Mono", "Fira Code", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
-body.quarto-dark .navbar .dropdown-item {
-  color: #b8c0cc;
+body:is(.quarto-light, .quarto-dark) .navbar .dropdown-item {
+  color: var(--term-fg);
   background-color: transparent;
 }
 
-body.quarto-dark .navbar .dropdown-item:hover,
-body.quarto-dark .navbar .dropdown-item:focus {
-  background-color: rgba(127,212,160,.08);
-  color: #7fd4a0;
+body:is(.quarto-light, .quarto-dark) .navbar .dropdown-item:hover,
+body:is(.quarto-light, .quarto-dark) .navbar .dropdown-item:focus {
+  background-color: var(--term-accent-soft);
+  color: var(--term-accent);
+}
+
+/* Dropdown menus stay above the scanline layer */
+body:is(.quarto-light, .quarto-dark) .navbar .dropdown-menu {
+  z-index: 1001;
 }
 
 /* Search icon, toggler and other navbar icons */
-body.quarto-dark .navbar .quarto-search-button,
-body.quarto-dark .navbar .quarto-search-button *,
-body.quarto-dark .navbar .navbar-toggler,
-body.quarto-dark .navbar i,
-body.quarto-dark .navbar .bi,
-body.quarto-dark .navbar svg {
-  color: #b8c0cc;
+body:is(.quarto-light, .quarto-dark) .navbar .quarto-search-button,
+body:is(.quarto-light, .quarto-dark) .navbar .quarto-search-button *,
+body:is(.quarto-light, .quarto-dark) .navbar .navbar-toggler,
+body:is(.quarto-light, .quarto-dark) .navbar i,
+body:is(.quarto-light, .quarto-dark) .navbar .bi,
+body:is(.quarto-light, .quarto-dark) .navbar svg {
+  color: var(--term-fg);
+}
+
+/* Light theme only: hamburger icon drawn in ink (Bootstrap's default is white, for the blue navbar) and toggler border */
+body.quarto-light .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%233d3d3a' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+body.quarto-light .navbar .navbar-toggler {
+  border-color: var(--term-fg);
 }
 
 /* Sélecteur de dépôt dans les boîtes de checkpoint (dépôt applicatif / GitOps) */
@@ -256,12 +312,12 @@ body.quarto-dark .navbar svg {
   padding: .2em .6em;
 }
 
-/* Dark mode: shell prompt as site title */
+/* Terminal theme: shell prompt as site title */
 /* The first link reads "ensae@prod:~$" instead of "Mise en production".
    The real text stays in the DOM, visually hidden, for screen readers.
-   ::before carries "ensae" (green), ::after carries "@prod:~$" (grey);
+   ::before carries "ensae" (accent), ::after carries "@prod:~$" (foreground);
    a single pseudo-element cannot hold several colours. */
-body.quarto-dark .navbar .navbar-nav > .nav-item > a.nav-link[href="https://ensae-reproductibilite.github.io/"] .menu-text {
+body:is(.quarto-light, .quarto-dark) .navbar .navbar-nav > .nav-item > a.nav-link[href="https://ensae-reproductibilite.github.io/"] .menu-text {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -273,95 +329,95 @@ body.quarto-dark .navbar .navbar-nav > .nav-item > a.nav-link[href="https://ensa
   border: 0;
 }
 
-body.quarto-dark .navbar .navbar-nav > .nav-item > a.nav-link[href="https://ensae-reproductibilite.github.io/"]::before {
+body:is(.quarto-light, .quarto-dark) .navbar .navbar-nav > .nav-item > a.nav-link[href="https://ensae-reproductibilite.github.io/"]::before {
   content: "ensae";
-  color: #7fd4a0;
+  color: var(--term-accent);
   font-weight: 600;
   margin-left: 0;
   animation: none;
 }
 
-body.quarto-dark .navbar .navbar-nav > .nav-item > a.nav-link[href="https://ensae-reproductibilite.github.io/"]::after {
+body:is(.quarto-light, .quarto-dark) .navbar .navbar-nav > .nav-item > a.nav-link[href="https://ensae-reproductibilite.github.io/"]::after {
   content: "@prod:~$";
-  color: #b8c0cc;
+  color: var(--term-fg);
   font-weight: 600;
   margin-left: 0;
   animation: none;
 }
 
-body.quarto-dark .navbar .navbar-nav > .nav-item > a.nav-link[href="https://ensae-reproductibilite.github.io/"]:hover::before,
-body.quarto-dark .navbar .navbar-nav > .nav-item > a.nav-link[href="https://ensae-reproductibilite.github.io/"]:focus::before,
-body.quarto-dark .navbar .navbar-nav > .nav-item > a.nav-link[href="https://ensae-reproductibilite.github.io/"]:hover::after,
-body.quarto-dark .navbar .navbar-nav > .nav-item > a.nav-link[href="https://ensae-reproductibilite.github.io/"]:focus::after {
-  text-shadow: 0 0 6px rgba(127,212,160,.5);
+body:is(.quarto-light, .quarto-dark) .navbar .navbar-nav > .nav-item > a.nav-link[href="https://ensae-reproductibilite.github.io/"]:hover::before,
+body:is(.quarto-light, .quarto-dark) .navbar .navbar-nav > .nav-item > a.nav-link[href="https://ensae-reproductibilite.github.io/"]:focus::before,
+body:is(.quarto-light, .quarto-dark) .navbar .navbar-nav > .nav-item > a.nav-link[href="https://ensae-reproductibilite.github.io/"]:hover::after,
+body:is(.quarto-light, .quarto-dark) .navbar .navbar-nav > .nav-item > a.nav-link[href="https://ensae-reproductibilite.github.io/"]:focus::after {
+  text-shadow: 0 0 6px var(--term-glow-strong);
 }
 
-/* Dark mode: terminal-style headings */
-body.quarto-dark #quarto-content main h1,
-body.quarto-dark #quarto-content main h2,
-body.quarto-dark #quarto-content main h3,
-body.quarto-dark .quarto-title h1.title {
+/* Terminal theme: terminal-style headings */
+body:is(.quarto-light, .quarto-dark) #quarto-content main h1,
+body:is(.quarto-light, .quarto-dark) #quarto-content main h2,
+body:is(.quarto-light, .quarto-dark) #quarto-content main h3,
+body:is(.quarto-light, .quarto-dark) .quarto-title h1.title {
   font-family: "JetBrains Mono", "Fira Code", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   letter-spacing: -0.01em;
   font-weight: 600;
 }
 
 /* Title and h1 keep their own colour */
-body.quarto-dark .quarto-title h1.title,
-body.quarto-dark main.content > section > h1 {
-  color: #e6e9ee;
+body:is(.quarto-light, .quarto-dark) .quarto-title h1.title,
+body:is(.quarto-light, .quarto-dark) main.content > section > h1 {
+  color: var(--term-heading);
   margin-bottom: 1rem;
 }
 
 /* Level-1 headings and the title get a "$ " shell prompt */
-body.quarto-dark main.content section.level1 > h1::before,
-body.quarto-dark .quarto-title h1.title::before {
+body:is(.quarto-light, .quarto-dark) main.content section.level1 > h1::before,
+body:is(.quarto-light, .quarto-dark) .quarto-title h1.title::before {
   content: "$ ";
-  color: #7fd4a0;
+  color: var(--term-accent);
   font-weight: 600;
 }
 
 /* h2: "## " prefix, bottom rule, direct children of level-2 sections only (never callouts, cards, TOC or sidebar) */
-body.quarto-dark main.content section.level2 > h2 {
-  color: #dfe2e7;
-  border-bottom: 1px dashed #3a3f47;
+body:is(.quarto-light, .quarto-dark) main.content section.level2 > h2 {
+  color: var(--term-h2);
+  border-bottom: 1px dashed var(--term-rule);
   padding-bottom: .2em;
   margin-top: 2.2rem;
   margin-bottom: .9rem;
 }
 
-body.quarto-dark main.content section.level2 > h2::before {
+body:is(.quarto-light, .quarto-dark) main.content section.level2 > h2::before {
   content: "## ";
-  color: #5c6773;
+  color: var(--term-dim);
   font-weight: 400;
 }
 
 /* h3: "### " prefix, dim and lighter */
-body.quarto-dark main.content section.level3 > h3 {
-  color: #c9ced6;
+body:is(.quarto-light, .quarto-dark) main.content section.level3 > h3 {
+  color: var(--term-h3);
   margin-top: 1.6rem;
   margin-bottom: .7rem;
 }
 
-body.quarto-dark main.content section.level3 > h3::before {
+body:is(.quarto-light, .quarto-dark) main.content section.level3 > h3::before {
   content: "### ";
-  color: #5c6773;
+  color: var(--term-dim);
   font-weight: 400;
 }
 
-/* Dark mode: code blocks as terminal windows */
-body.quarto-dark div.sourceCode:not(:has(> iframe)) {
+/* Terminal theme: code blocks as terminal windows */
+body:is(.quarto-light, .quarto-dark) div.sourceCode:not(:has(> iframe)) {
   position: relative;
-  border: 1px solid #2a2f36;
+  border: 1px solid var(--term-border);
   border-radius: 8px;
-  background: #0d0f12;
+  background: var(--term-bg);
   padding-top: 28px; /* title bar height */
   overflow: hidden;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, .35);
+  box-shadow: var(--term-window-shadow);
 }
 
 /* Title bar with the three window dots */
-body.quarto-dark div.sourceCode:not(:has(> iframe))::before {
+body:is(.quarto-light, .quarto-dark) div.sourceCode:not(:has(> iframe))::before {
   content: "";
   position: absolute;
   top: 0;
@@ -369,8 +425,8 @@ body.quarto-dark div.sourceCode:not(:has(> iframe))::before {
   right: 0;
   height: 28px;
   box-sizing: border-box;
-  background-color: #1a1d22;
-  border-bottom: 1px solid #2a2f36;
+  background-color: var(--term-bar);
+  border-bottom: 1px solid var(--term-border);
   background-image:
     radial-gradient(circle closest-side, #ff5f57 98%, transparent),
     radial-gradient(circle closest-side, #febc2e 98%, transparent),
@@ -380,29 +436,29 @@ body.quarto-dark div.sourceCode:not(:has(> iframe))::before {
   background-position: 12px 8.5px, 30px 8.5px, 48px 8.5px;
 }
 
-body.quarto-dark div.sourceCode pre.sourceCode {
+body:is(.quarto-light, .quarto-dark) div.sourceCode pre.sourceCode {
   background-color: transparent;
   border: none;
   margin: 0;
 }
 
 /* Copy button stays above the title bar (it is a sibling of div.sourceCode, inside a positioned scaffold) */
-body.quarto-dark div.code-copy-outer-scaffold > .code-copy-button {
+body:is(.quarto-light, .quarto-dark) div.code-copy-outer-scaffold > .code-copy-button {
   z-index: 3;
 }
 
 /* Code with a filename: Quarto already draws a header, so no second title bar */
-body.quarto-dark .code-with-filename div.sourceCode {
+body:is(.quarto-light, .quarto-dark) .code-with-filename div.sourceCode {
   padding-top: 0;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
 
-body.quarto-dark .code-with-filename div.sourceCode::before {
+body:is(.quarto-light, .quarto-dark) .code-with-filename div.sourceCode::before {
   content: none;
 }
 
-/* Dark mode: CRT scanlines on the navbar */
+/* Dark mode only: CRT scanlines on the navbar (they do not suit the paper look of the light theme) */
 /* #quarto-header is already position: fixed (fixed-top), which is the containing block */
 body.quarto-dark #quarto-header::after {
   content: "";
@@ -419,42 +475,37 @@ body.quarto-dark #quarto-header::after {
   50% { opacity: .9; }
 }
 
-/* Dropdown menus stay above the scanline layer */
-body.quarto-dark .navbar .dropdown-menu {
-  z-index: 1001;
-}
-
-/* Faint phosphor glow on hovered or active links */
-body.quarto-dark .navbar a.nav-link:hover,
-body.quarto-dark .navbar a.nav-link:focus,
-body.quarto-dark .navbar a.nav-link.active {
-  text-shadow: 0 0 4px rgba(127,212,160,.25);
-}
-
 @media (prefers-reduced-motion: reduce) {
   body.quarto-dark #quarto-header::after {
     animation: none;
   }
 }
 
-/* Dark mode: active TOC entry as a terminal line */
+/* Faint glow on hovered or active links */
+body:is(.quarto-light, .quarto-dark) .navbar a.nav-link:hover,
+body:is(.quarto-light, .quarto-dark) .navbar a.nav-link:focus,
+body:is(.quarto-light, .quarto-dark) .navbar a.nav-link.active {
+  text-shadow: 0 0 4px var(--term-glow-text);
+}
+
+/* Terminal theme: active TOC entry as a terminal line */
 /* Quarto's margin TOC (#quarto-margin-sidebar.sidebar) styles .active in light blue with a left rule;
    Bootstrap's scrollspy marks only the link of the section in view, but the cursor is limited to the
    deepest active link anyway, in case a parent is marked too. */
-body.quarto-dark #TOC a.nav-link.active {
-  color: #7fd4a0 !important;
-  border-left: 1px solid #7fd4a0;
+body:is(.quarto-light, .quarto-dark) #TOC a.nav-link.active {
+  color: var(--term-accent) !important;
+  border-left: 1px solid var(--term-accent);
 }
 
-body.quarto-dark #TOC a.nav-link.active:not(:has(~ ul a.nav-link.active))::after {
+body:is(.quarto-light, .quarto-dark) #TOC a.nav-link.active:not(:has(~ ul a.nav-link.active))::after {
   content: "▋";
   margin-left: .2em;
-  color: #7fd4a0;
+  color: var(--term-accent);
   animation: term-blink 1.06s steps(1) infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body.quarto-dark #TOC a.nav-link.active:not(:has(~ ul a.nav-link.active))::after {
+  body:is(.quarto-light, .quarto-dark) #TOC a.nav-link.active:not(:has(~ ul a.nav-link.active))::after {
     animation: none;
   }
 }
