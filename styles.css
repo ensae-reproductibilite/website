@@ -244,3 +244,38 @@ body.quarto-dark .navbar .bi,
 body.quarto-dark .navbar svg {
   color: #b8c0cc;
 }
+
+/* Dark mode: CRT scanlines on the navbar */
+/* #quarto-header is already position: fixed (fixed-top), which is the containing block */
+body.quarto-dark #quarto-header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: repeating-linear-gradient(to bottom, rgba(255,255,255,.025) 0, rgba(255,255,255,.025) 1px, transparent 1px, transparent 3px);
+  animation: term-scanline-flicker 4s ease-in-out infinite;
+}
+
+@keyframes term-scanline-flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .9; }
+}
+
+/* Dropdown menus stay above the scanline layer */
+body.quarto-dark .navbar .dropdown-menu {
+  z-index: 1001;
+}
+
+/* Faint phosphor glow on hovered or active links */
+body.quarto-dark a.nav-link:hover,
+body.quarto-dark a.nav-link:focus,
+body.quarto-dark a.nav-link.active {
+  text-shadow: 0 0 4px rgba(127,212,160,.25);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.quarto-dark #quarto-header::after {
+    animation: none;
+  }
+}
