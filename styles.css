@@ -143,3 +143,104 @@ body.quarto-dark .category {
 body.quarto-dark pre code.bash::before {
   color: #9aa1ab;
 }
+
+/* Dark mode: old-school terminal navbar */
+body.quarto-dark .navbar,
+body.quarto-dark #quarto-header {
+  background-color: #0d0f12 !important;
+  box-shadow: none;
+}
+
+/* The only blue: one line under the header, with a faint glow */
+body.quarto-dark #quarto-header {
+  border-bottom: 2px solid #447099;
+  box-shadow: 0 1px 12px rgba(68,112,153,.35);
+}
+
+body.quarto-dark .navbar .nav-link,
+body.quarto-dark .navbar .dropdown-item,
+body.quarto-dark .navbar-brand,
+body.quarto-dark .navbar-title {
+  font-family: "JetBrains Mono", "Fira Code", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .9rem;
+  letter-spacing: .02em;
+}
+
+body.quarto-dark a.nav-link:link,
+body.quarto-dark a.nav-link:visited,
+body.quarto-dark a.navbar-title:link,
+body.quarto-dark a.navbar-title:visited,
+body.quarto-dark a.navbar-brand:link,
+body.quarto-dark a.navbar-brand:visited {
+  color: #b8c0cc;
+}
+
+body.quarto-dark a.nav-link:hover,
+body.quarto-dark a.nav-link:focus,
+body.quarto-dark a.nav-link.active,
+body.quarto-dark a.navbar-title:hover,
+body.quarto-dark a.navbar-title:focus,
+body.quarto-dark a.navbar-brand:hover,
+body.quarto-dark a.navbar-brand:focus {
+  color: #7fd4a0;
+  background-color: transparent;
+}
+
+/* Terminal prompt before each top-level link (transparent, so no layout shift) */
+body.quarto-dark .navbar .navbar-nav > .nav-item > .nav-link::before {
+  content: "> ";
+  color: transparent;
+}
+
+body.quarto-dark .navbar .navbar-nav > .nav-item > .nav-link:hover::before,
+body.quarto-dark .navbar .navbar-nav > .nav-item > .nav-link:focus::before,
+body.quarto-dark .navbar .navbar-nav > .nav-item > .nav-link.active::before {
+  color: #8fb3d9;
+}
+
+/* Blinking block cursor after the active link (never on dropdown toggles, which use ::after for the caret) */
+body.quarto-dark .navbar .nav-link.active:not(.dropdown-toggle)::after {
+  content: "▋";
+  margin-left: .15em;
+  color: #7fd4a0;
+  animation: term-blink 1.06s steps(1) infinite;
+}
+
+@keyframes term-blink {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.quarto-dark .navbar .nav-link.active:not(.dropdown-toggle)::after {
+    animation: none;
+  }
+}
+
+/* Dropdown menus */
+body.quarto-dark .navbar .dropdown-menu {
+  background-color: #0d0f12;
+  border: 1px solid #2a2f36;
+  border-radius: 0;
+  font-family: "JetBrains Mono", "Fira Code", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+body.quarto-dark .navbar .dropdown-item {
+  color: #b8c0cc;
+  background-color: transparent;
+}
+
+body.quarto-dark .navbar .dropdown-item:hover,
+body.quarto-dark .navbar .dropdown-item:focus {
+  background-color: rgba(127,212,160,.08);
+  color: #7fd4a0;
+}
+
+/* Search icon, toggler and other navbar icons */
+body.quarto-dark .navbar .quarto-search-button,
+body.quarto-dark .navbar .quarto-search-button *,
+body.quarto-dark .navbar .navbar-toggler,
+body.quarto-dark .navbar i,
+body.quarto-dark .navbar .bi,
+body.quarto-dark .navbar svg {
+  color: #b8c0cc;
+}
