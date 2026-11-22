@@ -1,0 +1,603 @@
+<style>
+:root {
+  --appli-nav-offset: 0px;
+}
+.callout-application[id^="appli-"] {
+  scroll-margin-top: calc(var(--appli-nav-offset) + 12px);
+}
+.appli-nav-switch {
+  display: flex;
+  margin: 0.9rem 0 0.5rem;
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 0.3rem;
+  overflow: hidden;
+  font-family: var(--bs-font-monospace);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.appli-nav-switch button {
+  flex: 1 1 0;
+  margin: 0;
+  padding: 0.3rem 0.4rem;
+  border: 0;
+  background: transparent;
+  color: var(--bs-secondary-color, #6c757d);
+  cursor: pointer;
+}
+.appli-nav-switch button + button {
+  border-left: 1px solid var(--bs-border-color, #dee2e6);
+}
+.appli-nav-switch button[aria-pressed="true"] {
+  color: #9c5bd9;
+  font-weight: 600;
+  background: rgba(156, 91, 217, 0.12);
+}
+.appli-nav-list {
+  position: relative;
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
+  margin-bottom: 0.5rem;
+  padding-right: 0.25rem;
+  font-family: var(--bs-font-monospace);
+  font-size: 0.78rem;
+  line-height: 1.35;
+  scrollbar-width: thin;
+}
+.appli-nav-count {
+  padding: 0.2rem 0 0.4rem;
+  font-size: 0.7rem;
+  color: var(--bs-secondary-color, #6c757d);
+}
+.appli-nav-part {
+  margin: 0.7rem 0 0.25rem;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--bs-tertiary-color, #adb5bd);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.appli-nav-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.3rem 0.2rem 0.4rem;
+  border-left: 2px solid transparent;
+  border-radius: 0 0.2rem 0.2rem 0;
+  cursor: pointer;
+}
+.appli-nav-row:hover {
+  background: rgba(127, 127, 127, 0.08);
+}
+.appli-nav-check {
+  flex: 0 0 auto;
+  margin: 0;
+  accent-color: #9c5bd9;
+  cursor: pointer;
+}
+.appli-nav-num {
+  flex: 0 0 3ch;
+  text-align: right;
+  white-space: nowrap;
+  color: var(--bs-secondary-color, #6c757d);
+}
+.appli-nav-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--bs-body-color);
+  text-decoration: none;
+}
+.appli-nav-title:hover {
+  text-decoration: none;
+}
+.appli-nav-row.is-optional .appli-nav-title {
+  font-style: italic;
+  color: var(--bs-secondary-color, #6c757d);
+}
+.appli-nav-row.is-done .appli-nav-title {
+  text-decoration: line-through;
+  color: var(--bs-tertiary-color, #adb5bd);
+}
+.appli-nav-row.is-current {
+  border-left-color: #9c5bd9;
+  background: rgba(156, 91, 217, 0.08);
+  font-weight: 600;
+}
+.appli-nav-row.is-current .appli-nav-title,
+.appli-nav-row.is-current .appli-nav-num {
+  color: #9c5bd9;
+}
+.appli-nav-banner {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 1020;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+}
+.appli-nav-banner.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  pointer-events: auto;
+}
+.appli-nav-banner-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  height: 32px;
+  margin: 0;
+  padding: 0 1rem;
+  border: 0;
+  border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+  background: var(--bs-body-bg, #fff);
+  color: var(--bs-body-color);
+  font-family: var(--bs-font-monospace);
+  font-size: 0.75rem;
+  text-align: left;
+  cursor: pointer;
+}
+.appli-nav-banner-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.appli-nav-banner-count {
+  white-space: nowrap;
+  color: var(--bs-secondary-color, #6c757d);
+}
+.appli-nav-banner-caret {
+  color: var(--bs-secondary-color, #6c757d);
+  transition: transform 0.2s ease;
+}
+.appli-nav-banner-btn[aria-expanded="true"] .appli-nav-banner-caret {
+  transform: rotate(180deg);
+}
+.appli-nav-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  overflow-y: auto;
+  padding: 0.5rem 1rem 0.75rem;
+  background: var(--bs-body-bg, #fff);
+  border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+.appli-nav-panel[hidden] {
+  display: none;
+}
+.appli-nav-panel .appli-nav-list {
+  max-height: min(70vh, 480px);
+}
+@media print {
+  .appli-nav-switch,
+  .appli-nav-list,
+  .appli-nav-banner {
+    display: none !important;
+  }
+}
+</style>
+<script>
+(function () {
+  "use strict";
+
+  var MIN_APPLICATIONS = 5;
+  var DONE_PREFIX = "appli-nav:done:";
+  var VIEW_KEY = "appli-nav:view";
+  var TITLE_RE = /application\s+(?:pr[ée]liminaire\s+(\d+)|(\d+[a-z]?))/i;
+
+  var isFr = (document.documentElement.lang || "").indexOf("fr") === 0;
+  var L = isFr
+    ? {
+        applications: "Applications",
+        sections: "Sections",
+        done: "faites",
+        markDone: "Marquer comme faite",
+        openList: "Afficher la liste des applications",
+        switchLabel: "Affichage du sommaire",
+        preliminary: "préliminaire",
+        part: "Partie"
+      }
+    : {
+        applications: "Applications",
+        sections: "Sections",
+        done: "done",
+        markDone: "Mark as done",
+        openList: "Show the applications list",
+        switchLabel: "Sidebar view",
+        preliminary: "preliminary",
+        part: "Part"
+      };
+
+  function storageGet(key) {
+    try {
+      return window.localStorage.getItem(key);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function storageSet(key, value) {
+    try {
+      if (value === null) window.localStorage.removeItem(key);
+      else window.localStorage.setItem(key, value);
+    } catch (e) {}
+  }
+
+  function el(tag, cls, text) {
+    var node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text !== undefined && text !== null) node.textContent = text;
+    return node;
+  }
+
+  function cleanText(node) {
+    var clone = node.cloneNode(true);
+    var junk = clone.querySelectorAll(".screen-reader-only, .anchor, .header-section-number");
+    Array.prototype.forEach.call(junk, function (n) {
+      n.parentNode.removeChild(n);
+    });
+    return clone.textContent.replace(/\s+/g, " ").trim();
+  }
+
+  function reduceMotion() {
+    return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var callouts = document.querySelectorAll(".callout-application");
+    if (callouts.length < MIN_APPLICATIONS) return;
+
+    // Parsing ----------------------------------------------------------------
+    var items = [];
+    var used = {};
+    Array.prototype.forEach.call(callouts, function (callout) {
+      var titleBox = callout.querySelector(".callout-title-container");
+      if (!titleBox) return;
+      var title = cleanText(titleBox);
+      var m = TITLE_RE.exec(title);
+      if (!m) return;
+
+      var label, display;
+      if (m[1]) {
+        label = "P" + m[1];
+        display = L.preliminary + " " + m[1];
+      } else {
+        label = m[2].toLowerCase();
+        display = label;
+      }
+
+      var colon = title.indexOf(":");
+      var shortTitle =
+        colon >= 0
+          ? title.slice(colon + 1).trim()
+          : title.slice(m.index + m[0].length).trim();
+      if (!shortTitle) shortTitle = title;
+
+      var section = callout.closest("section.level1");
+      var h1 = section ? section.querySelector(":scope > h1") : null;
+      var part = h1 ? cleanText(h1) : "";
+
+      var base = "appli-" + label.toLowerCase();
+      var id = base;
+      var n = 2;
+      while (used[id] || document.getElementById(id)) {
+        id = base + "-" + n;
+        n++;
+      }
+      used[id] = true;
+      callout.id = id;
+
+      var doneRaw = storageGet(DONE_PREFIX + id);
+      items.push({
+        id: id,
+        el: callout,
+        label: label,
+        display: display,
+        short: shortTitle,
+        full: title,
+        optional: /optionnel/i.test(title),
+        part: part,
+        done: doneRaw === "1",
+        rows: [],
+        checks: [],
+        titles: []
+      });
+    });
+    if (!items.length) return;
+
+    var total = items.length;
+    var counters = [];
+    var containers = [];
+    var current = null;
+    var lastRevealed = null;
+    var navHeight = 0;
+    var bannerHeight = 32;
+
+    function shortPart(part) {
+      var idx = part.indexOf(":");
+      return idx >= 0 ? part.slice(0, idx).trim() : part;
+    }
+
+    function countDone() {
+      var n = 0;
+      items.forEach(function (it) {
+        if (it.done) n++;
+      });
+      return n;
+    }
+
+    function scrollOffset() {
+      return navHeight + bannerHeight + 12;
+    }
+
+    // La barre de Quarto (headroom) se masque en descendant : on se cale sur
+    // son bord inférieur visible, pas sur sa hauteur.
+    var header = document.getElementById("quarto-header");
+
+    function measure() {
+      navHeight = header ? Math.max(0, header.getBoundingClientRect().bottom) : 0;
+      bannerHeight = banner.offsetHeight || 32;
+      banner.style.top = navHeight + "px";
+      document.documentElement.style.setProperty(
+        "--appli-nav-offset",
+        navHeight + bannerHeight + "px"
+      );
+      panel.style.maxHeight = Math.max(120, window.innerHeight - navHeight - bannerHeight - 16) + "px";
+    }
+
+    function goTo(it) {
+      var y = it.el.getBoundingClientRect().top + window.pageYOffset - scrollOffset();
+      window.scrollTo({ top: Math.max(0, y), behavior: reduceMotion() ? "auto" : "smooth" });
+      try {
+        history.replaceState(null, "", "#" + it.id);
+      } catch (e) {}
+    }
+
+    function findCurrent() {
+      var threshold = navHeight + 0.3 * window.innerHeight;
+      for (var i = items.length - 1; i >= 0; i--) {
+        if (items[i].el.getBoundingClientRect().top < threshold) return items[i];
+      }
+      return null;
+    }
+
+    function reveal(row) {
+      var box = row.parentNode;
+      if (!box || !box.clientHeight) return;
+      var top = row.offsetTop;
+      var bottom = top + row.offsetHeight;
+      if (top < box.scrollTop) {
+        box.scrollTop = Math.max(0, top - 8);
+      } else if (bottom > box.scrollTop + box.clientHeight) {
+        box.scrollTop = bottom - box.clientHeight + 8;
+      }
+    }
+
+    function render() {
+      var doneN = countDone();
+      items.forEach(function (it) {
+        var isCurrent = it === current;
+        it.rows.forEach(function (r) {
+          r.classList.toggle("is-current", isCurrent);
+          r.classList.toggle("is-done", it.done);
+        });
+        it.checks.forEach(function (c) {
+          c.checked = it.done;
+        });
+        it.titles.forEach(function (t) {
+          if (isCurrent) t.setAttribute("aria-current", "true");
+          else t.removeAttribute("aria-current");
+        });
+      });
+
+      counters.forEach(function (node) {
+        node.textContent = doneN + " / " + total + " " + L.done;
+      });
+
+      if (current) {
+        bannerText.textContent =
+          shortPart(current.part) + " · " + "Application " + current.display + " — " + current.short;
+        bannerCount.textContent = doneN + "/" + total + " " + L.done;
+        banner.classList.add("is-visible");
+        if (lastRevealed !== current) {
+          current.rows.forEach(reveal);
+        }
+      } else {
+        banner.classList.remove("is-visible");
+        setPanel(false);
+      }
+      lastRevealed = current;
+    }
+
+    function onRowActivate(it, box) {
+      goTo(it);
+      if (box.parentNode === panel) setPanel(false);
+    }
+
+    function buildList(extraClass) {
+      var box = el("div", "appli-nav-list " + extraClass);
+      var count = el("div", "appli-nav-count");
+      box.appendChild(count);
+      counters.push(count);
+      containers.push(box);
+
+      var lastPart = null;
+      items.forEach(function (it) {
+        if (it.part !== lastPart) {
+          lastPart = it.part;
+          if (it.part) box.appendChild(el("div", "appli-nav-part", it.part));
+        }
+
+        var row = el("div", "appli-nav-row");
+        if (it.optional) row.classList.add("is-optional");
+
+        var check = el("input");
+        check.type = "checkbox";
+        check.className = "appli-nav-check";
+        check.setAttribute("aria-label", L.markDone + " : " + it.label + " " + it.short);
+
+        var num = el("span", "appli-nav-num", it.label);
+        var title = el("a", "appli-nav-title", it.short);
+        title.href = "#" + it.id;
+        title.title = it.full;
+
+        row.appendChild(check);
+        row.appendChild(num);
+        row.appendChild(title);
+
+        row.addEventListener("click", function (e) {
+          if (e.target === check) return;
+          e.preventDefault();
+          onRowActivate(it, box);
+        });
+        check.addEventListener("change", function () {
+          it.done = check.checked;
+          storageSet(DONE_PREFIX + it.id, it.done ? "1" : null);
+          render();
+        });
+
+        it.rows.push(row);
+        it.checks.push(check);
+        it.titles.push(title);
+        box.appendChild(row);
+      });
+      return box;
+    }
+
+    // Banner (all widths) ----------------------------------------------------
+    var banner = el("div", "appli-nav-banner");
+    var bannerBtn = el("button", "appli-nav-banner-btn");
+    bannerBtn.type = "button";
+    bannerBtn.setAttribute("aria-expanded", "false");
+    bannerBtn.setAttribute("aria-controls", "appli-nav-panel");
+    bannerBtn.setAttribute("aria-label", L.openList);
+    var bannerText = el("span", "appli-nav-banner-text");
+    var bannerCount = el("span", "appli-nav-banner-count");
+    var bannerCaret = el("span", "appli-nav-banner-caret", "▾");
+    bannerCaret.setAttribute("aria-hidden", "true");
+    bannerBtn.appendChild(bannerText);
+    bannerBtn.appendChild(bannerCount);
+    bannerBtn.appendChild(bannerCaret);
+
+    var panel = el("div", "appli-nav-panel");
+    panel.id = "appli-nav-panel";
+    panel.hidden = true;
+    panel.appendChild(buildList("appli-nav-panel-list"));
+
+    banner.appendChild(bannerBtn);
+    banner.appendChild(panel);
+    document.body.appendChild(banner);
+
+    function setPanel(open) {
+      panel.hidden = !open;
+      bannerBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+
+    bannerBtn.addEventListener("click", function () {
+      setPanel(panel.hidden);
+    });
+    document.addEventListener("click", function (e) {
+      if (!panel.hidden && !banner.contains(e.target)) setPanel(false);
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !panel.hidden) {
+        setPanel(false);
+        bannerBtn.focus();
+      }
+    });
+
+    // Side navigation inside nav#TOC (desktop) -------------------------------
+    var toc = document.querySelector("nav#TOC");
+    if (toc) {
+      var originalList = toc.querySelector(":scope > ul");
+      var switchBox = el("div", "appli-nav-switch");
+      switchBox.setAttribute("role", "group");
+      switchBox.setAttribute("aria-label", L.switchLabel);
+      var viewButtons = {};
+      [["applications", L.applications], ["sections", L.sections]].forEach(function (pair) {
+        var b = el("button", null, pair[1]);
+        b.type = "button";
+        b.setAttribute("data-view", pair[0]);
+        viewButtons[pair[0]] = b;
+        switchBox.appendChild(b);
+      });
+      var sideList = buildList("appli-nav-side-list");
+
+      toc.insertBefore(switchBox, originalList);
+      toc.insertBefore(sideList, originalList);
+
+      var setView = function (view, persist) {
+        var apps = view === "applications";
+        sideList.style.display = apps ? "" : "none";
+        if (originalList) originalList.style.display = apps ? "none" : "";
+        viewButtons.applications.setAttribute("aria-pressed", apps ? "true" : "false");
+        viewButtons.sections.setAttribute("aria-pressed", apps ? "false" : "true");
+        if (persist) storageSet(VIEW_KEY, view);
+        if (apps && current) {
+          current.rows.forEach(function (r) {
+            if (r.parentNode === sideList) reveal(r);
+          });
+        }
+      };
+      Object.keys(viewButtons).forEach(function (view) {
+        viewButtons[view].addEventListener("click", function () {
+          setView(view, true);
+        });
+      });
+      setView(storageGet(VIEW_KEY) === "sections" ? "sections" : "applications", false);
+    }
+
+    // Scrollspy --------------------------------------------------------------
+    var frame = null;
+    function schedule() {
+      if (frame) return;
+      frame = window.requestAnimationFrame(function () {
+        frame = null;
+        measure();
+        var next = findCurrent();
+        if (next !== current) {
+          current = next;
+          render();
+        }
+      });
+    }
+
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", function () {
+      measure();
+      schedule();
+    });
+
+    if (header) header.addEventListener("transitionend", schedule);
+
+    measure();
+
+    // Lien direct vers une application (#appli-12) : les identifiants n'existaient
+    // pas encore quand le navigateur a traité l'ancre.
+    var hash = decodeURIComponent(location.hash.slice(1));
+    items.forEach(function (it) {
+      if (it.id === hash) {
+        var y = it.el.getBoundingClientRect().top + window.pageYOffset - scrollOffset();
+        window.scrollTo(0, Math.max(0, y));
+      }
+    });
+
+    current = findCurrent();
+    render();
+  });
+})();
+</script>
