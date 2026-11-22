@@ -175,9 +175,15 @@ local function excalidraw_image(img)
     if c ~= "excalidraw-embed" then table.insert(classes, c) end
   end
 
+  -- editable=false : pas de bouton "Modifier" pour ce schéma (attribut lu par le JS).
+  local editable = ""
+  if img.attributes["editable"] == "false" then
+    editable = ' data-editable="false"'
+  end
+
   local html = '<span class="' .. html_attr(table.concat(classes, " ")) ..
     '" style="height:' .. html_attr(height) ..
-    '" role="img" aria-label="' .. html_attr(label) .. '">' ..
+    '" role="img" aria-label="' .. html_attr(label) .. '"' .. editable .. '>' ..
     '<script type="application/json" class="excalidraw-data">' ..
     escape_script(scene) .. '</script>'
 

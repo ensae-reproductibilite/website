@@ -1,6 +1,11 @@
 # Construction des fichiers vendorisés
 
-Ce dossier produit `../vendor/` : le moteur d'export SVG d'Excalidraw, ses polices et svg-pan-zoom.
+Ce dossier produit `../vendor/` : le moteur d'export SVG d'Excalidraw, l'éditeur (mode édition
+temporaire), ses polices et svg-pan-zoom.
+
+`entry.js` exporte `exportToSvg` (affichage), `Excalidraw` (éditeur), `createRoot` et `createElement`
+(React, bundlé une seule fois avec l'éditeur). `excalidraw.css` est la feuille de style de l'éditeur,
+chargée seulement à sa première ouverture.
 
 **Pourquoi vendoriser ?** Le site ne doit appeler aucun CDN au moment de la lecture. Les fichiers
 sont figés dans le dépôt, donc reproductibles, et servis avec le site.
@@ -9,8 +14,10 @@ sont figés dans le dépôt, donc reproductibles, et servis avec le site.
 (mermaid, pica, polices CJK, locales). `build.mjs` remplace leurs imports par un module vide
 pour ne pas les embarquer.
 
-**Polices retenues :** Excalifont, Virgil, Cascadia, Liberation et ComicShanns. Xiaolai (13 Mo de CJK),
-Assistant, Nunito et Lilita sont écartées.
+**Polices retenues :** Excalifont, Virgil, Cascadia, Liberation et ComicShanns, plus Assistant (interface
+de l'éditeur). Xiaolai (13 Mo de CJK), Nunito et Lilita sont écartées.
+
+**Locales :** l'éditeur a besoin des locales fr-FR, en et percentages ; les autres sont remplacées par des stubs.
 
 **Reconstruire :**
 
