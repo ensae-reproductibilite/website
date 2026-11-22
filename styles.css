@@ -306,10 +306,19 @@ body.quarto-dark .quarto-title h1.title {
   font-weight: 600;
 }
 
-/* Title and h1 keep their own colour, no prefix */
+/* Title and h1 keep their own colour */
 body.quarto-dark .quarto-title h1.title,
 body.quarto-dark main.content > section > h1 {
   color: #e6e9ee;
+  margin-bottom: 1rem;
+}
+
+/* Level-1 headings and the title get a "$ " shell prompt */
+body.quarto-dark main.content section.level1 > h1::before,
+body.quarto-dark .quarto-title h1.title::before {
+  content: "$ ";
+  color: #7fd4a0;
+  font-weight: 600;
 }
 
 /* h2: "## " prefix, bottom rule, direct children of level-2 sections only (never callouts, cards, TOC or sidebar) */
@@ -317,6 +326,8 @@ body.quarto-dark main.content section.level2 > h2 {
   color: #dfe2e7;
   border-bottom: 1px dashed #3a3f47;
   padding-bottom: .2em;
+  margin-top: 2.2rem;
+  margin-bottom: .9rem;
 }
 
 body.quarto-dark main.content section.level2 > h2::before {
@@ -328,6 +339,8 @@ body.quarto-dark main.content section.level2 > h2::before {
 /* h3: "### " prefix, dim and lighter */
 body.quarto-dark main.content section.level3 > h3 {
   color: #c9ced6;
+  margin-top: 1.6rem;
+  margin-bottom: .7rem;
 }
 
 body.quarto-dark main.content section.level3 > h3::before {
@@ -420,6 +433,28 @@ body.quarto-dark .navbar a.nav-link.active {
 
 @media (prefers-reduced-motion: reduce) {
   body.quarto-dark #quarto-header::after {
+    animation: none;
+  }
+}
+
+/* Dark mode: active TOC entry as a terminal line */
+/* Quarto's margin TOC (#quarto-margin-sidebar.sidebar) styles .active in light blue with a left rule;
+   Bootstrap's scrollspy marks only the link of the section in view, but the cursor is limited to the
+   deepest active link anyway, in case a parent is marked too. */
+body.quarto-dark #TOC a.nav-link.active {
+  color: #7fd4a0 !important;
+  border-left: 1px solid #7fd4a0;
+}
+
+body.quarto-dark #TOC a.nav-link.active:not(:has(~ ul a.nav-link.active))::after {
+  content: "▋";
+  margin-left: .2em;
+  color: #7fd4a0;
+  animation: term-blink 1.06s steps(1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.quarto-dark #TOC a.nav-link.active:not(:has(~ ul a.nav-link.active))::after {
     animation: none;
   }
 }
