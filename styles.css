@@ -149,6 +149,8 @@ body.quarto-dark {
   --term-window-shadow: 0 4px 18px rgba(0,0,0,.35);
   --term-glow-text: rgba(127,212,160,.25);
   --term-glow-strong: rgba(127,212,160,.5);
+  --term-phosphor: #33ff66;
+  --term-phosphor-glow: rgba(51,255,102,.55);
 }
 
 body.quarto-light {
@@ -169,6 +171,8 @@ body.quarto-light {
   --term-window-shadow: 0 2px 10px rgba(20,20,19,.08);
   --term-glow-text: transparent;
   --term-glow-strong: transparent;
+  --term-phosphor: #1d7a3a;
+  --term-phosphor-glow: transparent;
 }
 
 /* Terminal theme: old-school terminal navbar */
@@ -479,7 +483,42 @@ body:is(.quarto-light, .quarto-dark) .navbar a.nav-link.active {
    deepest active link anyway, in case a parent is marked too. */
 body:is(.quarto-light, .quarto-dark) #TOC a.nav-link.active {
   color: var(--term-accent) !important;
-  border-left: 1px solid var(--term-accent);
+  border-left: 0;
+}
+
+/* File-tree TOC (like `tree` output). Each sub-list is indented by 2em and carries a dim
+   dotted guide on its left edge; the branch glyph hangs in that indent, before the link text.
+   The glyph sits in ::before, so the active cursor (::after) is untouched.
+   Only colours and padding change: display is never set, so Quarto's collapse still works. */
+body:is(.quarto-light, .quarto-dark) #TOC ul ul {
+  padding-left: 2em;
+  background: linear-gradient(var(--term-dim), var(--term-dim)) no-repeat 0.3em 0 / 1px 100%;
+}
+
+body:is(.quarto-light, .quarto-dark) #TOC > ul > li > a.nav-link {
+  padding-left: 0;
+  border-left: 0;
+}
+
+body:is(.quarto-light, .quarto-dark) #TOC ul ul > li > a.nav-link {
+  position: relative;
+  padding-left: 0;
+  border-left: 0;
+}
+
+body:is(.quarto-light, .quarto-dark) #TOC ul ul > li > a.nav-link::before {
+  content: "\251C\2500\2500";
+  position: absolute;
+  left: -2em;
+  top: 0;
+  font-family: var(--bs-font-monospace), ui-monospace, monospace;
+  white-space: pre;
+  color: var(--term-dim);
+  pointer-events: none;
+}
+
+body:is(.quarto-light, .quarto-dark) #TOC ul ul > li:last-child > a.nav-link::before {
+  content: "\2514\2500\2500";
 }
 
 body:is(.quarto-light, .quarto-dark) #TOC a.nav-link.active:not(:has(~ ul a.nav-link.active))::after {
@@ -555,4 +594,48 @@ body:is(.quarto-light, .quarto-dark) #TOC a.nav-link.active:not(:has(~ ul a.nav-
 .gallery-links {
   font-size: 0.8rem;
   margin-bottom: 0;
+}
+
+/* Application page only: phosphor-green terminal title.
+   The page is the only one containing .callout-application blocks (custom-callout "application"). */
+body:has(.callout-application) .quarto-title h1.title {
+  color: var(--term-phosphor);
+  font-size: clamp(2.6rem, 5vw, 3.6rem);
+  line-height: 1.1;
+  margin-bottom: 1.6rem;
+  text-shadow: 0 0 6px var(--term-phosphor-glow), 0 0 18px var(--term-phosphor-glow);
+}
+
+body:has(.callout-application) .quarto-title h1.title::before {
+  color: var(--term-phosphor);
+}
+
+/* Blinking block cursor after the title */
+body:has(.callout-application) .quarto-title h1.title::after {
+  content: "\258B";
+  color: var(--term-phosphor);
+  margin-left: 0.15em;
+  font-weight: 400;
+  animation: term-blink 1.06s steps(1) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body:has(.callout-application) .quarto-title h1.title::after {
+    animation: none;
+  }
+}
+
+/* Description as a terminal comment: dim, monospace, "# " prefix, more air above */
+body:has(.callout-application) .quarto-title-block .description {
+  font-family: "JetBrains Mono", "Fira Code", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: var(--term-fg);
+  opacity: 0.8;
+  font-size: 0.95rem;
+  margin-top: 1.6rem;
+}
+
+body:has(.callout-application) .quarto-title-block .description::before {
+  content: "# ";
+  color: var(--term-phosphor);
+  opacity: 0.7;
 }
