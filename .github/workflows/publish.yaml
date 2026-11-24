@@ -13,18 +13,21 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Set up quarto
         uses: quarto-dev/quarto-actions/setup@v2
-      - name: Install Python and Dependencies
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-          cache: 'pip'
-      - run: pip install -r requirements.txt
-      - name: "Build website in multiple languages"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Install Python and dependencies
+        run: uv sync --locked
+
+      - name: "Build website in FR and EN"
         run: |
-          quarto render --profile fr --to html
-          quarto render --profile en --to html
+          uv run quarto render --profile fr --to html
+          uv run quarto render --profile en --to html
+
       - name: Publish to Pages
         run: |
           git config --global user.email quarto-github-actions-publish@example.com

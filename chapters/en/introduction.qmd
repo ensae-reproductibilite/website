@@ -1,0 +1,199 @@
+<details>
+<summary>
+See slides (in French) or [click here](https://ensae-reproductibilite.github.io/slides/#/title-slide)
+</summary>
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><iframe class="sourceCode yaml code-with-copy" src="https://ensae-reproductibilite.github.io/slides/#/title-slide"></iframe></div>
+
+</details>
+
+# Overview
+
+This course is intended for *data science* practitioners, understood here in a broad sense as the combination of techniques from mathematics, statistics, and computer science to generate useful insights from data. Since data science is not just a scientific discipline but aims to provide tools to meet operational objectives, the notion of production deployment is central for *data scientists*, whether in the private or public sector.
+
+This course starts from the observation that academic training in *data science* often takes a primarily technical approach, focusing on a deep understanding of models, but rarely addresses the practical problems that make up the daily work of a *data scientist* in a professional setting. Yet these issues significantly shape the scientific approach that can be implemented in practice.
+
+This course aims to fill that gap by offering potential solutions to various questions *data scientists* may face when transitioning from academic training to real-world projects:
+
+- How to __collaborate effectively__ on a project?
+- How to __share code__ and ensure it will __run without errors__ on a different execution environment?
+- How to transition from a development environment[^nb] to a __production environment__[^2]?
+- How to __deploy__ a *data science* model and make it accessible to users to create value?
+- How to __automate__ different steps of the project to __ease maintenance__?
+
+[^nb]: You're probably most familiar with the _Jupyter Notebook_. While very convenient for writing exploratory code or sharing annotated code, we’ll see its limitations in collaborative or large-scale projects.
+[^2]: We will define this central concept more formally later. For now, you can think of it as an always-on environment designed to deliver data products—often in the form of a production server or a computing cluster that must remain continuously available.
+
+:::: {.callout-note}
+
+## Additional Resource: MIT's _Missing Semester_
+
+Many practitioners have realized the lack of certain skills in statistics or computer science curricula. Some very useful resources have been compiled in the [MIT _Missing Semester_](https://missing.csail.mit.edu/), part of which overlaps with topics covered in this course.
+
+::::
+
+To address these questions, the course introduces **a set of best practices and tools from various computer science domains**, such as software development, infrastructure, server administration, and application deployment. The goal is not to become an expert in each of these fields, as they are professions in their own right—developers, *data architects*, *sysadmins*, and *data engineers*.
+
+However, as *data science* projects and the teams supporting them grow larger, *data scientists* increasingly find themselves at the intersection of these roles. They must communicate effectively across domains to see projects through. **This course is designed to equip you not just with technical knowledge, but with the vocabulary and concepts necessary to act as a bridge between business and technical teams involved in a *data science* project.**
+
+A *data science* project goes through a __full lifecycle__, which is often overlooked in data science education or specialized manuals. The most complex methodological or technical solution is rarely the best one. It tends to be costly to develop and even harder to implement. It may even become obsolete before completion: algorithms learn from the past, and it is challenging in the real world to maintain equivalent performance as new data accumulates.
+
+The development phase is just one moment in the life of a *data science* project. Focusing solely on it often leads to low external validity.
+
+This course introduces a set of techniques and principles intended to streamline the process of production deployment[^notenom] for a *data science* project. Production deployment is understood, abstractly, as the act of __making an application live in the user's environment__. While this definition may seem vague, it helps remind us that technical solutions are above all a response to user needs—needs which vary in expertise level and data access.
+
+Speaking of “application” might seem restrictive, but as we will see, this term can be interpreted broadly to fit a wide range of use cases.
+
+[^notenom]: The strong entanglement of best practices, reproducibility, and deployment actually made it hard for us to settle on a course title. Some names on our shortlist were _“Best Practices in Data Science”_ or _“Best Practices for Reproducibility in Data Science”_. However, since best practices are a means and deployment is the end, we decided to emphasize the latter.
+
+The main goal of the course is to show how a pragmatic approach, along with the right tools and principles, allows projects to move beyond experimental tinkering and toward production-grade solutions.
+
+# Development Best Practices
+
+## Origin
+
+The notion of “best practices” as used in this course originates from the software development community. It emerged in response to several observations:
+
+- _“Code is read much more often than it is written”_ (Guido Van Rossum);
+- Maintaining code often requires (much) more effort than writing it initially;
+- The person maintaining the codebase is likely not the one who wrote it.
+
+In light of these realities, the developer community has conventionally agreed on an **informal set of rules** recognized as producing **more reliable, scalable, and maintainable software over time**. Like language conventions, some may seem arbitrary—but they support a critical goal: enabling code to be shared and communicated effectively. This may seem secondary at first, but it's a key factor in the success of *open source* languages, which thrive on shared experience and collaboration.
+
+:::: {.callout-note collapse="true"}
+## The [`12 Factor App`](https://12factor.net/)
+
+Recently, as software has evolved toward cloud-based web applications, many of these best practices were formalized in a manifesto known as the [`12 Factor App`](https://12factor.net/). The rise of the *cloud*—i.e., standardized infrastructures external to traditional in-house data systems—makes adopting good practices more crucial than ever.
+::::
+
+## Why Care About Best Practices?
+
+> Why should this matter to a *data scientist*, whose job is to derive insights from data—not build applications?
+
+Due to the rapid growth of *data science* and the increasing size of typical projects, the *data scientist*'s work is becoming more similar in some ways to that of a developer:
+
+- *Data science* projects involve __intensive coding__;
+- Collaboration is required on __large-scale projects__;
+- Massive datasets require working on __technically complex big data infrastructures__;
+- The *data scientist* must __collaborate with technical roles__ to deploy models and make them accessible to users.
+
+Thus, it makes sense for modern *data scientists* to take interest in the best practices adopted by developers. Naturally, these need to be tailored to data-centered projects. The upside is significant: projects that adopt best practices are much cheaper to evolve—making them more competitive in the ever-changing data science ecosystem, where tools, data, and user expectations constantly shift.
+
+## A Continuum of Best Practices
+
+Best practices should not be viewed in a binary way: it's not that some projects follow them and others don’t. Best practices come with a __cost__, which should not be overlooked—even though they prevent future costs, especially in maintenance. It’s better to **view best practices as a spectrum**, and position your project on it based on cost-benefit analysis, particularly in terms of improving reproducibility.
+
+The appropriate threshold depends on trade-offs specific to your project:
+
+- **Ambitions**: Will the project grow or evolve? Is it meant to become collaborative—within a team or as open source? Are the outputs intended for public release?
+- **Resources**: What human resources are available? For open-source work, is there a potential contributor community?
+- **Constraints**: Are there tight deadlines? Specific quality requirements? Is deployment expected? Are there major security concerns?
+- **Target audience**: Who will consume the project’s data products? What’s their technical level, and how much time will they spend engaging with your work?
+
+We are not suggesting that every *data science* project must follow all the best practices covered in this course. That said, we strongly believe every *data scientist* should consider these questions and continuously improve their practices.
+
+In particular, we believe it’s possible to define a core set—i.e., a **minimal set of best practices** that provide more value than they cost to implement. Here’s our suggestion for such a baseline:
+
+- Use dedicated tools to check code quality (see [Code Quality](/chapters/code-quality.qmd));
+- Use a standardized project structure with ready-made templates (see [Project Architecture](/chapters/projects-architecture.qmd));
+- Use `Git` to version your code, whether or not you're working with others (see [Version Control and Collaboration with Git](/chapters/git.html));
+- Manage project dependencies with virtual environments (see [Portability](/chapters/portability.html)).
+
+Beyond this minimal baseline, decisions should weigh costs and benefits.
+But adopting this foundational level of reproducibility will make further progress much easier as your project grows.
+
+Let’s now look at the core principles promoted by this course and how the content is logically structured.
+
+# The Course’s Core Principles
+
+## Code as a Communication Tool
+
+The first best practice to adopt is to view code as a __communication tool__, not just a functional one. Code doesn’t exist solely to perform a task—it’s meant to be shared, reused, and maintained, whether in a team or an *open-source* context.
+
+To support this communication, conventions have been developed regarding code quality and project structure. These are covered in the chapters [Code Quality](/chapters/code-quality.html) and [Project Architecture](/chapters/projects-architecture.html).
+
+For the same reasons, applying __version control__ principles is essential. These provide continuous documentation of the project, which greatly improves its reusability and maintainability. We revisit the use of `Git` in the chapter [Version Control and Collaborative Work with Git](/chapters/git.html).
+
+## Working Collaboratively
+
+Regardless of context, *data scientists* typically work in team-based projects. This requires defining a work organization and using tools that enable secure, efficient collaboration.
+
+We present a modern way to collaborate using `Git` and `GitHub` in the reminder chapter [Version Control and Collaborative Work with Git](/chapters/git.html). Later chapters will build on this collaborative approach and refine it using the `DevOps` methodology[^devops].
+
+[^devops]: A methodology focused on automating and integrating design and delivery workflows prior to deployment. Like best practices, this approach originated in software development but has become essential for *data scientists*.
+
+## Maximizing Reproducibility
+
+The third pillar of best practices in this course is **reproducibility**.
+
+A project is reproducible when **the same code and data can be used to reproduce the same results**. It’s important to distinguish this from **replicability**. Replicability is a *scientific* concept—meaning the same experimental process yields similar results on different datasets. Reproducibility is a *technical* concept: it doesn’t guarantee scientific validity but ensures that the protocol is specified and shared in a way that allows others to reproduce the results.
+
+**Reproducibility is the guiding theme of this course**: all concepts covered in the chapters contribute to it. Producing code and projects that follow community conventions and using version control contribute to making code more readable and documented—and therefore reproducible.
+
+However, achieving full reproducibility requires going further—by considering the concept of an **execution environment**. Code doesn’t run in a vacuum; it runs in an environment (e.g., personal computer, server), and those environments can differ greatly (OS, installed libraries, security policies, etc.). That’s why we must consider **code portability—i.e., its ability to run as expected across different environments**, which we explore in the dedicated [chapter](/chapters/portability.html).
+
+## Facilitating Production Deployment
+
+For a *data science* project to ultimately create value, it must be deployed in a usable form that reaches its audience. This implies two things:
+
+- Choosing the right __distribution format__, i.e., one that best highlights the results to the intended users;
+- Transitioning the project from its development environment to a __production infrastructure__, i.e., one that allows the project output to be robustly deployed and accessible on demand.
+
+In the chapter [Deploy and Showcase Your Data Science Project](/chapters/deployment.html), we propose ways to address both needs. We present common output formats (API, app, automated report, website) that help make *data science* projects accessible, and the modern tools used to produce them.
+
+We then explain the essential concepts of production infrastructure and demonstrate them with examples of deployments in a modern *cloud* environment.
+
+This is, in a way, the reward for following best practices: once you’ve put in the effort to write quality code, properly version it, and make it portable, deploying your project becomes significantly easier.
+
+## Opening the Door to Industrialization
+
+By simplifying a project’s structure, you make it easier to scale. In *data science*, this may take the form of industrializing model training to select the “best” model from a much broader set—far beyond what an ad hoc approach would allow.
+
+However, every model learns from past data, and a model that works today may no longer be valid tomorrow. To account for this ever-changing reality, we will explore key principles of _MLOps_. Though the term is a buzzword, it represents a meaningful set of practices for *data scientists*, covered in the [dedicated chapter](/chapters/mlops.qmd).
+
+## Supplementary Chapters
+
+Several tools presented in this course, such as `Git` and `Docker`, require terminal usage and a basic understanding of how `Linux` systems work. In the chapter [Demystifying the Linux Terminal for Autonomy](/chapters/linux101.html), we cover the essential Linux knowledge a *data scientist* needs to deploy projects independently and apply development best practices.
+
+# Practical Information
+
+## Teaching Approach
+
+The guiding principle of this course is that only practice—especially hands-on experience with real-world problems—can effectively develop understanding of computing concepts. As such, a large part of the course will consist of **applying key ideas to concrete use cases**. Each chapter will conclude with applications rooted in realistic *data science* problems.
+
+A [running example](/chapters/) illustrates how a reproducible project evolves by progressively applying the practices discussed throughout the course.
+
+For the course evaluation, students will be asked to take a personal project—ideally already completed—and apply as many of the best practices introduced here as possible.
+
+## Programming Languages
+
+The principles presented in this course are mostly **language-agnostic**.
+
+This is not just an editorial decision—we believe it's central to the topic of best practices. Too often, language differences between development phases (e.g., `R` or `Python`) and production phases (e.g., `Java`) create artificial barriers that limit a *data science* project’s potential impact.
+
+By contrast, when the different teams involved in a project’s lifecycle adopt a shared set of best practices, they also develop a shared vocabulary—greatly easing the deployment process.
+
+A compelling example is **containerization**: if the *data scientist* provides a `Docker` image as the output of their development work, and a *data engineer* handles its deployment, then the underlying programming language becomes largely irrelevant. While simplistic, this example captures the essence of how best practices enhance communication within a project.
+
+Examples in this course will primarily use `Python`. The main reason is that despite its shortcomings, Python is widely taught in both *data science* and computer science programs. It serves as a bridge between data users and developers—two essential roles in production workflows.
+
+That said, the same principles can be applied with other languages, and we strongly encourage students to practice this transfer of skills.
+
+## Execution Environment
+
+Like programming language, the principles in this course are **agnostic to the infrastructure** used to run the examples. It is not only possible but desirable to apply best practices to both solo projects on a personal computer and collaborative projects intended for production deployment.
+
+That said, we have chosen the [`SSP Cloud`](https://datalab.sspcloud.fr/home) platform as our reference environment throughout the course. Developed at Insee and available to students at statistical schools, it offers several advantages:
+
+- **Standardized development environment**: SSP Cloud servers use a uniform configuration—specifically, the Debian Linux distribution—which ensures reproducibility across course examples;
+- Built on a Kubernetes cluster, SSP Cloud offers robust infrastructure for automated deployment of potentially data-intensive applications—making it possible to **simulate a true production environment**;
+- SSP Cloud follows modern *data science* infrastructure standards, enabling learners to **internalize best practices organically**:
+  - Services are run in containers configured via *Docker* images, which ensures strong **reproducibility** of deployments—at the cost of some initial complexity during development;
+  - The platform is based on a **cloud-native architecture**, composed of modular software building blocks. This encourages strict separation of code, data, configuration, and execution environment—a major principle of good practice that will be revisited throughout the course.
+
+To learn more about this platform, see [this page](https://ssphub.netlify.app/post/onyxia/).
+
+## Additional Resources
+
+- [MIT's _Missing Semester_](https://missing.csail.mit.edu/)
