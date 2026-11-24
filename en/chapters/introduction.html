@@ -49,9 +49,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-63b5708e65d6cd79cd7618c58d0c21e7.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-83d162495944edb778116f0d687d8158.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-4270bfa2d1f36a0b33004e29e2a05aa9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-83d162495944edb778116f0d687d8158.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-99cdf02140c539188f12aa4df764dfda.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-e1a783589af0ae796d59f579694c80c3.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-99cdf02140c539188f12aa4df764dfda.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <link href="../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
@@ -712,17 +712,30 @@ See slides (in French) or <a href="https://ensae-reproductibilite.github.io/slid
   color: var(--bs-tertiary-color, #adb5bd);
   line-height: 1.4;
 }
+/* Old-school framing: [████░░░░] */
 .toc-progress-bar {
   letter-spacing: -0.05em;
+  color: var(--term-dim, var(--bs-tertiary-color, #adb5bd));
 }
+.toc-progress-bar::before {
+  content: "[";
+  color: var(--term-dim, var(--bs-secondary-color));
+}
+.toc-progress-bar::after {
+  content: "]";
+  color: var(--term-dim, var(--bs-secondary-color));
+}
+/* Filled cells: phosphor green with a soft glow in dark mode */
 .toc-progress b {
-  color: var(--bs-body-color);
+  color: var(--term-phosphor, #33ff66);
   font-weight: 400;
+  text-shadow: 0 0 4px var(--term-phosphor-glow, transparent);
 }
 .toc-progress-pct {
-  color: var(--bs-secondary-color);
+  color: var(--term-phosphor, #33ff66);
   margin-left: 0.5em;
   letter-spacing: 0;
+  text-shadow: 0 0 4px var(--term-phosphor-glow, transparent);
 }
 .toc-progress-time {
   font-family: var(--bs-font-monospace);
@@ -731,6 +744,10 @@ See slides (in French) or <a href="https://ensae-reproductibilite.github.io/slid
   text-transform: uppercase;
   color: var(--bs-secondary-color);
   margin-top: 0.4rem;
+}
+.toc-progress-time::before {
+  content: "> ";
+  color: var(--term-phosphor, #33ff66);
 }
 @media print {
   .toc-progress,
