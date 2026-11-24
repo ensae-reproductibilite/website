@@ -7,24 +7,18 @@
 }
 
 /* Terminal palette shared by the sidebar, the banner and its panel.
-   The phosphor green is used in dark mode; light mode falls back to the
-   site accent, which stays readable on the cream background. */
+   --term-phosphor is defined site-wide with a legible dark green in light mode. */
 .appli-nav-banner,
 #appli-nav-sidebar {
   --appli-ink: var(--term-phosphor, #33ff66);
 }
-body.quarto-light .appli-nav-banner,
-body.quarto-light #appli-nav-sidebar {
-  --appli-ink: var(--term-accent, #b5553a);
-}
 
-/* Left sidebar (wide screens only): sits in the empty grid columns left of
-   the content, from the screen edge to the body start. */
+/* Left sidebar (wide screens only): sits in a dedicated column left of the
+   content, from the page start to the outset of the body. */
 #quarto-content > #appli-nav-sidebar {
   display: none;
-  grid-column: screen-start / body-start;
+  grid-column: page-start / body-start-outset;
   grid-row: content-top / page-bottom;
-  justify-self: end;
   min-width: 0;
   z-index: 1;
   padding: 0;
@@ -34,6 +28,12 @@ body.quarto-light #appli-nav-sidebar {
   #quarto-content > #appli-nav-sidebar {
     display: block;
   }
+  /* Carve a real left column (210-260px) out of the Quarto grid when the
+     sidebar is present. Line names are kept so that other elements
+     (margin TOC, callouts, figures, .column-page) still align. */
+  body #quarto-content.page-columns.has-appli-sidebar {
+    grid-template-columns: [screen-start] 1.5em [screen-start-inset] 1fr [page-start page-start-inset] minmax(210px, 260px) [body-start-outset] 1.5em [body-start] 1.5em [body-content-start] minmax(500px, calc(850px - 3em)) [body-content-end] 1.5em [body-end] 35px [body-end-outset] minmax(75px, 145px) [page-end-inset] 35px [page-end] 1fr [screen-end-inset] 1.5em [screen-end];
+  }
 }
 #appli-nav-sidebar .appli-nav-sticky {
   position: sticky;
@@ -41,7 +41,6 @@ body.quarto-light #appli-nav-sidebar {
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 240px;
   max-height: calc(100vh - var(--appli-nav-top, 80px) - 1rem);
   margin-top: 1rem;
   background: var(--term-bg, #fff);
@@ -647,6 +646,7 @@ body.quarto-dark .appli-nav-row.is-current .appli-nav-title {
 
     var content = document.getElementById("quarto-content");
     if (content) {
+      content.classList.add("has-appli-sidebar");
       var main = document.getElementById("quarto-document-content");
       content.insertBefore(sidebar, main && main.parentNode === content ? main : content.firstChild);
     }
