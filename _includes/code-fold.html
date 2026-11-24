@@ -1,0 +1,110 @@
+<style>
+/* Long code blocks (more than 20 lines) are folded to their first 12 lines.
+   The height is measured by the script (--code-fold-h); the fallback is 12 lines at 1.5em. */
+.code-folded pre {
+  max-height: var(--code-fold-h, calc(12 * 1.5em + 1em));
+  overflow: hidden;
+}
+.code-folded::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4em;
+  background: linear-gradient(to bottom, transparent, var(--term-bg, #f0eee6));
+  pointer-events: none;
+}
+.code-fold-btn {
+  display: block;
+  width: 100%;
+  margin-top: 0.4rem;
+  padding: 0.3rem 0.6rem;
+  font-family: var(--bs-font-monospace, monospace);
+  font-size: 0.75rem;
+  text-align: left;
+  color: var(--term-phosphor, #33ff66);
+  background: transparent;
+  border: 1px dashed var(--term-border, #ccc);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.code-fold-btn:hover,
+.code-fold-btn:focus-visible {
+  border-style: solid;
+}
+@media print {
+  .code-folded pre { max-height: none !important; }
+  .code-folded::after { display: none; }
+  .code-fold-btn { display: none; }
+}
+</style>
+<script>
+(function () {
+  var MIN_FOLD = 21;   /* folds blocks of 21 lines or more */
+  var KEEP = 12;       /* lines kept visible when folded */
+
+  function init() {
+    var fr = (document.documentElement.lang || '').toLowerCase().indexOf('fr') === 0;
+    var blocks = document.querySelectorAll('main.content div.sourceCode');
+
+    for (var i = 0; i < blocks.length; i++) {
+      var div = blocks[i];
+      if (div.getAttribute('data-code-fold') !== null) continue;
+      if (div.closest && div.closest('details')) continue;
+
+      var pre = div.querySelector('pre');
+      if (!pre) continue;
+      var code = pre.querySelector('code') || pre;
+      var spans = code.querySelectorAll(':scope > span');
+      var n = spans.length || code.textContent.replace(/\n$/, '').split('\n').length;
+      if (n < MIN_FOLD) continue;
+
+      div.setAttribute('data-code-fold', '1');
+
+      /* Measure the height of the first KEEP lines (before folding, so no max-height applies yet) */
+      if (spans.length > KEEP) {
+        var top0 = spans[0].getBoundingClientRect().top;
+        var lineH = spans[KEEP].getBoundingClientRect().top - top0;
+        var pad = parseFloat(window.getComputedStyle(pre).paddingTop) || 0;
+        if (lineH > 0) {
+          div.style.setProperty('--code-fold-h', (lineH + pad) + 'px');
+        }
+      }
+
+      var btn = makeButton(div, n, fr);
+      var anchor = div.closest('.code-copy-outer-scaffold') || div;
+      anchor.parentNode.insertBefore(btn, anchor.nextSibling);
+      setFolded(div, btn, true, n, fr);
+    }
+  }
+
+  function makeButton(div, n, fr) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'code-fold-btn';
+    btn.addEventListener('click', function () {
+      var folded = !div.classList.contains('code-folded');
+      setFolded(div, btn, folded, n, fr);
+    });
+    return btn;
+  }
+
+  function setFolded(div, btn, folded, n, fr) {
+    if (folded) {
+      div.classList.add('code-folded');
+      btn.textContent = '▾ ' + (fr ? 'afficher les ' + n + ' lignes' : 'show all ' + n + ' lines');
+    } else {
+      div.classList.remove('code-folded');
+      btn.textContent = '▴ ' + (fr ? 'replier' : 'collapse');
+    }
+    btn.setAttribute('aria-expanded', folded ? 'false' : 'true');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
