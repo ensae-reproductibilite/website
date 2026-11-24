@@ -8,17 +8,30 @@
   color: var(--bs-tertiary-color, #adb5bd);
   line-height: 1.4;
 }
+/* Old-school framing: [████░░░░] */
 .toc-progress-bar {
   letter-spacing: -0.05em;
+  color: var(--term-dim, var(--bs-tertiary-color, #adb5bd));
 }
+.toc-progress-bar::before {
+  content: "[";
+  color: var(--term-dim, var(--bs-secondary-color));
+}
+.toc-progress-bar::after {
+  content: "]";
+  color: var(--term-dim, var(--bs-secondary-color));
+}
+/* Filled cells: phosphor green with a soft glow in dark mode */
 .toc-progress b {
-  color: var(--bs-body-color);
+  color: var(--term-phosphor, #33ff66);
   font-weight: 400;
+  text-shadow: 0 0 4px var(--term-phosphor-glow, transparent);
 }
 .toc-progress-pct {
-  color: var(--bs-secondary-color);
+  color: var(--term-phosphor, #33ff66);
   margin-left: 0.5em;
   letter-spacing: 0;
+  text-shadow: 0 0 4px var(--term-phosphor-glow, transparent);
 }
 .toc-progress-time {
   font-family: var(--bs-font-monospace);
@@ -27,6 +40,10 @@
   text-transform: uppercase;
   color: var(--bs-secondary-color);
   margin-top: 0.4rem;
+}
+.toc-progress-time::before {
+  content: "> ";
+  color: var(--term-phosphor, #33ff66);
 }
 @media print {
   .toc-progress,
