@@ -55,11 +55,6 @@ h1, h2 {
 
 
 
-p {
-    text-align: justify;
-  }
-
-
   /* css styles */
 .grid-item-link {
   color: inherit;
@@ -373,7 +368,7 @@ body:is(.quarto-light, .quarto-dark) main.content section.level2 > h2 {
   color: var(--term-h2);
   border-bottom: 1px dashed var(--term-rule);
   padding-bottom: .2em;
-  margin-top: 2.2rem;
+  margin-top: 3rem;
   margin-bottom: .9rem;
 }
 
@@ -645,4 +640,95 @@ body:is(.quarto-light, .quarto-dark) .quarto-title-block .description::before {
    from the body text. Bold inside links keeps the link colour. */
 body:is(.quarto-light, .quarto-dark) main.content strong:not(a strong) {
   color: var(--term-strong);
+}
+
+/* ==========================================================================
+   Readability pass for long pages (site-wide, main.content only)
+   ========================================================================== */
+
+/* Typography: airier line height and paragraph spacing (text stays left-aligned) */
+body:is(.quarto-light, .quarto-dark) main.content {
+  line-height: 1.7;
+}
+
+body:is(.quarto-light, .quarto-dark) main.content p {
+  margin-bottom: 1.1em;
+}
+
+/* Loose list items: pandoc wraps their content in <p>, so space the items and the paragraphs inside them */
+body:is(.quarto-light, .quarto-dark) main.content li + li {
+  margin-top: .35em;
+}
+
+body:is(.quarto-light, .quarto-dark) main.content li > p {
+  margin-bottom: .4em;
+}
+
+/* Long pages: each level-1 part starts with air and a terminal separator (dashed rule) */
+body:is(.quarto-light, .quarto-dark) main.content section.level1 + section.level1 {
+  margin-top: 4.5rem;
+  padding-top: 2.5rem;
+  border-top: 1px dashed var(--term-rule);
+}
+
+/* Exercise callouts: the ordered list inside is the list of steps */
+body:is(.quarto-light, .quarto-dark) .callout-application .callout-body {
+  padding: .9rem 1.2rem 1rem;
+}
+
+body:is(.quarto-light, .quarto-dark) .callout-application .callout-body > ol > li {
+  margin-top: .9em;
+  padding-left: .3em;
+}
+
+body:is(.quarto-light, .quarto-dark) .callout-application .callout-body ol > li::marker {
+  color: var(--term-phosphor);
+  font-family: "JetBrains Mono", "Fira Code", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-weight: 700;
+}
+
+/* Nested lists: indented under a dashed left guide */
+body:is(.quarto-light, .quarto-dark) .callout-application .callout-body ol ol,
+body:is(.quarto-light, .quarto-dark) .callout-application .callout-body ol ul,
+body:is(.quarto-light, .quarto-dark) .callout-application .callout-body ul ul {
+  border-left: 1px dashed var(--term-rule);
+  padding-left: 1.2em;
+  margin-top: .4em;
+}
+
+/* <details> as terminal panels: solutions and long snippets inside exercises */
+body:is(.quarto-light, .quarto-dark) main.content details {
+  border: 1px solid var(--term-border);
+  border-radius: 0;
+  background: var(--term-accent-soft);
+  margin: .8em 0;
+  padding: 0 .8em;
+}
+
+/* Summary line: monospace, phosphor-coloured, with a shell-style chevron */
+body:is(.quarto-light, .quarto-dark) main.content details > summary {
+  font-family: "JetBrains Mono", "Fira Code", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .85rem;
+  cursor: pointer;
+  color: var(--term-phosphor);
+  padding: .45em 0;
+  list-style: none;
+}
+
+body:is(.quarto-light, .quarto-dark) main.content details > summary::-webkit-details-marker {
+  display: none;
+}
+
+body:is(.quarto-light, .quarto-dark) main.content details > summary::before {
+  content: "\25B8  ";
+}
+
+body:is(.quarto-light, .quarto-dark) main.content details[open] > summary::before {
+  content: "\25BE  ";
+}
+
+/* Open panel: rule between the summary and the content */
+body:is(.quarto-light, .quarto-dark) main.content details[open] > summary {
+  border-bottom: 1px dashed var(--term-rule);
+  margin-bottom: .6em;
 }
