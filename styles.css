@@ -696,8 +696,9 @@ body:is(.quarto-light, .quarto-dark) .callout-application .callout-body ul ul {
   margin-top: .4em;
 }
 
-/* <details> as terminal panels: solutions and long snippets inside exercises */
-body:is(.quarto-light, .quarto-dark) main.content details {
+/* <details> as terminal panels: solutions and long snippets inside exercises.
+   Folders of the filetree extension are <details> too: they keep their own style. */
+body:is(.quarto-light, .quarto-dark) main.content details:not(.filetree details) {
   border: 1px solid var(--term-border);
   border-radius: 0;
   background: var(--term-accent-soft);
@@ -706,7 +707,7 @@ body:is(.quarto-light, .quarto-dark) main.content details {
 }
 
 /* Summary line: monospace, phosphor-coloured, with a shell-style chevron */
-body:is(.quarto-light, .quarto-dark) main.content details > summary {
+body:is(.quarto-light, .quarto-dark) main.content details:not(.filetree details) > summary {
   font-family: "JetBrains Mono", "Fira Code", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: .85rem;
   cursor: pointer;
@@ -715,20 +716,20 @@ body:is(.quarto-light, .quarto-dark) main.content details > summary {
   list-style: none;
 }
 
-body:is(.quarto-light, .quarto-dark) main.content details > summary::-webkit-details-marker {
+body:is(.quarto-light, .quarto-dark) main.content details:not(.filetree details) > summary::-webkit-details-marker {
   display: none;
 }
 
-body:is(.quarto-light, .quarto-dark) main.content details > summary::before {
+body:is(.quarto-light, .quarto-dark) main.content details:not(.filetree details) > summary::before {
   content: "\25B8  ";
 }
 
-body:is(.quarto-light, .quarto-dark) main.content details[open] > summary::before {
+body:is(.quarto-light, .quarto-dark) main.content details:not(.filetree details)[open] > summary::before {
   content: "\25BE  ";
 }
 
 /* Open panel: rule between the summary and the content */
-body:is(.quarto-light, .quarto-dark) main.content details[open] > summary {
+body:is(.quarto-light, .quarto-dark) main.content details:not(.filetree details)[open] > summary {
   border-bottom: 1px dashed var(--term-rule);
   margin-bottom: .6em;
 }
