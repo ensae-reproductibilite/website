@@ -69,8 +69,49 @@
   min-height: 0;
 }
 .appli-nav-count {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
   padding: 0.4rem 0.25rem 0.2rem;
   color: var(--term-dim, #a8a59b);
+}
+/* Bulk controls [+] [-]: expand or collapse every application at once. */
+.appli-nav-head-right {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+.appli-nav-bulk {
+  display: inline-flex;
+  gap: 0.3rem;
+}
+.appli-nav-bulk-btn {
+  margin: 0;
+  padding: 0 0.1rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--term-dim, #a8a59b);
+  font: inherit;
+  line-height: inherit;
+  cursor: pointer;
+}
+.appli-nav-bulk-btn:hover {
+  color: var(--appli-ink);
+}
+.appli-nav-bulk-btn:focus-visible {
+  outline: 1px dotted var(--appli-ink);
+  outline-offset: 1px;
+}
+/* Done application, folded: marked "[x]" in the callout title. */
+.callout-application.appli-done .callout-header {
+  opacity: 0.65;
+}
+.callout-application.appli-done .callout-title-container::before {
+  content: "[x] ";
+  color: var(--term-phosphor, #33ff66);
+  font-family: monospace;
 }
 .appli-nav-part {
   display: block;
@@ -302,6 +343,9 @@ body.quarto-dark .appli-nav-row.is-current .appli-nav-title {
   .appli-nav-banner {
     display: none !important;
   }
+  .callout-application .callout-collapse {
+    display: block !important;
+  }
 }
 </style>
 <script>
@@ -326,7 +370,9 @@ body.quarto-dark .appli-nav-row.is-current .appli-nav-title {
         markDone: "Marquer comme faite",
         openList: "Afficher la liste des applications",
         preliminary: "préliminaire",
-        part: "Partie"
+        part: "Partie",
+        expandAll: "Tout déplier",
+        collapseAll: "Tout replier"
       }
     : {
         applications: "Applications",
@@ -334,7 +380,9 @@ body.quarto-dark .appli-nav-row.is-current .appli-nav-title {
         markDone: "Mark as done",
         openList: "Show the applications list",
         preliminary: "preliminary",
-        part: "Part"
+        part: "Part",
+        expandAll: "Expand all",
+        collapseAll: "Collapse all"
       };
 
   function storageGet(key) {
@@ -370,6 +418,37 @@ body.quarto-dark .appli-nav-row.is-current .appli-nav-title {
 
   function reduceMotion() {
     return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  }
+
+  // Folding ------------------------------------------------------------------
+  // The body of a callout is the Bootstrap collapse element (.callout-collapse,
+  // "show" when expanded); its header is the toggle. Bootstrap does not sync the
+  // header for these callouts (the target is a class selector), so we do it here.
+  function bodyOf(it) {
+    return it.el.querySelector(".callout-collapse");
+  }
+
+  function setHeader(it, expanded) {
+    var header = it.el.querySelector(".callout-header");
+    if (!header) return;
+    header.setAttribute("aria-expanded", expanded ? "true" : "false");
+    header.classList.toggle("collapsed", !expanded);
+  }
+
+  // instant: direct class changes, no transition (page load, bulk actions).
+  function setFolded(it, folded, instant) {
+    var body = bodyOf(it);
+    if (!body) return;
+    var collapse = window.bootstrap && window.bootstrap.Collapse;
+    if (!instant && collapse && !reduceMotion()) {
+      var inst = collapse.getOrCreateInstance(body, { toggle: false });
+      if (folded) inst.hide();
+      else inst.show();
+    } else {
+      body.classList.toggle("show", !folded);
+      body.classList.remove("collapsing");
+    }
+    setHeader(it, !folded);
   }
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -532,6 +611,8 @@ body.quarto-dark .appli-nav-row.is-current .appli-nav-title {
     }
 
     function goTo(it) {
+      // A done application is folded: open it before scrolling to it.
+      if (it.done) setFolded(it, false, false);
       var y = it.el.getBoundingClientRect().top + window.pageYOffset - scrollOffset();
       window.scrollTo({ top: Math.max(0, y), behavior: reduceMotion() ? "auto" : "smooth" });
       try {
@@ -584,6 +665,7 @@ body.quarto-dark .appli-nav-row.is-current .appli-nav-title {
 
       items.forEach(function (it) {
         var isCurrent = it === current;
+        it.el.classList.toggle("appli-done", it.done);
         it.rows.forEach(function (r) {
           r.classList.toggle("is-current", isCurrent);
           r.classList.toggle("is-done", it.done);
@@ -673,6 +755,7 @@ body.quarto-dark .appli-nav-row.is-current .appli-nav-title {
       check.addEventListener("change", function () {
         it.done = check.checked;
         storageSet(DONE_PREFIX + it.id, it.done ? "1" : null);
+        setFolded(it, it.done, false);
         render();
       });
 
@@ -682,12 +765,38 @@ body.quarto-dark .appli-nav-row.is-current .appli-nav-title {
       return row;
     }
 
+    // [+] / [-]: expand or collapse every application, instantly.
+    function setAllFolded(folded) {
+      items.forEach(function (it) {
+        setFolded(it, folded, true);
+      });
+      schedule();
+    }
+
+    function buildBulk() {
+      var wrap = el("span", "appli-nav-bulk");
+      [["[+]", L.expandAll, false], ["[-]", L.collapseAll, true]].forEach(function (spec) {
+        var btn = el("button", "appli-nav-bulk-btn", spec[0]);
+        btn.type = "button";
+        btn.title = spec[1];
+        btn.setAttribute("aria-label", spec[1]);
+        btn.addEventListener("click", function () {
+          setAllFolded(spec[2]);
+        });
+        wrap.appendChild(btn);
+      });
+      return wrap;
+    }
+
     function buildList(extraClass, inPanel) {
       var box = el("div", "appli-nav-list " + extraClass);
       if (inPanel) {
         var count = el("div", "appli-nav-count");
+        var countText = el("span");
+        count.appendChild(countText);
+        count.appendChild(buildBulk());
         box.appendChild(count);
-        counters.push(count);
+        counters.push(countText);
       }
 
       groups.forEach(function (g) {
@@ -721,8 +830,11 @@ body.quarto-dark .appli-nav-row.is-current .appli-nav-title {
     sidebar.setAttribute("aria-label", L.applications);
     var railHead = el("div", "appli-nav-head");
     railHead.appendChild(el("span", "appli-nav-prompt", "~/appli $ ls"));
+    var railRight = el("span", "appli-nav-head-right");
     railCounter = el("span", "appli-nav-counter");
-    railHead.appendChild(railCounter);
+    railRight.appendChild(railCounter);
+    railRight.appendChild(buildBulk());
+    railHead.appendChild(railRight);
     sidebar.appendChild(railHead);
     sidebar.appendChild(buildList("appli-nav-side-list", false));
     document.body.appendChild(sidebar);
@@ -794,9 +906,26 @@ body.quarto-dark .appli-nav-row.is-current .appli-nav-title {
 
     measure();
 
+    // Keep the header in sync with Bootstrap's own toggles (click on the header).
+    items.forEach(function (it) {
+      it.el.addEventListener("show.bs.collapse", function (e) {
+        if (e.target.classList && e.target.classList.contains("callout-collapse")) setHeader(it, true);
+      });
+      it.el.addEventListener("hide.bs.collapse", function (e) {
+        if (e.target.classList && e.target.classList.contains("callout-collapse")) setHeader(it, false);
+      });
+    });
+
     // Lien direct vers une application (#appli-12) : les identifiants n'existaient
     // pas encore quand le navigateur a traité l'ancre.
     var hash = decodeURIComponent(location.hash.slice(1));
+
+    // Applications already done start folded, at once and without animation.
+    // The one named by the hash stays open so that the deep link shows it.
+    items.forEach(function (it) {
+      if (it.done && it.id !== hash) setFolded(it, true, true);
+    });
+
     items.forEach(function (it) {
       if (it.id === hash) {
         var y = it.el.getBoundingClientRect().top + window.pageYOffset - scrollOffset();
